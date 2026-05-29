@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# qwen-ui-lab
+
+An AI-assisted workflow for converting UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.
+
+## Links
+
+- Repository: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
+
+## Goal
+
+Test whether Qwen can help shorten the front-end workflow from visual reference to usable component structure.
+
+## Workflow
+
+1. Upload UI screenshot to Qwen3-VL
+2. Extract layout, hierarchy, components, spacing, and accessibility risks
+3. Convert analysis into a React/Tailwind component plan
+4. Use Qwen Code Plan Mode to inspect the project before editing
+5. Generate a first-pass scaffold
+6. Refactor manually for accessibility, responsiveness, naming, and maintainability
+
+## Project Structure
+
+```
+src/
+  app/              — Next.js App Router pages
+  components/       — Reusable UI components
+    dashboard/      — Dashboard component system
+  data/             — Mock data files
+  lib/              — Utilities (cn, etc.)
+experiments/
+  01-dashboard/     — First case study artifacts
+public/
+  references/       — Original UI screenshots
+  results/          — Before/after comparisons
+.qwen/
+  skills/
+    ui-to-component/ — Reusable Qwen Code skill
+```
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the local quality gates before publishing or deploying:
 
-## Learn More
+```bash
+npm audit --audit-level=moderate
+npm run lint
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Current security posture: `npm audit --audit-level=moderate` reports `0 vulnerabilities`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## What Worked
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Layout decomposition
+- Component grouping
+- Naming suggestions
+- First-pass Tailwind structure
 
-## Deploy on Vercel
+## What Failed
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Exact spacing fidelity
+- Accessibility details
+- Responsive edge cases
+- Product logic
+- Overly generic component names
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Final Takeaway
+
+AI is useful for decomposition and scaffolding. It is not a replacement for front-end judgment.
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+## Sources
+
+- [Qwen3-VL GitHub](https://github.com/qwenlm/qwen3-vl)
+- [Qwen Code Docs](https://qwenlm.github.io/qwen-code-docs/en/users/overview/)

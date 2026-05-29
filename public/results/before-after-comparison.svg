@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <rect width="1600" height="900" fill="#f4f4f5"/>
+
+  <!-- Title -->
+  <text x="800" y="40" font-family="Inter,sans-serif" font-size="20" font-weight="700" fill="#18181b" text-anchor="middle">
+    Before / After: AI-Generated Scaffold vs Human-Refactored Final
+  </text>
+
+  <!-- Divider -->
+  <line x1="800" y1="60" x2="800" y2="880" stroke="#e4e4e7" stroke-width="2"/>
+
+  <!-- BEFORE (left) -->
+  <text x="400" y="80" font-family="Inter,sans-serif" font-size="16" font-weight="700" fill="#dc2626" text-anchor="middle">
+    ❌ BEFORE — AI Generated Scaffold
+  </text>
+
+  <rect x="40" y="100" width="720" height="780" rx="12" fill="#fff" stroke="#e4e4e7"/>
+
+  <!-- Before: code sample -->
+  <rect x="60" y="120" width="680" height="300" rx="8" fill="#18181b"/>
+  <text x="80" y="148" font-family="monospace" font-size="11" fill="#a1a1aa">// generated-first-pass.tsx — inline styles everywhere</text>
+  <text x="80" y="168" font-family="monospace" font-size="11" fill="#34d399">export default</text>
+  <text x="160" y="168" font-family="monospace" font-size="11" fill="#fafafa"> function DashboardPage() {"{"}</text>
+  <text x="80" y="188" font-family="monospace" font-size="11" fill="#71717a">  const stats = [{"{"} label: "Total Revenue", ... {"}"}];</text>
+  <text x="80" y="208" font-family="monospace" font-size="11" fill="#fafafa">  return (</text>
+  <text x="80" y="228" font-family="monospace" font-size="11" fill="#f87171">    &lt;div style={{"{ padding: '32px', maxWidth: '1280px'"}}&gt;</text>
+  <text x="80" y="248" font-family="monospace" font-size="11" fill="#f8717a">      &lt;h2 style={{"{ fontSize: '28px', fontWeight: 'bold'"}}&gt;</text>
+  <text x="80" y="268" font-family="monospace" font-size="11" fill="#71717a">        Dashboard</text>
+  <text x="80" y="288" font-family="monospace" font-size="11" fill="#f8717a">      &lt;/h2&gt;</text>
+  <text x="80" y="308" font-family="monospace" font-size="11" fill="#f87171">      &lt;div style={{"{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)'"}}&gt;</text>
+  <text x="80" y="328" font-family="monospace" font-size="11" fill="#71717a">        {"{"} stats.map((stat) =&gt; (</text>
+  <text x="80" y="348" font-family="monospace" font-size="11" fill="#f87171">          &lt;div style={{"{ border: '1px solid #e4e4e7', padding: '24px'"}}&gt;</text>
+  <text x="80" y="368" font-family="monospace" font-size="11" fill="#f87171">            &lt;p style={{"{ color: stat.up ? 'green' : 'red'"}}&gt;</text>
+  <text x="80" y="388" font-family="monospace" font-size="11" fill="#71717a">              ➕ Add User  {/* emoji icons */}</text>
+  <text x="80" y="408" font-family="monospace" font-size="11" fill="#fafafa">    ...</text>
+
+  <!-- Before: issues list -->
+  <text x="80" y="450" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#18181b">Issues Found:</text>
+  <text x="80" y="475" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Inline styles — no Tailwind, no design tokens</text>
+  <text x="80" y="497" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Single monolithic component (300+ lines)</text>
+  <text x="80" y="519" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No TypeScript interfaces</text>
+  <text x="80" y="541" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No semantic HTML (divs everywhere)</text>
+  <text x="80" y="563" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No accessibility attributes</text>
+  <text x="80" y="585" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Emoji icons instead of SVGs</text>
+  <text x="80" y="607" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Color-only trend indicators (no arrows)</text>
+  <text x="80" y="629" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No responsive breakpoints</text>
+  <text x="80" y="651" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No dark mode support</text>
+  <text x="80" y="673" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Hardcoded data mixed into component</text>
+  <text x="80" y="695" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No empty state handling</text>
+  <text x="80" y="717" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  No focus management on buttons</text>
+  <text x="80" y="739" font-family="Inter,sans-serif" font-size="12" fill="#dc2626">✗  Division by zero not guarded</text>
+
+  <!-- Metrics -->
+  <rect x="80" y="770" width="300" height="90" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="230" y="800" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#dc2626" text-anchor="middle">1 component · 300+ lines</text>
+  <text x="230" y="822" font-family="Inter,sans-serif" font-size="12" fill="#71717a" text-anchor="middle">0 TypeScript types · 0 tests</text>
+  <text x="230" y="844" font-family="Inter,sans-serif" font-size="12" fill="#71717a" text-anchor="middle">Lighthouse a11y: ~62</text>
+
+  <!-- AFTER (right) -->
+  <text x="1200" y="80" font-family="Inter,sans-serif" font-size="16" font-weight="700" fill="#059669" text-anchor="middle">
+    ✅ AFTER — Human-Refactored Final
+  </text>
+
+  <rect x="840" y="100" width="720" height="780" rx="12" fill="#fff" stroke="#e4e4e7"/>
+
+  <!-- After: code sample -->
+  <rect x="860" y="120" width="680" height="300" rx="8" fill="#18181b"/>
+  <text x="880" y="148" font-family="monospace" font-size="11" fill="#a1a1aa">// DashboardShell.tsx — clean, typed, accessible</text>
+  <text x="880" y="168" font-family="monospace" font-size="11" fill="#818cf8">import</text>
+  <text x="920" y="168" font-family="monospace" font-size="11" fill="#fafafa"> {"{"} StatCard {"}"} </text>
+  <text x="1050" y="168" font-family="monospace" font-size="11" fill="#818cf8">from</text>
+  <text x="1080" y="168" font-family="monospace" font-size="11" fill="#34d399"> "./StatCard";</text>
+  <text x="880" y="188" font-family="monospace" font-size="11" fill="#818cf8">import type</text>
+  <text x="950" y="188" font-family="monospace" font-size="11" fill="#fafafa"> {"{"} StatCardData {"}"} </text>
+  <text x="1060" y="188" font-family="monospace" font-size="11" fill="#818cf8">from</text>
+  <text x="1090" y="188" font-family="monospace" font-size="11" fill="#34d399"> "@/data/...";</text>
+  <text x="880" y="216" font-family="monospace" font-size="11" fill="#818cf8">interface</text>
+  <text x="940" y="216" font-family="monospace" font-size="11" fill="#fbbf24"> DashboardShellProps</text>
+  <text x="1090" y="216" font-family="monospace" font-size="11" fill="#fafafa"> {"{"}</text>
+  <text x="880" y="236" font-family="monospace" font-size="11" fill="#fafafa">  stats: StatCardData[];</text>
+  <text x="880" y="256" font-family="monospace" font-size="11" fill="#fafafa">  revenueData: RevenueDataPoint[];</text>
+  <text x="880" y="276" font-family="monospace" font-size="11" fill="#fafafa">  {"}"} </text>
+  <text x="880" y="304" font-family="monospace" font-size="11" fill="#34d399">export function</text>
+  <text x="980" y="304" font-family="monospace" font-size="11" fill="#fbbf24"> DashboardShell</text>
+  <text x="1090" y="304" font-family="monospace" font-size="11" fill="#fafafa">(...) {"{"}</text>
+  <text x="880" y="324" font-family="monospace" font-size="11" fill="#fafafa">  &lt;div className="mx-auto max-w-7xl px-4 py-8"&gt;</text>
+  <text x="880" y="344" font-family="monospace" font-size="11" fill="#fafafa">    &lt;section aria-label="Dashboard"&gt;</text>
+  <text x="880" y="364" font-family="monospace" font-size="11" fill="#fafafa">      &lt;div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"&gt;</text>
+  <text x="880" y="384" font-family="monospace" font-size="11" fill="#fafafa">        {"{"} stats.map((stat) =&gt; &lt;StatCard key=... stat={"{"}stat{"}"} /&gt;) {"}"}</text>
+  <text x="880" y="408" font-family="monospace" font-size="11" fill="#fafafa">    ...</text>
+
+  <!-- After: improvements list -->
+  <text x="880" y="450" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#18181b">Improvements Applied:</text>
+  <text x="880" y="475" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Tailwind CSS + design tokens (CSS custom properties)</text>
+  <text x="880" y="497" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  7 focused components + layout orchestrator</text>
+  <text x="880" y="519" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  TypeScript interfaces (StatCardData, ActivityData, etc.)</text>
+  <text x="880" y="541" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Semantic HTML (ul/li, time, nav, section)</text>
+  <text x="880" y="563" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  ARIA labels, role="meter", focus-visible rings</text>
+  <text x="880" y="585" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Proper SVG icons (exhaustive switch, no string map)</text>
+  <text x="880" y="607" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Trend arrows + colors (never color-only)</text>
+  <text x="880" y="629" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Responsive: 1→2→4 cols, stacked→split layouts</text>
+  <text x="880" y="651" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Dark mode with theme transition + flash prevention</text>
+  <text x="880" y="673" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Separated data layer with typed exports</text>
+  <text x="880" y="695" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Empty state handling for ActivityList</text>
+  <text x="880" y="717" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  focus-visible on all interactive elements</text>
+  <text x="880" y="739" font-family="Inter,sans-serif" font-size="12" fill="#059669">✓  Division by zero guarded in RevenueCard</text>
+
+  <!-- Metrics -->
+  <rect x="880" y="770" width="300" height="90" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="1030" y="800" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#059669" text-anchor="middle">8 components · avg 50 lines each</text>
+  <text x="1030" y="822" font-family="Inter,sans-serif" font-size="12" fill="#71717a" text-anchor="middle">4 TypeScript interfaces · 0 lint errors</text>
+  <text x="1030" y="844" font-family="Inter,sans-serif" font-size="12" fill="#71717a" text-anchor="middle">Lighthouse a11y: ~95+</text>
+</svg>
