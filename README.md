@@ -5,6 +5,7 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 ## Links
 
 - Repository: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
+- Live demo: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 
 ## Goal
 
