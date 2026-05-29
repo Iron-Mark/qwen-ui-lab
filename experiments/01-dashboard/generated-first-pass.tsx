@@ -114,7 +114,7 @@ export default function DashboardPage() {
               marginTop: "16px",
             }}
           >
-            <p style={{ color: "#a1a1aa" }}>Chart integration pending</p>
+            <p style={{ color: "#a1a1aa" }}>See ChartPreview (Recharts + Chart.js)</p>
           </div>
         </div>
       </div>

@@ -14,6 +14,11 @@
 - [x] 8-slide meetup deck → `deck/slides.html`
 - [x] LinkedIn carousel draft → `content/linkedin-posts.md`
 - [x] Demo recording script → `content/demo-script.md`
+- [x] Interactive upload flow → `src/components/UploadFlow.tsx`
+- [x] Local flow generation logic → `src/lib/ui-flow.mjs`
+- [x] Qwen provider route → `src/app/api/analyze-ui/route.ts`
+- [x] Qwen env template → `.env.example`
+- [x] Flow unit tests → `tests/ui-flow.test.mjs`
 
 ## 🔲 Manual (requires human action)
 
@@ -28,8 +33,11 @@
 |--------|-------|
 | Components | 8 |
 | TypeScript interfaces | 4 |
+| Interactive upload flow | ✅ Local demo mode |
+| Qwen provider route | ✅ Server route, env-gated |
 | Build status | ✅ Pass |
 | Lint status | ✅ 0 errors |
+| Test status | ✅ Pass |
 | Dark mode | ✅ Yes |
 | Responsive | ✅ Mobile → Desktop |
 | Accessibility | ARIA, semantic HTML, focus management |

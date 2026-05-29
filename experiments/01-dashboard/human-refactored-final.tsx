@@ -104,7 +104,7 @@ export function DashboardShell({
             <RevenueCard data={revenueData} />
           </div>
           <div className="lg:col-span-3">
-            <ChartPreview />
+            <ChartPreview data={revenueData} />
           </div>
         </div>
 

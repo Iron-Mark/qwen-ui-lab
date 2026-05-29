@@ -23,6 +23,16 @@ export interface RevenueDataPoint {
   revenue: number;
 }
 
+export interface PerformanceDataPoint {
+  week: string;
+  sessions: number;
+}
+
+export interface ChannelMixPoint {
+  channel: string;
+  share: number;
+}
+
 export const stats: StatCardData[] = [
   { label: "Total Revenue", value: "$45,231", change: "+20.1%", trend: "up" },
   { label: "Subscriptions", value: "+2,350", change: "+180.1%", trend: "up" },
@@ -37,6 +47,22 @@ export const revenueData: RevenueDataPoint[] = [
   { month: "Apr", revenue: 4500 },
   { month: "May", revenue: 6000 },
   { month: "Jun", revenue: 5500 },
+];
+
+export const performanceData: PerformanceDataPoint[] = [
+  { week: "W1", sessions: 2100 },
+  { week: "W2", sessions: 2450 },
+  { week: "W3", sessions: 2280 },
+  { week: "W4", sessions: 2720 },
+  { week: "W5", sessions: 2980 },
+  { week: "W6", sessions: 3150 },
+];
+
+export const channelMixData: ChannelMixPoint[] = [
+  { channel: "Organic", share: 42 },
+  { channel: "Paid", share: 28 },
+  { channel: "Referral", share: 18 },
+  { channel: "Direct", share: 12 },
 ];
 
 export const recentActivity: ActivityData[] = [

@@ -15,40 +15,40 @@ Use this script when recording the demo video.
 
 ## Script (target: 45 seconds)
 
-### [0:00–0:05] Opening shot — Dashboard
+### [0:00–0:08] Opening shot — Upload flow
 
-**Screen:** App running, light mode, full dashboard visible.
-
-**Voiceover:**
-> "I tested whether Qwen could turn a UI screenshot into a React/Tailwind dashboard."
-
-### [0:05–0:15] Dark mode toggle
-
-**Action:** Click the theme toggle button.
+**Screen:** App running, light mode, upload flow visible.
 
 **Voiceover:**
-> "The final result includes dark mode with smooth transitions, responsive grids from mobile to desktop..."
+> "I tested whether Qwen could turn a UI screenshot into a React/Tailwind dashboard, then added a live upload-to-preview demo flow."
 
-### [0:15–0:25] Scroll through components
+### [0:08–0:22] Upload and analyze
 
-**Action:** Slowly scroll down to show all sections — stats, revenue chart, activity list, quick actions.
-
-**Voiceover:**
-> "...stat cards with trend indicators, a revenue chart, activity feed, and quick action buttons — all built from a single screenshot."
-
-### [0:25–0:35] Show the code
-
-**Action:** Switch to VS Code. Show the component folder structure, then open `DashboardShell.tsx`.
+**Action:** Upload `public/references/dashboard-reference.svg`, then click Analyze.
 
 **Voiceover:**
-> "Qwen handled the visual breakdown and first-pass scaffold. I refactored for accessibility, naming, and production quality."
+> "The browser accepts a screenshot, previews it, and turns it into a structured component plan."
 
-### [0:35–0:45] Closing
+### [0:22–0:35] Generate preview
 
-**Action:** Switch back to the app. Show the full dashboard one more time.
+**Action:** Click Generate Preview. Show the generated scaffold and preview cards.
 
 **Voiceover:**
-> "AI accelerated the workflow, but front-end judgment made it usable. The full case study is on GitHub."
+> "The app calls a server-side Qwen route. If the key is not configured, it falls back locally so the demo still works without exposing credentials."
+
+### [0:35–0:48] Show the final dashboard
+
+**Action:** Scroll to the finished dashboard and click the theme toggle.
+
+**Voiceover:**
+> "Below that is the final human-refactored dashboard with dark mode, responsive grids, accessible chart meters, and reusable components."
+
+### [0:48–0:60] Closing
+
+**Action:** Show the GitHub README or deployed URL.
+
+**Voiceover:**
+> "The route is ready for a real Model Studio key, and the fallback keeps the public demo usable even before credentials are added."
 
 ---
 

@@ -5,14 +5,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "node --test tests/*.test.mjs",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
+    "es-toolkit": "^1.39.10",
     "next": "16.2.6",
     "react": "19.2.4",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4",
+    "recharts": "^3.8.1",
     "tailwind-merge": "^3.6.0"
   },
   "overrides": {

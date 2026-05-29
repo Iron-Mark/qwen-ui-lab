@@ -9,11 +9,15 @@ import type {
   RevenueDataPoint,
   ActivityData,
   QuickActionData,
+  PerformanceDataPoint,
+  ChannelMixPoint,
 } from "@/data/dashboard-data";
 
 interface DashboardShellProps {
   stats: StatCardData[];
   revenueData: RevenueDataPoint[];
+  performanceData: PerformanceDataPoint[];
+  channelMixData: ChannelMixPoint[];
   activities: ActivityData[];
   quickActions: QuickActionData[];
 }
@@ -21,6 +25,8 @@ interface DashboardShellProps {
 export function DashboardShell({
   stats,
   revenueData,
+  performanceData,
+  channelMixData,
   activities,
   quickActions,
 }: DashboardShellProps) {
@@ -49,7 +55,10 @@ export function DashboardShell({
             <RevenueCard data={revenueData} />
           </div>
           <div className="lg:col-span-3">
-            <ChartPreview />
+            <ChartPreview
+              performanceData={performanceData}
+              channelMixData={channelMixData}
+            />
           </div>
         </div>
 

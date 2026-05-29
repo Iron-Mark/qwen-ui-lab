@@ -1,9 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 
 export function ThemeToggle() {
+  const [mounted, setMounted] = useState(false);
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button
+        aria-label="Toggle theme"
+        className="rounded-lg border border-border bg-card p-2 text-card-foreground transition-colors hover:bg-muted"
+      >
+        <div style={{ width: 20, height: 20 }} />
+      </button>
+    );
+  }
 
   return (
     <button

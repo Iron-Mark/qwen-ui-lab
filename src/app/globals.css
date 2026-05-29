@@ -16,6 +16,8 @@
   --success: #059669;
   --danger: #dc2626;
   --chart-bar: #18181b;
+  --chart-line: #18181b;
+  --chart-grid: #e4e4e7;
 }
 
 .dark {
@@ -32,6 +34,8 @@
   --success: #34d399;
   --danger: #f87171;
   --chart-bar: #e4e4e7;
+  --chart-line: #e4e4e7;
+  --chart-grid: #27272a;
 }
 
 @theme inline {

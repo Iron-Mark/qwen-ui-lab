@@ -11,6 +11,42 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 
 Test whether Qwen can help shorten the front-end workflow from visual reference to usable component structure.
 
+## Presenting live
+
+See **[DEMO.md](./DEMO.md)** for a 30-second setup, click-by-click script, and pre-flight checklist. No API key is required for the offline demo path.
+
+## Live Demo Flow
+
+The app now includes an interactive local demo mode:
+
+1. Upload or drag in a UI screenshot, or click **Use sample screenshot**.
+2. Preview the uploaded image in the browser.
+3. Run local analysis to produce a structured component plan.
+4. Generate a React/Tailwind scaffold preview.
+5. Inspect the generated code and live preview cards.
+
+The Analyze step calls `/api/analyze-ui`, a server-side Qwen provider route. When `DASHSCOPE_API_KEY` is configured, the route sends the uploaded image to Qwen through Alibaba Cloud Model Studio's OpenAI-compatible vision API. When the key is missing, the base URL is wrong, Qwen returns an error, or the network fails, the UI falls back to local demo analysis and shows an **Offline demo mode** banner so the flow remains presentable without pretending the live API succeeded.
+
+## Qwen API Environment
+
+Copy `.env.example` to `.env.local` for local development and set:
+
+```bash
+DASHSCOPE_API_KEY=<your-model-studio-api-key>
+QWEN_MODEL=qwen3-vl-plus
+QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+```
+
+For Vercel production, add the key as a server-side environment variable:
+
+```bash
+vercel env add DASHSCOPE_API_KEY production
+vercel env add QWEN_MODEL production
+vercel env add QWEN_BASE_URL production
+```
+
+Do not use `NEXT_PUBLIC_` for the API key. The key must stay server-only.
+
 ## Workflow
 
 1. Upload UI screenshot to Qwen3-VL
@@ -25,10 +61,13 @@ Test whether Qwen can help shorten the front-end workflow from visual reference 
 ```
 src/
   app/              — Next.js App Router pages
+    api/analyze-ui/ — Server-side Qwen provider route
   components/       — Reusable UI components
+    UploadFlow.tsx  — Interactive upload/analyze/generate demo
     dashboard/      — Dashboard component system
   data/             — Mock data files
-  lib/              — Utilities (cn, etc.)
+  lib/              — Utilities and local flow generation
+tests/              — Node test coverage for local generation and fallback logic
 experiments/
   01-dashboard/     — First case study artifacts
 public/
@@ -54,6 +93,7 @@ Run the local quality gates before publishing or deploying:
 
 ```bash
 npm audit --audit-level=moderate
+npm test
 npm run lint
 npm run build
 ```
