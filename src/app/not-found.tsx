@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -29,15 +31,12 @@ export default function NotFound() {
         aria-label="Back to known pages"
         className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4"
       >
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-foreground px-5 text-sm font-medium text-background transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
+        <Link href="/" className={cn(buttonVariants(), "min-h-11 px-5")}>
           Back to dashboard
         </Link>
         <Link
           href="/design-system"
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-medium text-card-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className={cn(buttonVariants({ variant: "outline" }), "min-h-11 px-5")}
         >
           Design system
         </Link>

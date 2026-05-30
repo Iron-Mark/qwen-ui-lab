@@ -6,76 +6,111 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 
 - Repository: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
 - Live demo: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
+- **[DEMO.md](./DEMO.md)** — live presentation script and pre-flight checklist
+- **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md)** — folder tiers, catalog domains, how to add components
 
 ## Goal
 
 Test whether Qwen can help shorten the front-end workflow from visual reference to usable component structure.
 
+## Architecture
+
+```mermaid
+flowchart TB
+  subgraph client [Browser]
+    Upload[UploadFlow]
+    DS[Design system catalog]
+    HealthCheck["GET /api/health"]
+    Preprocess[Image preprocess]
+  end
+
+  subgraph server [Next.js server]
+    AnalyzeRoute["POST /api/analyze-ui"]
+    Qwen[Qwen3-VL vision API]
+    Fallback[buildUiFlowArtifact]
+  end
+
+  Upload --> Preprocess
+  Upload --> HealthCheck
+  HealthCheck -->|demo mode| Fallback
+  HealthCheck -->|QWEN_LIVE_ANALYSIS=true| AnalyzeRoute
+  AnalyzeRoute --> Qwen
+  Qwen -->|success| Upload
+  Qwen -->|error| Fallback
+  Fallback --> Upload
+  DS --> ExportBundle[Export all snippets]
+```
+
 ## Presenting live
 
-See **[DEMO.md](./DEMO.md)** for a 30-second setup, click-by-click script, and pre-flight checklist. No API key is required for the offline demo path.
+See **[DEMO.md](./DEMO.md)** for a 30-second setup, click-by-click script, and pre-flight checklist. No API key is required — Analyze uses **instant offline demo** unless `QWEN_LIVE_ANALYSIS=true` is set (API key alone does not enable live calls).
 
 ## Live Demo Flow
 
-The app now includes an interactive local demo mode:
-
 1. Upload or drag in a UI screenshot, or click **Use sample screenshot**.
-2. Preview the uploaded image in the browser.
-3. Run local analysis to produce a structured component plan.
-4. Generate a React/Tailwind scaffold preview.
-5. Inspect the generated code and live preview cards.
+2. **Analyze** — health check → instant demo or live Qwen (with image resize/compress + retry).
+3. Split view: reference screenshot vs plan cards; **Generate Preview** for scaffold + stats.
+4. Copy/export generated code; sessions saved in localStorage.
+5. Browse `/design-system` for atomic catalog, search/filter, variant toggles, and bundle export.
+6. Explore `/design-system/laws-of-ux` for interactive [Laws of UX](https://lawsofux.com) demos (Jon Yablonski); analyze/generate shows an automated compliance checklist.
+7. Browse `/design-system?domain=uilaws` for [UI Laws](https://www.uilaws.com)–informed patterns (unified atomic catalog).
 
-The Analyze step calls `/api/analyze-ui`, a server-side Qwen provider route. When `DASHSCOPE_API_KEY` is configured, the route sends the uploaded image to Qwen through Alibaba Cloud Model Studio's OpenAI-compatible vision API. When the key is missing, the base URL is wrong, Qwen returns an error, or the network fails, the UI falls back to local demo analysis and shows an **Offline demo mode** banner so the flow remains presentable without pretending the live API succeeded.
+## Screenshots
+
+| Flow | Path |
+|------|------|
+| Upload + analyze | `/` — UploadFlow with session history |
+| Generated scaffold | `/` — after **Generate Preview** |
+| Design system | `/design-system` — unified atomic catalog (product + UILaws + Laws of UX) |
+| Laws of UX filter | `/design-system?domain=laws-of-ux` |
+| UILaws filter | `/design-system?domain=uilaws` |
+| Charts (themed) | `/` dashboard — Recharts + Chart.js |
+
+_Add your own PNGs under `public/screenshots/` for README embeds._
 
 ## Qwen API Environment
 
-Copy `.env.example` to `.env.local` for local development and set:
+Copy `.env.example` to `.env.local` for local development.
+
+**Demo mode (default):** leave `QWEN_LIVE_ANALYSIS` unset. Analyze uses instant offline demo data — no upstream Qwen calls, even if `DASHSCOPE_API_KEY` is present.
+
+**Live Qwen (opt-in, spends credits):**
 
 ```bash
 DASHSCOPE_API_KEY=<your-model-studio-api-key>
+QWEN_LIVE_ANALYSIS=true
 QWEN_MODEL=qwen3-vl-plus
 QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 ```
 
-For Vercel production, add the key as a server-side environment variable:
+Alias: `USE_LIVE_QWEN=1`. Do not use `NEXT_PUBLIC_` for the API key. The key must stay server-only.
 
-```bash
-vercel env add DASHSCOPE_API_KEY production
-vercel env add QWEN_MODEL production
-vercel env add QWEN_BASE_URL production
-```
-
-Do not use `NEXT_PUBLIC_` for the API key. The key must stay server-only.
-
-## Workflow
-
-1. Upload UI screenshot to Qwen3-VL
-2. Extract layout, hierarchy, components, spacing, and accessibility risks
-3. Convert analysis into a React/Tailwind component plan
-4. Use Qwen Code Plan Mode to inspect the project before editing
-5. Generate a first-pass scaffold
-6. Refactor manually for accessibility, responsiveness, naming, and maintainability
+Dev boot logs env warnings via `instrumentation.ts`. Run `npm run doctor` for env, deps, and optional API ping.
 
 ## Project Structure
 
 ```
 src/
-  app/              — Next.js App Router pages
-    api/analyze-ui/ — Server-side Qwen provider route
-  components/       — Reusable UI components
-    UploadFlow.tsx  — Interactive upload/analyze/generate demo
-    dashboard/      — Dashboard component system
-  data/             — Mock data files
-  lib/              — Utilities and local flow generation
-tests/              — Node test coverage for local generation and fallback logic
-experiments/
-  01-dashboard/     — First case study artifacts
+  app/
+    api/analyze-ui/   — Qwen vision route
+    api/health/       — Provider / API-key probe
+  components/
+    ui/               — shadcn/ui primitives (Button, Card, Badge, Sonner, …)
+    atoms/            — Product atoms composing ui/
+    molecules/        — Composed widgets
+    organisms/        — UploadFlow, Header, dashboard sections
+    design-system/    — Catalog chrome (preview cards, filters)
+    providers/        — Theme, toast shim, error boundary
+    charts/           — Recharts + Chart.js with shared theme tokens
+  lib/                — analyze-outcome, ui-flow, image preprocess, session history
+tests/                — Node unit tests
+e2e/                  — Playwright smoke (upload → analyze → generate)
 public/
-  references/       — Original UI screenshots
-  results/          — Before/after comparisons
-.qwen/
-  skills/
-    ui-to-component/ — Reusable Qwen Code skill
+  manifest.json       — PWA manifest
+  sw.js               — Minimal service worker (production)
+docs/
+  ATOMIC_DESIGN.md    — Atomic tiers + shadcn/ui conventions
+  STORYBOOK.md        — Deferred Storybook note
 ```
 
 ## Getting Started
@@ -89,44 +124,40 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Verification
 
-Run the local quality gates before publishing or deploying:
-
 ```bash
-npm audit --audit-level=moderate
 npm test
 npm run lint
 npm run build
+npm run doctor      # env + deps (+ API ping when key set)
+npm run test:e2e    # Playwright smoke
 ```
 
-Current security posture: `npm audit --audit-level=moderate` reports `0 vulnerabilities`.
+### E2E (no live Qwen)
 
-## What Worked
+Playwright smoke tests do **not** call the Qwen API:
 
-- Layout decomposition
-- Component grouping
-- Naming suggestions
-- First-pass Tailwind structure
+- `e2e/helpers/mock-analyze-api.ts` intercepts `GET /api/health` (`liveAnalysisEnabled: false`) and `POST /api/analyze-ui` so Analyze always uses the **instant offline demo** path, even if `DASHSCOPE_API_KEY` or `QWEN_LIVE_ANALYSIS` is set in `.env.local` or CI.
+- `playwright.config.ts` starts `npm run dev` with `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYSIS` unset so the server health route matches demo mode when mocks are not hit.
 
-## What Failed
+No extra CI secrets are required for e2e.
 
-- Exact spacing fidelity
-- Accessibility details
-- Responsive edge cases
-- Product logic
-- Overly generic component names
+CI runs test, lint, build, and e2e on push/PR (see `.github/workflows/ci.yml`).
 
-## Final Takeaway
+## UX references
 
-AI is useful for decomposition and scaffolding. It is not a replacement for front-end judgment.
+- **[Laws of UX](https://lawsofux.com)** (Jon Yablonski) — canonical ergonomics/perception laws; integrated in `/design-system/laws-of-ux` with live demos and analyze/generate compliance heuristics.
+- **[UI Laws](https://www.uilaws.com)** — complementary visual-design principles; overlaps (Fitts, Hick, Jakob) cross-link to Laws of UX in-app.
 
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/) (App Router)
 - [React](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Tailwind CSS](https://tailwindcss.com/) v4
+- [shadcn/ui](https://ui.shadcn.com) — Button, Card, Badge, Tabs, Sonner, and other primitives under `src/components/ui/`
+- [Recharts](https://recharts.org/) + [Chart.js](https://www.chartjs.org/)
+- [Prism](https://prismjs.com/) — snippet syntax highlighting
 
-## Sources
+## Final Takeaway
 
-- [Qwen3-VL GitHub](https://github.com/qwenlm/qwen3-vl)
-- [Qwen Code Docs](https://qwenlm.github.io/qwen-code-docs/en/users/overview/)
+AI is useful for decomposition and scaffolding. It is not a replacement for front-end judgment.

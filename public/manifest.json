@@ -1,0 +1,17 @@
+{
+  "name": "qwen-ui-lab",
+  "short_name": "qwen-ui-lab",
+  "description": "AI-assisted UI scaffolding from screenshots",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
