@@ -107,6 +107,9 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/icons/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
+        <link rel="mask-icon" href="/icons/icon-maskable.svg" color="#18181b" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <script

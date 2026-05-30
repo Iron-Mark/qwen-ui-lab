@@ -1,5 +1,12 @@
-const CACHE_NAME = "qwen-ui-lab-v1";
-const PRECACHE = ["/", "/design-system", "/manifest.json", "/icons/icon.svg"];
+const CACHE_NAME = "qwen-ui-lab-v2";
+const PRECACHE = [
+  "/",
+  "/design-system",
+  "/manifest.json",
+  "/icons/icon.svg",
+  "/icons/icon-maskable.svg",
+  "/icons/apple-touch-icon.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
