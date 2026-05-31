@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Area,
   CartesianGrid,
   Line,
   LineChart,
@@ -9,8 +10,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useEffect, useState } from "react";
 import type { PerformanceDataPoint } from "@/data/dashboard-data";
-import { getChartColors, type ChartThemeMode } from "@/lib/chart-theme";
+import {
+  getChartColors,
+  getChartColorsFromDocument,
+  type ChartThemeMode,
+} from "@/lib/chart-theme";
 
 interface PerformanceLineChartProps {
   data: PerformanceDataPoint[];
@@ -23,7 +29,11 @@ export function PerformanceLineChart({
   theme = "light",
   className,
 }: PerformanceLineChartProps) {
-  const colors = getChartColors(theme);
+  const [colors, setColors] = useState(() => getChartColors(theme));
+
+  useEffect(() => {
+    setColors(getChartColorsFromDocument(theme));
+  }, [theme]);
 
   return (
     <div
@@ -31,8 +41,14 @@ export function PerformanceLineChart({
       role="img"
       aria-label="Weekly session performance line chart"
     >
-      <ResponsiveContainer width="100%" height={160}>
+      <ResponsiveContainer width="100%" height={180}>
         <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+          <defs>
+            <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={colors.primary} stopOpacity={0.28} />
+              <stop offset="95%" stopColor={colors.primary} stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
           <CartesianGrid stroke={colors.grid} strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="week"
@@ -48,11 +64,12 @@ export function PerformanceLineChart({
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: theme === "dark" ? "#18181b" : "#ffffff",
-              border: `1px solid ${colors.grid}`,
-              borderRadius: "6px",
+              backgroundColor: colors.tooltipBg,
+              border: `1px solid ${colors.tooltipBorder}`,
+              borderRadius: "10px",
               color: colors.primary,
               fontSize: "12px",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
             }}
             labelStyle={{ color: colors.muted }}
             formatter={(value) => [
@@ -60,13 +77,19 @@ export function PerformanceLineChart({
               "Sessions",
             ]}
           />
+          <Area
+            type="monotone"
+            dataKey="sessions"
+            fill="url(#performanceGradient)"
+            stroke="none"
+          />
           <Line
             type="monotone"
             dataKey="sessions"
             stroke={colors.primary}
-            strokeWidth={2}
-            dot={{ fill: colors.primary, r: 3 }}
-            activeDot={{ r: 5 }}
+            strokeWidth={2.5}
+            dot={{ fill: colors.primary, r: 2.75, strokeWidth: 2, stroke: colors.tooltipBg }}
+            activeDot={{ r: 5.5, strokeWidth: 2, stroke: colors.tooltipBg }}
           />
         </LineChart>
       </ResponsiveContainer>

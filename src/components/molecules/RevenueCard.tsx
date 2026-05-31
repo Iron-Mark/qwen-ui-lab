@@ -1,4 +1,11 @@
 import type { RevenueDataPoint } from "@/data/dashboard-data";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface RevenueCardProps {
   data: RevenueDataPoint[];
@@ -8,15 +15,12 @@ export function RevenueCard({ data }: RevenueCardProps) {
   const maxRevenue = Math.max(...data.map((d) => d.revenue));
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-card-foreground">
-          Revenue Overview
-        </h3>
-        <p className="text-sm text-muted-foreground">Monthly revenue trend</p>
-      </div>
-
-      <div className="space-y-3">
+    <Card>
+      <CardHeader>
+        <CardTitle>Revenue Overview</CardTitle>
+        <CardDescription>Monthly revenue trend</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
         {data.map((point) => {
           const percentage = maxRevenue > 0 ? (point.revenue / maxRevenue) * 100 : 0;
           return (
@@ -43,7 +47,7 @@ export function RevenueCard({ data }: RevenueCardProps) {
             </div>
           );
         })}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

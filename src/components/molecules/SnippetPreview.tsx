@@ -1,13 +1,15 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { ExportButton } from "./ExportButton";
+import { ExportButton } from "@/components/atoms/ExportButton";
+import { CodeHighlight } from "@/components/atoms/CodeHighlight";
 
 interface SnippetPreviewProps {
   code: string;
   title?: string;
   className?: string;
   showCopy?: boolean;
+  language?: string;
 }
 
 export function SnippetPreview({
@@ -15,6 +17,7 @@ export function SnippetPreview({
   title = "Snippet",
   className,
   showCopy = true,
+  language = "tsx",
 }: SnippetPreviewProps) {
   return (
     <section
@@ -33,12 +36,7 @@ export function SnippetPreview({
           />
         ) : null}
       </div>
-      <pre
-        className="max-h-80 overflow-auto px-4 py-4 font-mono text-[0.8125rem] leading-6 text-card-foreground sm:text-sm"
-        tabIndex={0}
-      >
-        <code className="block whitespace-pre-wrap break-words">{code}</code>
-      </pre>
+      <CodeHighlight code={code} language={language} />
     </section>
   );
 }

@@ -1,3 +1,3 @@
-export { PerformanceLineChart } from "./PerformanceLineChart";
-export { ChannelDonutChart } from "./ChannelDonutChart";
-export { chartOrganismsCatalog, type ChartOrganismId } from "./catalog";
+export { PerformanceLineChart } from "@/components/molecules/PerformanceLineChart";
+export { ChannelDonutChart } from "@/components/molecules/ChannelDonutChart";
+export { ThemedChartPreview } from "@/components/molecules/ThemedChartPreview";

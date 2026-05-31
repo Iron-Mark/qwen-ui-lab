@@ -8,8 +8,13 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { useEffect, useState } from "react";
 import type { ChannelMixPoint } from "@/data/dashboard-data";
-import { getChartColors, type ChartThemeMode } from "@/lib/chart-theme";
+import {
+  getChartColors,
+  getChartColorsFromDocument,
+  type ChartThemeMode,
+} from "@/lib/chart-theme";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -24,7 +29,11 @@ export function ChannelDonutChart({
   theme = "light",
   className,
 }: ChannelDonutChartProps) {
-  const colors = getChartColors(theme);
+  const [colors, setColors] = useState(() => getChartColors(theme));
+
+  useEffect(() => {
+    setColors(getChartColorsFromDocument(theme));
+  }, [theme]);
 
   const chartData = {
     labels: data.map((d) => d.channel),
@@ -32,8 +41,9 @@ export function ChannelDonutChart({
       {
         data: data.map((d) => d.share),
         backgroundColor: colors.series,
-        borderWidth: 0,
-        hoverOffset: 4,
+        borderColor: colors.tooltipBg,
+        borderWidth: 2,
+        hoverOffset: 6,
       },
     ],
   };
@@ -48,11 +58,19 @@ export function ChannelDonutChart({
         labels: {
           color: colors.muted,
           boxWidth: 10,
-          padding: 12,
+          boxHeight: 10,
+          padding: 14,
+          usePointStyle: true,
+          pointStyle: "circle",
           font: { size: 11 },
         },
       },
       tooltip: {
+        backgroundColor: colors.tooltipBg,
+        borderColor: colors.tooltipBorder,
+        borderWidth: 1,
+        titleColor: colors.primary,
+        bodyColor: colors.muted,
         callbacks: {
           label: (ctx) => ` ${ctx.label}: ${ctx.parsed}%`,
         },
@@ -66,7 +84,7 @@ export function ChannelDonutChart({
       role="img"
       aria-label="Traffic channel mix donut chart"
     >
-      <div className="h-36">
+      <div className="h-40 rounded-xl border border-border/70 bg-background/70 p-2">
         <Doughnut data={chartData} options={options} />
       </div>
     </div>

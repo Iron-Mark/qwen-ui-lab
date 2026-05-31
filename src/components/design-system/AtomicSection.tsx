@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import type { AtomicLevel } from "@/data/atomicCatalog";
+import type { AtomicLevel } from "@/data/catalog-types";
 
 const SECTION_META: Record<
   AtomicLevel,
