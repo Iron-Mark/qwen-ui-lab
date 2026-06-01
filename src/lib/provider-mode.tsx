@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
   type ReactNode,
 } from "react";
@@ -22,7 +21,7 @@ const ProviderModeContext = createContext<ProviderModeContextValue>({
 });
 
 export function ProviderModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ProviderMode>("unknown");
+  const [mode, setMode] = useState<ProviderMode>("demo");
 
   const refresh = useCallback(async () => {
     try {
@@ -39,10 +38,6 @@ export function ProviderModeProvider({ children }: { children: ReactNode }) {
       setMode("demo");
     }
   }, []);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
 
   return (
     <ProviderModeContext.Provider value={{ mode, refresh }}>

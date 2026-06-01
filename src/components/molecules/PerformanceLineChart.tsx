@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import type { PerformanceDataPoint } from "@/data/dashboard-data";
 import {
   getChartColors,
@@ -29,11 +29,10 @@ export function PerformanceLineChart({
   theme = "light",
   className,
 }: PerformanceLineChartProps) {
-  const [colors, setColors] = useState(() => getChartColors(theme));
-
-  useEffect(() => {
-    setColors(getChartColorsFromDocument(theme));
-  }, [theme]);
+  const colors = useMemo(
+    () => getChartColorsFromDocument(theme) ?? getChartColors(theme),
+    [theme],
+  );
 
   return (
     <div

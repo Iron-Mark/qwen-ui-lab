@@ -8,7 +8,7 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import type { ChannelMixPoint } from "@/data/dashboard-data";
 import {
   getChartColors,
@@ -29,11 +29,10 @@ export function ChannelDonutChart({
   theme = "light",
   className,
 }: ChannelDonutChartProps) {
-  const [colors, setColors] = useState(() => getChartColors(theme));
-
-  useEffect(() => {
-    setColors(getChartColorsFromDocument(theme));
-  }, [theme]);
+  const colors = useMemo(
+    () => getChartColorsFromDocument(theme) ?? getChartColors(theme),
+    [theme],
+  );
 
   const chartData = {
     labels: data.map((d) => d.channel),

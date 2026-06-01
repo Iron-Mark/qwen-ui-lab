@@ -81,10 +81,11 @@ export function UploadFlow() {
   const [providerDetail, setProviderDetail] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
-  const [sessions, setSessions] = useState<SessionRecord[]>([]);
+  const [sessions, setSessions] = useState<SessionRecord[]>(() =>
+    loadSessionHistory(),
+  );
 
   useEffect(() => {
-    setSessions(loadSessionHistory());
     return () => {
       if (previewUrlRef.current) {
         URL.revokeObjectURL(previewUrlRef.current);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AtomicSection } from "./AtomicSection";
@@ -44,11 +44,7 @@ export function DesignSystemPreview() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<AtomicLevel | "all">("all");
-  const [domainFilter, setDomainFilter] = useState<CatalogDomain | "all">("all");
-
-  useEffect(() => {
-    setDomainFilter(parseDomain(searchParams.get("domain")));
-  }, [searchParams]);
+  const domainFilter = parseDomain(searchParams.get("domain"));
 
   const filtered = useMemo(
     () => filterCatalog(query, levelFilter, domainFilter),
@@ -66,7 +62,6 @@ export function DesignSystemPreview() {
   }, [filtered, levelFilter]);
 
   function setDomain(domain: CatalogDomain | "all") {
-    setDomainFilter(domain);
     const href =
       domain === "all" ? "/design-system" : `/design-system?domain=${domain}`;
     router.push(href);
