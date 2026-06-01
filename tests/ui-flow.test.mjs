@@ -7,9 +7,13 @@ import {
 } from "../src/lib/ui-flow.mjs";
 import {
   buildQwenVisionRequest,
+  canUseLiveQwen,
   getQwenConfig,
+  isLiveQwenAnalysisEnabled,
   parseQwenAnalysisText,
 } from "../src/lib/qwen-analyze.mjs";
+import { filterCatalogEntries } from "../src/lib/catalog-filter.mjs";
+import { lawById, UI_LAWS } from "../src/data/uilaws.ts";
 
 test("formatFileSize formats bytes into readable units", () => {
   assert.equal(formatFileSize(512), "512 B");
@@ -44,11 +48,34 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
   assert.equal(artifact.previewStats.length, 4);
 });
 
+test("buildUiFlowArtifact uses filename and dimensions in fallback plan", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "mobile-login.png",
+    type: "image/png",
+    size: 1024,
+    width: 390,
+    height: 844,
+  });
+
+  assert.match(artifact.plan[0].body, /mobile-login\.png/);
+  assert.match(artifact.plan[0].body, /390×844px/);
+  assert.match(artifact.plan[1].body, /mobile-first/i);
+});
+
 test("getQwenConfig reports missing API key without exposing secrets", () => {
   const config = getQwenConfig({});
 
   assert.equal(config.ok, false);
   assert.equal(config.missing, "DASHSCOPE_API_KEY");
+});
+
+test("canUseLiveQwen requires explicit QWEN_LIVE_ANALYSIS", () => {
+  assert.equal(canUseLiveQwen({ DASHSCOPE_API_KEY: "secret" }), false);
+  assert.equal(
+    canUseLiveQwen({ DASHSCOPE_API_KEY: "secret", QWEN_LIVE_ANALYSIS: "true" }),
+    true,
+  );
+  assert.equal(isLiveQwenAnalysisEnabled({ USE_LIVE_QWEN: "yes" }), true);
 });
 
 test("buildQwenVisionRequest uses OpenAI-compatible image_url content", () => {
@@ -88,4 +115,48 @@ test("parseQwenAnalysisText accepts fenced JSON from the model", () => {
   assert.equal(parsed.plan[0].title, "Layout");
   assert.match(parsed.generatedCode, /GeneratedDashboard/);
   assert.equal(parsed.previewStats[0].value, "4");
+});
+
+test("UI_LAWS includes Fitts Hick and Jakob with applications", () => {
+  assert.ok(UI_LAWS.length >= 10);
+  assert.equal(lawById("fitts")?.name, "Fitts's Law");
+  assert.match(lawById("hick")?.application ?? "", /Upload flow/i);
+  assert.match(lawById("jakob")?.application ?? "", /familiar/i);
+});
+
+test("filterCatalogEntries searches by name, level, and domain", () => {
+  const sample = [
+    {
+      name: "Chart preview card",
+      description: "Charts",
+      usage: "Dashboard",
+      level: "organism",
+      domain: "product",
+    },
+    {
+      name: "Theme toggle",
+      description: "Switch",
+      usage: "Header",
+      level: "atom",
+      domain: "product",
+    },
+    {
+      name: "Law information card",
+      description: "UILaws",
+      usage: "Docs",
+      level: "molecule",
+      domain: "uilaws",
+    },
+  ];
+
+  const charts = filterCatalogEntries(sample, "chart", "all", "all");
+  assert.equal(charts.length, 1);
+
+  const atoms = filterCatalogEntries(sample, "", "atom", "all");
+  assert.equal(atoms.length, 1);
+  assert.equal(atoms[0].level, "atom");
+
+  const uilaws = filterCatalogEntries(sample, "", "all", "uilaws");
+  assert.equal(uilaws.length, 1);
+  assert.equal(uilaws[0].domain, "uilaws");
 });

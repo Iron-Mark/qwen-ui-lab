@@ -38,7 +38,11 @@ export async function POST(request: Request) {
   }
 
   if (!result.ok) {
-    return Response.json(result, { status: result.status || 500 });
+    const status =
+      "status" in result && typeof result.status === "number"
+        ? result.status
+        : 500;
+    return Response.json(result, { status });
   }
 
   return Response.json(result);

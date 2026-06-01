@@ -20,18 +20,49 @@ export function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function inferLayoutFromFileName(fileName) {
+  const lower = String(fileName || "").toLowerCase();
+  if (lower.includes("mobile") || lower.includes("phone")) {
+    return "mobile-first single-column layout with stacked cards and bottom navigation.";
+  }
+  if (lower.includes("login") || lower.includes("auth") || lower.includes("sign")) {
+    return "centered auth form with brand header, input fields, and primary CTA.";
+  }
+  if (lower.includes("settings") || lower.includes("profile")) {
+    return "settings panel with grouped form sections and save actions.";
+  }
+  if (lower.includes("chart") || lower.includes("analytics") || lower.includes("dashboard")) {
+    return "dashboard-style shell with a header, stat grid, analytics region, activity panel, and action controls.";
+  }
+  return "dashboard-style shell with a header, stat grid, analytics region, activity panel, and action controls.";
+}
+
+function dimensionHint(width, height) {
+  if (!width || !height) return null;
+  const orientation = width >= height ? "landscape" : "portrait";
+  const aspect = (width / height).toFixed(2);
+  return `${width}×${height}px ${orientation} frame (aspect ${aspect}).`;
+}
+
 export function buildUiFlowArtifact(file, overrides = {}) {
   const readableSize = formatFileSize(file.size);
   const fileName = file.name || "uploaded-reference";
+  const dims = dimensionHint(file.width, file.height);
+  const layoutRead = inferLayoutFromFileName(fileName);
 
   const plan = overrides.plan || [
     {
       title: "Visual Input",
-      body: `${fileName} is treated as the UI reference image (${readableSize}, ${file.type || "unknown type"}).`,
+      body: [
+        `${fileName} is treated as the UI reference image (${readableSize}, ${file.type || "unknown type"}).`,
+        dims ? `Detected dimensions: ${dims}` : null,
+      ]
+        .filter(Boolean)
+        .join(" "),
     },
     {
       title: "Layout Read",
-      body: "Detect a dashboard-style shell with a header, stat grid, analytics region, activity panel, and action controls.",
+      body: `Detect a ${layoutRead}`,
     },
     {
       title: "Component Map",
@@ -53,6 +84,8 @@ export function buildUiFlowArtifact(file, overrides = {}) {
       type: file.type || "unknown",
       size: file.size,
       readableSize,
+      width: file.width ?? null,
+      height: file.height ?? null,
     },
     steps: workflowSteps,
     plan,
@@ -71,8 +104,8 @@ function normalizePreviewStats(stats) {
 }
 
 function createGeneratedCode(fileName) {
-  return `import { StatCard } from "@/components/dashboard/StatCard";
-import { RevenueCard } from "@/components/dashboard/RevenueCard";
+  return `import { StatCard } from "@/components/molecules/StatCard";
+import { RevenueCard } from "@/components/molecules/RevenueCard";
 
 export function GeneratedDashboard() {
   return (

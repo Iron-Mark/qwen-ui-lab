@@ -4,6 +4,31 @@ export const DEFAULT_QWEN_BASE_URL =
   "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
 export const DEFAULT_QWEN_MODEL = "qwen3-vl-plus";
 
+/** True only when QWEN_LIVE_ANALYSIS=true or USE_LIVE_QWEN=1 — API key alone does not enable upstream calls. */
+export function isLiveQwenAnalysisEnabled(env = process.env) {
+  const raw = env.QWEN_LIVE_ANALYSIS ?? env.USE_LIVE_QWEN;
+  if (raw === undefined || raw === "") return false;
+  const normalized = String(raw).trim().toLowerCase();
+  return normalized === "true" || normalized === "1" || normalized === "yes";
+}
+
+/** Server may call Qwen vision only when key is set and live analysis is explicitly opted in. */
+export function canUseLiveQwen(env = process.env) {
+  return getQwenConfig(env).ok && isLiveQwenAnalysisEnabled(env);
+}
+
+export function buildDemoAnalyzeResponse({ fileName, fileType, fileSize }) {
+  return {
+    ok: true,
+    demo: true,
+    artifact: buildUiFlowArtifact(
+      { name: fileName, type: fileType, size: fileSize },
+      { modeLabel: "Local demo mode" },
+    ),
+    provider: { model: "demo" },
+  };
+}
+
 export function getQwenConfig(env = process.env) {
   const apiKey = env.DASHSCOPE_API_KEY;
 
@@ -93,6 +118,10 @@ export async function analyzeUiImageWithQwen({
       code: "missing_qwen_api_key",
       message: `${config.missing} is not configured on the server.`,
     };
+  }
+
+  if (!isLiveQwenAnalysisEnabled(env)) {
+    return buildDemoAnalyzeResponse({ fileName, fileType, fileSize });
   }
 
   const endpoint = `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
