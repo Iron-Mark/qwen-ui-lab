@@ -1,33 +1,61 @@
 import type { NextConfig } from "next";
 
 const CSP_REPORT_URI = "/api/security/csp-report";
+const CSP_REPORT_ONLY_LEVEL = process.env.CSP_REPORT_ONLY_LEVEL ?? "standard";
 
 const ENFORCED_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
+  "frame-src 'none'",
   "form-action 'self'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
+  "manifest-src 'self'",
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
   "connect-src 'self' https: ws: wss:",
   "object-src 'none'",
 ].join("; ");
 
-// Roll out strict CSP as report-only before enforcing to avoid runtime breaks.
-const REPORT_ONLY_CONTENT_SECURITY_POLICY = [
+const REPORT_ONLY_STANDARD_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
+  "frame-src 'none'",
   "form-action 'self'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
+  "manifest-src 'self'",
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' https: 'report-sample'",
   "connect-src 'self' https:",
   "object-src 'none'",
   "upgrade-insecure-requests",
+  `report-uri ${CSP_REPORT_URI}`,
+].join("; ");
+
+// Strict report-only profile to measure breakage before enforcement.
+const REPORT_ONLY_STRICT_CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+  "frame-src 'none'",
+  "form-action 'self'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "manifest-src 'self'",
+  "worker-src 'self' blob:",
+  "style-src 'self' https: 'report-sample'",
+  "style-src-attr 'none'",
+  "script-src 'self' https: 'report-sample'",
+  "script-src-attr 'none'",
+  "connect-src 'self' https:",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+  "require-trusted-types-for 'script'",
   `report-uri ${CSP_REPORT_URI}`,
 ].join("; ");
 
@@ -47,6 +75,11 @@ const nextConfig: NextConfig = {
   async headers() {
     const isProduction = process.env.NODE_ENV === "production";
     const enableReportOnly = process.env.CSP_REPORT_ONLY !== "false";
+    const reportOnlyPolicy =
+      CSP_REPORT_ONLY_LEVEL === "strict"
+        ? REPORT_ONLY_STRICT_CONTENT_SECURITY_POLICY
+        : REPORT_ONLY_STANDARD_CONTENT_SECURITY_POLICY;
+
     return [
       {
         source: "/:path*",
@@ -57,7 +90,7 @@ const nextConfig: NextConfig = {
                 ? [
                     {
                       key: "Content-Security-Policy-Report-Only",
-                      value: REPORT_ONLY_CONTENT_SECURITY_POLICY,
+                      value: reportOnlyPolicy,
                     },
                   ]
                 : []),
