@@ -107,7 +107,7 @@ jobs:
         run: npx --yes wait-on@7.2.0 --timeout 120000 http://127.0.0.1:${PORT}
 
       - name: Check internal links
-        run: npx --yes linkinator@6.1.2 http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry 1 --concurrency 3 --skip ".*(_next|api/analyze-ui).*"
+        run: npx --yes linkinator@6.1.2 http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry --concurrency 3 --skip ".*(_next|api/analyze-ui).*"
 
       - name: Lighthouse performance budget
         run: |
