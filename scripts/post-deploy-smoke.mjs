@@ -29,17 +29,35 @@ const checks = [
 
 const failures = [];
 
+async function safeFetch(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    failures.push(`Request failed for ${url.toString()} (${message})`);
+    return null;
+  }
+}
+
 async function getJson(pathname) {
-  const response = await fetch(new URL(pathname, baseUrl), {
+  const target = new URL(pathname, baseUrl);
+  const response = await safeFetch(target, {
     headers: { Accept: "application/json" },
     redirect: "follow",
   });
+  if (!response) {
+    return { response: { ok: false, status: 0 }, json: null };
+  }
   const json = await response.json().catch(() => null);
   return { response, json };
 }
 
 async function checkPage(pathname, label) {
-  const response = await fetch(new URL(pathname, baseUrl), { redirect: "follow" });
+  const target = new URL(pathname, baseUrl);
+  const response = await safeFetch(target, { redirect: "follow" });
+  if (!response) {
+    return;
+  }
   if (!response.ok) {
     failures.push(`${label} failed with HTTP ${response.status}`);
     return;

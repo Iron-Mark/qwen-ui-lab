@@ -18,6 +18,9 @@
 /.next/
 /out/
 
+# perf artifacts
+/.perf/
+
 # production
 /build
 
