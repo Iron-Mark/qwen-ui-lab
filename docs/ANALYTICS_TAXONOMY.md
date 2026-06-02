@@ -22,6 +22,8 @@ NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false
 NEXT_PUBLIC_OBSERVABILITY_DEBUG=false
 ```
 
+For a staging activation checklist and dashboard setup, see `docs/ANALYTICS_STAGING_ACTIVATION.md`.
+
 ## Privacy Guardrails
 
 - Event names are constrained to predefined constants in `src/lib/analytics.ts`.
@@ -73,6 +75,13 @@ Only these keys are accepted:
 - `entryId`
 - `queryLength`
 - `totalVisible`
+
+## Consistency Conventions
+
+- Keep telemetry disabled by default. Only enable in environments that intentionally opt in.
+- Use `status` values from this set: `started`, `completed`, `accepted`, `rejected`, `changed`, `selected`, `view`, `success`, `failed`, `fallback`, `instant_demo`, `updated`.
+- Use `trigger` for explicit user actions (`copy`, `export`) and `step` for funnel stage (`upload`, `analyze`, `generate`).
+- Route metadata must be path-only (query strings are stripped before dispatch).
 
 ## Key Files
 

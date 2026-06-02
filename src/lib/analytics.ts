@@ -23,8 +23,29 @@ export const AnalyticsEvent = {
 export type AnalyticsEventName =
   (typeof AnalyticsEvent)[keyof typeof AnalyticsEvent];
 
+type AnalyticsMetadataValue = string | number | boolean;
+
+export interface AnalyticsMetadata {
+  source?: AnalyticsMetadataValue;
+  providerState?: AnalyticsMetadataValue;
+  fileType?: AnalyticsMetadataValue;
+  fileSize?: AnalyticsMetadataValue;
+  route?: AnalyticsMetadataValue;
+  status?: AnalyticsMetadataValue;
+  durationMs?: AnalyticsMetadataValue;
+  step?: AnalyticsMetadataValue;
+  result?: AnalyticsMetadataValue;
+  trigger?: AnalyticsMetadataValue;
+  feature?: AnalyticsMetadataValue;
+  domain?: AnalyticsMetadataValue;
+  level?: AnalyticsMetadataValue;
+  entryId?: AnalyticsMetadataValue;
+  queryLength?: AnalyticsMetadataValue;
+  totalVisible?: AnalyticsMetadataValue;
+}
+
 export interface AnalyticsClient {
-  track: (eventName: AnalyticsEventName, metadata?: Record<string, unknown>) => void;
+  track: (eventName: AnalyticsEventName, metadata?: AnalyticsMetadata) => void;
 }
 
 interface CreateAnalyticsClientArgs {
@@ -49,8 +70,8 @@ export function createAnalyticsClient({
       hooks.trackEvent(
         eventName,
         {
-          route: routePath(route),
           ...metadata,
+          route: routePath(route),
         },
         { providerMode },
       );

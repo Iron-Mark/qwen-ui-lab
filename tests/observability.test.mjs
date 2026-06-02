@@ -98,3 +98,18 @@ test("analytics payload is sanitized to allowlisted metadata", () => {
     },
   });
 });
+
+test("analytics route metadata strips query strings", () => {
+  const sanitized = sanitizeAnalyticsEvent("design_system.viewed", {
+    route: "/design-system?domain=product&email=hidden@example.com",
+    source: "design_system_page",
+  });
+
+  assert.deepEqual(sanitized, {
+    eventName: "design_system.viewed",
+    metadata: {
+      route: "/design-system",
+      source: "design_system_page",
+    },
+  });
+});

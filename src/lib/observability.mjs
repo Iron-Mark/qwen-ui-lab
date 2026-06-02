@@ -95,7 +95,11 @@ export function sanitizeAnalyticsEvent(eventName, metadata = {}) {
   for (const [key, value] of Object.entries(metadata ?? {})) {
     if (!ALLOWLISTED_ANALYTICS_KEYS.has(key)) continue;
     if (typeof value === "string") {
-      safeMetadata[key] = value.slice(0, 120);
+      if (key === "route") {
+        safeMetadata[key] = safeRoutePath(value).slice(0, 120);
+      } else {
+        safeMetadata[key] = value.slice(0, 120);
+      }
       continue;
     }
     if (typeof value === "number" || typeof value === "boolean") {

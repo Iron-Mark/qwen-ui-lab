@@ -9,6 +9,30 @@ const EXPERIMENTS = {
       { name: "with-labs-badge", weight: 50 },
     ],
   },
+  uploadFlowHeadline: {
+    envKey: "NEXT_PUBLIC_EXP_UPLOAD_FLOW_HEADLINE",
+    defaultEnabled: false,
+    variants: [
+      { name: "control", weight: 50 },
+      { name: "faster-first-value", weight: 50 },
+    ],
+  },
+  uploadFlowAnalyzeCta: {
+    envKey: "NEXT_PUBLIC_EXP_UPLOAD_FLOW_ANALYZE_CTA",
+    defaultEnabled: false,
+    variants: [
+      { name: "control", weight: 50 },
+      { name: "analyze-now", weight: 50 },
+    ],
+  },
+  uploadFlowSamplePathHint: {
+    envKey: "NEXT_PUBLIC_EXP_UPLOAD_FLOW_SAMPLE_PATH_HINT",
+    defaultEnabled: false,
+    variants: [
+      { name: "control", weight: 50 },
+      { name: "show-path-hint", weight: 50 },
+    ],
+  },
 };
 
 function envFlag(value, defaultValue = false) {

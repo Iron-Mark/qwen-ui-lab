@@ -10,6 +10,9 @@ This project includes lightweight A/B experiment scaffolding designed to be safe
 ## Current experiment points
 
 - `headerDesignSystemCta`: toggles a small `Labs` badge in the Header's Design system CTA.
+- `uploadFlowHeadline`: tests upload-flow hero headline + supporting copy for stronger first-value framing.
+- `uploadFlowAnalyzeCta`: tests Analyze button label (`Analyze` vs `Analyze now`).
+- `uploadFlowSamplePathHint`: toggles a short helper hint near the sample screenshot button to simplify first-run path.
 
 This point is intentionally non-invasive and low risk.
 
@@ -23,6 +26,9 @@ NEXT_PUBLIC_EXPERIMENTS_ENABLED=true
 
 # per-experiment switch (default false)
 NEXT_PUBLIC_EXP_HEADER_DESIGN_SYSTEM_CTA=true
+NEXT_PUBLIC_EXP_UPLOAD_FLOW_HEADLINE=true
+NEXT_PUBLIC_EXP_UPLOAD_FLOW_ANALYZE_CTA=true
+NEXT_PUBLIC_EXP_UPLOAD_FLOW_SAMPLE_PATH_HINT=true
 ```
 
 ## Safe rollout checklist
