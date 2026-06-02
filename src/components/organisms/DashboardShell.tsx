@@ -35,7 +35,7 @@ export function DashboardShell({
 }: DashboardShellProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <Card className="mb-8 overflow-hidden border-border/60 bg-gradient-to-br from-card to-muted/30 animate-in fade-in-50 slide-in-from-top-1 duration-500">
+      <Card className="mb-8 overflow-hidden border-border/60 bg-gradient-to-br from-card to-muted/30">
         <CardHeader>
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-semibold text-muted-foreground">
             <Sparkles className="size-3.5" />
@@ -51,7 +51,7 @@ export function DashboardShell({
         </CardHeader>
       </Card>
 
-      <div className="grid gap-6 animate-in fade-in-50 duration-500">
+      <div className="grid gap-6">
         <WorkflowBanner />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

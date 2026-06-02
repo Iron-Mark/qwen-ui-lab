@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   ChevronRight,
@@ -11,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
-import { SnippetPreview } from "@/components/molecules/SnippetPreview";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
 import { postAnalyzeUi } from "@/lib/analyze-outcome.mjs";
@@ -22,7 +22,6 @@ import {
   removeSession,
   type SessionRecord,
 } from "@/lib/session-history";
-import { UiLawsCompliance } from "@/components/organisms/UiLawsCompliance";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/lib/provider-mode";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 
 interface UiFlowArtifact {
   file: {
@@ -70,6 +70,26 @@ const ANALYZE_STEPS = [
   "Analyzing layout…",
   "Building artifact…",
 ];
+
+const SnippetPreview = dynamic(
+  () =>
+    import("@/components/molecules/SnippetPreview").then((mod) => ({
+      default: mod.SnippetPreview,
+    })),
+  {
+    loading: () => <Skeleton className="h-72 w-full" />,
+  },
+);
+
+const UiLawsCompliance = dynamic(
+  () =>
+    import("@/components/organisms/UiLawsCompliance").then((mod) => ({
+      default: mod.UiLawsCompliance,
+    })),
+  {
+    loading: () => <Skeleton className="h-32 w-full" />,
+  },
+);
 
 export function UploadFlow() {
   const pathname = usePathname();
@@ -127,6 +147,19 @@ export function UploadFlow() {
   const isBusy = providerState === "loading" || loadingSample;
   const canAnalyze = Boolean(file) && providerState !== "loading";
   const canGenerate = Boolean(file) && providerState !== "loading";
+  const experimentConfig = useMemo(() => createExperimentConfig(process.env), []);
+  const headlineVariant = useMemo(
+    () => resolveExperimentVariant("uploadFlowHeadline", "anonymous", experimentConfig),
+    [experimentConfig],
+  );
+  const analyzeCtaVariant = useMemo(
+    () => resolveExperimentVariant("uploadFlowAnalyzeCta", "anonymous", experimentConfig),
+    [experimentConfig],
+  );
+  const samplePathHintVariant = useMemo(
+    () => resolveExperimentVariant("uploadFlowSamplePathHint", "anonymous", experimentConfig),
+    [experimentConfig],
+  );
 
   function acceptFile(nextFile: File | null) {
     setError(null);
@@ -376,7 +409,7 @@ export function UploadFlow() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 animate-in fade-in-50 duration-500">
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {providerState === "fallback" ? (
         <Alert
           role="status"
@@ -401,11 +434,14 @@ export function UploadFlow() {
             Live flow
           </p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
-            Upload screenshot to component preview
+            {headlineVariant === "faster-first-value"
+              ? "Ship scaffold-ready UI from one screenshot"
+              : "Upload screenshot to component preview"}
           </h2>
           <p className="growth-snippet mt-2 max-w-2xl text-sm text-muted-foreground">
-            Ideal for rapid design reviews: analyze one screenshot, generate a scaffold,
-            then reuse exported snippets across your next sprint.
+            {headlineVariant === "faster-first-value"
+              ? "A faster path to conversion: upload, analyze, and export reusable React/Tailwind scaffolds in minutes."
+              : "Ideal for rapid design reviews: analyze one screenshot, generate a scaffold, then reuse exported snippets across your next sprint."}
           </p>
         </div>
         <Badge
@@ -521,45 +557,52 @@ export function UploadFlow() {
               </Alert>
             ) : null}
 
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void loadSampleScreenshot()}
-                className="min-h-11 border-dashed"
-                disabled={isBusy}
-              >
-                <UploadCloud className="size-4" aria-hidden />
-                {loadingSample ? "Loading sample…" : "Use sample screenshot"}
-              </Button>
-            </div>
+            <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex min-w-0 flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void loadSampleScreenshot()}
+                  className="min-h-11 border-dashed md:w-fit"
+                  disabled={isBusy}
+                >
+                  <UploadCloud className="size-4" aria-hidden />
+                  {loadingSample ? "Loading sample…" : "Use sample screenshot"}
+                </Button>
+                {samplePathHintVariant === "show-path-hint" ? (
+                  <p className="text-xs text-muted-foreground">
+                    New here? Start with sample screenshot, then click Analyze.
+                  </p>
+                ) : null}
+              </div>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                onClick={() => void analyzeImage()}
-                className="min-h-11 min-w-40 gap-2 shadow-sm"
-                disabled={!canAnalyze}
-              >
-                {providerState === "loading" ? (
-                  "Analyzing..."
-                ) : (
-                  <>
-                    <WandSparkles className="size-4" aria-hidden />
-                    Analyze
-                  </>
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void generatePreview()}
-                className="min-h-11 min-w-40 gap-2"
-                disabled={!canGenerate}
-              >
-                <Sparkles className="size-4" aria-hidden />
-                Generate Preview
-              </Button>
+              <div className="flex flex-wrap gap-3 md:flex-nowrap md:justify-end">
+                <Button
+                  type="button"
+                  onClick={() => void analyzeImage()}
+                  className="min-h-11 min-w-40 gap-2 shadow-sm"
+                  disabled={!canAnalyze}
+                >
+                  {providerState === "loading" ? (
+                    "Analyzing..."
+                  ) : (
+                    <>
+                      <WandSparkles className="size-4" aria-hidden />
+                      {analyzeCtaVariant === "analyze-now" ? "Analyze now" : "Analyze"}
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void generatePreview()}
+                  className="min-h-11 min-w-40 gap-2"
+                  disabled={!canGenerate}
+                >
+                  <Sparkles className="size-4" aria-hidden />
+                  Generate Preview
+                </Button>
+              </div>
             </div>
 
             {providerState === "loading" ? (

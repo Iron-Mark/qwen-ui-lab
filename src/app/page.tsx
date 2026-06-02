@@ -18,8 +18,30 @@ const DashboardShellLazy = dynamic(
     })),
   {
     loading: () => (
-      <div className="mx-auto w-full max-w-7xl px-4 pb-12 text-sm text-muted-foreground">
-        Loading dashboard preview...
+      <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 lg:px-8">
+        <div className="min-h-[720px] space-y-6">
+          <div className="h-28 animate-pulse rounded-2xl border border-border/60 bg-muted/30" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="h-28 animate-pulse rounded-xl border border-border/70 bg-muted/30"
+              />
+            ))}
+          </div>
+          <div className="grid gap-6 lg:grid-cols-7">
+            <div className="lg:col-span-4">
+              <div className="h-80 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
+            </div>
+            <div className="lg:col-span-3">
+              <div className="h-80 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
+            </div>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="h-72 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
+            <div className="h-72 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
+          </div>
+        </div>
       </div>
     ),
   },
