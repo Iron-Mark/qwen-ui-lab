@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AtomicSection } from "./AtomicSection";
@@ -21,6 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { useObservability } from "@/components/providers/ObservabilityProvider";
+import { useProviderMode } from "@/lib/provider-mode";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism"];
 
@@ -42,9 +45,20 @@ export function DesignSystemPreview() {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
+  const observability = useObservability();
+  const { mode } = useProviderMode();
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<AtomicLevel | "all">("all");
   const domainFilter = parseDomain(searchParams.get("domain"));
+  const analytics = useMemo(
+    () =>
+      createAnalyticsClient({
+        hooks: observability,
+        providerMode: mode,
+        route: "/design-system",
+      }),
+    [mode, observability],
+  );
 
   const filtered = useMemo(
     () => filterCatalog(query, levelFilter, domainFilter),
@@ -61,9 +75,26 @@ export function DesignSystemPreview() {
     })).filter((group) => group.entries.length > 0);
   }, [filtered, levelFilter]);
 
+  useEffect(() => {
+    analytics.track(AnalyticsEvent.DesignSystemViewed, {
+      source: "design_system_page",
+      domain: domainFilter,
+      level: levelFilter,
+      totalVisible: filtered.length,
+      status: "view",
+    });
+  }, [analytics, domainFilter, filtered.length, levelFilter]);
+
   function setDomain(domain: CatalogDomain | "all") {
     const href =
       domain === "all" ? "/design-system" : `/design-system?domain=${domain}`;
+    analytics.track(AnalyticsEvent.DesignSystemDomainChanged, {
+      source: "design_system_tabs",
+      domain,
+      level: levelFilter,
+      totalVisible: filtered.length,
+      status: "changed",
+    });
     router.push(href);
   }
 
@@ -80,6 +111,10 @@ export function DesignSystemPreview() {
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Atomic component catalog
         </h1>
+        <p className="growth-snippet mt-2 text-sm text-muted-foreground">
+          Growth shortcut: shortlist proven patterns, copy snippets, and ship consistent
+          UX without rebuilding common blocks.
+        </p>
         <p className="mt-3 text-base leading-7 text-muted-foreground">
           Components organized by atomic tier (atoms → molecules → organisms) and
           domain (product, UILaws, Laws of UX). Live previews with copy/export and
@@ -115,11 +150,23 @@ export function DesignSystemPreview() {
             variant="outline"
             onClick={() => {
               downloadCatalogBundle(filtered.length ? filtered : unifiedCatalog);
+              analytics.track(AnalyticsEvent.ExportTriggered, {
+                source: "design_system_page",
+                feature: "catalog_bundle",
+                trigger: "export",
+                status: "success",
+              });
               toast("Design system bundle downloaded", "success");
             }}
           >
             Export all snippets
           </Button>
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            Try screenshot-to-scaffold workflow →
+          </Link>
         </div>
       </header>
 
@@ -146,6 +193,14 @@ export function DesignSystemPreview() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onBlur={(event) => {
+              analytics.track(AnalyticsEvent.DesignSystemSearchUpdated, {
+                source: "design_system_search",
+                queryLength: event.target.value.length,
+                status: "updated",
+                totalVisible: filtered.length,
+              });
+            }}
             placeholder="Search components…"
           />
         </div>
@@ -156,7 +211,16 @@ export function DesignSystemPreview() {
               type="button"
               size="sm"
               variant={levelFilter === level ? "default" : "outline"}
-              onClick={() => setLevelFilter(level)}
+              onClick={() => {
+                setLevelFilter(level);
+                analytics.track(AnalyticsEvent.DesignSystemLevelChanged, {
+                  source: "design_system_level_filter",
+                  domain: domainFilter,
+                  level,
+                  totalVisible: filtered.length,
+                  status: "changed",
+                });
+              }}
               className="rounded-full capitalize"
             >
               {level}

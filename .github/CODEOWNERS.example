@@ -1,0 +1,10 @@
+# Copy this file to `.github/CODEOWNERS` and replace placeholders.
+# Keep ownership broad enough to avoid review bottlenecks.
+
+* @org-or-user/repo-maintainers
+
+# Suggested lane-based ownership (optional)
+/src/app/api/ @org-or-user/backend-owners
+/src/components/ @org-or-user/frontend-owners
+/docs/ @org-or-user/docs-owners
+/tests/ @org-or-user/qa-owners

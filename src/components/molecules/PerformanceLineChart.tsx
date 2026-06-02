@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type { PerformanceDataPoint } from "@/data/dashboard-data";
 import {
   getChartColors,
@@ -24,7 +24,7 @@ interface PerformanceLineChartProps {
   className?: string;
 }
 
-export function PerformanceLineChart({
+export const PerformanceLineChart = memo(function PerformanceLineChart({
   data,
   theme = "light",
   className,
@@ -32,6 +32,36 @@ export function PerformanceLineChart({
   const colors = useMemo(
     () => getChartColorsFromDocument(theme) ?? getChartColors(theme),
     [theme],
+  );
+  const gradientStops = useMemo(
+    () => ({
+      start: colors.primary,
+      end: colors.primary,
+    }),
+    [colors.primary],
+  );
+  const tooltipStyle = useMemo(
+    () => ({
+      backgroundColor: colors.tooltipBg,
+      border: `1px solid ${colors.tooltipBorder}`,
+      borderRadius: "10px",
+      color: colors.primary,
+      fontSize: "12px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+    }),
+    [colors.tooltipBg, colors.tooltipBorder, colors.primary],
+  );
+  const tooltipLabelStyle = useMemo(
+    () => ({ color: colors.muted }),
+    [colors.muted],
+  );
+  const dotStyle = useMemo(
+    () => ({ fill: colors.primary, r: 2.75, strokeWidth: 2, stroke: colors.tooltipBg }),
+    [colors.primary, colors.tooltipBg],
+  );
+  const activeDotStyle = useMemo(
+    () => ({ r: 5.5, strokeWidth: 2, stroke: colors.tooltipBg }),
+    [colors.tooltipBg],
   );
 
   return (
@@ -44,8 +74,8 @@ export function PerformanceLineChart({
         <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
           <defs>
             <linearGradient id="performanceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={colors.primary} stopOpacity={0.28} />
-              <stop offset="95%" stopColor={colors.primary} stopOpacity={0.02} />
+              <stop offset="5%" stopColor={gradientStops.start} stopOpacity={0.28} />
+              <stop offset="95%" stopColor={gradientStops.end} stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke={colors.grid} strokeDasharray="3 3" vertical={false} />
@@ -62,15 +92,8 @@ export function PerformanceLineChart({
             width={36}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: colors.tooltipBg,
-              border: `1px solid ${colors.tooltipBorder}`,
-              borderRadius: "10px",
-              color: colors.primary,
-              fontSize: "12px",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-            }}
-            labelStyle={{ color: colors.muted }}
+            contentStyle={tooltipStyle}
+            labelStyle={tooltipLabelStyle}
             formatter={(value) => [
               typeof value === "number" ? value.toLocaleString() : value,
               "Sessions",
@@ -87,11 +110,11 @@ export function PerformanceLineChart({
             dataKey="sessions"
             stroke={colors.primary}
             strokeWidth={2.5}
-            dot={{ fill: colors.primary, r: 2.75, strokeWidth: 2, stroke: colors.tooltipBg }}
-            activeDot={{ r: 5.5, strokeWidth: 2, stroke: colors.tooltipBg }}
+            dot={dotStyle}
+            activeDot={activeDotStyle}
           />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
-}
+});

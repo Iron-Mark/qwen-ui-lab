@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   ChevronRight,
   Sparkles,
@@ -35,6 +36,9 @@ import {
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useObservability } from "@/components/providers/ObservabilityProvider";
+import { useProviderMode } from "@/lib/provider-mode";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 
 interface UiFlowArtifact {
   file: {
@@ -68,6 +72,9 @@ const ANALYZE_STEPS = [
 ];
 
 export function UploadFlow() {
+  const pathname = usePathname();
+  const observability = useObservability();
+  const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
   const { toast } = useToast();
@@ -83,6 +90,15 @@ export function UploadFlow() {
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
     loadSessionHistory(),
+  );
+  const analytics = useMemo(
+    () =>
+      createAnalyticsClient({
+        hooks: observability,
+        providerMode: mode,
+        route: pathname ?? "/",
+      }),
+    [mode, observability, pathname],
   );
 
   useEffect(() => {
@@ -122,6 +138,10 @@ export function UploadFlow() {
     if (!nextFile) return;
     if (!nextFile.type.startsWith("image/")) {
       setError("Upload an image file: PNG, JPG, SVG, or WebP.");
+      analytics.track(AnalyticsEvent.UploadRejected, {
+        source: "upload_dropzone",
+        fileType: nextFile.type || "unknown",
+      });
       if (previewUrlRef.current) {
         URL.revokeObjectURL(previewUrlRef.current);
         previewUrlRef.current = null;
@@ -141,6 +161,13 @@ export function UploadFlow() {
     setPreviewUrl(objectUrl);
     setFile(nextFile);
     setStage("uploaded");
+    analytics.track(AnalyticsEvent.UploadSelected, {
+      source: "upload_dropzone",
+      fileType: nextFile.type || "unknown",
+      fileSize: nextFile.size,
+      step: "upload",
+      status: "accepted",
+    });
   }
 
   async function analyzeImage() {
@@ -152,6 +179,14 @@ export function UploadFlow() {
     setError(null);
     setProviderState("loading");
     setAnalyzeStep(ANALYZE_STEPS[0]);
+    const startedAt = Date.now();
+    analytics.track(AnalyticsEvent.AnalyzeStarted, {
+      source: "upload_flow",
+      fileType: file.type || "unknown",
+      fileSize: file.size,
+      step: "analyze",
+      status: "started",
+    });
 
     try {
       setAnalyzeStep(ANALYZE_STEPS[1]);
@@ -204,6 +239,15 @@ export function UploadFlow() {
       } else {
         toast("Fell back to offline demo analysis", "warning");
       }
+      analytics.track(AnalyticsEvent.AnalyzeCompleted, {
+        source: "upload_flow",
+        providerState: String(outcome.providerState ?? "unknown"),
+        fileType: file.type || "unknown",
+        fileSize: file.size,
+        step: "analyze",
+        status: outcome.instantDemo ? "instant_demo" : "completed",
+        durationMs: Date.now() - startedAt,
+      });
 
       return outcome.artifact as UiFlowArtifact;
     } catch {
@@ -218,6 +262,15 @@ export function UploadFlow() {
       setProviderDetail(outcome.detail);
       setStage("analyzed");
       toast("Analysis failed — using local fallback", "error");
+      analytics.track(AnalyticsEvent.AnalyzeFailed, {
+        source: "upload_flow",
+        providerState: String(outcome.providerState ?? "fallback"),
+        fileType: file.type || "unknown",
+        fileSize: file.size,
+        step: "analyze",
+        status: "fallback",
+        durationMs: Date.now() - startedAt,
+      });
       return outcome.artifact as UiFlowArtifact;
     } finally {
       setAnalyzeStep(null);
@@ -226,6 +279,13 @@ export function UploadFlow() {
 
   async function generatePreview() {
     if (!file) return;
+    analytics.track(AnalyticsEvent.GenerateStarted, {
+      source: "upload_flow",
+      step: "generate",
+      status: "started",
+      fileType: file.type || "unknown",
+      fileSize: file.size,
+    });
 
     let nextArtifact = artifact;
     if (!nextArtifact) {
@@ -234,6 +294,13 @@ export function UploadFlow() {
     if (nextArtifact) {
       setStage("generated");
       toast("Preview generated", "success");
+      analytics.track(AnalyticsEvent.GenerateCompleted, {
+        source: "upload_flow",
+        step: "generate",
+        status: "completed",
+        fileType: file.type || "unknown",
+        fileSize: file.size,
+      });
     }
   }
 
@@ -291,6 +358,13 @@ export function UploadFlow() {
       });
       acceptFile(sampleFile);
       toast("Sample screenshot loaded", "success");
+      analytics.track(AnalyticsEvent.UploadSampleLoaded, {
+        source: "sample_button",
+        fileType: sampleFile.type || "image/svg+xml",
+        fileSize: sampleFile.size,
+        step: "upload",
+        status: "completed",
+      });
     } catch {
       setError(
         "Could not load the sample screenshot. Upload your own image instead.",
@@ -329,6 +403,10 @@ export function UploadFlow() {
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             Upload screenshot to component preview
           </h2>
+          <p className="growth-snippet mt-2 max-w-2xl text-sm text-muted-foreground">
+            Ideal for rapid design reviews: analyze one screenshot, generate a scaffold,
+            then reuse exported snippets across your next sprint.
+          </p>
         </div>
         <Badge
           variant="outline"
@@ -404,15 +482,17 @@ export function UploadFlow() {
                   Uploaded reference
                 </p>
                 {previewUrl ? (
-                  <Image
-                    src={previewUrl}
-                    alt={file ? `Uploaded UI reference: ${file.name}` : "Uploaded UI reference"}
-                    className="h-auto max-h-96 w-full rounded-md border border-border object-contain"
-                    width={800}
-                    height={384}
-                    sizes="(max-width: 1024px) 100vw, 880px"
-                    unoptimized
-                  />
+                  <div className="relative h-96 w-full overflow-hidden rounded-md border border-border">
+                    <Image
+                      src={previewUrl}
+                      alt={file ? `Uploaded UI reference: ${file.name}` : "Uploaded UI reference"}
+                      className="object-contain"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 880px"
+                      loading="lazy"
+                      unoptimized
+                    />
+                  </div>
                 ) : (
                   <div className="flex min-h-48 items-center justify-center rounded-md border border-border bg-background text-sm text-muted-foreground">
                     {artifact?.file.name ?? "Reference image"}
@@ -611,12 +691,16 @@ export function UploadFlow() {
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="copy"
+                        analyticsSource="upload_flow"
+                        analyticsFeature="generated_scaffold"
                         onCopied={() => toast("Scaffold copied", "success")}
                       />
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="export"
                         filename="generated-dashboard.tsx"
+                        analyticsSource="upload_flow"
+                        analyticsFeature="generated_scaffold"
                         onCopied={() => toast("Scaffold exported", "success")}
                       />
                     </div>

@@ -1,10 +1,75 @@
 import type { NextConfig } from "next";
 
+const CSP_REPORT_URI = "/api/security/csp-report";
+
+const ENFORCED_CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "style-src 'self' 'unsafe-inline' https:",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  "connect-src 'self' https: ws: wss:",
+  "object-src 'none'",
+].join("; ");
+
+// Roll out strict CSP as report-only before enforcing to avoid runtime breaks.
+const REPORT_ONLY_CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "style-src 'self' 'unsafe-inline' https:",
+  "script-src 'self' https: 'report-sample'",
+  "connect-src 'self' https:",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+  `report-uri ${CSP_REPORT_URI}`,
+].join("; ");
+
+const SECURITY_HEADERS = [
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Content-Security-Policy", value: ENFORCED_CONTENT_SECURITY_POLICY },
+];
+
 const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  async headers() {
+    const isProduction = process.env.NODE_ENV === "production";
+    const enableReportOnly = process.env.CSP_REPORT_ONLY !== "false";
+    return [
+      {
+        source: "/:path*",
+        headers: isProduction
+          ? [
+              ...SECURITY_HEADERS,
+              ...(enableReportOnly
+                ? [
+                    {
+                      key: "Content-Security-Policy-Report-Only",
+                      value: REPORT_ONLY_CONTENT_SECURITY_POLICY,
+                    },
+                  ]
+                : []),
+              {
+                key: "Strict-Transport-Security",
+                value: "max-age=31536000; includeSubDomains; preload",
+              },
+            ]
+          : SECURITY_HEADERS,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

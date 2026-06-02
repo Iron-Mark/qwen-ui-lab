@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -25,20 +26,22 @@ export function BrandThemeSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="Switch brand theme"><Palette className="size-4" /></Button>} />
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Brand theme</DropdownMenuLabel>
-        <DropdownMenuRadioGroup
-          value={brandTheme}
-          onValueChange={(value) => setBrandTheme(value as BrandTheme)}
-        >
-          {BRAND_OPTIONS.map((option) => (
-            <DropdownMenuRadioItem key={option.value} value={option.value}>
-              <div className="flex flex-col">
-                <span>{option.label}</span>
-                <span className="text-xs text-muted-foreground">{option.subtitle}</span>
-              </div>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Brand theme</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            value={brandTheme}
+            onValueChange={(value) => setBrandTheme(value as BrandTheme)}
+          >
+            {BRAND_OPTIONS.map((option) => (
+              <DropdownMenuRadioItem key={option.value} value={option.value}>
+                <div className="flex flex-col">
+                  <span>{option.label}</span>
+                  <span className="text-xs text-muted-foreground">{option.subtitle}</span>
+                </div>
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

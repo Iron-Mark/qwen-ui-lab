@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -7,9 +7,10 @@ import { ToastProvider } from "@/components/providers/Toast";
 import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
 import { ServiceWorkerRegister } from "@/components/providers/ServiceWorkerRegister";
+import { ObservabilityProvider } from "@/components/providers/ObservabilityProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { getSiteUrl } from "@/lib/seo";
+import { getSiteUrl, SITE_NAME, SITE_TAGLINE, toAbsoluteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -25,15 +26,23 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const siteUrl = getSiteUrl();
+const ogImagePath = "/opengraph-image";
+const organizationId = `${siteUrl}#organization`;
+const websiteId = `${siteUrl}#website`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "qwen-ui-lab | AI-assisted UI scaffolding",
-    template: "%s | qwen-ui-lab",
+    default: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Convert UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code",
+    "Convert UI screenshots into React/Tailwind component scaffolds with Qwen3-VL + Qwen Code and ship polished UI faster.",
+  applicationName: SITE_NAME,
+  category: "Developer Tools",
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
   keywords: [
     "Qwen UI Lab",
     "AI UI scaffolding",
@@ -45,18 +54,28 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "qwen-ui-lab | AI-assisted UI scaffolding",
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "Convert UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.",
+      "From screenshot to React/Tailwind scaffold in one AI-assisted workflow powered by Qwen3-VL and Qwen Code.",
     type: "website",
     url: "/",
-    siteName: "qwen-ui-lab",
+    siteName: SITE_NAME,
+    locale: "en_US",
+    images: [
+      {
+        url: ogImagePath,
+        width: 1200,
+        height: 630,
+        alt: "qwen-ui-lab AI-assisted UI scaffolding",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "qwen-ui-lab | AI-assisted UI scaffolding",
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "Convert UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.",
+      "Turn screenshot concepts into production-ready React/Tailwind starting points with qwen-ui-lab.",
+    images: [ogImagePath],
   },
   robots: {
     index: true,
@@ -70,10 +89,22 @@ export const metadata: Metadata = {
     },
   },
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   appleWebApp: {
     capable: true,
     title: "qwen-ui-lab",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#18181b",
 };
 
 const themeScript = `
@@ -108,7 +139,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/icons/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
+        <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
+        <link rel="icon" href="/icons/icon-512.png" sizes="512x512" type="image/png" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
         <link rel="mask-icon" href="/icons/icon-maskable.svg" color="#18181b" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
@@ -121,19 +154,53 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "WebSite",
+                  "@id": websiteId,
                   name: "qwen-ui-lab",
                   url: siteUrl,
                   description:
                     "Convert UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.",
+                  inLanguage: "en-US",
+                  publisher: {
+                    "@id": organizationId,
+                  },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: `${toAbsoluteUrl("/design-system")}?q={query}`,
+                    "query-input": "required name=query",
+                  },
                 },
                 {
                   "@type": "WebApplication",
+                  "@id": `${siteUrl}#webapp`,
                   name: "qwen-ui-lab",
                   applicationCategory: "DeveloperApplication",
                   operatingSystem: "Web",
                   url: siteUrl,
                   description:
                     "AI-assisted workflow for generating React and Tailwind component scaffolds from UI screenshots.",
+                  image: toAbsoluteUrl(ogImagePath),
+                  offers: {
+                    "@type": "Offer",
+                    availability: "https://schema.org/InStock",
+                    price: "0",
+                    priceCurrency: "USD",
+                  },
+                  publisher: {
+                    "@id": organizationId,
+                  },
+                },
+                {
+                  "@type": "Organization",
+                  "@id": organizationId,
+                  name: SITE_NAME,
+                  url: siteUrl,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: toAbsoluteUrl("/icons/icon-512.png"),
+                  },
+                  sameAs: [
+                    "https://github.com/QwenLM",
+                  ],
                 },
               ],
             }),
@@ -141,17 +208,19 @@ export default function RootLayout({
         />
         <ThemeProvider>
           <ProviderModeProvider>
-            <TooltipProvider>
-              <ToastProvider>
-                <div className="flex min-h-screen flex-col">
-                  <Header />
-                  <main className="flex-1">{children}</main>
-                  <Footer />
-                </div>
-                <ServiceWorkerRegister />
-                <Toaster richColors closeButton position="top-center" />
-              </ToastProvider>
-            </TooltipProvider>
+            <ObservabilityProvider>
+              <TooltipProvider>
+                <ToastProvider>
+                  <div className="flex min-h-screen flex-col">
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
+                  <ServiceWorkerRegister />
+                  <Toaster richColors closeButton position="top-center" />
+                </ToastProvider>
+              </TooltipProvider>
+            </ObservabilityProvider>
           </ProviderModeProvider>
         </ThemeProvider>
       </body>

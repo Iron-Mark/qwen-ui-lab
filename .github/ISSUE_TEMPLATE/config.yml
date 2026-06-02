@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project docs
+    url: https://github.com/Iron-Mark/qwen-ui-lab#readme
+    about: Check setup, architecture, and troubleshooting docs before filing.

@@ -2,15 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import { LayoutDashboard, Orbit, PanelsTopLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 import { BrandThemeSwitcher } from "@/components/atoms/BrandThemeSwitcher";
 import { ProviderModeBadge } from "@/components/atoms/ProviderModeBadge";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const designSystemVariant = useMemo(() => {
+    const config = createExperimentConfig(process.env);
+    // Use a stable subject key so assignment remains deterministic.
+    return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
@@ -54,6 +62,11 @@ export function Header() {
           >
             <PanelsTopLeft className="size-4" aria-hidden />
             Design system
+            {designSystemVariant === "with-labs-badge" ? (
+              <Badge variant="secondary" className="h-5 px-1.5 text-[10px] uppercase">
+                Labs
+              </Badge>
+            ) : null}
           </Link>
           <BrandThemeSwitcher />
           <ThemeToggle />

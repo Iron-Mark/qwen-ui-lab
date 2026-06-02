@@ -1,6 +1,6 @@
 "use client";
 
-import { ChannelDonutChart, PerformanceLineChart } from "@/components/charts";
+import dynamic from "next/dynamic";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { ChannelMixPoint, PerformanceDataPoint } from "@/data/dashboard-data";
 import {
@@ -11,6 +11,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
+const PerformanceLineChart = dynamic(
+  () =>
+    import("@/components/molecules/PerformanceLineChart").then((mod) => ({
+      default: mod.PerformanceLineChart,
+    })),
+  {
+    loading: () => <ChartSkeleton className="mb-6 h-[180px]" />,
+  },
+);
+
+const ChannelDonutChart = dynamic(
+  () =>
+    import("@/components/molecules/ChannelDonutChart").then((mod) => ({
+      default: mod.ChannelDonutChart,
+    })),
+  {
+    loading: () => <ChartSkeleton className="h-40" />,
+  },
+);
 
 interface ChartPreviewProps {
   performanceData: PerformanceDataPoint[];
@@ -45,5 +65,14 @@ export function ChartPreview({
         <ChannelDonutChart data={channelMixData} theme={theme} />
       </CardContent>
     </Card>
+  );
+}
+
+function ChartSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={`animate-pulse rounded-xl border border-border/70 bg-muted/30 ${className ?? ""}`}
+      aria-hidden
+    />
   );
 }

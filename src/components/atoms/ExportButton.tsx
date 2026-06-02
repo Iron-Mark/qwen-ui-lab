@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { usePathname } from "next/navigation";
 import {
   AlertCircle,
   Check,
@@ -16,6 +17,9 @@ import {
   useCopyToClipboard,
   type CopyStatus,
 } from "@/lib/hooks/useCopyToClipboard";
+import { useObservability } from "@/components/providers/ObservabilityProvider";
+import { useProviderMode } from "@/lib/provider-mode";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 
 export type ExportButtonVariant = "copy" | "export";
 
@@ -27,6 +31,8 @@ interface ExportButtonProps {
   overlay?: boolean;
   className?: string;
   onCopied?: () => void;
+  analyticsSource?: string;
+  analyticsFeature?: string;
 }
 
 const LABELS: Record<ExportButtonVariant, Record<CopyStatus, string>> = {
@@ -75,11 +81,21 @@ export function ExportButton({
   overlay = false,
   className,
   onCopied,
+  analyticsSource = "snippet_preview",
+  analyticsFeature = "code_export",
 }: ExportButtonProps) {
+  const pathname = usePathname();
+  const observability = useObservability();
+  const { mode } = useProviderMode();
   const { toast } = useToast();
   const { status, message, copy, isCopying } = useCopyToClipboard();
   const labels = LABELS[variant];
   const visibleLabel = label ?? labels[status];
+  const analytics = createAnalyticsClient({
+    hooks: observability,
+    providerMode: mode,
+    route: pathname ?? "/",
+  });
 
   const handleClick = useCallback(async () => {
     if (!text || isCopying) return;
@@ -88,9 +104,21 @@ export function ExportButton({
       downloadTextFile(text, filename, "text/typescript;charset=utf-8");
       const result = await copy(text, "File downloaded and code copied");
       if (result.ok) {
+        analytics.track(AnalyticsEvent.ExportTriggered, {
+          source: analyticsSource,
+          feature: analyticsFeature,
+          trigger: "export",
+          status: "success",
+        });
         toast("File exported", "success");
         onCopied?.();
       } else {
+        analytics.track(AnalyticsEvent.ExportTriggered, {
+          source: analyticsSource,
+          feature: analyticsFeature,
+          trigger: "export",
+          status: "copy_failed",
+        });
         toast("Export downloaded; copy failed", "warning");
       }
       return;
@@ -98,12 +126,35 @@ export function ExportButton({
 
     const result = await copy(text, "Code copied to clipboard");
     if (result.ok) {
+      analytics.track(AnalyticsEvent.ExportTriggered, {
+        source: analyticsSource,
+        feature: analyticsFeature,
+        trigger: "copy",
+        status: "success",
+      });
       toast("Copied to clipboard", "success");
       onCopied?.();
     } else {
+      analytics.track(AnalyticsEvent.ExportTriggered, {
+        source: analyticsSource,
+        feature: analyticsFeature,
+        trigger: "copy",
+        status: "failed",
+      });
       toast("Copy failed — try Export", "error");
     }
-  }, [copy, filename, isCopying, onCopied, text, toast, variant]);
+  }, [
+    analytics,
+    analyticsFeature,
+    analyticsSource,
+    copy,
+    filename,
+    isCopying,
+    onCopied,
+    text,
+    toast,
+    variant,
+  ]);
 
   const ariaLabel =
     status === "idle" ? `${visibleLabel} code` : message || visibleLabel;

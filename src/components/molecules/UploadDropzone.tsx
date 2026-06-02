@@ -51,15 +51,17 @@ export function UploadDropzone({
         className="flex min-h-72 h-auto w-full flex-col items-center justify-center border-dashed bg-background px-6 py-8 text-center whitespace-normal"
       >
         {previewUrl ? (
-          <Image
-            src={previewUrl}
-            alt="Uploaded UI reference"
-            className="h-auto max-h-64 w-full max-w-full rounded-md object-contain"
-            width={800}
-            height={256}
-            sizes="(max-width: 1024px) 100vw, 640px"
-            unoptimized
-          />
+          <span className="relative block h-64 w-full max-w-full overflow-hidden rounded-md">
+            <Image
+              src={previewUrl}
+              alt="Uploaded UI reference"
+              className="object-contain"
+              fill
+              sizes="(max-width: 1024px) 100vw, 640px"
+              loading="lazy"
+              unoptimized
+            />
+          </span>
         ) : (
           <span className="space-y-2">
             <span className="block text-lg font-semibold text-card-foreground">

@@ -2,14 +2,21 @@
   "name": "qwen-ui-lab",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
     "doctor": "node scripts/doctor.mjs",
+    "deploy:env:demo": "node scripts/validate-deploy-env.mjs --target=demo",
+    "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
+    "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
+    "synthetic:health": "node scripts/synthetic-health-check.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check": "npm run lint && npm test",
+    "check:full": "npm run check && npm run build"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

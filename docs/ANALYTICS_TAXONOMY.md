@@ -1,0 +1,84 @@
+# Analytics Taxonomy
+
+This project uses a privacy-safe analytics layer built on top of the observability hooks.
+
+By default, analytics is disabled. Nothing is emitted unless you explicitly turn on env flags.
+
+## Setup (opt-in only)
+
+Add these flags to `.env.local`:
+
+```bash
+# Master observability switch
+NEXT_PUBLIC_OBSERVABILITY_ENABLED=true
+
+# Enable analytics events
+NEXT_PUBLIC_ANALYTICS_ENABLED=true
+
+# Optional: keep demo telemetry off unless intentionally needed
+NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false
+
+# Optional debug logs in browser console
+NEXT_PUBLIC_OBSERVABILITY_DEBUG=false
+```
+
+## Privacy Guardrails
+
+- Event names are constrained to predefined constants in `src/lib/analytics.ts`.
+- Metadata is allowlisted in `src/lib/observability.mjs`; unknown keys are dropped.
+- Query strings are stripped from routes.
+- Sensitive values like freeform text, prompts, emails, and API payloads are not tracked.
+- Demo mode remains excluded unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true`.
+
+## Event Taxonomy
+
+### Upload + Analyze Funnel (`/`)
+
+- `upload.selected` — user selected a valid image.
+- `upload.rejected` — invalid file type was rejected.
+- `upload.sample_loaded` — sample screenshot was loaded.
+- `analysis.started` — analyze request flow started.
+- `analysis.completed` — analyze finished (Qwen or demo path).
+- `analysis.failed` — analyze failed and fallback path was used.
+- `generate.started` — generate preview flow started.
+- `generate.completed` — scaffold preview generated.
+- `export.triggered` — copy/export action on generated scaffold.
+
+### Design System (`/design-system`)
+
+- `design_system.viewed` — design-system page viewed.
+- `design_system.domain_changed` — domain tab changed.
+- `design_system.level_changed` — atomic level filter changed.
+- `design_system.search_updated` — search value updated (tracked on input blur).
+- `design_system.variant_changed` — component variant toggled.
+- `export.triggered` — snippet/catalag export interactions.
+
+## Allowlisted Metadata Keys
+
+Only these keys are accepted:
+
+- `source`
+- `providerState`
+- `fileType`
+- `fileSize`
+- `route`
+- `status`
+- `durationMs`
+- `step`
+- `result`
+- `trigger`
+- `feature`
+- `domain`
+- `level`
+- `entryId`
+- `queryLength`
+- `totalVisible`
+
+## Key Files
+
+- `src/lib/analytics.ts` — event constants and client abstraction.
+- `src/lib/observability.mjs` — env gating + sanitization + dispatch hooks.
+- `src/components/organisms/UploadFlow.tsx` — funnel instrumentation.
+- `src/components/design-system/DesignSystemPreview.tsx` — design-system instrumentation.
+- `src/components/design-system/ComponentPreviewCard.tsx` — variant and snippet interaction instrumentation.
+- `src/components/atoms/ExportButton.tsx` — centralized copy/export event tracking.

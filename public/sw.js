@@ -1,8 +1,12 @@
-const CACHE_NAME = "qwen-ui-lab-v2";
+const CACHE_NAME = "qwen-ui-lab-v3";
 const PRECACHE = [
   "/",
   "/design-system",
   "/manifest.json",
+  "/images/og-image.png",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/icons/apple-touch-icon.png",
   "/icons/icon.svg",
   "/icons/icon-maskable.svg",
   "/icons/apple-touch-icon.svg",

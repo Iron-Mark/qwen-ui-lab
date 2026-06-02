@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Optional local guardrail:
+# Enable with: git config core.hooksPath .githooks
+
+echo "Running pre-commit checks (lint + unit tests)..."
+npm run check

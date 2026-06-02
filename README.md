@@ -7,7 +7,17 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 - Repository: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
 - Live demo: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 - **[DEMO.md](./DEMO.md)** — live presentation script and pre-flight checklist
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — onboarding and contributor workflow
+- **[docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md)** — runtime architecture and boundaries
+- **[docs/TROUBLESHOOTING_RUNBOOK.md](./docs/TROUBLESHOOTING_RUNBOOK.md)** — troubleshooting guide and operational runbook
+- **[docs/RELIABILITY_OPS.md](./docs/RELIABILITY_OPS.md)** — synthetic checks, monitoring thresholds, and incident-response targets
 - **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md)** — folder tiers, catalog domains, how to add components
+- **[docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md)** — privacy-safe analytics taxonomy and setup
+- **[docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md)** — versioning, release flow, and release checklists
+- **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** — production deploy lane, env policy gates, and smoke hooks
+- **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** — feature flags, A/B setup, and safe rollout checklist
+- **[.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md)** — PR checklist for faster review
+- **[.github/CODEOWNERS.example](./.github/CODEOWNERS.example)** — suggested ownership map template
 
 ## Goal
 
@@ -87,6 +97,47 @@ Alias: `USE_LIVE_QWEN=1`. Do not use `NEXT_PUBLIC_` for the API key. The key mus
 
 Dev boot logs env warnings via `instrumentation.ts`. Run `npm run doctor` for env, deps, and optional API ping.
 
+## Observability Baseline
+
+The app includes a lightweight observability scaffold wired into the root provider tree. It is privacy-safe and disabled by default, so demo mode behavior remains unchanged unless you explicitly opt in.
+
+### Env flags (all optional)
+
+```bash
+# master switch
+NEXT_PUBLIC_OBSERVABILITY_ENABLED=true
+
+# choose what to emit
+NEXT_PUBLIC_ANALYTICS_ENABLED=true
+NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true
+
+# keep false for demos unless you intentionally want telemetry there
+NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false
+
+# optional local debugging logs for emitted payloads
+NEXT_PUBLIC_OBSERVABILITY_DEBUG=false
+```
+
+### What this scaffold does
+
+- Registers global browser hooks for `error` and `unhandledrejection`
+- Exposes a reusable analytics abstraction (`src/lib/analytics.ts`) with event constants and route/provider context
+- Applies privacy defaults by dropping unknown analytics fields and stripping route query strings
+- No-ops all monitoring calls when toggles are off
+
+See **[docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md)** for event definitions and metadata allowlist.
+
+## Experimentation Baseline
+
+The app includes lightweight experiment scaffolding for UI A/B tests:
+
+- Default-off by design (`NEXT_PUBLIC_EXPERIMENTS_ENABLED` must be explicitly set)
+- Per-experiment enablement flags for gradual rollout
+- Deterministic variant assignment from a stable subject key
+- Non-invasive UI insertion point currently in `Header`
+
+See **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** for flags, rollout steps, and verification guidance.
+
 ## Project Structure
 
 ```
@@ -129,6 +180,7 @@ npm test
 npm run lint
 npm run build
 npm run doctor      # env + deps (+ API ping when key set)
+npm run synthetic:health  # /api/health probe with latency thresholds
 npm run test:e2e    # Playwright smoke
 ```
 
@@ -142,6 +194,19 @@ Playwright smoke tests do **not** call the Qwen API:
 No extra CI secrets are required for e2e.
 
 CI runs test, lint, build, and e2e on push/PR (see `.github/workflows/ci.yml`).
+
+## Production deploy lane
+
+- Demo-safe by default: no live API dependency unless `QWEN_LIVE_ANALYSIS=true`.
+- Env policy gates:
+  - `npm run deploy:env:demo` (default production policy)
+  - `npm run deploy:env:live` (explicit paid/live rollout)
+- Post-deploy smoke:
+  - `DEPLOY_URL=<deployed-url> npm run smoke:deploy`
+  - optional live assertion: `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<deployed-url> npm run smoke:deploy`
+- CI + workflow hooks:
+  - `.github/workflows/ci.yml` validates demo env policy
+  - `.github/workflows/post-deploy-smoke.yml` runs deployed-route smoke checks
 
 ## UX references
 

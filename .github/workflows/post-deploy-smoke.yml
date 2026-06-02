@@ -1,0 +1,51 @@
+name: Post Deploy Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_url:
+        description: "Deployment URL to test (for example: https://qwen-ui-lab.vercel.app)"
+        required: true
+        type: string
+      expect_live_analysis:
+        description: "Expect live Qwen analysis to be enabled"
+        required: false
+        default: false
+        type: boolean
+  repository_dispatch:
+    types: [vercel-deployment-success]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke deployed routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DEPLOY_URL: ${{ github.event.inputs.deploy_url || github.event.client_payload.deploy_url || vars.PRODUCTION_DEPLOY_URL }}
+      EXPECT_LIVE_ANALYSIS: ${{ github.event.inputs.expect_live_analysis || github.event.client_payload.expect_live_analysis || 'false' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Ensure deploy URL is available
+        run: |
+          if [ -z "${DEPLOY_URL}" ]; then
+            echo "DEPLOY_URL is missing. Provide workflow_dispatch input deploy_url,"
+            echo "repository_dispatch.client_payload.deploy_url, or set vars.PRODUCTION_DEPLOY_URL."
+            exit 1
+          fi
+
+      - name: Run post-deploy smoke checks
+        run: npm run smoke:deploy

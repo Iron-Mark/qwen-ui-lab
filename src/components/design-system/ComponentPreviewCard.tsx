@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type {
   AtomicLevel,
@@ -10,6 +11,9 @@ import type {
 } from "@/data/catalog-types";
 import { lawNames, type UiLawId } from "@/data/uilaws";
 import { ExportButton } from "@/components/atoms/ExportButton";
+import { useObservability } from "@/components/providers/ObservabilityProvider";
+import { useProviderMode } from "@/lib/provider-mode";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 import { SnippetPreview } from "@/components/molecules/SnippetPreview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,6 +64,9 @@ export function ComponentPreviewCard({
   children,
   className,
 }: ComponentPreviewCardProps) {
+  const pathname = usePathname();
+  const observability = useObservability();
+  const { mode } = useProviderMode();
   const principleLabels = principles ? lawNames(principles) : [];
   const filename = exportFilename ?? `${id}.tsx`;
   const [activeVariant, setActiveVariant] = useState(variants?.[0]?.id ?? "default");
@@ -67,6 +74,11 @@ export function ComponentPreviewCard({
     variants?.find((variant) => variant.id === activeVariant) ?? null;
   const previewNode = selected?.preview ?? children;
   const activeSnippet = selected?.code ?? snippet;
+  const analytics = createAnalyticsClient({
+    hooks: observability,
+    providerMode: mode,
+    route: pathname ?? "/",
+  });
 
   return (
     <Card className={cn("overflow-hidden shadow-sm", className)}>
@@ -131,7 +143,16 @@ export function ComponentPreviewCard({
                 type="button"
                 size="sm"
                 variant={activeVariant === variant.id ? "default" : "outline"}
-                onClick={() => setActiveVariant(variant.id)}
+                onClick={() => {
+                  setActiveVariant(variant.id);
+                  analytics.track(AnalyticsEvent.DesignSystemVariantChanged, {
+                    source: "component_preview_card",
+                    entryId: id,
+                    domain,
+                    level,
+                    status: "selected",
+                  });
+                }}
                 className="rounded-full"
               >
                 {variant.label}
@@ -143,11 +164,18 @@ export function ComponentPreviewCard({
 
       <CardContent className="relative min-h-[10rem] border-b bg-background/50 p-4 sm:p-6">
         <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
-          <ExportButton text={activeSnippet} variant="copy" />
+          <ExportButton
+            text={activeSnippet}
+            variant="copy"
+            analyticsSource="component_preview_card"
+            analyticsFeature="design_system_snippet"
+          />
           <ExportButton
             text={activeSnippet}
             variant="export"
             filename={filename}
+            analyticsSource="component_preview_card"
+            analyticsFeature="design_system_snippet"
           />
         </div>
         <div className="pt-14 sm:pt-16">{previewNode}</div>
