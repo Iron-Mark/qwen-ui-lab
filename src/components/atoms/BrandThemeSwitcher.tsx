@@ -24,7 +24,13 @@ export function BrandThemeSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="Switch brand theme"><Palette className="size-4" /></Button>} />
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" size="icon-lg" aria-label="Switch brand theme">
+            <Palette className="size-4" />
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Brand theme</DropdownMenuLabel>

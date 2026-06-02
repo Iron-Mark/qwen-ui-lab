@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { LayoutDashboard, Orbit, PanelsTopLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 import { BrandThemeSwitcher } from "@/components/atoms/BrandThemeSwitcher";
-import { ProviderModeBadge } from "@/components/atoms/ProviderModeBadge";
+import { DemoModeSnackbar } from "@/components/atoms/DemoModeSnackbar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
@@ -22,31 +22,35 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <DemoModeSnackbar />
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-chart-2 text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]">
             <Orbit className="size-5" aria-hidden />
           </div>
-          <div>
-            <p className="text-lg font-bold text-card-foreground">
+          <div className="min-w-0">
+            <p className="truncate text-lg font-bold text-card-foreground">
               qwen-ui-lab
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground">
               AI UI Studio
             </p>
           </div>
         </Link>
-        <nav className="flex items-center gap-2 sm:gap-3" aria-label="Main">
-          <ProviderModeBadge />
+        <nav className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2" aria-label="Main">
           <Link
             href="/"
             className={cn(
-              buttonVariants({ variant: pathname === "/" ? "secondary" : "ghost" }),
-              "min-h-11 gap-2",
+              buttonVariants({
+                variant: pathname === "/" ? "secondary" : "ghost",
+                size: "lg",
+              }),
+              "h-10 min-h-10 gap-2 px-3",
             )}
+            aria-current={pathname === "/" ? "page" : undefined}
           >
             <LayoutDashboard className="size-4" aria-hidden />
             Dashboard
@@ -56,9 +60,11 @@ export function Header() {
             className={cn(
               buttonVariants({
                 variant: pathname.startsWith("/design-system") ? "secondary" : "ghost",
+                size: "lg",
               }),
-              "min-h-11 gap-2",
+              "h-10 min-h-10 gap-2 px-3",
             )}
+            aria-current={pathname.startsWith("/design-system") ? "page" : undefined}
           >
             <PanelsTopLeft className="size-4" aria-hidden />
             Design system
@@ -68,9 +74,11 @@ export function Header() {
               </Badge>
             ) : null}
           </Link>
+        </nav>
+        <div className="flex items-center justify-end gap-2">
           <BrandThemeSwitcher />
           <ThemeToggle />
-        </nav>
+        </div>
       </div>
     </header>
   );

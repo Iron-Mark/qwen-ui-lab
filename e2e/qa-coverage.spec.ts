@@ -38,8 +38,14 @@ test("switches between light and dark themes", async ({ page }) => {
 test("switches brand theme and persists selection", async ({ page }) => {
   await page.goto("/");
 
+  const dismissDemo = page.getByRole("button", { name: /dismiss demo mode notice/i });
+  if (await dismissDemo.isVisible().catch(() => false)) {
+    await dismissDemo.click();
+  }
+
   await page.getByRole("button", { name: /switch brand theme/i }).click();
-  await page.getByRole("menuitemradio", { name: /Emerald Pro/i }).click();
+  await expect(page.getByRole("menuitemradio", { name: /emerald/i })).toBeVisible();
+  await page.getByRole("menuitemradio", { name: /emerald/i }).click();
 
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.brand)).toBe(
     "emerald",
@@ -52,22 +58,19 @@ test("switches brand theme and persists selection", async ({ page }) => {
 test("filters and searches in design system catalog", async ({ page }) => {
   await page.goto("/design-system");
 
-  const visibleMetric = page
-    .locator("p:text-is('Visible')")
-    .locator("xpath=following-sibling::p[1]");
-  await expect(visibleMetric).toHaveText(/\d+/);
+  const visibleMetric = page.locator("header").getByText(/\d+\s+visible/i);
+  await expect(visibleMetric).toBeVisible();
 
   await page.getByRole("searchbox", { name: /search catalog/i }).fill("zzzz-no-match");
   await expect(page.getByText("No components match your search.")).toBeVisible();
-  await expect(visibleMetric).toHaveText("0");
+  await expect(visibleMetric).toHaveText(/0\s+visible/i);
 
   await page.getByRole("searchbox", { name: /search catalog/i }).fill("button");
   await expect(page.getByText("No components match your search.")).toBeHidden();
-  await expect(visibleMetric).not.toHaveText("0");
+  await expect(visibleMetric).not.toHaveText(/0\s+visible/i);
 
   await page.getByRole("button", { name: /^molecule$/i }).click();
-  const tierMetric = page.locator("p:text-is('Tier')").locator("xpath=following-sibling::p[1]");
-  await expect(tierMetric).toHaveText(/molecule/i);
+  await expect(page).toHaveURL(/level=molecule/);
 });
 
 test("runs deterministic offline demo flow", async ({ page }) => {
@@ -77,7 +80,9 @@ test("runs deterministic offline demo flow", async ({ page }) => {
   await expect(page.getByText(/Sample screenshot loaded/i)).toBeVisible();
 
   await page.getByRole("button", { name: /^Analyze$/i }).click();
-  await expect(page.getByRole("status").first()).toContainText(/offline demo mode/i);
+  await expect(
+    page.getByRole("status").filter({ hasText: /offline demo mode/i }).first(),
+  ).toBeVisible();
   await expect(page.getByText(/Demo analysis complete/i)).toBeVisible();
 });
 
@@ -102,4 +107,65 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   expect(bundleDownload.suggestedFilename()).toBe(
     "qwen-ui-lab-design-system-bundle.tsx",
   );
+});
+
+test("shows demo snackbar once per session", async ({ page }) => {
+  await page.goto("/");
+
+  const snackbar = page.getByRole("status").filter({ hasText: /demo mode/i }).first();
+  await expect(snackbar).toBeVisible();
+
+  await page.reload();
+
+  // Session storage should prevent re-showing on subsequent navigations.
+  await expect(snackbar).toBeHidden({ timeout: 2000 });
+});
+
+test("design system scrolls to preview on mobile selection", async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+
+  await stubClipboardForE2E(page);
+  await mockAnalyzeApiForE2E(page);
+
+  await page.goto("/design-system");
+
+  const previewPanel = page.locator("#component-preview-panel");
+  await expect(previewPanel).toBeVisible();
+
+  // Change selection after initial mount to trigger the mobile scroll behavior.
+  const listPanel = page
+    .getByText("Component list", { exact: true })
+    .locator("xpath=ancestor::section[1]");
+  const listButtons = listPanel.getByRole("button");
+  await expect(listButtons.first()).toBeVisible();
+  await listButtons.nth(1).click();
+
+  await expect(page).toHaveURL(/selected=/);
+
+  await expect
+    .poll(async () => {
+      const box = await previewPanel.boundingBox();
+      if (!box) return null;
+      const viewport = page.viewportSize();
+      if (!viewport) return null;
+      // Consider "scrolled into view" if the panel's top is within the first half of viewport.
+      return box.y >= 0 && box.y < viewport.height / 2;
+    })
+    .toBeTruthy();
+
+  await context.close();
+});
+
+test("preview segmented tabs switch modes", async ({ page }) => {
+  await page.goto("/design-system");
+
+  await page.getByRole("tab", { name: /mobile preview/i }).click();
+  await expect(page).toHaveURL(/preview=mobile/);
+
+  await page.getByRole("tab", { name: /desktop preview/i }).click();
+  // Desktop is the default mode; query params omit defaults.
+  await expect.poll(() => page.url()).not.toContain("preview=mobile");
 });

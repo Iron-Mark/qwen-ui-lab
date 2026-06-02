@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Inter, Space_Grotesk } from "next/font/google";
+import { Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ProviderModeProvider } from "@/lib/provider-mode";
@@ -14,11 +14,6 @@ import { getSiteUrl, SITE_NAME, SITE_TAGLINE, toAbsoluteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -144,7 +139,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
         <link rel="mask-icon" href="/icons/icon-maskable.svg" color="#18181b" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -211,13 +209,15 @@ export default function RootLayout({
             <ObservabilityProvider>
               <TooltipProvider>
                 <ToastProvider>
+                  <Toaster richColors closeButton position="top-center" offset={72} />
                   <div className="flex min-h-screen flex-col">
                     <Header />
-                    <main className="flex-1">{children}</main>
+                    <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
+                      {children}
+                    </main>
                     <Footer />
                   </div>
                   <ServiceWorkerRegister />
-                  <Toaster richColors closeButton position="top-center" />
                 </ToastProvider>
               </TooltipProvider>
             </ObservabilityProvider>
