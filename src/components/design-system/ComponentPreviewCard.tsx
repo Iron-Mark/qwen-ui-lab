@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { CopyPlus, Monitor, Smartphone, Tablet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
   AtomicLevel,
@@ -12,6 +13,7 @@ import type {
 import { lawNames, type UiLawId } from "@/data/uilaws";
 import { ExportButton } from "@/components/atoms/ExportButton";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
+import { useToast } from "@/components/providers/Toast";
 import { useProviderMode } from "@/lib/provider-mode";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 import { SnippetPreview } from "@/components/molecules/SnippetPreview";
@@ -24,6 +26,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 const LEVEL_VARIANT: Record<AtomicLevel, "default" | "secondary" | "outline"> = {
   atom: "default",
@@ -46,7 +53,23 @@ interface ComponentPreviewCardProps {
   principles?: UiLawId[];
   children: ReactNode;
   className?: string;
+  chromeless?: boolean;
+  previewMode?: "mobile" | "tablet" | "desktop";
+  onPreviewModeChange?: (mode: "mobile" | "tablet" | "desktop") => void;
+  deferPreview?: boolean;
+  showSnippet?: boolean;
+  denseHeader?: boolean;
 }
+
+const PREVIEW_MODE_OPTIONS: Array<{
+  value: "desktop" | "tablet" | "mobile";
+  label: string;
+  Icon: typeof Monitor;
+}> = [
+  { value: "desktop", label: "Desktop preview", Icon: Monitor },
+  { value: "tablet", label: "Tablet preview", Icon: Tablet },
+  { value: "mobile", label: "Mobile preview", Icon: Smartphone },
+];
 
 export function ComponentPreviewCard({
   id,
@@ -63,13 +86,22 @@ export function ComponentPreviewCard({
   principles,
   children,
   className,
+  chromeless = false,
+  previewMode = "desktop",
+  onPreviewModeChange,
+  deferPreview = false,
+  showSnippet = true,
+  denseHeader = false,
 }: ComponentPreviewCardProps) {
   const pathname = usePathname();
   const observability = useObservability();
+  const { toast } = useToast();
   const { mode } = useProviderMode();
   const principleLabels = principles ? lawNames(principles) : [];
   const filename = exportFilename ?? `${id}.tsx`;
   const [activeVariant, setActiveVariant] = useState(variants?.[0]?.id ?? "default");
+  const [canRenderPreview, setCanRenderPreview] = useState(!deferPreview);
+  const previewHostRef = useRef<HTMLDivElement | null>(null);
   const selected =
     variants?.find((variant) => variant.id === activeVariant) ?? null;
   const previewNode = selected?.preview ?? children;
@@ -79,10 +111,53 @@ export function ComponentPreviewCard({
     providerMode: mode,
     route: pathname ?? "/",
   });
+  const importPath = sourcePath
+    ? sourcePath.replace(/\.tsx$/, "")
+    : "path/to/component";
+  const importLine = `import { Component } from "@/components/${importPath}";`;
+  const copyImportAndSnippet = async () => {
+    try {
+      await navigator.clipboard.writeText(`${importLine}\n\n${activeSnippet}`);
+      toast("Import and snippet copied", "success");
+    } catch {
+      toast("Copy failed. Try again.", "error");
+    }
+  };
+  const previewFrameClass =
+    previewMode === "mobile"
+      ? "mx-auto w-full max-w-[22rem]"
+      : previewMode === "tablet"
+        ? "mx-auto w-full max-w-[40rem]"
+        : "w-full";
+
+  useEffect(() => {
+    if (!deferPreview || canRenderPreview) return;
+    const host = previewHostRef.current;
+    if (!host || typeof IntersectionObserver === "undefined") {
+      setCanRenderPreview(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setCanRenderPreview(true);
+        observer.disconnect();
+      },
+      { rootMargin: "180px 0px" },
+    );
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [canRenderPreview, deferPreview]);
 
   return (
-    <Card className={cn("overflow-hidden shadow-sm", className)}>
-      <CardHeader className="border-b">
+    <Card
+      className={cn(
+        "overflow-hidden",
+        chromeless ? "border-0 bg-transparent shadow-none" : "shadow-sm",
+        className,
+      )}
+    >
+      <CardHeader className={cn("border-b", denseHeader ? "p-4" : undefined)}>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <CardTitle className="text-base">{title}</CardTitle>
@@ -98,6 +173,19 @@ export function ComponentPreviewCard({
                 {usage}
               </p>
             ) : null}
+            <div className="mt-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={copyImportAndSnippet}
+                aria-label="Copy import line and snippet"
+                className="min-h-10 px-3 text-[0.7rem] text-muted-foreground hover:bg-muted/80 hover:text-card-foreground"
+              >
+                <CopyPlus className="mr-1 size-3.5" aria-hidden="true" />
+                Copy import + snippet
+              </Button>
+            </div>
             {principleLabels.length > 0 ? (
               <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="UI laws">
                 {principleLabels.map((label) => (
@@ -162,8 +250,13 @@ export function ComponentPreviewCard({
         ) : null}
       </CardHeader>
 
-      <CardContent className="relative min-h-[10rem] border-b bg-background/50 p-4 sm:p-6">
-        <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">
+      <CardContent
+        className={cn(
+          "relative min-h-[10rem] p-4 sm:p-6",
+          chromeless ? "border-b-0 bg-transparent" : "border-b bg-background/50",
+        )}
+      >
+        <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 sm:left-4 sm:top-4">
           <ExportButton
             text={activeSnippet}
             variant="copy"
@@ -178,10 +271,55 @@ export function ComponentPreviewCard({
             analyticsFeature="design_system_snippet"
           />
         </div>
-        <div className="pt-14 sm:pt-16">{previewNode}</div>
+        <Tabs
+          value={previewMode}
+          onValueChange={(value) =>
+            onPreviewModeChange?.(value as "desktop" | "tablet" | "mobile")
+          }
+          className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4"
+        >
+          <TabsList
+            aria-label="Preview device mode"
+            className="h-10 rounded-full border border-border/70 bg-background/90 p-1 shadow-sm"
+          >
+            {PREVIEW_MODE_OPTIONS.map(({ value, label, Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="h-10 w-10 rounded-full p-0 hover:bg-muted/80 data-active:bg-muted data-active:text-foreground"
+                aria-label={label}
+                title={label}
+              >
+                <Icon className="size-4" aria-hidden="true" />
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <div ref={previewHostRef} className="pt-14 sm:pt-16">
+          {canRenderPreview ? (
+            <div
+              className={cn(
+                chromeless
+                  ? "rounded-xl border border-border/60 bg-background/40 p-3 shadow-inner sm:p-4"
+                  : "rounded-xl border border-border/70 bg-card/40 p-3 shadow-inner sm:p-4",
+                previewFrameClass,
+              )}
+            >
+              {previewNode}
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "h-40 animate-pulse rounded-xl border border-dashed border-border/70 bg-muted/40",
+                previewFrameClass,
+              )}
+              aria-hidden="true"
+            />
+          )}
+        </div>
       </CardContent>
 
-      <SnippetPreview code={activeSnippet} title={`${title} snippet`} showCopy />
+      {showSnippet ? <SnippetPreview code={activeSnippet} title={`${title} snippet`} showCopy /> : null}
     </Card>
   );
 }

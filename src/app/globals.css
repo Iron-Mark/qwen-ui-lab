@@ -42,6 +42,25 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --syntax-plain: var(--foreground);
+  --syntax-comment: color-mix(in oklch, var(--muted-foreground) 94%, var(--foreground));
+  --syntax-punctuation: color-mix(in oklch, var(--muted-foreground) 84%, var(--foreground));
+  --syntax-string: color-mix(in oklch, var(--success) 88%, var(--foreground));
+  --syntax-keyword: color-mix(in oklch, var(--primary) 82%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 68%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-number: color-mix(in oklch, var(--danger) 70%, var(--foreground));
+  --syntax-boolean: color-mix(in oklch, var(--danger) 76%, var(--foreground));
+  --syntax-constant: color-mix(in oklch, var(--danger) 64%, var(--foreground));
+  --syntax-operator: color-mix(in oklch, var(--muted-foreground) 74%, var(--foreground));
+  --syntax-regex: color-mix(in oklch, var(--danger) 72%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 78%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 66%, var(--foreground));
+  --syntax-attr-value: color-mix(in oklch, var(--success) 80%, var(--foreground));
+  --syntax-property: color-mix(in oklch, var(--danger) 66%, var(--foreground));
+  --syntax-variable: color-mix(in oklch, var(--danger) 82%, var(--foreground));
+  --syntax-entity: color-mix(in oklch, var(--muted-foreground) 72%, var(--foreground));
+  --syntax-important: color-mix(in oklch, var(--danger) 84%, var(--foreground));
 }
 
 .dark {
@@ -81,6 +100,41 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --syntax-plain: var(--foreground);
+  --syntax-comment: color-mix(in oklch, var(--muted-foreground) 95%, var(--foreground));
+  --syntax-punctuation: color-mix(in oklch, var(--muted-foreground) 88%, var(--foreground));
+  --syntax-string: color-mix(in oklch, var(--success) 78%, var(--foreground));
+  --syntax-keyword: color-mix(in oklch, var(--primary) 82%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 74%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 78%, var(--secondary));
+  --syntax-number: color-mix(in oklch, var(--danger) 74%, var(--foreground));
+  --syntax-boolean: color-mix(in oklch, var(--danger) 80%, var(--foreground));
+  --syntax-constant: color-mix(in oklch, var(--danger) 70%, var(--foreground));
+  --syntax-operator: color-mix(in oklch, var(--muted-foreground) 80%, var(--foreground));
+  --syntax-regex: color-mix(in oklch, var(--danger) 76%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 74%, var(--foreground));
+  --syntax-attr-value: color-mix(in oklch, var(--success) 76%, var(--foreground));
+  --syntax-property: color-mix(in oklch, var(--danger) 72%, var(--foreground));
+  --syntax-variable: color-mix(in oklch, var(--danger) 80%, var(--foreground));
+  --syntax-entity: color-mix(in oklch, var(--muted-foreground) 78%, var(--foreground));
+  --syntax-important: color-mix(in oklch, var(--danger) 86%, var(--foreground));
+}
+
+:root[data-brand="indigo"] {
+  --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 70%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 78%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 68%, var(--foreground));
+}
+
+:root.dark[data-brand="indigo"] {
+  --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 76%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 86%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 76%, var(--foreground));
 }
 
 :root[data-brand="emerald"] {
@@ -96,6 +150,13 @@
   --chart-3: oklch(0.67 0.14 145);
   --chart-4: oklch(0.77 0.13 205);
   --chart-5: oklch(0.64 0.12 130);
+  --syntax-keyword: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 68%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-string: color-mix(in oklch, var(--success) 90%, var(--foreground));
+  --syntax-tag: color-mix(in oklch, var(--primary) 76%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 66%, var(--foreground));
+  --syntax-attr-value: color-mix(in oklch, var(--success) 82%, var(--foreground));
 }
 
 :root.dark[data-brand="emerald"] {
@@ -111,6 +172,13 @@
   --chart-3: oklch(0.69 0.14 145);
   --chart-4: oklch(0.79 0.12 205);
   --chart-5: oklch(0.68 0.12 130);
+  --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 76%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-string: color-mix(in oklch, var(--success) 80%, var(--foreground));
+  --syntax-tag: color-mix(in oklch, var(--primary) 82%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 74%, var(--foreground));
+  --syntax-attr-value: color-mix(in oklch, var(--success) 78%, var(--foreground));
 }
 
 :root[data-brand="sunset"] {
@@ -126,6 +194,16 @@
   --chart-3: oklch(0.69 0.16 15);
   --chart-4: oklch(0.76 0.14 70);
   --chart-5: oklch(0.66 0.15 350);
+  --syntax-keyword: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 66%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-number: color-mix(in oklch, var(--danger) 72%, var(--foreground));
+  --syntax-boolean: color-mix(in oklch, var(--danger) 78%, var(--foreground));
+  --syntax-constant: color-mix(in oklch, var(--danger) 68%, var(--foreground));
+  --syntax-regex: color-mix(in oklch, var(--danger) 76%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 78%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 64%, var(--foreground));
+  --syntax-property: color-mix(in oklch, var(--danger) 70%, var(--foreground));
 }
 
 :root.dark[data-brand="sunset"] {
@@ -141,6 +219,16 @@
   --chart-3: oklch(0.72 0.15 15);
   --chart-4: oklch(0.8 0.14 70);
   --chart-5: oklch(0.7 0.15 350);
+  --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-function: color-mix(in oklch, var(--primary) 72%, var(--foreground));
+  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-number: color-mix(in oklch, var(--danger) 76%, var(--foreground));
+  --syntax-boolean: color-mix(in oklch, var(--danger) 82%, var(--foreground));
+  --syntax-constant: color-mix(in oklch, var(--danger) 72%, var(--foreground));
+  --syntax-regex: color-mix(in oklch, var(--danger) 80%, var(--secondary));
+  --syntax-tag: color-mix(in oklch, var(--primary) 84%, var(--foreground));
+  --syntax-attr-name: color-mix(in oklch, var(--primary) 74%, var(--foreground));
+  --syntax-property: color-mix(in oklch, var(--danger) 74%, var(--foreground));
 }
 
 @theme inline {
@@ -220,25 +308,37 @@ body {
   }
 }
 
-/* Prism syntax highlighting — uses design tokens */
+/* Prism syntax highlighting — centralized semantic token mapping */
 .code-highlight .token.comment,
 .code-highlight .token.prolog,
 .code-highlight .token.doctype,
 .code-highlight .token.cdata {
-  color: var(--muted-foreground);
+  color: var(--syntax-comment);
 }
 
 .code-highlight .token.punctuation {
-  color: var(--muted-foreground);
+  color: var(--syntax-punctuation);
 }
 
 .code-highlight .token.property,
-.code-highlight .token.tag,
-.code-highlight .token.boolean,
-.code-highlight .token.number,
-.code-highlight .token.constant,
 .code-highlight .token.symbol {
-  color: var(--foreground);
+  color: var(--syntax-property);
+}
+
+.code-highlight .token.tag {
+  color: var(--syntax-tag);
+}
+
+.code-highlight .token.boolean {
+  color: var(--syntax-boolean);
+}
+
+.code-highlight .token.number {
+  color: var(--syntax-number);
+}
+
+.code-highlight .token.constant {
+  color: var(--syntax-constant);
 }
 
 .code-highlight .token.selector,
@@ -246,30 +346,58 @@ body {
 .code-highlight .token.string,
 .code-highlight .token.char,
 .code-highlight .token.builtin {
-  color: var(--success);
+  color: var(--syntax-attr-value);
+}
+
+.code-highlight .token.string,
+.code-highlight .token.char {
+  color: var(--syntax-string);
+}
+
+.code-highlight .token.attr-name {
+  color: var(--syntax-attr-name);
 }
 
 .code-highlight .token.operator,
 .code-highlight .token.entity,
 .code-highlight .token.url {
-  color: var(--muted-foreground);
+  color: var(--syntax-entity);
+}
+
+.code-highlight .token.operator {
+  color: var(--syntax-operator);
 }
 
 .code-highlight .token.atrule,
 .code-highlight .token.attr-value,
 .code-highlight .token.keyword {
-  color: var(--accent);
+  color: var(--syntax-keyword);
 }
 
 .code-highlight .token.function,
 .code-highlight .token.class-name {
-  color: var(--card-foreground);
+  color: var(--syntax-class);
+}
+
+.code-highlight .token.function {
+  color: var(--syntax-function);
 }
 
 .code-highlight .token.regex,
-.code-highlight .token.important,
 .code-highlight .token.variable {
-  color: var(--danger);
+  color: var(--syntax-variable);
+}
+
+.code-highlight .token.regex {
+  color: var(--syntax-regex);
+}
+
+.code-highlight .token.important {
+  color: var(--syntax-important);
+}
+
+.code-highlight .token.plain-text {
+  color: var(--syntax-plain);
 }
 
 @layer base {
@@ -288,4 +416,25 @@ body {
     font-family: var(--font-heading), var(--font-sans), system-ui, sans-serif;
     letter-spacing: -0.02em;
   }
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 60;
+  border-radius: calc(var(--radius) * 0.8);
+  padding: 0.5rem 0.75rem;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
+  box-shadow: 0 10px 25px color-mix(in oklch, var(--foreground) 10%, transparent);
+  transform: translateY(-140%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid color-mix(in oklch, var(--ring) 85%, transparent);
+  outline-offset: 2px;
 }
