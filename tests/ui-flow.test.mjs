@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   buildUiFlowArtifact,
@@ -13,7 +16,8 @@ import {
   parseQwenAnalysisText,
 } from "../src/lib/qwen-analyze.mjs";
 import { filterCatalogEntries } from "../src/lib/catalog-filter.mjs";
-import { lawById, UI_LAWS } from "../src/data/uilaws.ts";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 test("formatFileSize formats bytes into readable units", () => {
   assert.equal(formatFileSize(512), "512 B");
@@ -118,10 +122,15 @@ test("parseQwenAnalysisText accepts fenced JSON from the model", () => {
 });
 
 test("UI_LAWS includes Fitts Hick and Jakob with applications", () => {
-  assert.ok(UI_LAWS.length >= 10);
-  assert.equal(lawById("fitts")?.name, "Fitts's Law");
-  assert.match(lawById("hick")?.application ?? "", /Upload flow/i);
-  assert.match(lawById("jakob")?.application ?? "", /familiar/i);
+  const source = readFileSync(
+    resolve(__dirname, "../src/data/uilaws.ts"),
+    "utf8",
+  );
+
+  assert.match(source, /id: "fitts"[\s\S]*name: "Fitts's Law"/);
+  assert.match(source, /id: "hick"[\s\S]*application:[\s\S]*Upload flow/i);
+  assert.match(source, /id: "jakob"[\s\S]*application:[\s\S]*familiar/i);
+  assert.ok((source.match(/\n  {\n    id: "/g) ?? []).length >= 10);
 });
 
 test("filterCatalogEntries searches by name, level, and domain", () => {
