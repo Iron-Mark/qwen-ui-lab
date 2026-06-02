@@ -23,6 +23,7 @@ After `1.0.0`, follow standard semver expectations:
 Each release should update or produce:
 
 - `docs/RELEASE_NOTES_DRAFT.md` (changelog-style release notes).
+- `docs/RELEASE_PACKAGE_CHECKLIST.md` (version/tag recommendation and command checklist).
 - `docs/DEPLOYMENT_CHECKLIST.md` (go-live checklist).
 - `docs/ROLLBACK_CHECKLIST.md` (rollback execution checklist).
 
@@ -36,7 +37,7 @@ Each release should update or produce:
    - `npm run doctor`
 3. Confirm documented routes/APIs are still accurate:
    - Pages: `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`
-   - APIs: `GET /api/health`, `POST /api/analyze-ui`
+   - APIs: `GET /api/health`, `POST /api/analyze-ui`, `POST /api/security/csp-report`
 4. Deploy from approved release branch/tag.
 5. Run post-deploy smoke checks and publish final release notes.
 
@@ -44,7 +45,7 @@ Each release should update or produce:
 
 - Keep command examples aligned with `package.json` scripts only.
 - Keep route references aligned with `src/app` pages and route handlers.
-- Treat README CI claims as conditional if workflow files are absent.
+- Keep CI references aligned with existing workflow files in `.github/workflows`.
 
 ## Release and commit hygiene
 

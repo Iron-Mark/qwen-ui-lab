@@ -7,6 +7,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 - [ ] Working tree is clean (no accidental local changes, no secrets staged).
 - [ ] Version and release notes are updated (`package.json`, `docs/RELEASE_NOTES_DRAFT.md`).
 - [ ] Install dependencies: `npm ci`.
+- [ ] No concurrent `next build` is running in another terminal/session.
 - [ ] Lint passes: `npm run lint`.
 - [ ] Unit tests pass: `npm test`.
 - [ ] Production build passes: `npm run build`.
@@ -41,8 +42,18 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
   - [ ] Optional live expectation: `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<deployed-url> npm run smoke:deploy`
 - [ ] `GET /api/health` mode matches rollout intent (demo by default unless explicit live rollout).
 - [ ] `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `robots.txt`, and `sitemap.xml` are healthy.
+- [ ] Optional latency probe for sign-off: `node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5`.
 
-## 6) Release communication
+## 6) Staging drill simulation (no real deploy)
+
+Use this sequence to rehearse the lane against a staging URL or active local server:
+
+- [ ] `npm run deploy:env:demo`
+- [ ] `DEPLOY_URL=<staging-or-local-url> npm run smoke:deploy`
+- [ ] `node scripts/synthetic-health-check.mjs --base-url <staging-or-local-url> --attempts 3`
+- [ ] For live rehearsal only (with live env set): `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<url> npm run smoke:deploy`
+
+## 7) Release communication
 
 - [ ] Publish release note summary from `docs/RELEASE_NOTES_DRAFT.md`.
 - [ ] Share rollback owner/on-call and monitoring channel.

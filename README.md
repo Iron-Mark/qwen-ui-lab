@@ -14,6 +14,7 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 - **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md)** — folder tiers, catalog domains, how to add components
 - **[docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md)** — privacy-safe analytics taxonomy and setup
 - **[docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md)** — versioning, release flow, and release checklists
+- **[docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md)** — version/tag recommendation and exact release commands
 - **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** — production deploy lane, env policy gates, and smoke hooks
 - **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** — feature flags, A/B setup, and safe rollout checklist
 - **[.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md)** — PR checklist for faster review
@@ -193,7 +194,8 @@ Playwright smoke tests do **not** call the Qwen API:
 
 No extra CI secrets are required for e2e.
 
-CI runs test, lint, build, and e2e on push/PR (see `.github/workflows/ci.yml`).
+CI runs security/dependency checks, lint, unit tests, build, and web audits on push/PR (see `.github/workflows/ci.yml`).
+Run `npm run test:e2e` in release prep before final sign-off.
 
 ## Production deploy lane
 

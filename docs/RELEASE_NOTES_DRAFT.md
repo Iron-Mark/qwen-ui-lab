@@ -2,14 +2,14 @@
 
 ## qwen-ui-lab v0.1.0
 
-Release date: _TBD_
+Release date: _TBD (set at tag cut)_
 
 ### Highlights
 
 - Initial public baseline of `qwen-ui-lab` with Next.js App Router and TypeScript.
 - Screenshot-to-UI workflow with offline demo mode by default and optional live Qwen analysis.
 - Atomic design-system catalog with Laws of UX and UI Laws views.
-- Health and analysis API routes for operational checks and image analysis flows.
+- Health, analysis, and CSP-report API routes for operations and security telemetry.
 
 ### User-facing features
 
@@ -22,7 +22,15 @@ Release date: _TBD_
 
 - `GET /api/health` reports provider mode (`demo` or `qwen`) and live-analysis availability.
 - `POST /api/analyze-ui` validates payloads and returns typed error codes for invalid input and upstream failures.
+- `POST /api/security/csp-report` accepts CSP report-only payloads and returns `204`.
 - Demo mode remains default unless both API key and live-analysis flag are enabled.
+
+### Release package summary
+
+- **Runtime surface:** app routes (`/`, `/design-system`, domain redirects), API routes (`/api/health`, `/api/analyze-ui`, `/api/security/csp-report`), and production metadata routes (`robots.txt`, `sitemap.xml`).
+- **Operational lane:** demo-safe deploy policy (`deploy:env:demo`), optional live gate (`deploy:env:live`), and post-deploy smoke script/workflow.
+- **Quality gates:** lint, unit tests, build, dependency/secrets scanning, link/perf/assets audits in CI.
+- **Docs bundle:** release/process/deploy/rollback/runbook docs aligned with current scripts and workflows.
 
 ### Verification snapshot
 
@@ -38,7 +46,7 @@ Validated against current project scripts:
 
 - `.env.local` contains local secrets and must not be bundled into release artifacts.
 - Live Qwen usage depends on external quota/network health; demo mode remains the fallback path.
-- CI workflow references in README should be treated as optional until workflow files exist in `.github/workflows`.
+- CI workflows are present under `.github/workflows`; release notes and README references should point to existing files only.
 
 ### Upgrade and compatibility notes
 

@@ -20,6 +20,7 @@ Use this when a release introduces regression, downtime, or unacceptable risk.
 - [ ] Redeploy last known good release/tag.
 - [ ] If needed, force safe mode by disabling live analysis (`QWEN_LIVE_ANALYSIS` unset/false).
 - [ ] Verify deployment completes successfully.
+- [ ] Capture rollback target (commit/tag and deploy ID) in incident notes.
 
 ## 4) Verify recovery
 
@@ -27,8 +28,15 @@ Use this when a release introduces regression, downtime, or unacceptable risk.
 - [ ] `/` loads and Analyze works in fallback demo mode at minimum.
 - [ ] `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws` load successfully.
 - [ ] Critical smoke checks pass with no new high-severity errors.
+- [ ] Run: `DEPLOY_URL=<rollback-url> npm run smoke:deploy`
+- [ ] Run: `node scripts/synthetic-health-check.mjs --base-url <rollback-url> --attempts 5`
 
-## 5) Closeout
+## 5) Roll-forward guard before unfreeze
+
+- [ ] Confirm `npm run deploy:env:demo` passes on release branch before re-opening deploys.
+- [ ] If re-enabling live mode, verify `npm run deploy:env:live` passes in release pipeline env.
+
+## 6) Closeout
 
 - [ ] Post rollback summary with root-cause hypothesis and impact window.
 - [ ] Open follow-up issue for permanent fix.
