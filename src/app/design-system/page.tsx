@@ -1,7 +1,6 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
-import { DesignSystemPreview } from "@/components/design-system/DesignSystemPreview";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
+import { DesignSystemPreviewClient } from "./DesignSystemPreviewClient";
 
 export const metadata: Metadata = createRouteMetadata({
   title: "Design System Playground",
@@ -22,14 +21,6 @@ export const metadata: Metadata = createRouteMetadata({
   shareSnippet:
     "Browse reusable UI patterns and export-ready snippets from the qwen-ui-lab design system.",
 });
-
-function DesignSystemFallback() {
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-muted-foreground">
-      Loading design system…
-    </div>
-  );
-}
 
 export default function DesignSystemPage() {
   const structuredData = createRouteStructuredData({
@@ -60,9 +51,7 @@ export default function DesignSystemPage() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={structuredData}
       />
-      <Suspense fallback={<DesignSystemFallback />}>
-        <DesignSystemPreview />
-      </Suspense>
+      <DesignSystemPreviewClient />
     </>
   );
 }
