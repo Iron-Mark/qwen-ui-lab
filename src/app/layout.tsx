@@ -8,7 +8,7 @@ import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
 import { ServiceWorkerRegister } from "@/components/providers/ServiceWorkerRegister";
 import { ObservabilityProvider } from "@/components/providers/ObservabilityProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { LazyToaster } from "@/components/providers/LazyToaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getSiteUrl, SITE_NAME, SITE_TAGLINE, toAbsoluteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -216,7 +216,7 @@ export default function RootLayout({
             <ObservabilityProvider>
               <TooltipProvider>
                 <ToastProvider>
-                  <Toaster
+                  <LazyToaster
                     richColors
                     closeButton
                     position="bottom-center"

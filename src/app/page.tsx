@@ -1,5 +1,6 @@
-import dynamic from "next/dynamic";
 import Link from "next/link";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { DashboardShell } from "@/components/organisms/DashboardShell";
 import { UploadFlow } from "@/components/organisms/UploadFlow";
 import type { Metadata } from "next";
 import {
@@ -10,42 +11,6 @@ import {
   recentActivity,
   quickActions,
 } from "@/data/dashboard-data";
-
-const DashboardShellLazy = dynamic(
-  () =>
-    import("@/components/organisms/DashboardShell").then((mod) => ({
-      default: mod.DashboardShell,
-    })),
-  {
-    loading: () => (
-      <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-10 sm:px-6 lg:px-8">
-        <div className="min-h-[720px] space-y-6">
-          <div className="h-28 animate-pulse rounded-2xl border border-border/60 bg-muted/30" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, idx) => (
-              <div
-                key={idx}
-                className="h-28 animate-pulse rounded-xl border border-border/70 bg-muted/30"
-              />
-            ))}
-          </div>
-          <div className="grid gap-6 lg:grid-cols-7">
-            <div className="lg:col-span-4">
-              <div className="h-80 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
-            </div>
-            <div className="lg:col-span-3">
-              <div className="h-80 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
-            </div>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="h-72 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
-            <div className="h-72 animate-pulse rounded-xl border border-border/70 bg-muted/30" />
-          </div>
-        </div>
-      </div>
-    ),
-  },
-);
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = createRouteMetadata({
@@ -109,16 +74,16 @@ export default function Home() {
         <h1 className="sr-only">
           qwen-ui-lab dashboard and AI screenshot-to-component demo
         </h1>
-        <p className="growth-snippet mx-auto max-w-7xl px-4 pt-8 text-sm text-muted-foreground sm:px-6 lg:px-8">
+        <PageContainer as="p" className="growth-snippet pt-8 text-sm text-muted-foreground">
           Launch faster with a screenshot-to-scaffold loop.
           {" "}
           <Link className="font-medium text-foreground underline-offset-4 hover:underline" href="/design-system">
             Explore reusable snippets
           </Link>
           {" "}to reduce polish time after generation.
-        </p>
+        </PageContainer>
         <UploadFlow />
-        <DashboardShellLazy
+        <DashboardShell
           stats={stats}
           revenueData={revenueData}
           performanceData={performanceData}

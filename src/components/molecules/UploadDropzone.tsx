@@ -64,7 +64,7 @@ export function UploadDropzone({
           </span>
         ) : (
           <span className="space-y-2">
-            <span className="block text-lg font-semibold text-card-foreground">
+            <span className="block min-h-[1.75rem] text-lg font-semibold text-card-foreground">
               Drop a screenshot here
             </span>
             <span className="block text-sm font-normal text-muted-foreground">
