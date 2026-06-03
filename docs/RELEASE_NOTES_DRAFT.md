@@ -2,7 +2,7 @@
 
 ## qwen-ui-lab v0.1.0
 
-Release date: _TBD (set at tag cut)_
+Release date: 2026-06-03
 
 ### Highlights
 
@@ -10,6 +10,15 @@ Release date: _TBD (set at tag cut)_
 - Screenshot-to-UI workflow with offline demo mode by default and optional live Qwen analysis.
 - Atomic design-system catalog with Laws of UX and UI Laws views.
 - Health, analysis, and CSP-report API routes for operations and security telemetry.
+
+### UX, performance, and accessibility (v0.1.0)
+
+- Upload-to-scaffold flow polish with refined preview card and device preview tabs.
+- Sticky design-system preview panel and mobile scroll-to-preview behavior.
+- Session-scoped demo snackbar for offline-tour guidance (no live API required).
+- Snippet/code preview theming with tokenized shells, Prism syntax variables, and focus rings.
+- Lighthouse perf tooling and CI performance budgets on home and design-system routes.
+- Demo-safe deploy validation (`deploy:env:demo`); live analysis remains opt-in via `QWEN_LIVE_ANALYSIS`.
 
 ### User-facing features
 
