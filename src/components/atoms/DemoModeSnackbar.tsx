@@ -21,14 +21,35 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
 
     try {
       if (sessionStorage.getItem(SESSION_KEY) === "1") return;
-      sessionStorage.setItem(SESSION_KEY, "1");
     } catch {
-      // Ignore storage errors (e.g. blocked), still show once per mount.
+      // Ignore storage errors (e.g. blocked), still attempt once per mount.
     }
 
     shownRef.current = true;
 
-    toast.custom(
+    const markShownForSession = () => {
+      try {
+        sessionStorage.setItem(SESSION_KEY, "1");
+      } catch {
+        // Ignore storage errors.
+      }
+    };
+
+    let frame = 0;
+    const maxFrames = 180;
+
+    const showWhenToasterReady = () => {
+      if (!document.querySelector("[data-sonner-toaster]")) {
+        frame += 1;
+        if (frame < maxFrames) {
+          requestAnimationFrame(showWhenToasterReady);
+          return;
+        }
+      }
+
+      markShownForSession();
+
+      toast.custom(
       (t) => (
         <div
           role="status"
@@ -92,6 +113,9 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
       ),
       { id: TOAST_ID, duration: durationMs },
     );
+    };
+
+    requestAnimationFrame(showWhenToasterReady);
   }, [durationMs, mode]);
 
   return null;
