@@ -439,7 +439,11 @@ body {
   outline-offset: 2px;
 }
 
-/* Keep bottom toasts clear of home-indicator safe areas on mobile */
+/* Keep bottom-left toasts clear of safe areas (home indicator, notches) */
 [data-sonner-toaster][data-y-position="bottom"] {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+[data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
+  padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
 }

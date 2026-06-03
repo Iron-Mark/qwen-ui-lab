@@ -221,9 +221,12 @@ export default function RootLayout({
                   <LazyToaster
                     richColors
                     closeButton
-                    position="bottom-center"
+                    position="bottom-left"
                     offset={20}
-                    mobileOffset={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+                    mobileOffset={{
+                      bottom: "max(1rem, env(safe-area-inset-bottom))",
+                      left: "max(1rem, env(safe-area-inset-left))",
+                    }}
                   />
                   <div className="flex min-h-screen flex-col">
                     <Header />

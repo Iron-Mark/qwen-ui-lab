@@ -157,9 +157,22 @@ test("shows demo snackbar once per session", async ({ page }) => {
   const box = await snackbar.boundingBox();
   const viewport = page.viewportSize();
   if (box && viewport) {
-    // Bottom placement should not cover the main header controls.
-    expect(box.y).toBeGreaterThan(viewport.height * 0.45);
+    const headerClearancePx = 64;
+    // Bottom-left: below sticky header, anchored on the left, not centered.
+    expect(box.y).toBeGreaterThan(headerClearancePx);
+    expect(box.x).toBeLessThan(viewport.width * 0.5);
+    expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);
+    expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 2);
   }
+
+  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
+    "data-x-position",
+    "left",
+  );
+  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
+    "data-y-position",
+    "bottom",
+  );
 
   await page.reload({ waitUntil: "domcontentloaded" });
 

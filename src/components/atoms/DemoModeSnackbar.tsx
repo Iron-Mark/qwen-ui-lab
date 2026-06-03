@@ -111,7 +111,7 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
           `}</style>
         </div>
       ),
-      { id: TOAST_ID, duration: durationMs },
+      { id: TOAST_ID, duration: durationMs, position: "bottom-left" },
     );
     };
 
