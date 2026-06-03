@@ -232,7 +232,7 @@ export function ExampleQuickAction() {
     domain: "product",
     name: "Snippet preview",
     description: "Monospace code block with Prism highlighting and optional copy.",
-    usage: "Wrap generated or catalog snippets; set `showCopy={false}` when ExportButton overlays.",
+    usage: "Wrap generated or catalog snippets; use `hideHeader` when a parent supplies copy/export controls.",
     sourcePath: "components/molecules/SnippetPreview.tsx",
     props: [
       { name: "code", type: "string", description: "Source text to highlight." },
@@ -242,7 +242,7 @@ export function ExampleQuickAction() {
     preview: (
       <SnippetPreview
         code={'export function Hello() {\n  return <p>Hi</p>;\n}'}
-        title="Preview"
+        hideHeader
       />
     ),
     code: `import { SnippetPreview } from "@/components/molecules/SnippetPreview";
