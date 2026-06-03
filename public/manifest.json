@@ -1,7 +1,7 @@
 {
-  "name": "qwen-ui-lab",
+  "name": "qwen-ui-lab — meetup demo",
   "short_name": "qwen-ui-lab",
-  "description": "AI-assisted UI scaffolding from screenshots",
+  "description": "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fafafa",

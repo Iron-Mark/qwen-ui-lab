@@ -7,7 +7,7 @@ import { DesignSystemPreviewClient } from "./DesignSystemPreviewClient";
 export const metadata: Metadata = createRouteMetadata({
   title: "Design System Playground",
   description:
-    "Explore an AI-ready component catalog with atomic patterns, UX-law references, and instant copy/export snippets for faster delivery.",
+    "Browse atomic UI snippets, UX-law patterns, and one-click exports—your polish lane after screenshot-to-scaffold generation.",
   path: "/design-system",
   keywords: [
     "Design system playground",

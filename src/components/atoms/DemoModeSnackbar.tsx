@@ -71,10 +71,10 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium leading-5">Demo mode — offline tour</p>
+              <p className="text-sm font-medium leading-5">Demo mode — safe for live demos</p>
               <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
-                Sample screenshots and catalog previews run locally. Enable live Qwen analysis in
-                deploy settings when you are ready.
+                Analyze and previews run locally with no API key. Turn on live Qwen only in deploy
+                settings when you are ready to spend credits.
               </p>
             </div>
 

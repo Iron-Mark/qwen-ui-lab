@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
-export const SITE_TAGLINE = "AI-assisted UI scaffolding";
-export const DEFAULT_OG_IMAGE = "/images/og-image.png";
+export const SITE_TAGLINE = "Screenshot-to-scaffold meetup demo";
+export const SITE_PITCH =
+  "Turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code.";
+export const DEFAULT_OG_IMAGE = "/opengraph-image";
 
 function normalizeUrl(rawUrl: string): string {
   const withProtocol = rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`;
@@ -52,7 +54,9 @@ export function createRouteMetadata({
   shareSnippet,
 }: RouteMetadataInput): Metadata {
   return {
-    title,
+    title: {
+      absolute: `${title} | ${SITE_NAME}`,
+    },
     description,
     keywords,
     alternates: {

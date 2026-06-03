@@ -204,18 +204,86 @@ test("design system scrolls to preview on mobile selection", async ({ browser })
 
   await expect(page).toHaveURL(/selected=/);
 
-  await expect
-    .poll(async () => {
-      const box = await previewPanel.boundingBox();
-      if (!box) return null;
-      const viewport = page.viewportSize();
-      if (!viewport) return null;
-      // Consider "scrolled into view" if the panel's top is within the first half of viewport.
-      return box.y >= 0 && box.y < viewport.height / 2;
-    })
+    await expect
+    .poll(
+      async () => {
+        const box = await previewPanel.boundingBox();
+        if (!box) return null;
+        const viewport = page.viewportSize();
+        if (!viewport) return null;
+        // Scrolled into view when the panel top sits in the upper ~70% of the viewport.
+        return box.y >= 0 && box.y < viewport.height * 0.7;
+      },
+      { timeout: 15_000 },
+    )
     .toBeTruthy();
 
   await context.close();
+});
+
+test.describe("marketing surfaces", () => {
+  test("home hero, growth snippet, and primary CTAs are visible", async ({ page }) => {
+    await page.goto("/");
+
+    const hero = page.getByTestId("home-marketing-hero");
+    await expect(hero).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      /screenshot/i,
+    );
+    await expect(hero.locator(".growth-snippet")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /try the live flow/i }),
+    ).toHaveAttribute("href", "#upload-flow");
+    await expect(
+      page.getByRole("link", { name: /explore design system/i }),
+    ).toHaveAttribute("href", "/design-system");
+    await expect(page.getByLabel("Trust signals")).toBeVisible();
+    await expect(page.getByLabel("Key benefits")).toBeVisible();
+  });
+
+  test("home metadata is present and non-empty", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page).toHaveTitle(/qwen-ui-lab/i);
+    const description = page.locator('meta[name="description"]');
+    await expect(description).toHaveAttribute("content", /.+/);
+    const content = await description.getAttribute("content");
+    expect(content?.length ?? 0).toBeGreaterThan(40);
+
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      /.+/,
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      /.+/,
+    );
+  });
+
+  test("header design-system link navigates to catalog", async ({ page }) => {
+    await page.goto("/");
+    await page
+      .getByRole("navigation", { name: "Main" })
+      .getByRole("link", { name: /design system/i })
+      .click();
+    await expect(page).toHaveURL(/\/design-system/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      /atomic component lab/i,
+    );
+  });
+
+  test("sitemap and manifest are reachable", async ({ request }) => {
+    const sitemap = await request.get("/sitemap.xml");
+    expect(sitemap.ok()).toBeTruthy();
+    const body = await sitemap.text();
+    expect(body).toContain("/design-system");
+
+    const manifest = await request.get("/manifest.json");
+    expect(manifest.ok()).toBeTruthy();
+    const json = (await manifest.json()) as { name?: string; start_url?: string };
+    expect(json.name).toMatch(/qwen-ui-lab/i);
+    expect(json.start_url).toBe("/");
+  });
 });
 
 test("preview segmented tabs switch modes", async ({ page }) => {

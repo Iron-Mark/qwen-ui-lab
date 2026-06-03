@@ -34,7 +34,7 @@ export async function waitForSonnerToaster(page: Page, timeoutMs = 15_000) {
 export function demoModeSnackbar(page: Page): Locator {
   return page
     .getByRole("status")
-    .filter({ hasText: /demo mode.*offline tour/i })
+    .filter({ hasText: /demo mode.*safe for live demos/i })
     .first();
 }
 

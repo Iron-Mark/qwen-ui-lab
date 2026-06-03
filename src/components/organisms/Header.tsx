@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { LayoutDashboard, Orbit, PanelsTopLeft } from "lucide-react";
+import { LayoutDashboard, PanelsTopLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 import { BrandThemeSwitcher } from "@/components/atoms/BrandThemeSwitcher";
 import { DemoModeSnackbar } from "@/components/atoms/DemoModeSnackbar";
@@ -29,15 +30,20 @@ export function Header() {
           href="/"
           className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-chart-2 text-primary-foreground shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]">
-            <Orbit className="size-5" aria-hidden />
-          </div>
+          <Image
+            src="/icons/icon.svg"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
+            priority
+          />
           <div className="min-w-0">
             <p className="truncate text-lg font-bold text-card-foreground">
               qwen-ui-lab
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              AI UI Studio
+              Screenshot → scaffold demo
             </p>
           </div>
         </Link>

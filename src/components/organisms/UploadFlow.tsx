@@ -496,7 +496,7 @@ export function UploadFlow() {
   }
 
   return (
-    <PageContainer as="section" className="py-8">
+    <PageContainer as="section" id="upload-flow" className="scroll-mt-20 py-8">
       {providerState === "fallback" ? (
         <Alert
           role="status"
@@ -525,7 +525,7 @@ export function UploadFlow() {
               ? "Ship scaffold-ready UI from one screenshot"
               : "Upload screenshot to component preview"}
           </h2>
-          <p className="growth-snippet mt-2 max-w-2xl text-sm text-muted-foreground">
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             {headlineVariant === "faster-first-value"
               ? "A faster path to conversion: upload, analyze, and export reusable React/Tailwind scaffolds in minutes."
               : "Ideal for rapid design reviews: analyze one screenshot, generate a scaffold, then reuse exported snippets across your next sprint."}

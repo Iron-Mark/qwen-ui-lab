@@ -6,7 +6,7 @@ export const size = {
 };
 
 export const contentType = "image/png";
-export const alt = "qwen-ui-lab screenshot-to-component workflow";
+export const alt = "qwen-ui-lab — meetup screenshot-to-scaffold demo";
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -36,19 +36,19 @@ export default function OpenGraphImage() {
                 background: "rgba(255,255,255,0.15)",
               }}
             >
-              Growth lane
+              Meetup demo
             </div>
           </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1.05 }}>
-              Ship UI concepts in minutes
+              Screenshot to scaffold in minutes
             </div>
             <div style={{ fontSize: 28, opacity: 0.9 }}>
-              Turn screenshots into React + Tailwind starters with AI
+              Live demo with Qwen3-VL + Qwen Code — offline-safe on stage
             </div>
         </div>
         <div style={{ fontSize: 24, opacity: 0.9 }}>
-            {"Upload -> Analyze -> Scaffold -> Export"}
+            {"Upload → Analyze → Preview → Export"}
         </div>
       </div>
     ),

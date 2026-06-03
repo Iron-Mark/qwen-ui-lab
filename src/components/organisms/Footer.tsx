@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { SITE_PITCH } from "@/lib/seo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/70 bg-card/80 backdrop-blur-sm">
       <PageContainer className="py-6">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-start">
-          <div className="text-center sm:text-left">
+          <div className="max-w-sm text-center sm:text-left">
             <p className="text-sm font-semibold text-card-foreground">
               qwen-ui-lab
             </p>
-            <p className="text-xs text-muted-foreground">
-              Branded AI screenshot-to-component workflow
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              {SITE_PITCH} Demo mode runs locally for meetups and reviews.
             </p>
           </div>
           <nav aria-label="Internal links">
@@ -58,12 +59,22 @@ export function Footer() {
               </li>
               <li>
                 <a
+                  href="https://github.com/Iron-Mark/qwen-ui-lab"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted-foreground transition-colors hover:text-card-foreground"
+                >
+                  Source repo
+                </a>
+              </li>
+              <li>
+                <a
                   href="https://github.com/qwenlm"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground transition-colors hover:text-card-foreground"
                 >
-                  GitHub
+                  QwenLM
                 </a>
               </li>
             </ul>

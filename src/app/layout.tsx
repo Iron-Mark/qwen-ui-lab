@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Convert UI screenshots into React/Tailwind component scaffolds with Qwen3-VL + Qwen Code and ship polished UI faster.",
+    "Meetup-ready demo: turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code—offline-safe by default, no API key on stage.",
   applicationName: SITE_NAME,
   category: "Developer Tools",
   creator: SITE_NAME,
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "From screenshot to React/Tailwind scaffold in one AI-assisted workflow powered by Qwen3-VL and Qwen Code.",
+      "Live meetup demo—screenshot to React/Tailwind scaffold in minutes. Offline-safe; enable live Qwen only when you choose.",
     type: "website",
     url: "/",
     siteName: SITE_NAME,
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     description:
-      "Turn screenshot concepts into production-ready React/Tailwind starting points with qwen-ui-lab.",
+      "Mass-presentation demo: upload, analyze, and export scaffold-ready UI—no production API required.",
     images: [ogImagePath],
   },
   robots: {
@@ -165,7 +165,7 @@ export default function RootLayout({
                   name: "qwen-ui-lab",
                   url: siteUrl,
                   description:
-                    "Convert UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.",
+                    "Meetup demo for converting UI screenshots into React/Tailwind scaffolds with Qwen3-VL and Qwen Code.",
                   inLanguage: "en-US",
                   publisher: {
                     "@id": organizationId,
@@ -184,7 +184,7 @@ export default function RootLayout({
                   operatingSystem: "Web",
                   url: siteUrl,
                   description:
-                    "AI-assisted workflow for generating React and Tailwind component scaffolds from UI screenshots.",
+                    "Offline-safe meetup workflow: screenshot upload, layout analysis, and React/Tailwind scaffold export.",
                   image: toAbsoluteUrl(ogImagePath),
                   offers: {
                     "@type": "Offer",
@@ -207,6 +207,7 @@ export default function RootLayout({
                   },
                   sameAs: [
                     "https://github.com/QwenLM",
+                    "https://github.com/Iron-Mark/qwen-ui-lab",
                   ],
                 },
               ],

@@ -8,7 +8,8 @@ export function DesignSystemLcpHeader() {
         Atomic component lab
       </h1>
       <p className="growth-snippet mt-1 text-sm text-muted-foreground">
-        Filter fast, inspect one component deeply, and copy implementation snippets.
+        Filter by tier and domain, preview variants, and copy export-ready snippets for your next
+        sprint.
       </p>
     </header>
   );
