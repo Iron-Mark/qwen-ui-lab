@@ -180,6 +180,45 @@ test("shows demo snackbar once per session", async ({ page }) => {
   await expectDemoSnackbarSessionFlag(page, "1");
 });
 
+test("design system desktop has no excess document scroll", async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+  });
+  const page = await context.newPage();
+
+  await stubClipboardForE2E(page);
+  await mockAnalyzeApiForE2E(page);
+
+  await page.goto("/design-system?selected=shadcn-button", {
+    waitUntil: "domcontentloaded",
+  });
+  await waitForDesignSystemPreview(page);
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const doc = document.documentElement;
+          return doc.scrollHeight - document.body.scrollHeight;
+        }),
+      { timeout: 20_000 },
+    )
+    .toBeLessThan(50);
+
+  const metrics = await page.evaluate(() => {
+    const doc = document.documentElement;
+    return {
+      slack: doc.scrollHeight - window.innerHeight,
+      scrollHeight: doc.scrollHeight,
+    };
+  });
+
+  expect(metrics.scrollHeight).toBeLessThan(1800);
+  expect(metrics.slack).toBeLessThan(450);
+
+  await context.close();
+});
+
 test("design system scrolls to preview on mobile selection", async ({ browser }) => {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },

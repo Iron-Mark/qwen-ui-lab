@@ -2,9 +2,9 @@ export function DesignSystemPreviewSkeletonBody() {
   return (
     <>
       <div className="min-h-[11.5rem] animate-pulse rounded-2xl border border-border/70 bg-muted/25" />
-      <div className="grid min-h-[calc(100vh-14rem)] gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <div className="min-h-[28rem] animate-pulse rounded-2xl border border-border/70 bg-muted/20" />
-        <div className="min-h-[32rem] animate-pulse rounded-2xl border border-border/70 bg-muted/20" />
+      <div className="grid items-start gap-4 lg:h-[calc(100dvh-13.5rem)] lg:max-h-[calc(100dvh-13.5rem)] lg:grid-cols-[23rem_minmax(0,1fr)] lg:overflow-hidden lg:[contain:layout_size_style]">
+        <div className="h-[min(28rem,calc(100dvh-14rem))] animate-pulse rounded-2xl border border-border/70 bg-muted/20 lg:h-full" />
+        <div className="h-64 animate-pulse rounded-2xl border border-border/70 bg-muted/20 lg:h-full" />
       </div>
     </>
   );

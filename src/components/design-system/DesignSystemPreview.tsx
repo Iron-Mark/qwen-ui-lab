@@ -48,6 +48,12 @@ const DOMAINS: { id: CatalogDomain | "all"; label: string }[] = [
 
 const DOMAIN_SHORTCUTS = ["all", "product", "uilaws", "laws-of-ux"] as const;
 
+/** Desktop workspace below sticky site + page headers; list/preview scroll inside. */
+const DESKTOP_CATALOG_GRID_CLASS =
+  "lg:h-[calc(100dvh-13.5rem)] lg:max-h-[calc(100dvh-13.5rem)] lg:min-h-0 lg:overflow-clip lg:[contain:layout_size_style] lg:items-stretch";
+const DESKTOP_CATALOG_COLUMN_CLASS =
+  "lg:h-full lg:max-h-full lg:min-h-0 lg:overflow-clip";
+
 export function DesignSystemPreview() {
   const router = useRouter();
   const { toast } = useToast();
@@ -352,13 +358,24 @@ export function DesignSystemPreview() {
         </div>
       </header>
 
-      <div className="grid min-h-0 items-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:items-stretch xl:grid-cols-[25rem_minmax(0,1fr)]">
-        <section className="flex max-lg:min-h-[30rem] flex-col rounded-2xl border border-border/70 bg-card/30 p-3 lg:max-h-[calc(100vh-8.5rem)] lg:min-h-0 lg:overflow-hidden">
+      <div
+        className={cn(
+          "grid min-h-0 items-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] xl:grid-cols-[25rem_minmax(0,1fr)]",
+          DESKTOP_CATALOG_GRID_CLASS,
+        )}
+      >
+        <section
+          className={cn(
+            "flex min-h-0 flex-col overflow-clip rounded-2xl border border-border/70 bg-card/30 p-3",
+            "max-lg:max-h-[min(28rem,calc(100dvh-14rem))]",
+            DESKTOP_CATALOG_COLUMN_CLASS,
+          )}
+        >
           <div className="mb-3 flex shrink-0 items-center justify-between">
             <p className="text-sm font-semibold text-foreground">Component list</p>
             <p className="text-xs text-muted-foreground">Dense view</p>
           </div>
-          <div className="min-h-0 max-h-[calc(100vh-18rem)] flex-1 space-y-1 overflow-y-auto pr-1 lg:max-h-none lg:pb-1">
+          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
             {filtered.map((entry) => (
               <button
                 key={entry.id}
@@ -409,7 +426,10 @@ export function DesignSystemPreview() {
         <section
           ref={previewAnchorRef}
           id="component-preview-panel"
-          className="flex min-h-0 scroll-mt-[5.5rem] flex-col rounded-2xl border border-border/70 bg-background/30 sm:scroll-mt-24 lg:sticky lg:top-[8.75rem] lg:max-h-[calc(100vh-10rem)] lg:overflow-hidden lg:scroll-mt-0"
+          className={cn(
+            "flex min-h-0 scroll-mt-[5.5rem] flex-col overflow-clip rounded-2xl border border-border/70 bg-background/30 sm:scroll-mt-24 lg:sticky lg:top-[8.75rem] lg:scroll-mt-0",
+            DESKTOP_CATALOG_COLUMN_CLASS,
+          )}
           aria-live="polite"
         >
           <div
@@ -448,7 +468,7 @@ export function DesignSystemPreview() {
               </Link>
             </div>
           </div>
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 pt-4 lg:overscroll-contain">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-3 pt-4">
             <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
               {selectedEntry ? (
                 <ErrorBoundary fallbackTitle={`Could not render ${selectedEntry.name}.`}>
