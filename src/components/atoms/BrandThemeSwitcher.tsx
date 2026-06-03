@@ -1,7 +1,11 @@
 "use client";
 
 import { Palette } from "lucide-react";
-import { useTheme, type BrandTheme } from "@/components/providers/ThemeProvider";
+import {
+  BRAND_THEME_SWATCH,
+  useTheme,
+  type BrandTheme,
+} from "@/components/providers/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,11 +43,20 @@ export function BrandThemeSwitcher() {
             onValueChange={(value) => setBrandTheme(value as BrandTheme)}
           >
             {BRAND_OPTIONS.map((option) => (
-              <DropdownMenuRadioItem key={option.value} value={option.value}>
-                <div className="flex flex-col">
+              <DropdownMenuRadioItem
+                key={option.value}
+                value={option.value}
+                className="pr-14"
+              >
+                <div className="flex min-w-0 flex-1 flex-col">
                   <span>{option.label}</span>
                   <span className="text-xs text-muted-foreground">{option.subtitle}</span>
                 </div>
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute top-1/2 right-8 size-4 shrink-0 -translate-y-1/2 rounded-md ring-1 ring-foreground/15"
+                  style={{ backgroundColor: BRAND_THEME_SWATCH[option.value] }}
+                />
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

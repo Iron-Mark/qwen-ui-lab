@@ -5,6 +5,13 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 type Theme = "light" | "dark";
 export type BrandTheme = "indigo" | "emerald" | "sunset";
 
+/** Light-mode `--primary` from globals.css per brand (dropdown swatches). */
+export const BRAND_THEME_SWATCH: Record<BrandTheme, string> = {
+  indigo: "oklch(0.54 0.2 259)",
+  emerald: "oklch(0.66 0.16 165)",
+  sunset: "oklch(0.68 0.19 28)",
+};
+
 interface ThemeContextType {
   theme: Theme;
   brandTheme: BrandTheme;
