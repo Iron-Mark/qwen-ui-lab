@@ -1,239 +1,238 @@
 # qwen-ui-lab
 
-An AI-assisted workflow for converting UI screenshots into React/Tailwind component scaffolds using Qwen3-VL and Qwen Code.
+**AI-assisted UI scaffolding** — turn UI screenshots into React + Tailwind starting points you can refine in minutes.
 
-## Links
+[![Demo mode](https://img.shields.io/badge/mode-demo--safe%20(default)-amber)](https://qwen-ui-lab.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
+[![Release](https://img.shields.io/github/v/release/Iron-Mark/qwen-ui-lab?label=release)](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2)
 
-- Repository: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
-- Live demo: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
-- **[DEMO.md](./DEMO.md)** — live presentation script and pre-flight checklist
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — onboarding and contributor workflow
-- **[docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md)** — runtime architecture and boundaries
-- **[docs/TROUBLESHOOTING_RUNBOOK.md](./docs/TROUBLESHOOTING_RUNBOOK.md)** — troubleshooting guide and operational runbook
-- **[docs/RELIABILITY_OPS.md](./docs/RELIABILITY_OPS.md)** — synthetic checks, monitoring thresholds, and incident-response targets
-- **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md)** — folder tiers, catalog domains, how to add components
-- **[docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md)** — privacy-safe analytics taxonomy and setup
-- **[docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md)** — versioning, release flow, and release checklists
-- **[docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md)** — version/tag recommendation and exact release commands
-- **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** — production deploy lane, env policy gates, and smoke hooks
-- **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** — feature flags, A/B setup, and safe rollout checklist
-- **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** — post-launch checklist for demo operators (defaults, verification, CSP/analytics staging)
-- **[.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md)** — PR checklist for faster review
-- **[.github/CODEOWNERS.example](./.github/CODEOWNERS.example)** — suggested ownership map template
+> **Pitch (matches the live app):** Convert UI screenshots into React/Tailwind component scaffolds with Qwen3-VL + Qwen Code and ship polished UI faster.  
+> On the dashboard: *Launch faster with a screenshot-to-scaffold loop.*
 
-## Goal
+| | |
+|---|---|
+| **Repository** | [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab) |
+| **Production** | **[qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)** |
+| **Latest release** | [v0.1.2](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2) |
 
-Test whether Qwen can help shorten the front-end workflow from visual reference to usable component structure.
+---
 
-## Architecture
+## Live demo
 
-```mermaid
-flowchart TB
-  subgraph client [Browser]
-    Upload[UploadFlow]
-    DS[Design system catalog]
-    HealthCheck["GET /api/health"]
-    Preprocess[Image preprocess]
-  end
+**[Open the live demo →](https://qwen-ui-lab.vercel.app)**
 
-  subgraph server [Next.js server]
-    AnalyzeRoute["POST /api/analyze-ui"]
-    Qwen[Qwen3-VL vision API]
-    Fallback[buildUiFlowArtifact]
-  end
+No API key required — the public site runs **offline demo analysis** by default. On first visit you’ll see the bottom-left **Demo mode — offline tour** snackbar (once per session).
 
-  Upload --> Preprocess
-  Upload --> HealthCheck
-  HealthCheck -->|demo mode| Fallback
-  HealthCheck -->|QWEN_LIVE_ANALYSIS=true| AnalyzeRoute
-  AnalyzeRoute --> Qwen
-  Qwen -->|success| Upload
-  Qwen -->|error| Fallback
-  Fallback --> Upload
-  DS --> ExportBundle[Export all snippets]
+| Preview | Where |
+|--------|--------|
+| Social / OG | Production serves `/opengraph-image` and `/twitter-image` |
+| README embeds | Add PNGs under `public/screenshots/` (optional) |
+
+```text
+<!-- Optional local embed after you add assets -->
+![Upload and analyze flow](./public/screenshots/upload-analyze.png)
 ```
 
-## Presenting live
+---
 
-See **[DEMO.md](./DEMO.md)** for a 30-second setup, click-by-click script, and pre-flight checklist. No API key is required — Analyze uses **instant offline demo** unless `QWEN_LIVE_ANALYSIS=true` is set (API key alone does not enable live calls).
+## What it does (meetup audience)
 
-## Live Demo Flow
+- **Screenshot → analyze → scaffold** — upload (or **Use sample screenshot**), run **Analyze**, then **Generate Preview** for React/Tailwind output with copy/export.
+- **Demo-safe by default** — instant offline analysis; live Qwen vision is opt-in (`QWEN_LIVE_ANALYSIS=true`).
+- **Design system lab** — atomic catalog at `/design-system` with search, filters, variant toggles, and **Export all snippets**.
+- **UX literacy built in** — [Laws of UX](https://lawsofux.com) compliance dialog on analyze/generate; domain filters for Laws of UX and UI Laws patterns.
+- **Polish without a redesign** — brand themes (Indigo / Emerald / Sunset), light/dark mode, themed Recharts + Chart.js dashboard on `/`.
 
-1. Upload or drag in a UI screenshot, or click **Use sample screenshot**.
-2. **Analyze** — health check → instant demo or live Qwen (with image resize/compress + retry).
-3. Split view: reference screenshot vs plan cards; **Generate Preview** for scaffold + stats.
-4. Copy/export generated code; sessions saved in localStorage.
-5. Browse `/design-system` for atomic catalog, search/filter, variant toggles, and bundle export.
-6. Explore `/design-system/laws-of-ux` for interactive [Laws of UX](https://lawsofux.com) demos (Jon Yablonski); analyze/generate shows an automated compliance checklist.
-7. Browse `/design-system?domain=uilaws` for [UI Laws](https://www.uilaws.com)–informed patterns (unified atomic catalog).
+**Value props (same language as the home UI)**
 
-## Screenshots
+| Surface | Copy |
+|---------|------|
+| Site tagline | AI-assisted UI scaffolding |
+| Header | AI UI Studio |
+| Upload flow | Upload screenshot to component preview |
+| Upload subcopy | Ideal for rapid design reviews: analyze one screenshot, generate a scaffold, then reuse exported snippets across your next sprint. |
+| Growth line | Launch faster with a screenshot-to-scaffold loop. |
 
-| Flow | Path |
-|------|------|
-| Upload + analyze | `/` — UploadFlow with session history |
-| Generated scaffold | `/` — after **Generate Preview** |
-| Design system | `/design-system` — unified atomic catalog (product + UILaws + Laws of UX) |
-| Laws of UX filter | `/design-system?domain=laws-of-ux` |
-| UILaws filter | `/design-system?domain=uilaws` |
-| Charts (themed) | `/` dashboard — Recharts + Chart.js |
+---
 
-_Add your own PNGs under `public/screenshots/` for README embeds._
-
-## Qwen API Environment
-
-Copy `.env.example` to `.env.local` for local development.
-
-**Demo mode (default):** leave `QWEN_LIVE_ANALYSIS` unset. Analyze uses instant offline demo data — no upstream Qwen calls, even if `DASHSCOPE_API_KEY` is present.
-
-**Live Qwen (opt-in, spends credits):**
+## Quick start
 
 ```bash
-DASHSCOPE_API_KEY=<your-model-studio-api-key>
-QWEN_LIVE_ANALYSIS=true
-QWEN_MODEL=qwen3-vl-plus
-QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-```
-
-Alias: `USE_LIVE_QWEN=1`. Do not use `NEXT_PUBLIC_` for the API key. The key must stay server-only.
-
-Dev boot logs env warnings via `instrumentation.ts`. Run `npm run doctor` for env, deps, and optional API ping.
-
-## Observability Baseline
-
-The app includes a lightweight observability scaffold wired into the root provider tree. It is privacy-safe and disabled by default, so demo mode behavior remains unchanged unless you explicitly opt in.
-
-### Env flags (all optional)
-
-```bash
-# master switch
-NEXT_PUBLIC_OBSERVABILITY_ENABLED=true
-
-# choose what to emit
-NEXT_PUBLIC_ANALYTICS_ENABLED=true
-NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true
-
-# keep false for demos unless you intentionally want telemetry there
-NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false
-
-# optional local debugging logs for emitted payloads
-NEXT_PUBLIC_OBSERVABILITY_DEBUG=false
-```
-
-### What this scaffold does
-
-- Registers global browser hooks for `error` and `unhandledrejection`
-- Exposes a reusable analytics abstraction (`src/lib/analytics.ts`) with event constants and route/provider context
-- Applies privacy defaults by dropping unknown analytics fields and stripping route query strings
-- No-ops all monitoring calls when toggles are off
-
-See **[docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md)** for event definitions and metadata allowlist.
-
-## Experimentation Baseline
-
-The app includes lightweight experiment scaffolding for UI A/B tests:
-
-- Default-off by design (`NEXT_PUBLIC_EXPERIMENTS_ENABLED` must be explicitly set)
-- Per-experiment enablement flags for gradual rollout
-- Deterministic variant assignment from a stable subject key
-- Non-invasive UI insertion point currently in `Header`
-
-See **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** for flags, rollout steps, and verification guidance.
-
-## Project Structure
-
-```
-src/
-  app/
-    api/analyze-ui/   — Qwen vision route
-    api/health/       — Provider / API-key probe
-  components/
-    ui/               — shadcn/ui primitives (Button, Card, Badge, Sonner, …)
-    atoms/            — Product atoms composing ui/
-    molecules/        — Composed widgets
-    organisms/        — UploadFlow, Header, dashboard sections
-    design-system/    — Catalog chrome (preview cards, filters)
-    providers/        — Theme, toast shim, error boundary
-    charts/           — Recharts + Chart.js with shared theme tokens
-  lib/                — analyze-outcome, ui-flow, image preprocess, session history
-tests/                — Node unit tests
-e2e/                  — Playwright smoke (upload → analyze → generate)
-public/
-  manifest.json       — PWA manifest
-  sw.js               — Minimal service worker (production)
-docs/
-  ATOMIC_DESIGN.md    — Atomic tiers + shadcn/ui conventions
-  STORYBOOK.md        — Deferred Storybook note
-```
-
-## Getting Started
-
-```bash
-npm install
+git clone https://github.com/Iron-Mark/qwen-ui-lab.git
+cd qwen-ui-lab
+npm ci
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Verification
+**Environment (demo default = none)**
 
-```bash
-npm test
-npm run lint
-npm run build
-npm run doctor      # env + deps (+ API ping when key set)
-npm run synthetic:health  # /api/health probe with latency thresholds
-npm run test:e2e    # Playwright smoke
+| Variable | Demo (default) | Live (opt-in) |
+|----------|----------------|---------------|
+| `DASHSCOPE_API_KEY` | unset | your Model Studio key |
+| `QWEN_LIVE_ANALYSIS` | unset / false | `true` (alias `USE_LIVE_QWEN=1`) |
+
+Copy [`.env.example`](./.env.example) to `.env.local` only when testing live vision. **A key alone does not enable live calls.**
+
+Optional: `npm run doctor` for env, deps, and API ping when a key is set.
+
+---
+
+## Key routes
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Dashboard + **UploadFlow** (screenshot → analyze → generate preview) |
+| `/design-system` | Atomic component catalog, filters, export bundle |
+| `/design-system?domain=laws-of-ux` | Laws of UX pattern slice |
+| `/design-system?domain=uilaws` | UI Laws–informed patterns |
+| `/design-system/laws-of-ux` | Redirects to `?domain=laws-of-ux` |
+| `GET /api/health` | Provider probe (`demo` vs live analysis enabled) |
+| `POST /api/analyze-ui` | Vision analysis (skipped in demo mode on client) |
+
+---
+
+## Demo flow (30-second presenter script)
+
+Use this on stage; full click-by-click notes live in **[DEMO.md](./DEMO.md)**.
+
+1. Open **[qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)** — point out header **Demo mode** and the bottom-left offline-tour snackbar.
+2. Click **Use sample screenshot** → **Analyze** (instant offline path; no API wait).
+3. **Generate Preview** — reference vs plan cards, scaffold + stats.
+4. Jump to **Design system** — filter, toggle variants, mention **Laws of UX** dialog from analyze flow.
+5. Toggle **brand theme** + light/dark — charts follow tokens.
+
+**One-liner for the room:** *“Turn screenshots into production-ready React/Tailwind starting points — demo runs offline; live Qwen is one env flag when you’re ready.”*
+
+---
+
+## Architecture
+
+**Stack:** Next.js App Router · React · TypeScript · Tailwind CSS v4 · shadcn/ui · Recharts + Chart.js · Qwen3-VL (optional)
+
+```mermaid
+flowchart LR
+  Browser[Browser] --> Health["GET /api/health"]
+  Health -->|demo| Offline[Instant offline artifact]
+  Health -->|QWEN_LIVE_ANALYSIS| Analyze["POST /api/analyze-ui"]
+  Analyze --> Qwen[Qwen3-VL]
+  Qwen --> Preview[Generate Preview]
+  Offline --> Preview
 ```
 
-### E2E (no live Qwen)
+**Folder map**
 
-Playwright smoke tests do **not** call the Qwen API:
+```
+src/app/              routes + API (analyze-ui, health)
+src/components/
+  ui/                 shadcn primitives
+  atoms|molecules|organisms/   product UI + UploadFlow
+  design-system/      catalog chrome
+src/lib/              analyze, ui-flow, sessions, SEO
+docs/                 operator + design docs (see table below)
+e2e/                  Playwright smoke (mocked analyze)
+tests/                Node unit tests
+```
 
-- `e2e/helpers/mock-analyze-api.ts` intercepts `GET /api/health` (`liveAnalysisEnabled: false`) and `POST /api/analyze-ui` so Analyze always uses the **instant offline demo** path, even if `DASHSCOPE_API_KEY` or `QWEN_LIVE_ANALYSIS` is set in `.env.local` or CI.
-- `playwright.config.ts` starts `npm run dev` with `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYSIS` unset so the server health route matches demo mode when mocks are not hit.
+Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md)** · runtime boundaries: **[docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md)**
 
-No extra CI secrets are required for e2e.
+---
 
-CI runs security/dependency checks, lint, unit tests, build, and web audits on push/PR (see `.github/workflows/ci.yml`).
-Run `npm run test:e2e` in release prep before final sign-off.
+## Scripts
 
-## Production deploy lane
+| Script | What it does |
+|--------|----------------|
+| `npm run dev` | Local Next.js dev server |
+| `npm run check` | Lint + unit tests |
+| `npm run check:full` | `check` + production build |
+| `npm run build` | Production build |
+| `npm test` | Node unit tests (`tests/*.test.mjs`) |
+| `npm run lint` | ESLint |
+| `npm run test:e2e` | Playwright smoke (offline mocks; no live Qwen) |
+| `npm run doctor` | Env, deps, optional API ping |
+| `npm run synthetic:health` | `/api/health` probe + latency thresholds |
+| `npm run smoke:deploy` | Post-deploy route smoke (`DEPLOY_URL=…`) |
+| `npm run deploy:env:demo` | Validate demo-safe deploy env |
+| `npm run deploy:env:live` | Validate live-analysis deploy env |
+| `npm run perf:lighthouse` | Lighthouse run (see script for baseline/after) |
 
-- Demo-safe by default: no live API dependency unless `QWEN_LIVE_ANALYSIS=true`.
-- Env policy gates:
-  - `npm run deploy:env:demo` (default production policy)
-  - `npm run deploy:env:live` (explicit paid/live rollout)
-- Post-deploy smoke:
-  - `DEPLOY_URL=<deployed-url> npm run smoke:deploy`
-  - optional live assertion: `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<deployed-url> npm run smoke:deploy`
-- CI + workflow hooks:
-  - `.github/workflows/ci.yml` validates demo env policy
-  - `.github/workflows/post-deploy-smoke.yml` runs deployed-route smoke checks
+---
 
-## UX references
+## Deployment
 
-- **[Laws of UX](https://lawsofux.com)** (Jon Yablonski) — canonical ergonomics/perception laws; integrated in `/design-system/laws-of-ux` with live demos and analyze/generate compliance heuristics.
-- **[UI Laws](https://www.uilaws.com)** — complementary visual-design principles; overlaps (Fitts, Hick, Jakob) cross-link to Laws of UX in-app.
+**Host:** [Vercel](https://vercel.com) — production URL **[https://qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)**
 
-## Tech Stack
+| Policy | Command / doc |
+|--------|----------------|
+| Demo-safe production (default) | `npm run deploy:env:demo` · **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** |
+| Pre/post release checklist | **[docs/DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** |
+| After go-live (operators) | **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** |
 
-- [Next.js](https://nextjs.org/) (App Router)
-- [React](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/) v4
-- [shadcn/ui](https://ui.shadcn.com) — Button, Card, Badge, Tabs, Sonner, and other primitives under `src/components/ui/`
-- [Recharts](https://recharts.org/) + [Chart.js](https://www.chartjs.org/)
-- [Prism](https://prismjs.com/) — snippet syntax highlighting
+Post-deploy smoke:
 
-## What's next (demo operators)
+```bash
+DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
+```
 
-After launch, keep the public demo on **offline analysis** (no `QWEN_LIVE_ANALYSIS`). Use **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** for:
+---
 
-- Pre-demo verification (`check:full`, e2e, `deploy:env:demo`, synthetic health)
-- Staging-only analytics activation (**[docs/ANALYTICS_STAGING_ACTIVATION.md](./docs/ANALYTICS_STAGING_ACTIVATION.md)**)
-- CSP report-only monitoring via `POST /api/security/csp-report` (**[docs/CSP_HARDENING_GUIDE.md](./docs/CSP_HARDENING_GUIDE.md)**)
+## Safety: demo vs live
 
-## Final Takeaway
+| Mode | `QWEN_LIVE_ANALYSIS` | Behavior |
+|------|----------------------|----------|
+| **Demo (default)** | unset / false | `GET /api/health` → `provider: demo`; client uses **instant offline** artifact — no upstream Qwen spend |
+| **Live** | `true` + `DASHSCOPE_API_KEY` | Header **Live Qwen**; image preprocess → `POST /api/analyze-ui` → Qwen3-VL |
 
-AI is useful for decomposition and scaffolding. It is not a replacement for front-end judgment.
+Never put API keys in `NEXT_PUBLIC_*`. Public meetup demos should keep **`QWEN_LIVE_ANALYSIS` unset** on Vercel.
+
+E2E always forces demo behavior via mocks — see **[DEMO.md](./DEMO.md)** and `e2e/helpers/mock-analyze-api.ts`.
+
+---
+
+## Contributing & license
+
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for branch workflow, commands, and PR expectations. Open issues and PRs on [Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab).
+
+License: see repository default license on GitHub (no separate `LICENSE` file in tree at time of writing).
+
+---
+
+## Documentation index
+
+Presenter and marketing-adjacent docs:
+
+| Doc | Audience |
+|-----|----------|
+| **[DEMO.md](./DEMO.md)** | Meetup script, pre-flight checklist, what to say about the API |
+| **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** | Demo operators after production deploy |
+| **[docs/DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** | Release deploy steps |
+| **[docs/RELEASE_NOTES_DRAFT.md](./docs/RELEASE_NOTES_DRAFT.md)** | Release notes source (tag on publish) |
+
+Engineering & ops:
+
+| Doc | Topic |
+|-----|--------|
+| [docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md) | Folder tiers, catalog domains |
+| [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
+| [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |
+| [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) | Versioning and release flow |
+| [docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md) | Tag and release commands |
+| [docs/TROUBLESHOOTING_RUNBOOK.md](./docs/TROUBLESHOOTING_RUNBOOK.md) | Incidents and fixes |
+| [docs/RELIABILITY_OPS.md](./docs/RELIABILITY_OPS.md) | Synthetic checks, SLOs |
+| [docs/ANALYTICS_TAXONOMY.md](./docs/ANALYTICS_TAXONOMY.md) | Privacy-safe analytics events |
+| [docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md) | Feature flags / A/B |
+| [docs/ANALYTICS_STAGING_ACTIVATION.md](./docs/ANALYTICS_STAGING_ACTIVATION.md) | Staging-only telemetry |
+| [docs/CSP_HARDENING_GUIDE.md](./docs/CSP_HARDENING_GUIDE.md) | CSP report-only rollout |
+| [docs/ROLLBACK_CHECKLIST.md](./docs/ROLLBACK_CHECKLIST.md) | Rollback steps |
+| [docs/STORYBOOK.md](./docs/STORYBOOK.md) | Deferred Storybook note |
+
+**Releases:** [GitHub Releases](https://github.com/Iron-Mark/qwen-ui-lab/releases) · current **[v0.1.2](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2)**
+
+---
+
+## Final takeaway
+
+AI helps with decomposition and scaffolding; it does not replace front-end judgment. Ship faster with a screenshot-to-scaffold loop — keep the public demo offline unless you explicitly opt into live analysis.
