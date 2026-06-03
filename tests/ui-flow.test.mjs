@@ -125,7 +125,7 @@ test("UI_LAWS includes Fitts Hick and Jakob with applications", () => {
   const source = readFileSync(
     resolve(__dirname, "../src/data/uilaws.ts"),
     "utf8",
-  );
+  ).replace(/\r\n/g, "\n");
 
   assert.match(source, /id: "fitts"[\s\S]*name: "Fitts's Law"/);
   assert.match(source, /id: "hick"[\s\S]*application:[\s\S]*Upload flow/i);
