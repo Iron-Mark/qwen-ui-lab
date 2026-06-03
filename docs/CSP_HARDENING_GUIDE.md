@@ -48,3 +48,28 @@ This project uses a two-track CSP strategy:
 - Reports are accepted at `POST /api/security/csp-report` and returned as `204`.
 - Keep report payloads out of user-facing logs and dashboards unless redacted.
 - Start in production with `CSP_REPORT_ONLY_LEVEL=standard`; raise to `strict` only after reviewing violation trends.
+
+## Monitoring report-only violations
+
+Report-only CSP does **not** block scripts or styles for the demo. Use it to learn what a stricter enforce policy would break later.
+
+1. **Confirm the route is live** (staging or production build):
+   ```bash
+   curl -s -o /dev/null -w "%{http_code}\n" -X POST \
+     -H "Content-Type: application/csp-report" \
+     -d '{"csp-report":{"document-uri":"https://example.test/","violated-directive":"script-src","blocked-uri":"inline"}}' \
+     https://<your-host>/api/security/csp-report
+   ```
+   Expect `204`.
+
+2. **Collect violations** from server/runtime logs. The handler logs a single structured line per report:
+   - `CSP report-only violation`
+   - `violatedDirective`, `blockedUri`, `documentUri`, `sourceIp`, `userAgent`
+
+3. **Triage weekly:** group by `violated-directive` and `blocked-uri`; fix first-party issues before changing enforced headers.
+
+4. **Disable report-only temporarily** (e.g. noisy third-party): set `CSP_REPORT_ONLY=false` in the host env — enforced baseline in `next.config.ts` stays demo-safe.
+
+5. **Do not enforce strict script/style policy** on the public demo until report-only noise is near zero on a rehearsal deploy.
+
+See also `docs/POST_LAUNCH.md` (demo operators) and `docs/RELIABILITY_OPS.md` (health/CSP alongside synthetic checks).

@@ -17,6 +17,7 @@ An AI-assisted workflow for converting UI screenshots into React/Tailwind compon
 - **[docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md)** — version/tag recommendation and exact release commands
 - **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** — production deploy lane, env policy gates, and smoke hooks
 - **[docs/EXPERIMENTATION.md](./docs/EXPERIMENTATION.md)** — feature flags, A/B setup, and safe rollout checklist
+- **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** — post-launch checklist for demo operators (defaults, verification, CSP/analytics staging)
 - **[.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md)** — PR checklist for faster review
 - **[.github/CODEOWNERS.example](./.github/CODEOWNERS.example)** — suggested ownership map template
 
@@ -224,6 +225,14 @@ Run `npm run test:e2e` in release prep before final sign-off.
 - [shadcn/ui](https://ui.shadcn.com) — Button, Card, Badge, Tabs, Sonner, and other primitives under `src/components/ui/`
 - [Recharts](https://recharts.org/) + [Chart.js](https://www.chartjs.org/)
 - [Prism](https://prismjs.com/) — snippet syntax highlighting
+
+## What's next (demo operators)
+
+After launch, keep the public demo on **offline analysis** (no `QWEN_LIVE_ANALYSIS`). Use **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** for:
+
+- Pre-demo verification (`check:full`, e2e, `deploy:env:demo`, synthetic health)
+- Staging-only analytics activation (**[docs/ANALYTICS_STAGING_ACTIVATION.md](./docs/ANALYTICS_STAGING_ACTIVATION.md)**)
+- CSP report-only monitoring via `POST /api/security/csp-report` (**[docs/CSP_HARDENING_GUIDE.md](./docs/CSP_HARDENING_GUIDE.md)**)
 
 ## Final Takeaway
 

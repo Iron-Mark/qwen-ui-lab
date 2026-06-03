@@ -1,0 +1,57 @@
+# Post-Launch Guide (Demo Operators)
+
+Use this checklist after the public demo is live. The product stays **offline-analysis-first**: no API key or live Qwen flag is required for presentations.
+
+## Demo defaults (do not change for meetups)
+
+| Concern | Default | Why |
+|--------|---------|-----|
+| Analysis | `QWEN_LIVE_ANALYSIS` unset | Instant offline demo; no API spend |
+| Analytics | all `NEXT_PUBLIC_*` observability flags unset | No client telemetry |
+| Experiments | `NEXT_PUBLIC_EXPERIMENTS_ENABLED` unset | UI stays on `control` |
+| CSP enforce | permissive baseline in `next.config.ts` | Avoid breaking Next/Tailwind runtime |
+| CSP report-only | on in production (`CSP_REPORT_ONLY` unset or `true`) | Collect violations without blocking users |
+
+See **[DEMO.md](../DEMO.md)** for the live click path and **[docs/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** for deploy gates.
+
+## Pre-demo verification (5 minutes)
+
+```bash
+npm run check:full
+npm run test:e2e
+npm run deploy:env:demo
+npm run synthetic:health
+```
+
+Optional against production:
+
+```bash
+DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
+```
+
+## When to turn things on (staging only)
+
+- **Analytics funnel:** follow **[docs/ANALYTICS_STAGING_ACTIVATION.md](./ANALYTICS_STAGING_ACTIVATION.md)** — set flags only in staging; never commit secrets.
+- **A/B experiments:** follow **[docs/EXPERIMENTATION.md](./EXPERIMENTATION.md)** — enable master flag, then one experiment at a time.
+- **Live Qwen:** `QWEN_LIVE_ANALYSIS=true` + `DASHSCOPE_API_KEY` in host env; run `npm run deploy:env:live` before promoting.
+
+## CSP report-only monitoring
+
+Violations are **report-only** in production — they do not block the demo.
+
+1. **Endpoint:** `POST /api/security/csp-report` → `204` (see `src/app/api/security/csp-report/route.ts`).
+2. **Logs:** search host logs for `CSP report-only violation` (fields: `violatedDirective`, `blockedUri`, `documentUri`; IPs redact as needed).
+3. **Rollout:** see **[docs/CSP_HARDENING_GUIDE.md](./CSP_HARDENING_GUIDE.md)** — keep `CSP_REPORT_ONLY=false` off until violations are triaged; never tighten enforced policy during a demo window without a rehearsal build.
+
+## Incident quick path
+
+1. `GET /api/health` — expect `provider: "demo"` on the public demo.
+2. **[docs/TROUBLESHOOTING_RUNBOOK.md](./TROUBLESHOOTING_RUNBOOK.md)** — analyze/fallback issues.
+3. **[docs/ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** — if the deployed build regresses.
+
+## What's next (backlog, not required for demo)
+
+- Scheduled synthetic health workflow (sketch in **[docs/RELIABILITY_OPS.md](./RELIABILITY_OPS.md)**).
+- Promote CSP report-only findings into enforced policy in stages (guide above).
+- Optional `npm run perf:lighthouse` before/after perf-sensitive UI changes (artifacts under `.perf/`, gitignored).
+- Release tagging per **[docs/RELEASE_PROCESS.md](./RELEASE_PROCESS.md)** when cutting a versioned milestone.

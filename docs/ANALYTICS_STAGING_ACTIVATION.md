@@ -2,6 +2,8 @@
 
 This runbook activates analytics safely in staging while keeping production-safe privacy defaults.
 
+**Demo / production default:** leave all observability and experiment env vars unset. The app ships with analytics and error monitoring disabled; demo-mode events are suppressed unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true` (avoid for public demo hosts). Copy flag names from `.env.example` — never commit real keys or tokens.
+
 ## 1) Activation Flags (staging only)
 
 Set these environment variables in staging:
