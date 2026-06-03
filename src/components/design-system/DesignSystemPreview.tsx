@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PageContainer } from "@/components/layout/PageContainer";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
 import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
 import { useToast } from "@/components/providers/Toast";
@@ -247,20 +246,9 @@ export function DesignSystemPreview() {
   }, [domainFilter, levelFilter, moveSelection, setDomain]);
 
   return (
-    <PageContainer className="space-y-6 py-6">
-      <header className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]">
-        <div className="grid gap-3 lg:grid-cols-[1.1fr_1fr_auto] lg:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Design system
-            </p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Atomic component lab
-            </h1>
-            <p className="growth-snippet mt-1 text-sm text-muted-foreground">
-              Filter fast, inspect one component deeply, and copy implementation snippets.
-            </p>
-          </div>
+    <>
+      <header className="rounded-2xl border border-border/70 bg-background/95 p-4">
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-muted/30 px-3 py-2">
             <Search className="size-4 text-muted-foreground" />
             <Label htmlFor="catalog-search" className="sr-only">
@@ -287,7 +275,6 @@ export function DesignSystemPreview() {
               /
             </kbd>
           </div>
-          <div />
         </div>
 
         <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
@@ -512,6 +499,6 @@ export function DesignSystemPreview() {
           </div>
         </section>
       </div>
-    </PageContainer>
+    </>
   );
 }

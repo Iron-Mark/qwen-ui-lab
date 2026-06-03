@@ -145,7 +145,9 @@ try {
   await runBuildWithRetries();
 
   const selectedPort = await resolvePort(REQUESTED_PORT);
-  const targetUrl = process.env.PERF_URL || `http://127.0.0.1:${selectedPort}/`;
+  const perfPath = process.env.PERF_PATH || "/";
+  const targetUrl =
+    process.env.PERF_URL || `http://127.0.0.1:${selectedPort}${perfPath}`;
 
   serverProcess = spawn("npm", ["run", "start", "--", "--port", String(selectedPort)], {
     cwd: ROOT,

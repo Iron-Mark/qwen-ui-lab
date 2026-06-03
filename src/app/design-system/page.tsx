@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { DesignSystemLcpHeader } from "@/components/design-system/DesignSystemLcpHeader";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 import { DesignSystemPreviewClient } from "./DesignSystemPreviewClient";
 
@@ -51,7 +53,10 @@ export default function DesignSystemPage() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={structuredData}
       />
-      <DesignSystemPreviewClient />
+      <PageContainer className="space-y-6 py-6">
+        <DesignSystemLcpHeader />
+        <DesignSystemPreviewClient />
+      </PageContainer>
     </>
   );
 }
