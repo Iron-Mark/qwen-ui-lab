@@ -96,6 +96,16 @@ test("supports dashboard and design-system exports", async ({ page }) => {
     .click();
   await expect(page.getByText(/Generated scaffold/i)).toBeVisible();
 
+  const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
+  await expect(complianceTrigger).toBeVisible();
+  await expect(complianceTrigger).toContainText(/\d+ met · \d+ partial · \d+ review/);
+  await complianceTrigger.click();
+  const complianceDialog = page.getByRole("dialog", { name: /laws of ux compliance/i });
+  await expect(complianceDialog).toBeVisible();
+  await expect(complianceDialog.getByText(/Fitts's Law/i)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(complianceDialog).toBeHidden();
+
   const dashboardDownloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /^Export code$/i }).click();
   const dashboardDownload = await dashboardDownloadPromise;
