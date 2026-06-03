@@ -79,20 +79,21 @@ test("runs deterministic offline demo flow", async ({ page }) => {
   await page.getByRole("button", { name: /use sample screenshot/i }).click();
   await expect(page.getByText(/Sample screenshot loaded/i)).toBeVisible();
 
-  await page.getByRole("button", { name: /^Analyze$/i }).click();
+  await page
+    .getByRole("button", { name: /analyze & generate preview/i })
+    .click();
   await expect(
     page.getByRole("status").filter({ hasText: /offline demo mode/i }).first(),
   ).toBeVisible();
-  await expect(page.getByText(/Demo analysis complete/i)).toBeVisible();
+  await expect(page.getByText(/Preview ready/i)).toBeVisible();
 });
 
 test("supports dashboard and design-system exports", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /use sample screenshot/i }).click();
-  await page.getByRole("button", { name: /^Analyze$/i }).click();
-  await expect(page.getByText(/Demo analysis complete/i)).toBeVisible();
-
-  await page.getByRole("button", { name: /generate preview/i }).click();
+  await page
+    .getByRole("button", { name: /analyze & generate preview/i })
+    .click();
   await expect(page.getByText(/Generated scaffold/i)).toBeVisible();
 
   const dashboardDownloadPromise = page.waitForEvent("download");

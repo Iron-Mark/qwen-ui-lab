@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
@@ -8,7 +9,6 @@ import {
   ChevronRight,
   Sparkles,
   UploadCloud,
-  WandSparkles,
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
@@ -141,7 +141,7 @@ export function UploadFlow() {
   const [providerMessage, setProviderMessage] = useState<string | null>(null);
   const [providerDetail, setProviderDetail] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
-  const [sampleUsed, setSampleUsed] = useState(false);
+  const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
@@ -165,12 +165,6 @@ export function UploadFlow() {
     };
   }, []);
 
-  useEffect(() => {
-    if (readSampleUsedFromSession()) {
-      setSampleUsed(true);
-    }
-  }, []);
-
   const showSampleScreenshotButton =
     !sampleUsed && !userUploadedOwn && !file;
 
@@ -190,8 +184,7 @@ export function UploadFlow() {
   }, [analyzeStep]);
 
   const isBusy = providerState === "loading" || loadingSample;
-  const canAnalyze = Boolean(file) && providerState !== "loading";
-  const canGenerate = Boolean(file) && providerState !== "loading";
+  const canRunPrimary = Boolean(file) && providerState !== "loading";
   const experimentConfig = useMemo(() => createExperimentConfig(process.env), []);
   const headlineVariant = useMemo(
     () => resolveExperimentVariant("uploadFlowHeadline", "anonymous", experimentConfig),
@@ -205,6 +198,17 @@ export function UploadFlow() {
     () => resolveExperimentVariant("uploadFlowSamplePathHint", "anonymous", experimentConfig),
     [experimentConfig],
   );
+  const primaryCtaLabel = useMemo(() => {
+    if (providerState === "loading") return "Analyzing…";
+    if (stage === "generated") return "Regenerate preview";
+    if (stage === "analyzed") return "Generate preview";
+    if (file) {
+      return analyzeCtaVariant === "analyze-now"
+        ? "Analyze & generate now"
+        : "Analyze & generate preview";
+    }
+    return "Analyze & generate preview";
+  }, [analyzeCtaVariant, file, providerState, stage]);
 
   function acceptFile(
     nextFile: File | null,
@@ -363,6 +367,22 @@ export function UploadFlow() {
     }
   }
 
+  async function finishPreviewGeneration(
+    nextArtifact: UiFlowArtifact | null,
+    toastMessage = "Preview generated",
+  ) {
+    if (!nextArtifact) return;
+    setStage("generated");
+    toast(toastMessage, "success");
+    analytics.track(AnalyticsEvent.GenerateCompleted, {
+      source: "upload_flow",
+      step: "generate",
+      status: "completed",
+      fileType: file?.type || "unknown",
+      fileSize: file?.size ?? 0,
+    });
+  }
+
   async function generatePreview() {
     if (!file) return;
     analytics.track(AnalyticsEvent.GenerateStarted, {
@@ -377,17 +397,29 @@ export function UploadFlow() {
     if (!nextArtifact) {
       nextArtifact = await analyzeImage();
     }
-    if (nextArtifact) {
-      setStage("generated");
-      toast("Preview generated", "success");
-      analytics.track(AnalyticsEvent.GenerateCompleted, {
+    await finishPreviewGeneration(nextArtifact);
+  }
+
+  async function runPrimaryAction() {
+    if (!file) {
+      setError("Choose an image before running analysis.");
+      return;
+    }
+
+    if (stage === "generated") {
+      analytics.track(AnalyticsEvent.GenerateStarted, {
         source: "upload_flow",
         step: "generate",
-        status: "completed",
+        status: "started",
         fileType: file.type || "unknown",
         fileSize: file.size,
       });
+      const nextArtifact = await analyzeImage();
+      await finishPreviewGeneration(nextArtifact, "Preview regenerated");
+      return;
     }
+
+    await generatePreview();
   }
 
   function restoreSession(record: SessionRecord) {
@@ -464,7 +496,7 @@ export function UploadFlow() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <PageContainer as="section" className="py-8">
       {providerState === "fallback" ? (
         <Alert
           role="status"
@@ -627,7 +659,7 @@ export function UploadFlow() {
                   </Button>
                   {samplePathHintVariant === "show-path-hint" ? (
                     <p className="text-xs text-muted-foreground">
-                      New here? Start with sample screenshot, then click Analyze.
+                      New here? Start with sample screenshot, then run analysis.
                     </p>
                   ) : null}
                 </div>
@@ -641,28 +673,12 @@ export function UploadFlow() {
               >
                 <Button
                   type="button"
-                  onClick={() => void analyzeImage()}
-                  className="min-h-11 min-w-40 gap-2 shadow-sm disabled:shadow-none"
-                  disabled={!canAnalyze}
-                >
-                  {providerState === "loading" ? (
-                    "Analyzing..."
-                  ) : (
-                    <>
-                      <WandSparkles className="size-4" aria-hidden />
-                      {analyzeCtaVariant === "analyze-now" ? "Analyze now" : "Analyze"}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => void generatePreview()}
-                  className="min-h-11 min-w-40 gap-2"
-                  disabled={!canGenerate}
+                  onClick={() => void runPrimaryAction()}
+                  className="min-h-11 min-w-48 gap-2 shadow-sm disabled:shadow-none"
+                  disabled={!canRunPrimary}
                 >
                   <Sparkles className="size-4" aria-hidden />
-                  Generate Preview
+                  {primaryCtaLabel}
                 </Button>
               </div>
             </div>
@@ -702,15 +718,25 @@ export function UploadFlow() {
               </Card>
             ) : null}
 
-            {stage === "analyzed" || stage === "generated" ? (
+            {stage === "analyzed" ? (
               <Alert
                 role="status"
                 className="mt-4 border-success/30 bg-success/10 text-success"
               >
                 <AlertDescription className="font-medium text-success">
                   {providerState === "qwen"
-                    ? "Qwen analysis complete — generate preview to see the scaffold."
-                    : "Demo analysis complete — generate preview to see the scaffold."}
+                    ? "Qwen analysis complete — open the preview to see the scaffold."
+                    : "Demo analysis complete — open the preview to see the scaffold."}
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            {stage === "generated" ? (
+              <Alert
+                role="status"
+                className="mt-4 border-success/30 bg-success/10 text-success"
+              >
+                <AlertDescription className="font-medium text-success">
+                  Preview ready — copy or export the scaffold from the panel on the right.
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -850,7 +876,7 @@ export function UploadFlow() {
           </CardContent>
         </Card>
       </div>
-    </section>
+    </PageContainer>
   );
 }
 

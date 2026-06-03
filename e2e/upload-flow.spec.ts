@@ -25,17 +25,12 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
 
   await page.locator('input[type="file"]').setInputFiles(samplePath);
 
-  await expect(page.getByRole("button", { name: /^Analyze$/i })).toBeEnabled({
-    timeout: 10_000,
+  const runPipeline = page.getByRole("button", {
+    name: /analyze & generate preview|generate preview|regenerate preview/i,
   });
 
-  await page.getByRole("button", { name: /^Analyze$/i }).click();
-
-  await expect(
-    page.getByText(/Demo analysis complete|Qwen analysis complete/i),
-  ).toBeVisible({ timeout: 15_000 });
-
-  await page.getByRole("button", { name: /Generate Preview/i }).click();
+  await expect(runPipeline).toBeEnabled({ timeout: 10_000 });
+  await runPipeline.click();
 
   await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
     timeout: 10_000,
