@@ -3,6 +3,7 @@ import {
   demoModeSnackbar,
   designSystemTierButton,
   expectDemoSnackbarSessionFlag,
+  waitForDesignSystemPreview,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForSonnerToaster,
@@ -44,12 +45,14 @@ test("switches between light and dark themes", async ({ page }) => {
 });
 
 test("switches brand theme and persists selection", async ({ page }) => {
+  await resetE2ESessionStorage(page);
   await page.goto("/");
+  await waitForSonnerToaster(page);
 
   const dismissDemo = page.getByRole("button", { name: /dismiss demo mode notice/i });
-  if (await dismissDemo.isVisible().catch(() => false)) {
-    await dismissDemo.click();
-  }
+  await expect(dismissDemo).toBeVisible({ timeout: 15_000 });
+  await dismissDemo.click();
+  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
 
   await page.getByRole("button", { name: /switch brand theme/i }).click();
   await expect(page.getByRole("menuitemradio", { name: /emerald/i })).toBeVisible();
@@ -174,9 +177,9 @@ test("design system scrolls to preview on mobile selection", async ({ browser })
   await mockAnalyzeApiForE2E(page);
 
   await page.goto("/design-system");
+  await waitForDesignSystemPreview(page);
 
   const previewPanel = page.locator("#component-preview-panel");
-  await expect(previewPanel).toBeVisible();
 
   // Change selection after initial mount to trigger the mobile scroll behavior.
   const listPanel = page
@@ -204,6 +207,7 @@ test("design system scrolls to preview on mobile selection", async ({ browser })
 
 test("preview segmented tabs switch modes", async ({ page }) => {
   await page.goto("/design-system");
+  await waitForDesignSystemPreview(page);
 
   await page.getByRole("tab", { name: /mobile preview/i }).click();
   await expect(page).toHaveURL(/preview=mobile/);

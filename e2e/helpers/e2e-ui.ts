@@ -53,6 +53,14 @@ export async function expectDemoSnackbarSessionFlag(page: Page, value: "0" | "1"
     .toBe(value === "1" ? "1" : null);
 }
 
+/** Waits for idle-deferred DesignSystemPreview (LCP path uses a skeleton first). */
+export async function waitForDesignSystemPreview(page: Page, timeoutMs = 20_000) {
+  await page.locator("#component-preview-panel").waitFor({
+    state: "visible",
+    timeout: timeoutMs,
+  });
+}
+
 /** Tier filter in the design-system header (not catalog list badges). */
 export function designSystemTierButton(page: Page, tier: string): Locator {
   return page
