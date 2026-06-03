@@ -438,3 +438,8 @@ body {
   outline: 2px solid color-mix(in oklch, var(--ring) 85%, transparent);
   outline-offset: 2px;
 }
+
+/* Keep bottom toasts clear of home-indicator safe areas on mobile */
+[data-sonner-toaster][data-y-position="bottom"] {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}

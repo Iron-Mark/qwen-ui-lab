@@ -112,8 +112,18 @@ test("supports dashboard and design-system exports", async ({ page }) => {
 test("shows demo snackbar once per session", async ({ page }) => {
   await page.goto("/");
 
-  const snackbar = page.getByRole("status").filter({ hasText: /demo mode/i }).first();
+  const snackbar = page
+    .getByRole("status")
+    .filter({ hasText: /demo mode.*offline tour/i })
+    .first();
   await expect(snackbar).toBeVisible();
+
+  const box = await snackbar.boundingBox();
+  const viewport = page.viewportSize();
+  if (box && viewport) {
+    // Bottom placement should not cover the main header controls.
+    expect(box.y).toBeGreaterThan(viewport.height * 0.45);
+  }
 
   await page.reload();
 

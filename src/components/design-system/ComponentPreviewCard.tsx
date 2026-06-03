@@ -252,74 +252,87 @@ export function ComponentPreviewCard({
 
       <CardContent
         className={cn(
-          "relative min-h-[10rem] p-4 sm:p-6",
-          chromeless ? "border-b-0 bg-transparent" : "border-b bg-background/50",
+          "p-4 sm:p-6",
+          chromeless ? "min-h-0 border-b-0 bg-transparent" : "min-h-[10rem] border-b bg-background/50",
         )}
       >
-        <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 sm:left-4 sm:top-4">
-          <ExportButton
-            text={activeSnippet}
-            variant="copy"
-            analyticsSource="component_preview_card"
-            analyticsFeature="design_system_snippet"
-          />
-          <ExportButton
-            text={activeSnippet}
-            variant="export"
-            filename={filename}
-            analyticsSource="component_preview_card"
-            analyticsFeature="design_system_snippet"
-          />
-        </div>
-        <Tabs
-          value={previewMode}
-          onValueChange={(value) =>
-            onPreviewModeChange?.(value as "desktop" | "tablet" | "mobile")
-          }
-          className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4"
-        >
-          <TabsList
-            aria-label="Preview device mode"
-            className="h-10 rounded-full border border-border/70 bg-background/90 p-1 shadow-sm"
-          >
-            {PREVIEW_MODE_OPTIONS.map(({ value, label, Icon }) => (
-              <TabsTrigger
-                key={value}
-                value={value}
-                className="h-10 w-10 rounded-full p-0 hover:bg-muted/80 data-active:bg-muted data-active:text-foreground"
-                aria-label={label}
-                title={label}
-              >
-                <Icon className="size-4" aria-hidden="true" />
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <div ref={previewHostRef} className="pt-14 sm:pt-16">
-          {canRenderPreview ? (
-            <div
-              className={cn(
-                chromeless
-                  ? "rounded-xl border border-border/60 bg-background/40 p-3 shadow-inner sm:p-4"
-                  : "rounded-xl border border-border/70 bg-card/40 p-3 shadow-inner sm:p-4",
-                previewFrameClass,
-              )}
-            >
-              {previewNode}
-            </div>
-          ) : (
-            <div
-              className={cn(
-                "h-40 animate-pulse rounded-xl border border-dashed border-border/70 bg-muted/40",
-                previewFrameClass,
-              )}
-              aria-hidden="true"
-            />
+        <div
+          ref={previewHostRef}
+          className={cn(
+            "overflow-hidden rounded-xl border shadow-inner",
+            chromeless
+              ? "border-border/60 bg-background/40"
+              : "border-border/70 bg-card/40",
+            previewFrameClass,
           )}
+          aria-label="Component preview"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-muted/65 px-3 py-2 sm:px-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Preview
+            </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {onPreviewModeChange ? (
+                <Tabs
+                  value={previewMode}
+                  onValueChange={(value) =>
+                    onPreviewModeChange(value as "desktop" | "tablet" | "mobile")
+                  }
+                >
+                  <TabsList
+                    aria-label="Preview device mode"
+                    className="h-9 rounded-full border border-border/70 bg-background/90 p-0.5 shadow-sm"
+                  >
+                    {PREVIEW_MODE_OPTIONS.map(({ value, label, Icon }) => (
+                      <TabsTrigger
+                        key={value}
+                        value={value}
+                        className="h-8 w-8 rounded-full p-0 hover:bg-muted/80 data-active:bg-muted data-active:text-foreground"
+                        aria-label={label}
+                        title={label}
+                      >
+                        <Icon className="size-4" aria-hidden="true" />
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              ) : null}
+              <ExportButton
+                text={activeSnippet}
+                variant="copy"
+                label="Copy"
+                analyticsSource="component_preview_card"
+                analyticsFeature="design_system_snippet"
+              />
+              <ExportButton
+                text={activeSnippet}
+                variant="export"
+                filename={filename}
+                analyticsSource="component_preview_card"
+                analyticsFeature="design_system_snippet"
+              />
+            </div>
+          </div>
+          <div className="min-w-0 p-3 sm:p-4">
+            {canRenderPreview ? (
+              previewNode
+            ) : (
+              <div
+                className="h-40 animate-pulse rounded-lg border border-dashed border-border/70 bg-muted/40"
+                aria-hidden="true"
+              />
+            )}
+          </div>
         </div>
       </CardContent>
 
-      {showSnippet ? <SnippetPreview code={activeSnippet} title={`${title} snippet`} showCopy /> : null}
+      {showSnippet ? (
+        <SnippetPreview
+          code={activeSnippet}
+          title={`${title} snippet`}
+          showCopy={false}
+        />
+      ) : null}
     </Card>
   );
 }

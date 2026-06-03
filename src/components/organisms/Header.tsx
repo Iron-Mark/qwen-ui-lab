@@ -40,34 +40,39 @@ export function Header() {
             </p>
           </div>
         </Link>
-        <nav className="flex flex-1 items-center justify-center gap-1.5 sm:gap-2" aria-label="Main">
+        <nav
+          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto overscroll-x-contain sm:gap-2"
+          aria-label="Main"
+        >
           <Link
             href="/"
+            aria-label="Dashboard"
             className={cn(
               buttonVariants({
                 variant: pathname === "/" ? "secondary" : "ghost",
                 size: "lg",
               }),
-              "h-10 min-h-10 gap-2 px-3",
+              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
             )}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <LayoutDashboard className="size-4" aria-hidden />
-            Dashboard
+            <LayoutDashboard className="size-4 shrink-0" aria-hidden />
+            <span className="hidden sm:inline">Dashboard</span>
           </Link>
           <Link
             href="/design-system"
+            aria-label="Design system"
             className={cn(
               buttonVariants({
                 variant: pathname.startsWith("/design-system") ? "secondary" : "ghost",
                 size: "lg",
               }),
-              "h-10 min-h-10 gap-2 px-3",
+              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
             )}
             aria-current={pathname.startsWith("/design-system") ? "page" : undefined}
           >
-            <PanelsTopLeft className="size-4" aria-hidden />
-            Design system
+            <PanelsTopLeft className="size-4 shrink-0" aria-hidden />
+            <span className="hidden sm:inline">Design system</span>
             {designSystemVariant === "with-labs-badge" ? (
               <Badge variant="secondary" className="h-5 px-1.5 text-[10px] uppercase">
                 Labs

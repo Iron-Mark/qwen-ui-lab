@@ -247,7 +247,7 @@ export function DesignSystemPreview() {
 
   return (
     <div className="mx-auto max-w-[96rem] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="sticky top-3 z-20 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]">
         <div className="grid gap-3 lg:grid-cols-[1.1fr_1fr_auto] lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -298,12 +298,12 @@ export function DesignSystemPreview() {
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
-              <TabsList className="mt-1 h-auto w-full flex-wrap justify-start gap-1 rounded-lg bg-background/70 p-1">
+              <TabsList className="mt-1 h-auto w-full flex-wrap justify-start gap-1.5 rounded-lg bg-background/70 p-1.5">
                 {DOMAINS.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="rounded-md px-2.5 text-[11px] font-medium sm:text-xs"
+                    className="min-h-10 rounded-md px-3 text-xs font-medium sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -316,7 +316,7 @@ export function DesignSystemPreview() {
             <p className="px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               Tier
             </p>
-            <div className="mt-1 flex flex-wrap gap-1.5 rounded-lg bg-background/70 p-1">
+            <div className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5">
               {(["all", ...LEVELS] as const).map((level) => (
                 <Button
                   key={level}
@@ -333,7 +333,7 @@ export function DesignSystemPreview() {
                       status: "changed",
                     });
                   }}
-                  className="h-8 rounded-md px-2.5 text-[11px] font-medium capitalize sm:text-xs"
+                  className="min-h-10 rounded-md px-3 text-xs font-medium capitalize sm:text-sm"
                 >
                   {level}
                 </Button>
@@ -343,7 +343,7 @@ export function DesignSystemPreview() {
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-          <span>
+          <span className="hidden min-w-0 flex-1 basis-full sm:inline sm:basis-auto">
             Press <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">/</kbd> to
             search, <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">j</kbd> and{" "}
             <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">k</kbd> to move through
@@ -364,20 +364,21 @@ export function DesignSystemPreview() {
         </div>
       </header>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] xl:grid-cols-[25rem_minmax(0,1fr)]">
-        <section className="min-h-[30rem] rounded-2xl border border-border/70 bg-card/30 p-3 lg:max-h-[calc(100vh-8.5rem)] lg:overflow-hidden">
-          <div className="mb-3 flex items-center justify-between">
+      <div className="grid min-h-0 items-start gap-4 lg:grid-cols-[23rem_minmax(0,1fr)] lg:items-stretch xl:grid-cols-[25rem_minmax(0,1fr)]">
+        <section className="flex max-lg:min-h-[30rem] flex-col rounded-2xl border border-border/70 bg-card/30 p-3 lg:max-h-[calc(100vh-8.5rem)] lg:min-h-0 lg:overflow-hidden">
+          <div className="mb-3 flex shrink-0 items-center justify-between">
             <p className="text-sm font-semibold text-foreground">Component list</p>
             <p className="text-xs text-muted-foreground">Dense view</p>
           </div>
-          <div className="max-h-[calc(100vh-18rem)] space-y-1 overflow-auto pr-1 lg:max-h-none lg:pb-1">
+          <div className="min-h-0 max-h-[calc(100vh-18rem)] flex-1 space-y-1 overflow-y-auto pr-1 lg:max-h-none lg:pb-1">
             {filtered.map((entry) => (
               <button
                 key={entry.id}
                 type="button"
                 className={cn(
-                  "w-full cursor-pointer rounded-lg border px-3 py-2 text-left transition-colors",
+                  "w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
                   "hover:border-foreground/40 hover:bg-muted/50",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   selectedEntry?.id === entry.id
                     ? "border-foreground/50 bg-muted/60"
                     : "border-transparent bg-background/40",
@@ -420,23 +421,24 @@ export function DesignSystemPreview() {
         <section
           ref={previewAnchorRef}
           id="component-preview-panel"
-          className="flex flex-col rounded-2xl border border-border/70 bg-background/30 lg:sticky lg:top-[6.5rem] lg:max-h-[calc(100vh-8.5rem)] lg:overflow-auto"
+          className="flex min-h-0 scroll-mt-[5.5rem] flex-col rounded-2xl border border-border/70 bg-background/30 sm:scroll-mt-24 lg:sticky lg:top-[8.75rem] lg:max-h-[calc(100vh-10rem)] lg:overflow-hidden lg:scroll-mt-0"
           aria-live="polite"
         >
           <div
             role="toolbar"
             aria-label="Preview panel actions"
-            className="flex flex-col gap-3 border-b border-border/70 bg-background/60 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/45 sm:flex-row sm:items-center sm:justify-between sm:px-4"
+            className="flex shrink-0 flex-col gap-3 border-b border-border/70 bg-background/60 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/45 max-sm:sticky max-sm:top-16 max-sm:z-10 sm:flex-row sm:items-center sm:justify-between sm:px-4"
           >
             <Link
               href="/"
-              className="order-2 inline-flex min-h-9 cursor-pointer items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:order-1"
+              className="order-2 inline-flex min-h-10 cursor-pointer items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:order-1"
             >
               ← Back to dashboard demo
             </Link>
             <div className="order-1 flex flex-wrap items-center gap-2 sm:order-2 sm:justify-end">
               <Button
                 type="button"
+                className="min-h-10"
                 onClick={() => {
                   downloadCatalogBundle(filtered.length ? filtered : unifiedCatalog);
                   analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -452,13 +454,13 @@ export function DesignSystemPreview() {
               </Button>
               <Link
                 href="/"
-                className={cn(buttonVariants({ variant: "outline" }), "min-h-9")}
+                className={cn(buttonVariants({ variant: "outline" }), "min-h-10")}
               >
                 Try screenshot-to-scaffold workflow →
               </Link>
             </div>
           </div>
-          <div className="space-y-4 p-3 pt-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 pt-4 lg:overscroll-contain">
             <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
               {selectedEntry ? (
                 <ErrorBoundary fallbackTitle={`Could not render ${selectedEntry.name}.`}>
@@ -479,6 +481,7 @@ export function DesignSystemPreview() {
                     onPreviewModeChange={setPreviewMode}
                     deferPreview
                     chromeless
+                    showSnippet={selectedEntry.id !== "snippet-preview"}
                     className="rounded-2xl"
                   >
                     {selectedEntry.preview}

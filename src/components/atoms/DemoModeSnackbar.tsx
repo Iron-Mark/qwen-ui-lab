@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const SESSION_KEY = "qwen-ui-lab:demo-mode-snackbar-shown";
 const TOAST_ID = "demo-mode-snackbar";
-const DEFAULT_DURATION_MS = 8000;
+const DEFAULT_DURATION_MS = 6000;
 
 export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { durationMs?: number }) {
   const { mode } = useProviderMode();
@@ -50,10 +50,10 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium leading-5">Demo mode</p>
+              <p className="text-sm font-medium leading-5">Demo mode — offline tour</p>
               <p className="mt-0.5 text-xs leading-4 text-muted-foreground">
-                Instant offline analysis. Set <span className="font-mono">QWEN_LIVE_ANALYSIS=true</span>{" "}
-                (and <span className="font-mono">DASHSCOPE_API_KEY</span>) for live calls.
+                Sample screenshots and catalog previews run locally. Enable live Qwen analysis in
+                deploy settings when you are ready.
               </p>
             </div>
 
@@ -72,19 +72,20 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
 
           <div
             aria-hidden
-            className={cn(
-              "absolute inset-x-0 bottom-0 h-0.5 bg-amber-500/25",
-              "[mask-image:linear-gradient(to_right,black,transparent)]",
-            )}
-            style={{
-              animation: `demo-snackbar-decay ${durationMs}ms linear forwards`,
-            }}
-          />
+            className="absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-amber-500/15"
+          >
+            <div
+              className="h-full origin-left bg-amber-500/70"
+              style={{
+                animation: `demo-snackbar-decay ${durationMs}ms linear forwards`,
+              }}
+            />
+          </div>
 
           <style>{`
             @keyframes demo-snackbar-decay {
-              from { transform: translateX(0%); }
-              to { transform: translateX(-100%); }
+              from { transform: scaleX(1); }
+              to { transform: scaleX(0); }
             }
           `}</style>
         </div>
@@ -95,4 +96,3 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
 
   return null;
 }
-

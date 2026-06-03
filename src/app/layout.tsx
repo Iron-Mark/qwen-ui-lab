@@ -8,16 +8,23 @@ import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
 import { ServiceWorkerRegister } from "@/components/providers/ServiceWorkerRegister";
 import { ObservabilityProvider } from "@/components/providers/ObservabilityProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { LazyToaster } from "@/components/providers/LazyToaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getSiteUrl, SITE_NAME, SITE_TAGLINE, toAbsoluteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap",
+  preload: false,
+  weight: ["500", "600", "700"],
 });
 
 const siteUrl = getSiteUrl();
@@ -209,7 +216,13 @@ export default function RootLayout({
             <ObservabilityProvider>
               <TooltipProvider>
                 <ToastProvider>
-                  <Toaster richColors closeButton position="top-center" offset={72} />
+                  <LazyToaster
+                    richColors
+                    closeButton
+                    position="bottom-center"
+                    offset={20}
+                    mobileOffset={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+                  />
                   <div className="flex min-h-screen flex-col">
                     <Header />
                     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
