@@ -1,3 +1,4 @@
+import { PageContainer } from "@/components/layout/PageContainer";
 import { StatCard } from "@/components/molecules/StatCard";
 import { RevenueCard } from "@/components/molecules/RevenueCard";
 import { ActivityList } from "@/components/organisms/ActivityList";
@@ -34,7 +35,7 @@ export function DashboardShell({
   quickActions,
 }: DashboardShellProps) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <PageContainer className="py-10">
       <Card className="mb-8 overflow-hidden border-border/60 bg-gradient-to-br from-card to-muted/30">
         <CardHeader>
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-semibold text-muted-foreground">
@@ -91,6 +92,6 @@ export function DashboardShell({
           </Card>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -10,6 +10,7 @@ import { DemoModeSnackbar } from "@/components/atoms/DemoModeSnackbar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -23,7 +24,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
       <DemoModeSnackbar />
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <PageContainer className="flex h-16 items-center gap-4">
         <Link
           href="/"
           className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -84,7 +85,7 @@ export function Header() {
           <BrandThemeSwitcher />
           <ThemeToggle />
         </div>
-      </div>
+      </PageContainer>
     </header>
   );
 }

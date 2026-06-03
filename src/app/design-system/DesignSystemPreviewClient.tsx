@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 function DesignSystemPreviewSkeleton() {
   return (
-    <div
-      className="mx-auto max-w-[96rem] space-y-6 px-4 py-6 sm:px-6 lg:px-8"
+    <PageContainer
+      className="space-y-6 py-6"
       aria-busy="true"
       aria-label="Loading design system"
     >
@@ -14,7 +15,7 @@ function DesignSystemPreviewSkeleton() {
         <div className="min-h-[28rem] animate-pulse rounded-2xl border border-border/70 bg-muted/20" />
         <div className="min-h-[32rem] animate-pulse rounded-2xl border border-border/70 bg-muted/20" />
       </div>
-    </div>
+    </PageContainer>
   );
 }
 

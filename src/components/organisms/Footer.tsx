@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/70 bg-card/80 backdrop-blur-sm">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer className="py-6">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-start">
           <div className="text-center sm:text-left">
             <p className="text-sm font-semibold text-card-foreground">
@@ -68,7 +69,7 @@ export function Footer() {
             </ul>
           </nav>
         </div>
-      </div>
+      </PageContainer>
     </footer>
   );
 }

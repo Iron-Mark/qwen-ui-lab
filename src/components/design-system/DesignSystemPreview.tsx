@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
 import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
 import { useToast } from "@/components/providers/Toast";
@@ -246,7 +247,7 @@ export function DesignSystemPreview() {
   }, [domainFilter, levelFilter, moveSelection, setDomain]);
 
   return (
-    <div className="mx-auto max-w-[96rem] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <PageContainer className="space-y-6 py-6">
       <header className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]">
         <div className="grid gap-3 lg:grid-cols-[1.1fr_1fr_auto] lg:items-center">
           <div>
@@ -511,6 +512,6 @@ export function DesignSystemPreview() {
           </div>
         </section>
       </div>
-    </div>
+    </PageContainer>
   );
 }

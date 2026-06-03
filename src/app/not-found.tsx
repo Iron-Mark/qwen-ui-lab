@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
-    <section
+    <PageContainer
+      as="section"
       aria-labelledby="not-found-heading"
-      className="mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center sm:px-6 sm:py-24 lg:px-8"
+      className="flex flex-col items-center py-16 text-center sm:py-24"
     >
       <p
         aria-hidden="true"
@@ -41,6 +43,6 @@ export default function NotFound() {
           Design system
         </Link>
       </nav>
-    </section>
+    </PageContainer>
   );
 }
