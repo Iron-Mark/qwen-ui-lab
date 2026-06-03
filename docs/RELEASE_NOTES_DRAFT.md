@@ -1,5 +1,57 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.1.1
+
+Release date: 2026-06-03
+
+Patch release on `main` after `v0.1.0`. Demo-safe by default — **live Qwen analysis remains opt-in** (`QWEN_LIVE_ANALYSIS` unset for public demo).
+
+### Highlights
+
+- Demo tour reliability: synchronous Sonner mount so the offline snackbar fires in e2e and live demos.
+- Upload flow polish: merged Analyze + Preview CTA, clearer disabled states, sample CTA hidden after first use.
+- Home route LCP: dashboard shell in initial HTML; deferred non-critical client bundles (offline analyze unchanged).
+- UX compliance: compact summary row opens a scrollable dialog with accordion law panels.
+- Layout consistency: shared `PageContainer` gutters across header, footer, dashboard, design-system, and 404.
+- Theme switcher shows brand primary swatches beside palette labels.
+- Operator docs: `docs/POST_LAUNCH.md` for post-launch demo-safe operations.
+
+### Fixes since v0.1.0
+
+- Design-system excess scroll whitespace; unified preview toolbar in `ComponentPreviewCard`.
+- Mobile demo snackbar placement, timing, and once-per-session copy.
+- Sticky headers and scroll-to-preview on design-system lab.
+
+### UX, performance, and accessibility
+
+- Accordion primitive for collapsible UX law references.
+- E2E coverage for UX compliance dialog (open, law names, Escape close).
+- Lighthouse perf tooling and CI budgets unchanged; demo deploy lane still `deploy:env:demo`.
+
+### API and runtime behavior
+
+- `GET /api/health` still reports `demo` unless `QWEN_LIVE_ANALYSIS=true` and API key are set.
+- `POST /api/analyze-ui` unchanged; instant offline path when live analysis is disabled.
+- **No live API enablement in this release** — production demo stays offline.
+
+### Verification snapshot
+
+Validated against current project scripts:
+
+- `npm run build`
+- `npm test`
+- `npm run lint`
+- `npm run test:e2e`
+- `npm run doctor`
+
+### Upgrade notes
+
+- No migration steps from `v0.1.0`.
+- No breaking route or API changes.
+- Operators: keep `QWEN_LIVE_ANALYSIS` unset on the public demo; see `docs/POST_LAUNCH.md`.
+
+---
+
 ## qwen-ui-lab v0.1.0
 
 Release date: 2026-06-03
@@ -41,23 +93,8 @@ Release date: 2026-06-03
 - **Quality gates:** lint, unit tests, build, dependency/secrets scanning, link/perf/assets audits in CI.
 - **Docs bundle:** release/process/deploy/rollback/runbook docs aligned with current scripts and workflows.
 
-### Verification snapshot
-
-Validated against current project scripts:
-
-- `npm run build`
-- `npm test`
-- `npm run lint`
-- `npm run test:e2e`
-- `npm run doctor`
-
 ### Known operational notes
 
 - `.env.local` contains local secrets and must not be bundled into release artifacts.
 - Live Qwen usage depends on external quota/network health; demo mode remains the fallback path.
 - CI workflows are present under `.github/workflows`; release notes and README references should point to existing files only.
-
-### Upgrade and compatibility notes
-
-- No migration steps required for first tagged release.
-- No breaking changes are expected for first public baseline.
