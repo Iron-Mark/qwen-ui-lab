@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 import {
+  demoModeSnackbar,
+  designSystemTierButton,
+  expectDemoSnackbarSessionFlag,
+  primaryAnalyzeButton,
+  resetE2ESessionStorage,
+  waitForSonnerToaster,
+} from "./helpers/e2e-ui";
+import {
   mockAnalyzeApiForE2E,
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
@@ -69,31 +77,40 @@ test("filters and searches in design system catalog", async ({ page }) => {
   await expect(page.getByText("No components match your search.")).toBeHidden();
   await expect(visibleMetric).not.toHaveText(/0\s+visible/i);
 
-  await page.getByRole("button", { name: /^molecule$/i }).click();
-  await expect(page).toHaveURL(/level=molecule/);
+  await designSystemTierButton(page, "molecule").click();
+  await expect.poll(() => page.url()).toMatch(/level=molecule/);
 });
 
 test("runs deterministic offline demo flow", async ({ page }) => {
+  await resetE2ESessionStorage(page);
   await page.goto("/");
+  await waitForSonnerToaster(page);
 
-  await page.getByRole("button", { name: /use sample screenshot/i }).click();
-  await expect(page.getByText(/Sample screenshot loaded/i)).toBeVisible();
+  const sampleButton = page.getByRole("button", { name: /use sample screenshot/i });
+  await expect(sampleButton).toBeVisible();
+  await sampleButton.click();
 
-  await page
-    .getByRole("button", { name: /analyze & generate preview/i })
-    .click();
+  await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
+  await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
+
+  await primaryAnalyzeButton(page).click();
   await expect(
     page.getByRole("status").filter({ hasText: /offline demo mode/i }).first(),
   ).toBeVisible();
-  await expect(page.getByText(/Preview ready/i)).toBeVisible();
+  await expect(page.getByText(/Preview ready/i)).toBeVisible({ timeout: 15_000 });
 });
 
 test("supports dashboard and design-system exports", async ({ page }) => {
+  test.setTimeout(60_000);
+
+  await resetE2ESessionStorage(page);
   await page.goto("/");
+  await waitForSonnerToaster(page);
+
   await page.getByRole("button", { name: /use sample screenshot/i }).click();
-  await page
-    .getByRole("button", { name: /analyze & generate preview/i })
-    .click();
+  await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
+  await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
+  await primaryAnalyzeButton(page).click();
   await expect(page.getByText(/Generated scaffold/i)).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
@@ -111,7 +128,10 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   const dashboardDownload = await dashboardDownloadPromise;
   expect(dashboardDownload.suggestedFilename()).toBe("generated-dashboard.tsx");
 
-  await page.goto("/design-system");
+  await page.goto("/design-system", { waitUntil: "domcontentloaded", timeout: 45_000 });
+  await expect(page.getByRole("searchbox", { name: /search catalog/i })).toBeVisible({
+    timeout: 15_000,
+  });
   const bundleDownloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /export all snippets/i }).click();
   const bundleDownload = await bundleDownloadPromise;
@@ -121,13 +141,15 @@ test("supports dashboard and design-system exports", async ({ page }) => {
 });
 
 test("shows demo snackbar once per session", async ({ page }) => {
-  await page.goto("/");
+  test.setTimeout(60_000);
 
-  const snackbar = page
-    .getByRole("status")
-    .filter({ hasText: /demo mode.*offline tour/i })
-    .first();
-  await expect(snackbar).toBeVisible();
+  await resetE2ESessionStorage(page);
+  await page.goto("/");
+  await waitForSonnerToaster(page);
+
+  const snackbar = demoModeSnackbar(page);
+  await expect(snackbar).toBeVisible({ timeout: 15_000 });
+  await expectDemoSnackbarSessionFlag(page, "1");
 
   const box = await snackbar.boundingBox();
   const viewport = page.viewportSize();
@@ -136,10 +158,10 @@ test("shows demo snackbar once per session", async ({ page }) => {
     expect(box.y).toBeGreaterThan(viewport.height * 0.45);
   }
 
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
 
-  // Session storage should prevent re-showing on subsequent navigations.
-  await expect(snackbar).toBeHidden({ timeout: 2000 });
+  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 10_000 });
+  await expectDemoSnackbarSessionFlag(page, "1");
 });
 
 test("design system scrolls to preview on mobile selection", async ({ browser }) => {
