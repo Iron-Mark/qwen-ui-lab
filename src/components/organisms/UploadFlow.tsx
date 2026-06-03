@@ -14,8 +14,6 @@ import {
 import { ExportButton } from "@/components/atoms/ExportButton";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
-import { postAnalyzeUi } from "@/lib/analyze-outcome.mjs";
-import { preprocessImageDataUrl } from "@/lib/image-preprocess.mjs";
 import {
   loadSessionHistory,
   saveSession,
@@ -62,6 +60,42 @@ type ProviderState = "idle" | "loading" | "qwen" | "fallback" | "error";
 
 const SAMPLE_IMAGE_PATH = "/references/dashboard-reference.svg";
 const SAMPLE_IMAGE_NAME = "dashboard-reference.svg";
+const SAMPLE_USED_STORAGE_KEY = "qwen-ui-lab:upload-sample-used";
+
+function readSampleUsedFromSession(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(SAMPLE_USED_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function persistSampleUsedInSession() {
+  try {
+    sessionStorage.setItem(SAMPLE_USED_STORAGE_KEY, "1");
+  } catch {
+    // sessionStorage may be unavailable (private mode, quota, etc.)
+  }
+}
+
+type AnalyzeModules = {
+  postAnalyzeUi: typeof import("@/lib/analyze-outcome.mjs").postAnalyzeUi;
+  preprocessImageDataUrl: typeof import("@/lib/image-preprocess.mjs").preprocessImageDataUrl;
+};
+
+let analyzeModulesPromise: Promise<AnalyzeModules> | null = null;
+
+function loadAnalyzeModules() {
+  analyzeModulesPromise ??= Promise.all([
+    import("@/lib/analyze-outcome.mjs"),
+    import("@/lib/image-preprocess.mjs"),
+  ]).then(([analyze, preprocess]) => ({
+    postAnalyzeUi: analyze.postAnalyzeUi,
+    preprocessImageDataUrl: preprocess.preprocessImageDataUrl,
+  }));
+  return analyzeModulesPromise;
+}
 
 const ANALYZE_STEPS = [
   "Reading image…",
@@ -107,6 +141,8 @@ export function UploadFlow() {
   const [providerMessage, setProviderMessage] = useState<string | null>(null);
   const [providerDetail, setProviderDetail] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
+  const [sampleUsed, setSampleUsed] = useState(false);
+  const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
     loadSessionHistory(),
@@ -128,6 +164,15 @@ export function UploadFlow() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (readSampleUsedFromSession()) {
+      setSampleUsed(true);
+    }
+  }, []);
+
+  const showSampleScreenshotButton =
+    !sampleUsed && !userUploadedOwn && !file;
 
   const activeStepIndex = useMemo(() => {
     if (stage === "empty") return -1;
@@ -161,7 +206,10 @@ export function UploadFlow() {
     [experimentConfig],
   );
 
-  function acceptFile(nextFile: File | null) {
+  function acceptFile(
+    nextFile: File | null,
+    source: "dropzone" | "sample" = "dropzone",
+  ) {
     setError(null);
     setArtifact(null);
     setProviderState("idle");
@@ -169,6 +217,10 @@ export function UploadFlow() {
     setProviderDetail(null);
 
     if (!nextFile) return;
+
+    if (source === "dropzone") {
+      setUserUploadedOwn(true);
+    }
     if (!nextFile.type.startsWith("image/")) {
       setError("Upload an image file: PNG, JPG, SVG, or WebP.");
       analytics.track(AnalyticsEvent.UploadRejected, {
@@ -222,6 +274,7 @@ export function UploadFlow() {
     });
 
     try {
+      const { postAnalyzeUi, preprocessImageDataUrl } = await loadAnalyzeModules();
       setAnalyzeStep(ANALYZE_STEPS[1]);
       const rawDataUrl = await readFileAsDataUrl(file);
       const preprocessed = await preprocessImageDataUrl(rawDataUrl);
@@ -389,7 +442,9 @@ export function UploadFlow() {
       const sampleFile = new File([blob], SAMPLE_IMAGE_NAME, {
         type: blob.type || "image/svg+xml",
       });
-      acceptFile(sampleFile);
+      acceptFile(sampleFile, "sample");
+      setSampleUsed(true);
+      persistSampleUsedInSession();
       toast("Sample screenshot loaded", "success");
       analytics.track(AnalyticsEvent.UploadSampleLoaded, {
         source: "sample_button",
@@ -558,29 +613,36 @@ export function UploadFlow() {
             ) : null}
 
             <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex min-w-0 flex-col gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => void loadSampleScreenshot()}
-                  className="min-h-11 border-dashed md:w-fit"
-                  disabled={isBusy}
-                >
-                  <UploadCloud className="size-4" aria-hidden />
-                  {loadingSample ? "Loading sample…" : "Use sample screenshot"}
-                </Button>
-                {samplePathHintVariant === "show-path-hint" ? (
-                  <p className="text-xs text-muted-foreground">
-                    New here? Start with sample screenshot, then click Analyze.
-                  </p>
-                ) : null}
-              </div>
+              {showSampleScreenshotButton ? (
+                <div className="flex min-w-0 flex-col gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void loadSampleScreenshot()}
+                    className="min-h-11 border-dashed md:w-fit"
+                    disabled={isBusy}
+                  >
+                    <UploadCloud className="size-4" aria-hidden />
+                    {loadingSample ? "Loading sample…" : "Use sample screenshot"}
+                  </Button>
+                  {samplePathHintVariant === "show-path-hint" ? (
+                    <p className="text-xs text-muted-foreground">
+                      New here? Start with sample screenshot, then click Analyze.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
 
-              <div className="flex flex-wrap gap-3 md:flex-nowrap md:justify-end">
+              <div
+                className={cn(
+                  "flex flex-wrap gap-3 md:flex-nowrap md:justify-end",
+                  !showSampleScreenshotButton && "w-full md:ml-auto",
+                )}
+              >
                 <Button
                   type="button"
                   onClick={() => void analyzeImage()}
-                  className="min-h-11 min-w-40 gap-2 shadow-sm"
+                  className="min-h-11 min-w-40 gap-2 shadow-sm disabled:shadow-none"
                   disabled={!canAnalyze}
                 >
                   {providerState === "loading" ? (
