@@ -10,13 +10,14 @@ This project uses a two-track CSP strategy:
 - Enforced policy allows compatibility-focused script and style behavior while tightening low-risk directives:
   - `script-src 'unsafe-inline' 'unsafe-eval'`
   - `style-src 'unsafe-inline'`
-  - `connect-src` websocket endpoints
-- Enforced policy now additionally pins:
+- Enforced policy additionally pins:
   - `frame-src 'none'`
   - `manifest-src 'self'`
   - `worker-src 'self' blob:`
-- Report-only has staged strictness levels:
-  - `standard` (default): removes script `unsafe-inline` and `unsafe-eval`, narrows `connect-src` to HTTPS.
+  - `connect-src 'self' https:` (Stage A — no `ws:` / `wss:`; app uses HTTPS `fetch` only)
+  - `upgrade-insecure-requests` (Stage A — production is HTTPS-only)
+- Report-only has staged strictness levels (tests **next** tightenings beyond enforced):
+  - `standard` (default): script without `unsafe-inline` / `unsafe-eval` (`'report-sample'` only).
   - `strict`: also removes style `unsafe-inline`, blocks script/style attributes, and reports Trusted Types requirements.
   - Reports violations to `/api/security/csp-report`
 
@@ -36,8 +37,8 @@ This project uses a two-track CSP strategy:
 3. **Fix** first-party offenders (inline scripts/styles, eval usage, non-HTTPS endpoints).
 4. **Reduce noise** from known third-party sources by explicit allowlisting or removal.
 5. **Promote** strict policy from report-only to enforced in stages:
-   - Stage A: enforce strict `connect-src` (drop ws/wss if not required).
-   - Stage B: enforce script without `unsafe-eval`.
+   - Stage A: enforce strict `connect-src` (drop ws/wss if not required). **Done** (v0.1.6 lane).
+   - Stage B: enforce script without `unsafe-eval` (report-only `standard` is measuring this now).
    - Stage C: enforce script without `unsafe-inline` (nonce/hash based).
    - Stage D: enforce style without `unsafe-inline` (nonce/hash based).
    - Stage E: enforce `script-src-attr 'none'` and `style-src-attr 'none'`.

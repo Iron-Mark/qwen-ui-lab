@@ -9,7 +9,7 @@ Use this checklist after the public demo is live. The product stays **offline-an
 | Analysis | `QWEN_LIVE_ANALYSIS` unset | Instant offline demo; no API spend |
 | Analytics | all `NEXT_PUBLIC_*` observability flags unset | No client telemetry |
 | Experiments | `NEXT_PUBLIC_EXPERIMENTS_ENABLED` unset | UI stays on `control` |
-| CSP enforce | permissive baseline in `next.config.ts` | Avoid breaking Next/Tailwind runtime |
+| CSP enforce | Stage A baseline in `next.config.ts` (`connect-src` HTTPS-only, `upgrade-insecure-requests`; script/style still allow `unsafe-*`) | Avoid breaking Next/Tailwind runtime |
 | CSP report-only | on in production (`CSP_REPORT_ONLY` unset or `true`) | Collect violations without blocking users |
 
 See **[DEMO.md](../DEMO.md)** for the live click path and **[docs/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** for deploy gates.

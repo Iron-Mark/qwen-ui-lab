@@ -20,8 +20,9 @@ const ENFORCED_CONTENT_SECURITY_POLICY = [
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https:",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
-  "connect-src 'self' https: ws: wss:",
+  "connect-src 'self' https:",
   "object-src 'none'",
+  "upgrade-insecure-requests",
 ].join("; ");
 
 const REPORT_ONLY_STANDARD_CONTENT_SECURITY_POLICY = [
@@ -38,7 +39,6 @@ const REPORT_ONLY_STANDARD_CONTENT_SECURITY_POLICY = [
   "script-src 'self' https: 'report-sample'",
   "connect-src 'self' https:",
   "object-src 'none'",
-  "upgrade-insecure-requests",
   `report-uri ${CSP_REPORT_URI}`,
 ].join("; ");
 
