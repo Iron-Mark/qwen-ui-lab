@@ -96,7 +96,7 @@ Full ops runbook: **[docs/TROUBLESHOOTING_RUNBOOK.md](./docs/TROUBLESHOOTING_RUN
 
 ## Optional slides outline (markdown)
 
-Copy into Marp, Slidev, or Google Slides speaker notes. One slide ≈ 45–60 seconds.
+Copy into Marp, Slidev, or Google Slides speaker notes. One slide ≈ 45–60 seconds. **Marp-ready deck + export commands:** [MEETUP_MEDIA.md](./MEETUP_MEDIA.md) and [content/meetup-slides.marp.md](./content/meetup-slides.marp.md).
 
 ```markdown
 # Slide 1 — Title

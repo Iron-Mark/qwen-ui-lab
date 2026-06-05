@@ -214,6 +214,7 @@ Presenter and marketing-adjacent docs:
 | Doc | Audience |
 |-----|----------|
 | **[DEMO.md](./DEMO.md)** | 10-min meetup script, `/demo` tour order, troubleshooting table, slides outline |
+| **[MEETUP_MEDIA.md](./MEETUP_MEDIA.md)** | Recording checklist, Marp slide export (`content/meetup-slides.marp.md`) |
 | **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** | Demo operators after production deploy |
 | **[docs/DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** | Release deploy steps |
 | **[docs/RELEASE_NOTES_DRAFT.md](./docs/RELEASE_NOTES_DRAFT.md)** | Release notes source (tag on publish) |

@@ -14,6 +14,38 @@ qwen-ui-lab ships as an installable PWA for meetup demos. The service worker is 
 1. Open the site in Chrome.
 2. Tap the menu → **Install app** or **Add to Home screen**.
 
+The in-app [PwaInstallBanner](../src/components/providers/PwaInstallBanner.tsx) surfaces the same flow when `beforeinstallprompt` fires.
+
+### Android (Play Store — Trusted Web Activity)
+
+For meetup chapters that want a **Play Store listing** instead of (or in addition to) Chrome install, wrap the production PWA in a **Trusted Web Activity (TWA)**. The Android shell is a thin APK; all UI loads from your HTTPS origin.
+
+| Step | Action |
+|------|--------|
+| 1 | Confirm the live site meets PWA criteria (manifest, icons, SW) — see [Verification](#verification). |
+| 2 | Generate an Android project with [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap) or [PWABuilder](https://www.pwabuilder.com/) pointing at `https://qwen-ui-lab.vercel.app` (or your fork’s domain). |
+| 3 | Note the **package name** (e.g. `com.yourorg.qwenuilab`) and the **SHA-256 signing certificate fingerprint** from your upload key or Play App Signing. |
+| 4 | Copy [docs/templates/assetlinks.json](./templates/assetlinks.json), replace placeholders, and publish as **`/.well-known/assetlinks.json`** on the **same origin** as `start_url` in [manifest.json](../public/manifest.json). |
+| 5 | Verify: [Google Digital Asset Links API](https://developers.google.com/digital-asset-links/v1/getting-started) or `curl https://YOUR_DOMAIN/.well-known/assetlinks.json`. |
+| 6 | Build, sign, and upload the APK/AAB to Play Console; set the default URL to `/` or `/demo` for meetup handouts. |
+
+**Hosting `assetlinks.json` on Vercel**
+
+1. Create `public/.well-known/assetlinks.json` from the template (remove `.template` suffix — the file must be served at exactly `/.well-known/assetlinks.json`).
+2. Redeploy. `public/` files are static; no Next.js route is required.
+3. Response must be `application/json` over HTTPS with no redirects on that path.
+
+**When to skip TWA**
+
+- Public meetup demos: Chrome **Install app** is enough — no Play review cycle.
+- Forks on custom domains: update `assetlinks.json` with **your** package name and fingerprint; the template is not committed to production by default.
+
+**References**
+
+- [Trusted Web Activity overview](https://developer.chrome.com/docs/android/trusted-web-activity)
+- [Digital Asset Links](https://developers.google.com/digital-asset-links/v1/getting-started)
+- Meetup recording / slides: [MEETUP_MEDIA.md](../MEETUP_MEDIA.md)
+
 ### iOS (Safari)
 
 1. Open the site in Safari.
