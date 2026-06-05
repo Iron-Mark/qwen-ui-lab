@@ -1,11 +1,15 @@
 {
+  "id": "/",
   "name": "qwen-ui-lab — meetup demo",
   "short_name": "qwen-ui-lab",
   "description": "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#fafafa",
   "theme_color": "#18181b",
+  "categories": ["developer", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-192.png",

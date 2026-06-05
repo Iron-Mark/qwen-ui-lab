@@ -8,9 +8,11 @@ export function ServiceWorkerRegister() {
     if (!("serviceWorker" in navigator)) return;
 
     const register = () => {
-      void navigator.serviceWorker.register("/sw.js").catch(() => {
-        /* PWA is best-effort */
-      });
+      void navigator.serviceWorker
+        .register("/sw.js", { scope: "/", updateViaCache: "none" })
+        .catch(() => {
+          /* PWA is best-effort */
+        });
     };
 
     if (typeof globalThis.requestIdleCallback === "function") {
@@ -20,6 +22,17 @@ export function ServiceWorkerRegister() {
 
     const timeoutId = globalThis.setTimeout(register, 1500);
     return () => globalThis.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") return;
+    const reloadOnControllerChange = () => {
+      globalThis.location.reload();
+    };
+    navigator.serviceWorker?.addEventListener("controllerchange", reloadOnControllerChange);
+    return () => {
+      navigator.serviceWorker?.removeEventListener("controllerchange", reloadOnControllerChange);
+    };
   }, []);
 
   return null;

@@ -220,6 +220,7 @@ Engineering & ops:
 | [docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md) | Folder tiers, catalog domains |
 | [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
 | [docs/OFFLINE_DEMO_E2E.md](./docs/OFFLINE_DEMO_E2E.md) | Offline demo algorithm + E2E guarantee (no AI) |
+| [docs/PWA.md](./docs/PWA.md) | Install, offline shell, service worker updates |
 | [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |
 | [docs/LIVE_QWEN_ROLLOUT.md](./docs/LIVE_QWEN_ROLLOUT.md) | Live Qwen env, `deploy:env:live`, smoke, rollback |
 | [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) | Versioning and release flow |

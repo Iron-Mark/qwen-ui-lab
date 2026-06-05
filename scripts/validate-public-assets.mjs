@@ -12,6 +12,8 @@ const MAX_BYTES = 2 * 1024 * 1024;
 /** Static files that must exist under public/ (layout + PWA). */
 const REQUIRED_PUBLIC_PATHS = [
   "manifest.json",
+  "sw.js",
+  "offline.html",
   "icons/icon.svg",
   "icons/icon-192.png",
   "icons/icon-512.png",

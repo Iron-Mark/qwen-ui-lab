@@ -319,9 +319,27 @@ test.describe("marketing surfaces", () => {
 
     const manifest = await request.get("/manifest.json");
     expect(manifest.ok()).toBeTruthy();
-    const json = (await manifest.json()) as { name?: string; start_url?: string };
+    const json = (await manifest.json()) as {
+      name?: string;
+      start_url?: string;
+      scope?: string;
+      display?: string;
+    };
     expect(json.name).toMatch(/qwen-ui-lab/i);
     expect(json.start_url).toBe("/");
+    expect(json.scope).toBe("/");
+    expect(json.display).toBe("standalone");
+  });
+
+  test("PWA assets are reachable", async ({ request }) => {
+    const sw = await request.get("/sw.js");
+    expect(sw.ok()).toBeTruthy();
+    const swBody = await sw.text();
+    expect(swBody).toContain("offline.html");
+
+    const offline = await request.get("/offline.html");
+    expect(offline.ok()).toBeTruthy();
+    expect(await offline.text()).toMatch(/offline/i);
   });
 });
 
