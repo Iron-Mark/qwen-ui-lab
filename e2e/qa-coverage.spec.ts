@@ -4,6 +4,7 @@ import {
   designSystemTierButton,
   expectDemoSnackbarSessionFlag,
   waitForDesignSystemPreview,
+  loadBundledSample,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForSonnerToaster,
@@ -89,9 +90,9 @@ test("runs deterministic offline demo flow", async ({ page }) => {
   await page.goto("/");
   await waitForSonnerToaster(page);
 
-  const sampleButton = page.getByRole("button", { name: /use sample screenshot/i });
-  await expect(sampleButton).toBeVisible();
-  await sampleButton.click();
+  const samplePicker = page.getByTestId("sample-picker");
+  await expect(samplePicker).toBeVisible();
+  await loadBundledSample(page, "Dashboard");
 
   await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
@@ -110,7 +111,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await page.goto("/");
   await waitForSonnerToaster(page);
 
-  await page.getByRole("button", { name: /use sample screenshot/i }).click();
+  await loadBundledSample(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
@@ -158,7 +159,6 @@ test("shows demo snackbar once per session", async ({ page }) => {
   const viewport = page.viewportSize();
   if (box && viewport) {
     const headerClearancePx = 64;
-    // Bottom-left: below sticky header, anchored on the left, not centered.
     expect(box.y).toBeGreaterThan(headerClearancePx);
     expect(box.x).toBeLessThan(viewport.width * 0.5);
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);

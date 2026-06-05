@@ -5,9 +5,11 @@ import {
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
 import {
+  loadBundledSample,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForDesignSystemPreview,
+  waitForUploadFlowReady,
 } from "./helpers/e2e-ui";
 
 test.beforeEach(async ({ page }) => {
@@ -15,9 +17,22 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
+test("upload flow sample picker visual baseline", async ({ page }) => {
+  await resetE2ESessionStorage(page);
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  const samplePicker = page.getByTestId("sample-picker");
+  await expect(samplePicker).toBeVisible();
+  await expect(samplePicker).toHaveScreenshot("upload-flow-sample-picker.png", {
+    maxDiffPixelRatio: 0.02,
+  });
+});
+
 test("home marketing hero visual baseline", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
+  await waitForUploadFlowReady(page);
 
   const hero = page.getByTestId("home-marketing-hero");
   await expect(hero).toBeVisible();
@@ -31,7 +46,7 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
 
   await resetE2ESessionStorage(page);
   await page.goto("/");
-  await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
+  await waitForUploadFlowReady(page);
 
   const samplePath = path.join(
     process.cwd(),
@@ -54,6 +69,40 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
     maxDiffPixelRatio: 0.03,
   });
 });
+
+const BUNDLED_SAMPLE_ARTIFACT_CASES = [
+  { label: "Sign in", fileName: "auth-reference.svg", screenshot: "post-analyze-auth-summary.png" },
+  { label: "Mobile app", fileName: "mobile-reference.svg", screenshot: "post-analyze-mobile-summary.png" },
+  { label: "Landing page", fileName: "landing-reference.svg", screenshot: "post-analyze-landing-summary.png" },
+  { label: "Settings", fileName: "settings-reference.svg", screenshot: "post-analyze-settings-summary.png" },
+  { label: "Shop catalog", fileName: "ecommerce-reference.svg", screenshot: "post-analyze-ecommerce-summary.png" },
+] as const;
+
+for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
+  test(`post-analyze summary for ${sampleCase.label} sample`, async ({ page }) => {
+    test.setTimeout(60_000);
+
+    await resetE2ESessionStorage(page);
+    await page.goto("/");
+    await waitForUploadFlowReady(page);
+
+    await loadBundledSample(page, sampleCase.label);
+    await expect(page.getByText(new RegExp(sampleCase.fileName, "i"))).toBeVisible();
+    await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
+    await primaryAnalyzeButton(page).click();
+
+    await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+      timeout: 15_000,
+    });
+
+    const summaryCard = page
+      .getByText("Layout Read", { exact: true })
+      .locator("xpath=ancestor::div[contains(@class,'group/card')][1]");
+    await expect(summaryCard).toHaveScreenshot(sampleCase.screenshot, {
+      maxDiffPixelRatio: 0.03,
+    });
+  });
+}
 
 test("design-system preview panel visual baseline", async ({ page }) => {
   test.setTimeout(60_000);

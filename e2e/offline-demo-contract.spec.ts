@@ -5,6 +5,7 @@ import {
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
 import {
+  loadBundledSample,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
 } from "./helpers/e2e-ui";
@@ -30,7 +31,7 @@ test("demo mode skips POST /api/analyze-ui entirely", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await page.getByRole("button", { name: /use sample screenshot/i }).click();
+  await loadBundledSample(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
@@ -49,7 +50,7 @@ test("sample upload produces deterministic offline artifact content", async ({
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await page.getByRole("button", { name: /use sample screenshot/i }).click();
+  await loadBundledSample(page, "Dashboard");
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
@@ -73,7 +74,7 @@ test("offline demo completes when health fetch fails", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await page.getByRole("button", { name: /use sample screenshot/i }).click();
+  await loadBundledSample(page, "Dashboard");
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 

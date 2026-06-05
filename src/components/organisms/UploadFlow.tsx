@@ -37,6 +37,7 @@ import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/lib/provider-mode";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
+import { BUNDLED_REFERENCE_SAMPLES } from "@/lib/reference-samples.mjs";
 
 interface UiFlowArtifact {
   file: {
@@ -58,8 +59,6 @@ interface UiFlowArtifact {
 type Stage = "empty" | "uploaded" | "analyzed" | "generated";
 type ProviderState = "idle" | "loading" | "qwen" | "fallback" | "error";
 
-const SAMPLE_IMAGE_PATH = "/references/dashboard-reference.svg";
-const SAMPLE_IMAGE_NAME = "dashboard-reference.svg";
 const SAMPLE_USED_STORAGE_KEY = "qwen-ui-lab:upload-sample-used";
 
 function readSampleUsedFromSession(): boolean {
@@ -462,24 +461,29 @@ export function UploadFlow() {
     toast("Session removed", "default");
   }
 
-  async function loadSampleScreenshot() {
+  async function loadBundledSample(sampleId: string) {
+    const sample =
+      BUNDLED_REFERENCE_SAMPLES.find((entry) => entry.id === sampleId) ??
+      BUNDLED_REFERENCE_SAMPLES[0];
+
     setError(null);
     setLoadingSample(true);
     try {
-      const response = await fetch(SAMPLE_IMAGE_PATH);
+      const response = await fetch(sample.path);
       if (!response.ok) {
         throw new Error("Sample image unavailable.");
       }
       const blob = await response.blob();
-      const sampleFile = new File([blob], SAMPLE_IMAGE_NAME, {
+      const sampleFile = new File([blob], sample.fileName, {
         type: blob.type || "image/svg+xml",
       });
       acceptFile(sampleFile, "sample");
       setSampleUsed(true);
       persistSampleUsedInSession();
-      toast("Sample screenshot loaded", "success");
+      toast(`${sample.label} sample loaded`, "success");
       analytics.track(AnalyticsEvent.UploadSampleLoaded, {
-        source: "sample_button",
+        source: "sample_picker",
+        sampleId: sample.id,
         fileType: sampleFile.type || "image/svg+xml",
         fileSize: sampleFile.size,
         step: "upload",
@@ -646,20 +650,37 @@ export function UploadFlow() {
 
             <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               {showSampleScreenshotButton ? (
-                <div className="flex min-w-0 flex-col gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => void loadSampleScreenshot()}
-                    className="min-h-11 border-dashed md:w-fit"
-                    disabled={isBusy}
-                  >
-                    <UploadCloud className="size-4" aria-hidden />
-                    {loadingSample ? "Loading sample…" : "Use sample screenshot"}
-                  </Button>
+                <div
+                  className="flex min-w-0 flex-col gap-2"
+                  data-testid="sample-picker"
+                >
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Try a bundled reference
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {BUNDLED_REFERENCE_SAMPLES.map((sample) => (
+                      <Button
+                        key={sample.id}
+                        type="button"
+                        variant="outline"
+                        onClick={() => void loadBundledSample(sample.id)}
+                        className="h-auto min-h-11 flex-col items-start gap-0.5 border-dashed px-3 py-2 text-left"
+                        disabled={isBusy}
+                        aria-label={`Load ${sample.label} sample`}
+                      >
+                        <span className="flex items-center gap-1.5 text-sm font-medium">
+                          <UploadCloud className="size-3.5 shrink-0" aria-hidden />
+                          {loadingSample ? "Loading…" : sample.label}
+                        </span>
+                        <span className="text-[11px] font-normal text-muted-foreground">
+                          {sample.hint}
+                        </span>
+                      </Button>
+                    ))}
+                  </div>
                   {samplePathHintVariant === "show-path-hint" ? (
                     <p className="text-xs text-muted-foreground">
-                      New here? Start with sample screenshot, then run analysis.
+                      New here? Pick a reference, then run analysis.
                     </p>
                   ) : null}
                 </div>

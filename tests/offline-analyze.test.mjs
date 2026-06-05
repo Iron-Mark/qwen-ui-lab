@@ -14,6 +14,19 @@ import {
   getSampleReferenceFile,
   SAMPLE_REFERENCE_NAME,
 } from "../src/lib/demo-fixtures.mjs";
+import { BUNDLED_REFERENCE_SAMPLES } from "../src/lib/reference-samples.mjs";
+
+test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
+  const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
+  assert.deepEqual(fileNames, [
+    "dashboard-reference.svg",
+    "auth-reference.svg",
+    "mobile-reference.svg",
+    "landing-reference.svg",
+    "settings-reference.svg",
+    "ecommerce-reference.svg",
+  ]);
+});
 
 test("normalizeSampleKey uses basename only", () => {
   assert.equal(normalizeSampleKey("C:\\refs\\dashboard-reference.svg"), "dashboard-reference.svg");
@@ -57,6 +70,14 @@ test("lookupKnownSample returns rich settings fixture", () => {
   assert.match(known.summary, /Account settings/i);
   assert.match(known.generatedCode, /SaveBar/);
   assert.match(known.plan[2].body, /ToggleRow/);
+});
+
+test("lookupKnownSample returns rich ecommerce fixture", () => {
+  const known = lookupKnownSample("ecommerce-reference.svg");
+  assert.ok(known);
+  assert.match(known.summary, /E-commerce catalog/i);
+  assert.match(known.generatedCode, /ProductGrid/);
+  assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
 test("buildUiFlowArtifact uses known sample registry for auth-reference.svg", () => {

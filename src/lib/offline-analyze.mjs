@@ -290,6 +290,63 @@ export function GeneratedSettings() {
   );
 }`,
   },
+  "ecommerce-reference.svg": {
+    summary:
+      "E-commerce catalog with filter sidebar, product grid, cart badge, and quick-add CTAs — tuned for live demos.",
+    previewStats: [
+      { label: "Sections", value: "5" },
+      { label: "Components", value: "10" },
+      { label: "Breakpoints", value: "3" },
+      { label: "Review Items", value: "6" },
+    ],
+    plan: [
+      {
+        title: "Visual Input",
+        body: "ecommerce-reference.svg is the bundled meetup reference (SVG, desktop catalog with left filter rail).",
+      },
+      {
+        title: "Layout Read",
+        body: "Detect a shop shell with top search, filter sidebar (category + price), responsive product grid, and cart affordance in the header.",
+      },
+      {
+        title: "Component Map",
+        body: "Generate ShopHeader (search + cart), FilterSidebar, ProductGrid, ProductCard (image, title, price, Add CTA), CartDrawer, and CheckoutStepper.",
+      },
+      {
+        title: "Accessibility Pass",
+        body: "Product cards expose name and price to screen readers, filter checkboxes use native inputs, Add buttons have descriptive labels, and cart badge announces item count.",
+      },
+      {
+        title: "Human Review",
+        body: "Verify filter state against the SVG reference, wire cart persistence, and validate grid reflow at sm/md/lg breakpoints.",
+      },
+    ],
+    generatedCode: `import { ShopHeader } from "@/components/organisms/ShopHeader";
+import { FilterSidebar } from "@/components/molecules/FilterSidebar";
+import { ProductGrid } from "@/components/organisms/ProductGrid";
+import { ProductCard } from "@/components/molecules/ProductCard";
+import { CartDrawer } from "@/components/organisms/CartDrawer";
+
+export function GeneratedCatalog() {
+  return (
+    <div aria-label="Generated catalog from ecommerce-reference.svg" className="min-h-dvh bg-background">
+      <ShopHeader cartCount={3} onSearch={handleSearch} />
+      <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
+        <FilterSidebar
+          categories={["Electronics", "Apparel", "Home"]}
+          priceRange={[0, 200]}
+        />
+        <ProductGrid>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} onAdd={handleAdd} />
+          ))}
+        </ProductGrid>
+      </div>
+      <CartDrawer open={cartOpen} items={cartItems} onCheckout={handleCheckout} />
+    </div>
+  );
+}`,
+  },
 };
 
 /** Weighted keyword signals per UI archetype. */

@@ -38,6 +38,13 @@ export function demoModeSnackbar(page: Page): Locator {
     .first();
 }
 
+/** Load a bundled reference from the upload-flow sample picker. */
+export async function loadBundledSample(page: Page, label: string) {
+  const picker = page.getByTestId("sample-picker");
+  await expect(picker).toBeVisible();
+  await picker.getByRole("button", { name: new RegExp(`load ${label} sample`, "i") }).click();
+}
+
 /** Combined analyze CTA (experiment may use "now" suffix). */
 export function primaryAnalyzeButton(page: Page): Locator {
   return page.getByRole("button", {
