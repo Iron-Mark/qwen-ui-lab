@@ -36,6 +36,7 @@ export { localizedHref } from "./localized-href";
 export { useLocale } from "./use-locale";
 export type {
   Dictionary,
+  AccountDictionary,
   DemoBannerDictionary,
   DesignSystemDictionary,
   HeaderDictionary,

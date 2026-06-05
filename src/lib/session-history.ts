@@ -9,6 +9,7 @@ export interface SessionRecord {
   fileSize: number;
   modeLabel: string;
   providerState: "qwen" | "fallback";
+  savedBy?: string;
   summary?: string;
   artifact: {
     plan: Array<{ title: string; body: string }>;

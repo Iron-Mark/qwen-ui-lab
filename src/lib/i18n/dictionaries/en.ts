@@ -30,7 +30,43 @@ export const en = {
     navDashboardAria: "Dashboard",
     navDesignSystem: "Design system",
     navDesignSystemAria: "Design system",
+    navAccountGuest: "Guest",
+    navAccountAria: "Account",
     labsBadge: "Labs",
+  },
+  account: {
+    eyebrow: "Account",
+    title: "Local account (demo stub)",
+    subtitle:
+      "Guest mode by default. Set a display name or try the magic-link stub — everything stays in sessionStorage for this tab only. No OAuth or real email yet.",
+    statusTitle: "Current session",
+    statusDesc: "Demo-safe: no server-side identity or secrets.",
+    modeGuest: "Guest",
+    modeNamed: "Signed in (local)",
+    savedScaffoldsAs: "Saved scaffolds list uses “{name}”",
+    displayNameTitle: "Display name",
+    displayNameDesc:
+      "Labels your locally saved scaffold sessions on the upload flow. Clears when you sign out or close the tab.",
+    displayNameLabel: "Display name",
+    displayNamePlaceholder: "e.g. Alex",
+    saveDisplayName: "Save display name",
+    signOut: "Sign out",
+    magicLinkTitle: "Magic link (demo stub)",
+    magicLinkDesc:
+      "Simulates email sign-in for meetups. No message is sent — confirm locally to finish.",
+    emailLabel: "Email",
+    emailPlaceholder: "you@example.com",
+    sendMagicLink: "Send magic link (demo)",
+    magicLinkPendingTitle: "Demo link pending",
+    magicLinkPendingBody:
+      "No email was sent to {email}. Click confirm below to sign in locally for this tab.",
+    confirmMagicLink: "Confirm sign-in (demo)",
+    backToDemo: "Back to live demo",
+    toastDisplayNameSaved: "Display name saved as {name}",
+    toastSignedOut: "Signed out — back to guest mode",
+    toastMagicLinkStub: "Demo stub: magic link recorded locally (no email sent)",
+    toastMagicLinkConfirmed: "Signed in locally as {name}",
+    errorInvalidEmail: "Enter a valid email address",
   },
   demoBanner: {
     title: "Demo mode — safe for live demos",
@@ -104,6 +140,7 @@ export const en = {
     modeQwenReady: "Qwen route ready",
     recentAnalyses: "Recent analyses",
     recentAnalysesStored: "Stored locally (last {count})",
+    recentAnalysesSavedBy: "Saved as {name}",
     removeSessionAria: "Remove {fileName} session",
     uploadedReference: "Uploaded reference",
     uploadedReferenceAlt: "Uploaded UI reference",
@@ -193,6 +230,10 @@ export type HeaderDictionary = {
   [K in keyof (typeof en)["header"]]: string;
 };
 
+export type AccountDictionary = {
+  [K in keyof (typeof en)["account"]]: string;
+};
+
 export type DemoBannerDictionary = {
   [K in keyof (typeof en)["demoBanner"]]: string;
 };
@@ -204,6 +245,7 @@ export type DesignSystemDictionary = {
 export type Dictionary = {
   hero: HeroDictionary;
   header: HeaderDictionary;
+  account: AccountDictionary;
   demoBanner: DemoBannerDictionary;
   designSystem: DesignSystemDictionary;
   uploadFlow: UploadFlowDictionary;

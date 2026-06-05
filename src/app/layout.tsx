@@ -4,6 +4,7 @@ import { Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ProviderModeProvider } from "@/lib/provider-mode";
+import { AuthProvider } from "@/lib/auth";
 import { ToastProvider } from "@/components/providers/Toast";
 import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
@@ -222,7 +223,8 @@ export default function RootLayout({
           }}
         />
         <ThemeProvider>
-          <ProviderModeProvider>
+          <AuthProvider>
+            <ProviderModeProvider>
             <ObservabilityProvider>
               <TooltipProvider>
                 <ToastProvider>
@@ -254,7 +256,8 @@ export default function RootLayout({
                 </ToastProvider>
               </TooltipProvider>
             </ObservabilityProvider>
-          </ProviderModeProvider>
+            </ProviderModeProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

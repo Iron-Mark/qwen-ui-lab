@@ -5,12 +5,13 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { LayoutDashboard, PanelsTopLeft } from "lucide-react";
+import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { localizedHref, useLocale } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ export function Header() {
   const pathname = usePathname();
   const { locale, dict } = useLocale();
   const t = dict.header;
+  const { savedByLabel, signedIn } = useAuth();
   const designSystemVariant = useMemo(() => {
     const config = createExperimentConfig(process.env);
     return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
@@ -99,6 +101,24 @@ export function Header() {
           </Link>
         </nav>
         <div className="flex items-center justify-end gap-2">
+          <Link
+            href={localizedHref("/account", locale)}
+            aria-label={t.navAccountAria}
+            data-testid="header-account-link"
+            className={cn(
+              buttonVariants({
+                variant: pathname.startsWith("/account") ? "secondary" : "ghost",
+                size: "lg",
+              }),
+              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
+            )}
+            aria-current={pathname.startsWith("/account") ? "page" : undefined}
+          >
+            <UserRound className="size-4 shrink-0" aria-hidden />
+            <span className="hidden max-w-[8rem] truncate sm:inline">
+              {signedIn ? savedByLabel : t.navAccountGuest}
+            </span>
+          </Link>
           <BrandThemeSwitcher />
           <ThemeToggle />
         </div>

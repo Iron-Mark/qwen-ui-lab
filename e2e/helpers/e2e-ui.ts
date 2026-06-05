@@ -3,11 +3,13 @@ import { expect, type Locator, type Page } from "@playwright/test";
 /** Mirrors app sessionStorage keys — keep in sync with UI code. */
 export const DEMO_SNACKBAR_SESSION_KEY = "qwen-ui-lab:demo-mode-snackbar-shown";
 export const SAMPLE_USED_SESSION_KEY = "qwen-ui-lab:upload-sample-used";
+export const AUTH_SESSION_KEY = "qwen-ui-lab:auth";
 export const SESSION_HISTORY_KEY = "qwen-ui-lab:sessions";
 
 const E2E_SESSION_KEYS = [
   DEMO_SNACKBAR_SESSION_KEY,
   SAMPLE_USED_SESSION_KEY,
+  AUTH_SESSION_KEY,
 ] as const;
 
 const E2E_LOCAL_KEYS = [SESSION_HISTORY_KEY] as const;
