@@ -4,16 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
-  Link2,
   Share2,
   Sparkles,
   UploadCloud,
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
+import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
 import {
@@ -48,6 +48,7 @@ import { getReferenceSampleByFileName } from "@/lib/reference-samples.mjs";
 import {
   buildShareableSummary,
   buildShareUrl,
+  createShortShareLink,
   encodeShareHash,
   persistShareSummary,
   readShareFromLocation,
@@ -151,6 +152,7 @@ export function UploadFlow({
   autoRunDemo = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
+  const router = useRouter();
   const observability = useObservability();
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +199,20 @@ export function UploadFlow({
     };
   }, []);
 
+  useEffect(() => {
+    const fromHash = readShareFromLocation();
+    if (!fromHash || typeof window === "undefined") return;
+
+    setSharedSummary(fromHash);
+    persistShareSummary(fromHash);
+
+    void createShortShareLink(window.location.origin, fromHash).then((shortLink) => {
+      if (shortLink?.url) {
+        router.replace(shortLink.url);
+      }
+    });
+  }, [router]);
+
   function rememberShareableArtifact(nextArtifact: UiFlowArtifact, fileName: string) {
     const payload = buildShareableSummary({
       summary: nextArtifact.summary,
@@ -227,10 +243,22 @@ export function UploadFlow({
     setCopyingShareLink(true);
     try {
       persistShareSummary(payload);
-      const url = buildShareUrl(window.location.origin, pathname ?? "/", payload);
+      const shortLink = await createShortShareLink(window.location.origin, payload);
+      const url =
+        shortLink?.url ??
+        buildShareUrl(window.location.origin, pathname ?? "/", payload);
       await navigator.clipboard.writeText(url);
-      window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
-      toast("Share link copied (read-only summary)", "success");
+      if (shortLink) {
+        window.history.replaceState(null, "", shortLink.url);
+      } else {
+        window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
+      }
+      toast(
+        shortLink
+          ? "Short share link copied (read-only summary)"
+          : "Share link copied (hash fallback — read-only summary)",
+        "success",
+      );
     } catch {
       toast("Could not copy share link", "error");
     } finally {
@@ -639,37 +667,9 @@ export function UploadFlow({
       ) : null}
 
       {sharedSummary && !artifact ? (
-        <Card
-          className="mb-6 border-primary/30 bg-primary/5"
-          data-testid="shared-result-summary"
-        >
-          <CardHeader className="pb-2">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Link2 className="size-4 text-primary" aria-hidden />
-                  Shared analysis summary
-                </CardTitle>
-                <CardDescription className="mt-1 text-xs">
-                  Read-only link — no code or secrets included ({sharedSummary.file})
-                </CardDescription>
-              </div>
-              <Badge variant="outline">{sharedSummary.mode}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-0">
-            <p className="text-sm text-muted-foreground">{sharedSummary.summary}</p>
-            {sharedSummary.stats.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {sharedSummary.stats.map((stat) => (
-                  <Badge key={`${stat.l}-${stat.v}`} variant="secondary">
-                    {stat.l}: {stat.v}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <SharedSummaryCard summary={sharedSummary} />
+        </div>
       ) : null}
 
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -976,7 +976,7 @@ export function UploadFlow({
                       data-testid="copy-share-link"
                     >
                       <Share2 className="size-3.5" aria-hidden />
-                      {copyingShareLink ? "Copying…" : "Copy share link"}
+                      {copyingShareLink ? "Creating link…" : "Copy short share link"}
                     </Button>
                   </CardContent>
                 </Card>
