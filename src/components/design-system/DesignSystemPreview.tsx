@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
-import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
+import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
 import { useToast } from "@/components/providers/Toast";
 import { Search } from "lucide-react";
 import {
@@ -471,7 +471,7 @@ export function DesignSystemPreview() {
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-3 pt-4">
             <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
               {selectedEntry ? (
-                <ErrorBoundary fallbackTitle={`Could not render ${selectedEntry.name}.`}>
+                <ObservabilityErrorBoundary fallbackTitle={`Could not render ${selectedEntry.name}.`}>
                   <ComponentPreviewCard
                     id={selectedEntry.id}
                     title={selectedEntry.name}
@@ -494,7 +494,7 @@ export function DesignSystemPreview() {
                   >
                     {selectedEntry.preview}
                   </ComponentPreviewCard>
-                </ErrorBoundary>
+                </ObservabilityErrorBoundary>
               ) : (
                 <div className="p-8 text-sm text-muted-foreground">
                   Pick a component from the list to inspect preview, props, and snippet.
