@@ -1,3 +1,8 @@
+import {
+  buildAdvancedOfflineOverrides,
+  lookupKnownSample,
+} from "./offline-analyze.mjs";
+
 const workflowSteps = [
   { id: "upload", label: "Upload" },
   { id: "analyze", label: "Analyze" },
@@ -7,7 +12,7 @@ const workflowSteps = [
   { id: "export", label: "Export" },
 ];
 
-const previewStats = [
+const defaultPreviewStats = [
   { label: "Sections", value: "5" },
   { label: "Components", value: "8" },
   { label: "Breakpoints", value: "3" },
@@ -20,23 +25,6 @@ export function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function inferLayoutFromFileName(fileName) {
-  const lower = String(fileName || "").toLowerCase();
-  if (lower.includes("mobile") || lower.includes("phone")) {
-    return "mobile-first single-column layout with stacked cards and bottom navigation.";
-  }
-  if (lower.includes("login") || lower.includes("auth") || lower.includes("sign")) {
-    return "centered auth form with brand header, input fields, and primary CTA.";
-  }
-  if (lower.includes("settings") || lower.includes("profile")) {
-    return "settings panel with grouped form sections and save actions.";
-  }
-  if (lower.includes("chart") || lower.includes("analytics") || lower.includes("dashboard")) {
-    return "dashboard-style shell with a header, stat grid, analytics region, activity panel, and action controls.";
-  }
-  return "dashboard-style shell with a header, stat grid, analytics region, activity panel, and action controls.";
-}
-
 function dimensionHint(width, height) {
   if (!width || !height) return null;
   const orientation = width >= height ? "landscape" : "portrait";
@@ -44,39 +32,53 @@ function dimensionHint(width, height) {
   return `${width}×${height}px ${orientation} frame (aspect ${aspect}).`;
 }
 
+/**
+ * Resolve offline content: known sample registry → advanced classifier → caller overrides.
+ * @param {{ name?: string; type?: string; size?: number; width?: number | null; height?: number | null }} file
+ * @param {Record<string, unknown>} overrides
+ */
+function resolveOfflineContent(file, overrides) {
+  if (overrides.plan || overrides.previewStats || overrides.generatedCode) {
+    return overrides;
+  }
+
+  const known = lookupKnownSample(file.name || "");
+  if (known) {
+    return {
+      plan: known.plan,
+      previewStats: known.previewStats,
+      generatedCode: known.generatedCode,
+      summary: known.summary ?? "",
+    };
+  }
+
+  const readableSize = formatFileSize(file.size);
+  const advanced = buildAdvancedOfflineOverrides(file, {
+    readableSize,
+    dimensionLine: dimensionHint(file.width, file.height),
+  });
+
+  return {
+    plan: advanced.plan,
+    previewStats: advanced.previewStats,
+    generatedCode: advanced.generatedCode,
+    summary: overrides.summary ?? advanced.summary,
+  };
+}
+
 export function buildUiFlowArtifact(file, overrides = {}) {
   const readableSize = formatFileSize(file.size);
   const fileName = file.name || "uploaded-reference";
-  const dims = dimensionHint(file.width, file.height);
-  const layoutRead = inferLayoutFromFileName(fileName);
+  const offline = resolveOfflineContent(file, overrides);
 
-  const plan = overrides.plan || [
-    {
-      title: "Visual Input",
-      body: [
-        `${fileName} is treated as the UI reference image (${readableSize}, ${file.type || "unknown type"}).`,
-        dims ? `Detected dimensions: ${dims}` : null,
-      ]
-        .filter(Boolean)
-        .join(" "),
-    },
-    {
-      title: "Layout Read",
-      body: `Detect a ${layoutRead}`,
-    },
-    {
-      title: "Component Map",
-      body: "Generate Header, WorkflowBanner, StatCard, RevenueCard, ChartPreview, ActivityList, QuickActionButton, and Footer.",
-    },
-    {
-      title: "Accessibility Pass",
-      body: "Prefer semantic regions, keyboard-focusable controls, readable contrast, alt text for image references, and aria labels for chart-like values.",
-    },
-    {
-      title: "Human Review",
-      body: "Flag spacing fidelity, real data wiring, responsive edge cases, and chart-library replacement as manual review items.",
-    },
-  ];
+  const plan = overrides.plan || offline.plan;
+  const previewStats = normalizePreviewStats(
+    overrides.previewStats || offline.previewStats || defaultPreviewStats,
+  );
+  const generatedCode =
+    overrides.generatedCode ||
+    offline.generatedCode ||
+    createGeneratedCode(fileName);
 
   return {
     file: {
@@ -89,10 +91,10 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     },
     steps: workflowSteps,
     plan,
-    previewStats: normalizePreviewStats(overrides.previewStats || previewStats),
-    generatedCode: overrides.generatedCode || createGeneratedCode(fileName),
+    previewStats,
+    generatedCode,
     modeLabel: overrides.modeLabel || "Local demo mode",
-    summary: overrides.summary || "",
+    summary: overrides.summary ?? offline.summary ?? "",
   };
 }
 

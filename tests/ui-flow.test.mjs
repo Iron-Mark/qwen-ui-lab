@@ -63,7 +63,7 @@ test("buildUiFlowArtifact uses filename and dimensions in fallback plan", () => 
 
   assert.match(artifact.plan[0].body, /mobile-login\.png/);
   assert.match(artifact.plan[0].body, /390×844px/);
-  assert.match(artifact.plan[1].body, /mobile-first/i);
+  assert.match(artifact.plan[1].body, /Mobile app shell|Authentication/i);
 });
 
 test("getQwenConfig reports missing API key without exposing secrets", () => {

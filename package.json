@@ -18,6 +18,7 @@
     "lint": "eslint",
     "check": "npm run lint && npm test",
     "check:full": "npm run check && npm run build",
+    "export:demo-fixtures": "node scripts/export-demo-fixtures.mjs",
     "perf:lighthouse": "node scripts/perf-lighthouse.mjs",
     "perf:lighthouse:baseline": "node scripts/perf-lighthouse.mjs baseline",
     "perf:lighthouse:after": "node scripts/perf-lighthouse.mjs after"
