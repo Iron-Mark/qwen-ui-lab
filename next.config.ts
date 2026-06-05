@@ -71,6 +71,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts", "chart.js"],
+  },
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   async headers() {
     const isProduction = process.env.NODE_ENV === "production";

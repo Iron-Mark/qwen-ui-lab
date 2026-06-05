@@ -59,7 +59,7 @@ export function HomeMarketingHero() {
             </div>
             <h1
               id="home-hero-heading"
-              className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]"
+              className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]"
             >
               Turn UI screenshots into scaffold-ready React
             </h1>
@@ -106,7 +106,7 @@ export function HomeMarketingHero() {
         </div>
 
         <ul
-          className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:auto_280px]"
           aria-label="Key benefits"
         >
           {VALUE_PROPS.map(({ icon: Icon, title, body }) => (

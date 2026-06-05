@@ -17,7 +17,7 @@ const geist = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  preload: false,
+  preload: true,
   adjustFontFallback: true,
 });
 
@@ -25,8 +25,8 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  preload: true,
-  weight: ["500", "600", "700"],
+  preload: false,
+  weight: ["600", "700"],
   adjustFontFallback: true,
 });
 

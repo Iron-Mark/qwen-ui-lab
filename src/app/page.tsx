@@ -1,6 +1,6 @@
+import { HomeBelowFoldClient } from "@/app/HomeBelowFoldClient";
 import { HomeMarketingHero } from "@/components/organisms/HomeMarketingHero";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import {
   stats,
   revenueData,
@@ -10,17 +10,6 @@ import {
   quickActions,
 } from "@/data/dashboard-data";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
-
-const UploadFlow = dynamic(
-  () => import("@/components/organisms/UploadFlow").then((mod) => mod.UploadFlow),
-  { ssr: true },
-);
-
-const DashboardShell = dynamic(
-  () =>
-    import("@/components/organisms/DashboardShell").then((mod) => mod.DashboardShell),
-  { ssr: true },
-);
 
 export const metadata: Metadata = createRouteMetadata({
   title: "Live Meetup Demo",
@@ -82,17 +71,14 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(circle_at_top,oklch(0.97_0_0),transparent_65%)] dark:bg-[radial-gradient(circle_at_top,oklch(0.26_0_0),transparent_65%)]" />
       <div className="relative">
         <HomeMarketingHero />
-        <UploadFlow />
-        <div className="[content-visibility:auto] [contain-intrinsic-size:auto_1200px]">
-          <DashboardShell
-            stats={stats}
-            revenueData={revenueData}
-            performanceData={performanceData}
-            channelMixData={channelMixData}
-            activities={recentActivity}
-            quickActions={quickActions}
-          />
-        </div>
+        <HomeBelowFoldClient
+          stats={stats}
+          revenueData={revenueData}
+          performanceData={performanceData}
+          channelMixData={channelMixData}
+          activities={recentActivity}
+          quickActions={quickActions}
+        />
       </div>
     </main>
   );
