@@ -1,6 +1,8 @@
 /**
  * Demo-safe local auth — guest mode by default, optional display name or
  * magic-link stub stored in sessionStorage only (no OAuth, no real email).
+ *
+ * Real OAuth / email plan: docs/OAUTH_ROADMAP.md
  */
 
 export const AUTH_SESSION_KEY = "qwen-ui-lab:auth";

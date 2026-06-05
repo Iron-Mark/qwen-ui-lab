@@ -89,6 +89,7 @@ Optional: `npm run doctor` for env, deps, and API ping when a key is set.
 | `/design-system?domain=laws-of-ux` | Laws of UX pattern slice |
 | `/design-system?domain=uilaws` | UI Laws–informed patterns |
 | `/design-system/laws-of-ux` | Redirects to `?domain=laws-of-ux` |
+| `/account` | Demo-safe guest / display-name / magic-link stub (`sessionStorage` only) |
 | `GET /api/health` | Provider probe (`demo` vs live analysis enabled) |
 | `POST /api/analyze-ui` | Vision analysis (skipped in demo mode on client) |
 
@@ -227,6 +228,7 @@ Engineering & ops:
 | [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
 | [docs/CI.md](./docs/CI.md) | GitHub Actions (PR checks, nightly E2E, visual gate, LCP budget) |
 | [docs/OFFLINE_DEMO_E2E.md](./docs/OFFLINE_DEMO_E2E.md) | Offline demo algorithm + E2E guarantee (no AI) |
+| [docs/OAUTH_ROADMAP.md](./docs/OAUTH_ROADMAP.md) | Research spike: OAuth (Google/GitHub), magic link, demo-safe migration from auth stub |
 | [docs/PWA.md](./docs/PWA.md) | Install, offline shell, service worker updates |
 | [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |
 | [docs/LIVE_QWEN_ROLLOUT.md](./docs/LIVE_QWEN_ROLLOUT.md) | Live Qwen env, `deploy:env:live`, smoke, rollback |
