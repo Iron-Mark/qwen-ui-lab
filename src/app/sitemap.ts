@@ -3,6 +3,7 @@ import { getSiteUrl } from "@/lib/seo";
 
 const STATIC_ROUTES = [
   "/",
+  "/demo",
   "/design-system",
   "/design-system/laws-of-ux",
   "/design-system/uilaws",

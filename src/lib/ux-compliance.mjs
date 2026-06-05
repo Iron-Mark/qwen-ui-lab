@@ -5,6 +5,47 @@
  * @typedef {import('../data/lawsOfUx').LawOfUxId} LawOfUxId
  */
 
+import { classifyLayoutArchetype, lookupKnownSample } from "./offline-analyze.mjs";
+import { getReferenceSampleByFileName } from "./reference-samples.data.mjs";
+
+/** Priority laws to surface per detected UI archetype. */
+export const ARCHETYPE_HIGHLIGHT_LAWS = {
+  dashboard: ["jakob", "miller", "chunking", "doherty", "serial-position"],
+  auth: ["fitts", "hick", "cognitive-load", "aesthetic-usability", "peak-end"],
+  mobile: ["fitts", "goal-gradient", "hick", "chunking", "serial-position"],
+  landing: ["von-restorff", "peak-end", "aesthetic-usability", "serial-position", "hick"],
+  settings: ["hick", "miller", "cognitive-load", "chunking", "fitts"],
+  ecommerce: ["choice-overload", "hick", "fitts", "jakob", "chunking"],
+};
+
+/**
+ * @param {LawOfUxId} lawId
+ */
+export function lawOfUxCatalogHref(lawId) {
+  return `/design-system?domain=laws-of-ux&selected=law-of-ux-${lawId}`;
+}
+
+/**
+ * @param {object | null | undefined} artifact
+ * @param {{ name?: string; type?: string; size?: number; width?: number | null; height?: number | null }} [artifact.file]
+ */
+export function inferArchetypeIdFromArtifact(artifact) {
+  if (!artifact?.file?.name) return "dashboard";
+  if (lookupKnownSample(artifact.file.name)) {
+    return getReferenceSampleByFileName(artifact.file.name).id;
+  }
+  const { archetypeId } = classifyLayoutArchetype(artifact.file);
+  return archetypeId;
+}
+
+/**
+ * @param {string} archetypeId
+ * @returns {LawOfUxId[]}
+ */
+export function getArchetypeHighlightLaws(archetypeId) {
+  return ARCHETYPE_HIGHLIGHT_LAWS[archetypeId] ?? ARCHETYPE_HIGHLIGHT_LAWS.dashboard;
+}
+
 /** @type {Record<LawOfUxId, { name: string; surface: ComplianceSurface }>} */
 const LAW_META = {
   "aesthetic-usability": { name: "Aesthetic-Usability Effect", surface: "scaffold" },

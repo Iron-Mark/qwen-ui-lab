@@ -23,7 +23,32 @@ export interface UxComplianceArtifact {
   generatedCode?: string;
   previewStats?: Array<{ label: string; value: string }>;
   steps?: Array<{ id: string; label: string }>;
+  file?: {
+    name?: string;
+    type?: string;
+    size?: number;
+    width?: number | null;
+    height?: number | null;
+  };
 }
+
+export type LayoutArchetypeId =
+  | "dashboard"
+  | "auth"
+  | "mobile"
+  | "landing"
+  | "settings"
+  | "ecommerce";
+
+export function lawOfUxCatalogHref(lawId: LawOfUxId): string;
+
+export function inferArchetypeIdFromArtifact(
+  artifact: UxComplianceArtifact | null | undefined,
+): LayoutArchetypeId;
+
+export function getArchetypeHighlightLaws(archetypeId: string): LawOfUxId[];
+
+export const ARCHETYPE_HIGHLIGHT_LAWS: Record<LayoutArchetypeId, LawOfUxId[]>;
 
 export function evaluateUxCompliance(
   artifact: UxComplianceArtifact | null | undefined,

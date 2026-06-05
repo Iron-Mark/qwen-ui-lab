@@ -39,13 +39,13 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
 
-  await page.getByRole("button", { name: /^Copy code$/i }).click();
+  await page.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Scaffold copied/i)).toBeVisible({
     timeout: 5_000,
   });
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: /^Export code$/i }).click();
+  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("generated-dashboard.tsx");
+  expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 });

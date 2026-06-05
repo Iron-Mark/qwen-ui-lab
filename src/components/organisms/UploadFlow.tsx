@@ -155,7 +155,7 @@ export function UploadFlow({
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
-  const demoBootstrappedRef = useRef(false);
+  const demoBootstrappedRef = useRef<string | null>(null);
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -303,10 +303,12 @@ export function UploadFlow({
   }, [demoArchetype, file?.name]);
 
   useEffect(() => {
-    if (!autoRunDemo || demoBootstrappedRef.current) return;
-    demoBootstrappedRef.current = true;
+    if (!autoRunDemo) return;
 
     const sampleId = demoArchetype ?? "dashboard";
+    if (demoBootstrappedRef.current === sampleId) return;
+    demoBootstrappedRef.current = sampleId;
+
     void (async () => {
       await loadBundledSample(sampleId);
     })();

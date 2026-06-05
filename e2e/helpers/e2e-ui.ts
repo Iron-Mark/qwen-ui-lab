@@ -3,8 +3,14 @@ import { expect, type Locator, type Page } from "@playwright/test";
 /** Mirrors app sessionStorage keys — keep in sync with UI code. */
 export const DEMO_SNACKBAR_SESSION_KEY = "qwen-ui-lab:demo-mode-snackbar-shown";
 export const SAMPLE_USED_SESSION_KEY = "qwen-ui-lab:upload-sample-used";
+export const SESSION_HISTORY_KEY = "qwen-ui-lab:sessions";
 
-const E2E_SESSION_KEYS = [DEMO_SNACKBAR_SESSION_KEY, SAMPLE_USED_SESSION_KEY] as const;
+const E2E_SESSION_KEYS = [
+  DEMO_SNACKBAR_SESSION_KEY,
+  SAMPLE_USED_SESSION_KEY,
+] as const;
+
+const E2E_LOCAL_KEYS = [SESSION_HISTORY_KEY] as const;
 
 /**
  * Clears demo session keys once (not on every reload).
@@ -12,15 +18,31 @@ const E2E_SESSION_KEYS = [DEMO_SNACKBAR_SESSION_KEY, SAMPLE_USED_SESSION_KEY] as
  */
 export async function resetE2ESessionStorage(page: Page) {
   await page.goto("about:blank");
-  await page.evaluate((keys: string[]) => {
-    for (const key of keys) {
-      try {
-        sessionStorage.removeItem(key);
-      } catch {
-        // ignore
+  await page.evaluate(
+    ({
+      sessionKeys,
+      localKeys,
+    }: {
+      sessionKeys: string[];
+      localKeys: string[];
+    }) => {
+      for (const key of sessionKeys) {
+        try {
+          sessionStorage.removeItem(key);
+        } catch {
+          // ignore
+        }
       }
-    }
-  }, [...E2E_SESSION_KEYS]);
+      for (const key of localKeys) {
+        try {
+          localStorage.removeItem(key);
+        } catch {
+          // ignore
+        }
+      }
+    },
+    { sessionKeys: [...E2E_SESSION_KEYS], localKeys: [...E2E_LOCAL_KEYS] },
+  );
 }
 
 /** LazyToaster mounts after hydration; Sonner toasts need this container. */
