@@ -39,6 +39,7 @@ export function UploadDropzone({
         ref={inputRef}
         type="file"
         accept={accept}
+        aria-label="Upload UI screenshot"
         className="sr-only upload-dropzone-input"
         disabled={disabled}
         suppressHydrationWarning
