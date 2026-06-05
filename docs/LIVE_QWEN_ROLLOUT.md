@@ -14,6 +14,96 @@ Related: **[PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** · **[DEPL
 
 An API key **alone** does not call Qwen. Both the flag and the key are required.
 
+## Preview-only enable checklist
+
+Use this when turning on live vision on **Vercel Preview only**. Do **not** check **Production** in the Vercel UI until Stage C.
+
+- [ ] **Production untouched** — `QWEN_LIVE_ANALYSIS` unset or `false` on Production (meetup stays demo-safe).
+- [ ] **Preview scope only** — live vars added with **Preview** checked, **Production** unchecked.
+- [ ] **Server-only secrets** — `DASHSCOPE_API_KEY` not exposed to the browser; no `NEXT_PUBLIC_QWEN_API_KEY`.
+- [ ] **Required trio on Preview** — `QWEN_LIVE_ANALYSIS=true`, `DASHSCOPE_API_KEY`, `QWEN_MODEL` (e.g. `qwen3-vl-plus`).
+- [ ] **Redeploy Preview** after any env change (vars apply on the next deployment, not old builds).
+- [ ] **Local gate** — `npm run deploy:env:live` passes with the same values (see below).
+- [ ] **Staged smoke** — `DEPLOY_URL=https://<preview-host> npm run smoke:staged` (or `npm run smoke:live`) exits `0`.
+- [ ] **Health** — `GET /api/health` on preview → `liveAnalysisEnabled: true`, `provider: "qwen"`.
+- [ ] **Manual UI** — header **Live Qwen** → sample screenshot → **Analyze** completes (quota permitting).
+
+## Copy-paste Vercel env (Preview only)
+
+Paste into **Vercel → Project → Settings → Environment Variables** one row at a time, or use the REST API / CLI snippets below. Replace placeholders; delete the JSON file after import if you saved secrets on disk.
+
+| Key | Value (example) | Environments |
+|-----|-----------------|--------------|
+| `QWEN_LIVE_ANALYSIS` | `true` | **Preview** only |
+| `DASHSCOPE_API_KEY` | `<your-model-studio-key>` | **Preview** only |
+| `QWEN_MODEL` | `qwen3-vl-plus` | **Preview** only |
+| `QWEN_BASE_URL` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | **Preview** only (optional) |
+| `ANALYZE_UI_RATE_LIMIT_MAX` | `12` (or lower for dry runs) | **Preview** only (optional) |
+
+### REST API bulk create (Preview target)
+
+Requires a Vercel token and project ID. **`target` must be `preview` only** — do not include `production` until Stage C.
+
+```json
+[
+  {
+    "key": "QWEN_LIVE_ANALYSIS",
+    "value": "true",
+    "type": "encrypted",
+    "target": ["preview"]
+  },
+  {
+    "key": "DASHSCOPE_API_KEY",
+    "value": "<your-model-studio-key>",
+    "type": "encrypted",
+    "target": ["preview"]
+  },
+  {
+    "key": "QWEN_MODEL",
+    "value": "qwen3-vl-plus",
+    "type": "plain",
+    "target": ["preview"]
+  },
+  {
+    "key": "QWEN_BASE_URL",
+    "value": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    "type": "plain",
+    "target": ["preview"]
+  }
+]
+```
+
+POST to `https://api.vercel.com/v10/projects/{projectId}/env` with `Authorization: Bearer <token>` and `Content-Type: application/json`. See [Vercel env API](https://vercel.com/docs/rest-api/projects/create-one-or-more-environment-variables).
+
+### CLI helper JSON (Preview via `vercel env add`)
+
+Save as `vercel-preview-live.json` (git-ignore this file), set `VERCEL_ENV=preview`, then:
+
+```json
+{
+  "QWEN_LIVE_ANALYSIS": "true",
+  "DASHSCOPE_API_KEY": "<your-model-studio-key>",
+  "QWEN_MODEL": "qwen3-vl-plus",
+  "QWEN_BASE_URL": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+}
+```
+
+```bash
+# bash + jq — Preview only; never run with VERCEL_ENV=production for this rehearsal
+VERCEL_ENV=preview
+source <(jq -rj '. | to_entries[] | "echo -n \"\(.value)\" | vercel env add \(.key) $VERCEL_ENV;\n"' vercel-preview-live.json)
+rm vercel-preview-live.json
+```
+
+PowerShell (one variable at a time):
+
+```powershell
+cd qwen-ui-lab
+"true" | vercel env add QWEN_LIVE_ANALYSIS preview
+"<your-model-studio-key>" | vercel env add DASHSCOPE_API_KEY preview
+"qwen3-vl-plus" | vercel env add QWEN_MODEL preview
+```
+
 ## Enable live on Vercel Preview (operator steps)
 
 Use this sequence to rehearse live vision on a **Preview** deployment without changing **Production** env (meetup-safe default).
@@ -36,7 +126,9 @@ Use this sequence to rehearse live vision on a **Preview** deployment without ch
    ```
 5. **Smoke the preview URL** (HTTPS required):
    ```bash
-   DEPLOY_URL=https://<your-preview-host> node scripts/staged-live-smoke.mjs
+   DEPLOY_URL=https://<your-preview-host> npm run smoke:staged
+   # aliases: npm run smoke:live
+   # or: node scripts/staged-live-smoke.mjs --url=https://<your-preview-host>
    ```
    - Script refuses `http://` and the public demo production host unless `ALLOW_PRODUCTION_LIVE_SMOKE=1`.
    - Expect: health `provider: "qwen"`, `liveAnalysisEnabled: true`, `hasApiKey: true`, non-empty `model`; `POST /api/analyze-ui` rejects invalid body with HTTP 400.
@@ -104,6 +196,39 @@ When **`QWEN_LIVE_ANALYSIS=true`** and **`DASHSCOPE_API_KEY`** are set (`canUseL
 
 **Tuning for preview rehearsal:** lower `ANALYZE_UI_RATE_LIMIT_MAX` on Preview if you expect heavy clicking during a dry run.
 
+### Troubleshooting HTTP 429 (`rate_limit_exceeded`)
+
+This **429** is from **this app’s** per-IP guard on `POST /api/analyze-ui`, not Model Studio’s upstream quota (those usually surface as 5xx or provider error bodies after the route accepts the request).
+
+| Symptom | Likely cause | What to do |
+|---------|--------------|------------|
+| UI shows rate-limit message after many **Analyze** clicks | Exceeded `ANALYZE_UI_RATE_LIMIT_MAX` in the current window | Wait for **`Retry-After`** seconds (response header), then retry |
+| `curl` returns 429 with `"code":"rate_limit_exceeded"` | Same — live flag on, rapid requests from one IP | Raise limit on **Preview only** or slow down rehearsal traffic |
+| 429 on first request after idle | Unlikely app limit — check browser extensions / shared NAT rehearsing from one IP | Lower concurrent testers; inspect `X-RateLimit-Limit` |
+| Demo host, no live flag | App should **not** rate-limit this route | If you see 429, confirm `GET /api/health` → `liveAnalysisEnabled: false` |
+
+**Verify with curl** (preview URL, live enabled):
+
+```bash
+curl -sS -D - -o /dev/null -X POST "https://<preview-host>/api/analyze-ui" \
+  -H "Content-Type: application/json" \
+  -d "{}"
+# First calls: 400 (validation). After exceeding limit: 429 + Retry-After + X-RateLimit-Limit
+```
+
+**Preview-only relief** (Vercel → Preview scope → redeploy):
+
+```bash
+ANALYZE_UI_RATE_LIMIT_MAX=24
+ANALYZE_UI_RATE_LIMIT_WINDOW_MS=60000
+```
+
+Do **not** raise limits on **Production** until you intentionally run Stage C and accept abuse risk. For meetup/demo production, keep live off — no rate limit applies.
+
+**Serverless caveat:** limits are **per warm instance**; heavy parallel traffic from many users can still spike Model Studio quota even when 429s are rare.
+
+See also **[TROUBLESHOOTING_RUNBOOK.md](./TROUBLESHOOTING_RUNBOOK.md)** § live / 429.
+
 ## Pre-promote gate: `deploy:env:live`
 
 Run validation **in the same shell or CI job** that will deploy, with production secrets loaded:
@@ -167,18 +292,19 @@ npm run deploy:env:live
 
 - Demo target with `DASHSCOPE_API_KEY` set but live flag off → warning only; still passes demo gate
 
-### Validation log (2026-06-05)
+### Validation log (2026-06-05, Lane 4)
 
-Ran on `qwen-ui-lab` release branch tooling (no production live enablement):
+Ran locally on `qwen-ui-lab` (no production Vercel changes):
 
 | Command | Exit | Summary |
 |---------|------|---------|
 | `npm run deploy:env:demo` (clean env) | `0` | `Live analysis requested: no`, `Live calls executable: no` |
 | `npm run deploy:env:live` (clean env) | `1` | Errors: missing `QWEN_LIVE_ANALYSIS`, `DASHSCOPE_API_KEY`, `QWEN_MODEL` |
-| `npm run deploy:env:live` (mock live env) | `0` | `Live analysis requested: yes`, `Live calls executable: yes` |
+| `npm run deploy:env:live` (mock: `QWEN_LIVE_ANALYSIS=true`, `DASHSCOPE_API_KEY=sk-mock-validation-only`, `QWEN_MODEL=qwen3-vl-plus`) | `0` | `Live analysis requested: yes`, `Live calls executable: yes` |
 | `npm run deploy:env:demo` with `QWEN_LIVE_ANALYSIS=true` | `1` | Demo gate blocks live flag |
 | `DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy` | `0` | `provider=demo`, `liveAnalysisEnabled=false` (production stays demo-safe) |
 | `EXPECT_LIVE_ANALYSIS=true` + same production URL | `1` | Health mismatch — confirms live smoke detects demo rollback state |
+| `npm run smoke:staged` | — | Requires `DEPLOY_URL` or `--url=`; use on Preview after live env |
 
 ## Staged rollout
 
@@ -189,9 +315,9 @@ Ran on `qwen-ui-lab` release branch tooling (no production live enablement):
    - [ ] Demo baseline on preview (if env not yet live): `DEPLOY_URL=<preview-url> npm run smoke:deploy`
    - [ ] **Staged live smoke** (after live env on preview):
      ```bash
-     DEPLOY_URL=https://<preview-url> node scripts/staged-live-smoke.mjs
-     # equivalent:
-     EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=https://<preview-url> npm run smoke:deploy
+     DEPLOY_URL=https://<preview-url> npm run smoke:staged
+     # aliases: npm run smoke:live
+     # equivalent: EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=https://<preview-url> npm run smoke:deploy
      ```
    - [ ] `GET /api/health` → `liveAnalysisEnabled: true`, `provider: "qwen"`
 
@@ -210,12 +336,12 @@ Full release checklist: **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)**
 
 ## Post-deploy smoke (live)
 
-Use **`scripts/staged-live-smoke.mjs`** on preview or staging only until production is intentionally live:
+Use **`npm run smoke:staged`** (alias **`smoke:live`**) on preview or staging only until production is intentionally live:
 
 ```bash
-DEPLOY_URL=https://<preview-or-staging-host> node scripts/staged-live-smoke.mjs
-# or with explicit URL flag:
-node scripts/staged-live-smoke.mjs --url=https://<preview-or-staging-host>
+DEPLOY_URL=https://<preview-or-staging-host> npm run smoke:staged
+# or:
+npm run smoke:live -- --url=https://<preview-or-staging-host>
 ```
 
 Equivalent manual form:
@@ -261,7 +387,7 @@ Use this when live vision misbehaves, quota spikes, or you need meetup-safe beha
    Expected: `PASS health: provider=demo, liveAnalysisEnabled=false`.
 4. **Confirm live smoke would fail** (negative check — proves rollback stuck):
    ```bash
-   DEPLOY_URL=https://<host> node scripts/staged-live-smoke.mjs
+   DEPLOY_URL=https://<host> npm run smoke:staged
    ```
    Expected: exit `1`, `/api/health liveAnalysisEnabled mismatch (expected true, got false)`.
 5. If the **build** is bad, follow **[ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** (redeploy last good tag **and** keep live flag off).
