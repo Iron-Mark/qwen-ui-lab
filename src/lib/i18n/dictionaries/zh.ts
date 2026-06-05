@@ -33,6 +33,25 @@ export const zh = {
     navAccountAria: "账户",
     labsBadge: "实验室",
   },
+  notFound: {
+    title: "页面未找到",
+    description:
+      "您访问的页面不存在或已移动。请从下方选择一个入口继续浏览 qwen-ui-lab。",
+    navAria: "返回已知页面",
+    backDashboard: "返回工作台",
+    designSystem: "设计系统",
+  },
+  share: {
+    eyebrow: "分享链接",
+    title: "只读分析摘要",
+    descriptionLead: "短链接",
+    descriptionTrail: "— 仅含摘要，不含生成代码或 API 密钥。",
+    tryLiveDemo: "体验 live demo",
+    oneClickDemo: "一键演示",
+    metadataNotFoundTitle: "分享未找到",
+    metadataNotFoundDescription: "该只读分析摘要链接不存在或已过期。",
+    metadataTitle: "共享摘要 · {file}",
+  },
   account: {
     eyebrow: "账户",
     title: "本地账户（演示占位）",
@@ -59,7 +78,7 @@ export const zh = {
     magicLinkPendingBody:
       "未向 {email} 发送邮件。点击下方确认即可在本标签页本地登录。",
     confirmMagicLink: "确认登录（演示）",
-    backToDemo: "返回 live demo",
+    backToDemo: "返回实时演示",
     toastDisplayNameSaved: "显示名称已保存为 {name}",
     toastSignedOut: "已退出 — 回到访客模式",
     toastMagicLinkStub: "演示占位：魔法链接已本地记录（未发送邮件）",

@@ -41,5 +41,7 @@ export type {
   DesignSystemDictionary,
   HeaderDictionary,
   HeroDictionary,
+  NotFoundDictionary,
+  ShareDictionary,
   UploadFlowDictionary,
 } from "./dictionaries/en";

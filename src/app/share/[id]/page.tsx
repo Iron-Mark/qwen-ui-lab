@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { PageContainer } from "@/components/layout/PageContainer";
-import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { SharePageClient } from "@/app/share/[id]/SharePageClient";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getDictionary, interpolate, resolveLocale } from "@/lib/i18n";
 import { createRouteMetadata } from "@/lib/seo";
 import { getShareRecord } from "@/lib/share-store.mjs";
 
@@ -12,22 +11,26 @@ export const runtime = "nodejs";
 
 type SharePageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ lang?: string }>;
 };
 
-export async function generateMetadata({ params }: SharePageProps) {
+export async function generateMetadata({ params, searchParams }: SharePageProps) {
   const { id } = await params;
+  const { lang } = await searchParams;
+  const locale = resolveLocale(lang);
+  const t = getDictionary(locale).share;
   const summary = await getShareRecord(id);
 
   if (!summary) {
     return createRouteMetadata({
-      title: "Share not found",
-      description: "This read-only analysis summary link is missing or expired.",
+      title: t.metadataNotFoundTitle,
+      description: t.metadataNotFoundDescription,
       path: `/share/${id}`,
     });
   }
 
   return createRouteMetadata({
-    title: `Shared summary · ${summary.file}`,
+    title: interpolate(t.metadataTitle, { file: summary.file }),
     description: summary.summary,
     path: `/share/${id}`,
   });
@@ -42,32 +45,14 @@ export default async function SharePage({ params }: SharePageProps) {
   }
 
   return (
-    <PageContainer className="py-10">
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold uppercase text-muted-foreground">
-            Share link
-          </p>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
-            Read-only analysis summary
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Short link <span className="font-mono text-foreground">/share/{id}</span> —
-            summary only, no generated code or API secrets.
-          </p>
+    <Suspense
+      fallback={
+        <div className="py-10">
+          <Skeleton className="mx-auto h-64 max-w-2xl rounded-2xl" aria-hidden />
         </div>
-
-        <SharedSummaryCard summary={summary} />
-
-        <div className="flex flex-wrap gap-3">
-          <Link href="/" className={cn(buttonVariants({ variant: "outline" }))}>
-            Try the live demo
-          </Link>
-          <Link href="/demo" className={cn(buttonVariants({ variant: "ghost" }))}>
-            One-click demo
-          </Link>
-        </div>
-      </div>
-    </PageContainer>
+      }
+    >
+      <SharePageClient id={id} summary={summary} />
+    </Suspense>
   );
 }

@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { buildDesignSystemDomainRedirect } from "@/lib/design-system-state.mjs";
+import { resolveLocale } from "@/lib/i18n";
 import { createRouteMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -21,6 +23,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function UILawsRedirectPage() {
-  redirect("/design-system?domain=uilaws");
+type UILawsRedirectPageProps = {
+  searchParams: Promise<{ lang?: string }>;
+};
+
+export default async function UILawsRedirectPage({
+  searchParams,
+}: UILawsRedirectPageProps) {
+  const { lang } = await searchParams;
+  const locale = resolveLocale(lang);
+  redirect(buildDesignSystemDomainRedirect("uilaws", locale));
 }

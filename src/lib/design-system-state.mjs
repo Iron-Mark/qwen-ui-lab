@@ -19,6 +19,20 @@ export function pickSelectedId(value, availableIds) {
   return availableIds.includes(value) ? value : (availableIds[0] ?? null);
 }
 
+/** Redirect target for /design-system/laws-of-ux and /design-system/uilaws entry routes. */
+export function buildDesignSystemDomainRedirect(domain, locale = "en") {
+  const params = createDesignSystemSearchParams({
+    domain,
+    level: "all",
+    query: "",
+    selected: null,
+    previewMode: "desktop",
+    lang: locale,
+  });
+  const qs = params.toString();
+  return qs ? `/design-system?${qs}` : "/design-system";
+}
+
 export function createDesignSystemSearchParams(state) {
   const params = new URLSearchParams();
   if (state.domain && state.domain !== "all") params.set("domain", state.domain);

@@ -34,6 +34,26 @@ export const en = {
     navAccountAria: "Account",
     labsBadge: "Labs",
   },
+  notFound: {
+    title: "Page not found",
+    description:
+      "The page you requested doesn't exist or may have been moved. Choose a destination below to continue exploring qwen-ui-lab.",
+    navAria: "Back to known pages",
+    backDashboard: "Back to dashboard",
+    designSystem: "Design system",
+  },
+  share: {
+    eyebrow: "Share link",
+    title: "Read-only analysis summary",
+    descriptionLead: "Short link",
+    descriptionTrail: "— summary only, no generated code or API secrets.",
+    tryLiveDemo: "Try the live demo",
+    oneClickDemo: "One-click demo",
+    metadataNotFoundTitle: "Share not found",
+    metadataNotFoundDescription:
+      "This read-only analysis summary link is missing or expired.",
+    metadataTitle: "Shared summary · {file}",
+  },
   account: {
     eyebrow: "Account",
     title: "Local account (demo stub)",
@@ -230,6 +250,14 @@ export type HeaderDictionary = {
   [K in keyof (typeof en)["header"]]: string;
 };
 
+export type NotFoundDictionary = {
+  [K in keyof (typeof en)["notFound"]]: string;
+};
+
+export type ShareDictionary = {
+  [K in keyof (typeof en)["share"]]: string;
+};
+
 export type AccountDictionary = {
   [K in keyof (typeof en)["account"]]: string;
 };
@@ -245,6 +273,8 @@ export type DesignSystemDictionary = {
 export type Dictionary = {
   hero: HeroDictionary;
   header: HeaderDictionary;
+  notFound: NotFoundDictionary;
+  share: ShareDictionary;
   account: AccountDictionary;
   demoBanner: DemoBannerDictionary;
   designSystem: DesignSystemDictionary;

@@ -9,7 +9,12 @@ import {
   getFlowStepLabels,
   translateAnalyzeStep,
 } from "../src/lib/i18n/translate-analyze-step.mjs";
-import { createDesignSystemSearchParams } from "../src/lib/design-system-state.mjs";
+import {
+  buildDesignSystemDomainRedirect,
+  createDesignSystemSearchParams,
+} from "../src/lib/design-system-state.mjs";
+import { en } from "../src/lib/i18n/dictionaries/en.ts";
+import { zh } from "../src/lib/i18n/dictionaries/zh.ts";
 
 const uploadFlowZh = {
   ctaAnalyzing: "分析中…",
@@ -71,4 +76,32 @@ test("createDesignSystemSearchParams preserves lang=zh", () => {
     lang: "zh",
   });
   assert.equal(params.toString(), "domain=product&lang=zh");
+});
+
+test("buildDesignSystemDomainRedirect preserves lang=zh", () => {
+  assert.equal(
+    buildDesignSystemDomainRedirect("laws-of-ux", "zh"),
+    "/design-system?domain=laws-of-ux&lang=zh",
+  );
+  assert.equal(
+    buildDesignSystemDomainRedirect("uilaws", "zh"),
+    "/design-system?domain=uilaws&lang=zh",
+  );
+  assert.equal(
+    buildDesignSystemDomainRedirect("laws-of-ux", "en"),
+    "/design-system?domain=laws-of-ux",
+  );
+});
+
+test("localizedHref preserves share and account paths", () => {
+  assert.equal(localizedHref("/share/Ab12Cd34", "zh"), "/share/Ab12Cd34?lang=zh");
+  assert.equal(localizedHref("/account", "zh"), "/account?lang=zh");
+});
+
+test("zh dictionaries cover remaining route strings", () => {
+  assert.equal(zh.notFound.title, "页面未找到");
+  assert.equal(zh.share.title, "只读分析摘要");
+  assert.equal(zh.account.backToDemo, "返回实时演示");
+  assert.notEqual(zh.notFound.title, en.notFound.title);
+  assert.notEqual(zh.share.tryLiveDemo, en.share.tryLiveDemo);
 });

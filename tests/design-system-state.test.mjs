@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildDesignSystemDomainRedirect,
   createDesignSystemSearchParams,
   nextFromList,
   parseDomain,
@@ -20,6 +21,13 @@ test("pickSelectedId falls back to first available", () => {
   assert.equal(pickSelectedId("beta", ids), "beta");
   assert.equal(pickSelectedId("missing", ids), "alpha");
   assert.equal(pickSelectedId(null, ids), "alpha");
+});
+
+test("buildDesignSystemDomainRedirect sets domain filter", () => {
+  assert.equal(
+    buildDesignSystemDomainRedirect("uilaws", "en"),
+    "/design-system?domain=uilaws",
+  );
 });
 
 test("createDesignSystemSearchParams omits defaults", () => {
