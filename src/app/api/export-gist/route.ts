@@ -82,7 +82,14 @@ export async function POST(request: Request) {
         code: "gist_create_failed",
         message: result.message,
       },
-      { status: result.status >= 400 && result.status < 600 ? result.status : 502 },
+      {
+        status:
+          typeof result.status === "number" &&
+          result.status >= 400 &&
+          result.status < 600
+            ? result.status
+            : 502,
+      },
     );
   }
 

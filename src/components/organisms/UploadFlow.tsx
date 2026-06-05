@@ -252,7 +252,6 @@ export function UploadFlow({
     const fromHash = readShareFromLocation();
     if (!fromHash || typeof window === "undefined") return;
 
-    setSharedSummary(fromHash);
     persistShareSummary(fromHash);
 
     void createShortShareLink(window.location.origin, fromHash).then((shortLink) => {

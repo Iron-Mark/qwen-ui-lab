@@ -34,7 +34,10 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
     const env = getClientObservabilityEnv();
     const config = createObservabilityConfig(env);
     const dispatchError = createClientErrorDispatch(config, env);
-    return createMonitoringHooks({ config, dispatchError });
+    return createMonitoringHooks({
+      config,
+      dispatchError: dispatchError as (payload: unknown) => void,
+    });
   }, []);
 
   useEffect(() => {

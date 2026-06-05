@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
-import { AlertCircle, Check, Github, Loader2 } from "lucide-react";
+import { AlertCircle, Check, Code2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/providers/Toast";
@@ -189,7 +189,7 @@ export function GistExportButton({
         ? Check
         : status === "error"
           ? AlertCircle
-          : Github;
+          : Code2;
 
   return (
     <Button
