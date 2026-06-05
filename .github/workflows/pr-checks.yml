@@ -38,7 +38,8 @@ jobs:
       - name: Build
         run: npm run build
 
-  # E2E and visual regression omitted from PR gate — Playwright + prod server
+  # E2E and visual regression omitted from the required PR gate — Playwright + prod server
   # adds several minutes and snapshot diffs are noisy on feature branches.
+  # Optional warn-only E2E smoke: pr-e2e-smoke.yml (mobile + a11y + live-qwen-contract).
   # Main push runs visual-regression (hard fail) and strict production LCP in ci.yml;
   # full E2E runs nightly (e2e-nightly.yml) and via workflow_dispatch.

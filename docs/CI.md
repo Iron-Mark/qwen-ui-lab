@@ -7,11 +7,34 @@ GitHub Actions workflows under [`.github/workflows/`](../.github/workflows/) gat
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | [pr-checks.yml](../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, build (no E2E) |
+| [pr-e2e-smoke.yml](../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract (warn-only on PRs) |
 | [ci.yml](../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
 | [post-deploy-smoke.yml](../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route smoke against a deployed URL |
 
 PR checks stay fast on purpose. Heavier browser work runs on main or on the nightly schedule.
+
+## PR E2E smoke (optional)
+
+**Workflow:** `pr-e2e-smoke.yml`
+
+Runs a **fast subset** of Playwright specs on every pull request:
+
+- `e2e/mobile.spec.ts` — mobile viewport flows
+- `e2e/a11y.spec.ts` — accessibility checks
+- `e2e/live-qwen-contract.spec.ts` — live-path contract (mocked JSON, no API key)
+
+**Warn-only on PRs:** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, build).
+
+**Strict on manual run:** **Actions → PR E2E Smoke → Run workflow** fails the workflow on test errors (useful before merge or when debugging CI).
+
+Local equivalent:
+
+```bash
+CI=1 npm run test:e2e:pr-smoke
+```
+
+On failure, `test-results/` artifacts are uploaded for 7 days.
 
 ### Why visual regression is not on PR checks
 
@@ -92,6 +115,7 @@ To temporarily allow a breach without changing workflow YAML, set repository var
 | Script | Use |
 |--------|-----|
 | `npm run test:e2e` | Full Playwright suite |
+| `npm run test:e2e:pr-smoke` | PR smoke subset (mobile + a11y + live-qwen-contract) |
 | `npm run test:e2e:visual` | Visual regression spec only |
 | `npm run perf:lcp-budget` | Production LCP check |
 | `npm run perf:lighthouse` | Local build + Lighthouse (see [POST_LAUNCH.md](./POST_LAUNCH.md)) |
