@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useMemo } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
   Layers,
@@ -8,38 +12,75 @@ import {
   Zap,
 } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { useProviderMode } from "@/lib/provider-mode";
 import { cn } from "@/lib/utils";
-import { SITE_PITCH } from "@/lib/seo";
-
-const VALUE_PROPS = [
-  {
-    icon: Upload,
-    title: "Start from any screenshot",
-    body: "Drop PNG, JPG, SVG, or WebP—or load the built-in sample in one click.",
-  },
-  {
-    icon: Sparkles,
-    title: "See structure before you code",
-    body: "Get layout analysis, plan cards, and a React + Tailwind scaffold you can refine.",
-  },
-  {
-    icon: Layers,
-    title: "Polish with the design system",
-    body: "Browse atomic snippets and UX-law patterns to speed up the last mile.",
-  },
-] as const;
-
-const TRUST_SIGNALS = [
-  { icon: ShieldCheck, label: "Demo mode — no API key" },
-  { icon: Zap, label: "Runs offline for meetups" },
-] as const;
 
 export function HomeMarketingHero() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const observability = useObservability();
+  const { mode } = useProviderMode();
+  const locale = resolveLocale(searchParams.get("lang"));
+  const copy = getDictionary(locale).hero;
+
+  const analytics = useMemo(
+    () =>
+      createAnalyticsClient({
+        hooks: observability,
+        providerMode: mode,
+        route: pathname ?? "/",
+      }),
+    [mode, observability, pathname],
+  );
+
+  useEffect(() => {
+    analytics.track(AnalyticsEvent.HomeHeroViewed, {
+      source: "home_hero",
+      feature: "marketing_hero",
+      route: "/",
+    });
+  }, [analytics]);
+
+  const valueProps = [
+    {
+      icon: Upload,
+      title: copy.benefitUploadTitle,
+      body: copy.benefitUploadBody,
+    },
+    {
+      icon: Sparkles,
+      title: copy.benefitAnalyzeTitle,
+      body: copy.benefitAnalyzeBody,
+    },
+    {
+      icon: Layers,
+      title: copy.benefitDesignTitle,
+      body: copy.benefitDesignBody,
+    },
+  ] as const;
+
+  const trustSignals = [
+    { icon: ShieldCheck, label: copy.trustDemo },
+    { icon: Zap, label: copy.trustOffline },
+  ] as const;
+
+  function trackCta(feature: string) {
+    analytics.track(AnalyticsEvent.HomeHeroCtaClicked, {
+      source: "home_hero",
+      feature,
+      trigger: "link",
+    });
+  }
+
   return (
     <section
       data-testid="home-marketing-hero"
+      lang={locale}
       aria-labelledby="home-hero-heading"
       className="border-b border-border/60 bg-card/30"
     >
@@ -48,34 +89,44 @@ export function HomeMarketingHero() {
           <div className="max-w-3xl space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="text-xs font-medium">
-                Qwen meetup demo
+                {copy.badgeDemo}
               </Badge>
               <Badge
                 variant="outline"
                 className="border-amber-500/40 bg-amber-500/10 text-xs text-amber-900 dark:text-amber-100"
               >
-                Offline-safe · instant preview
+                {copy.badgeOffline}
               </Badge>
             </div>
             <h1
               id="home-hero-heading"
               className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]"
             >
-              Turn UI screenshots into scaffold-ready React
+              {copy.title}
             </h1>
             <p className="growth-snippet max-w-2xl text-base text-muted-foreground sm:text-lg">
-              {SITE_PITCH} Upload, analyze, and export in minutes—built for live
-              presentations without touching production APIs.
+              {copy.subtitle}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <Link
+                href="/demo"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "h-11 gap-2 px-5",
+                )}
+              >
+                One-click demo
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
               <Link
                 href="#upload-flow"
                 className={cn(
                   buttonVariants({ size: "lg" }),
                   "h-11 gap-2 px-5",
                 )}
+                onClick={() => trackCta("try_live_flow")}
               >
-                Try the live flow
+                {copy.ctaPrimary}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link
@@ -84,15 +135,16 @@ export function HomeMarketingHero() {
                   buttonVariants({ variant: "outline", size: "lg" }),
                   "h-11 gap-2 px-5",
                 )}
+                onClick={() => trackCta("explore_design_system")}
               >
-                Explore design system
+                {copy.ctaSecondary}
               </Link>
             </div>
             <ul
               className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
               aria-label="Trust signals"
             >
-              {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
+              {trustSignals.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2">
                   <Icon
                     className="size-4 shrink-0 text-primary"
@@ -109,7 +161,7 @@ export function HomeMarketingHero() {
           className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:auto_280px]"
           aria-label="Key benefits"
         >
-          {VALUE_PROPS.map(({ icon: Icon, title, body }) => (
+          {valueProps.map(({ icon: Icon, title, body }) => (
             <li
               key={title}
               className="rounded-xl border border-border/70 bg-background/80 p-4 shadow-sm"

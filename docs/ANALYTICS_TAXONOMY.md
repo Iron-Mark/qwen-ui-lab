@@ -34,6 +34,11 @@ For a staging activation checklist and dashboard setup, see `docs/ANALYTICS_STAG
 
 ## Event Taxonomy
 
+### Home hero (`/`)
+
+- `home.hero_viewed` — marketing hero rendered (once per mount).
+- `home.hero_cta_clicked` — primary or secondary hero CTA clicked (`feature`: `try_live_flow` | `explore_design_system`).
+
 ### Upload + Analyze Funnel (`/`)
 
 - `upload.selected` — user selected a valid image.

@@ -18,6 +18,8 @@ export const AnalyticsEvent = {
   DesignSystemLevelChanged: "design_system.level_changed",
   DesignSystemSearchUpdated: "design_system.search_updated",
   DesignSystemVariantChanged: "design_system.variant_changed",
+  HomeHeroViewed: "home.hero_viewed",
+  HomeHeroCtaClicked: "home.hero_cta_clicked",
 } as const;
 
 export type AnalyticsEventName =

@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { HomeBelowFoldClient } from "@/app/HomeBelowFoldClient";
 import { HomeMarketingHero } from "@/components/organisms/HomeMarketingHero";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
 import {
   stats,
@@ -70,7 +72,15 @@ export default function Home() {
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(circle_at_top,oklch(0.97_0_0),transparent_65%)] dark:bg-[radial-gradient(circle_at_top,oklch(0.26_0_0),transparent_65%)]" />
       <div className="relative">
-        <HomeMarketingHero />
+        <Suspense
+          fallback={
+            <div className="border-b border-border/60 bg-card/30 py-12">
+              <Skeleton className="mx-auto h-40 max-w-3xl" />
+            </div>
+          }
+        >
+          <HomeMarketingHero />
+        </Suspense>
         <HomeBelowFoldClient
           stats={stats}
           revenueData={revenueData}

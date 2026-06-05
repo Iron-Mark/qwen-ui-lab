@@ -7,6 +7,8 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   ChevronRight,
+  Link2,
+  Share2,
   Sparkles,
   UploadCloud,
   X,
@@ -38,6 +40,19 @@ import { useProviderMode } from "@/lib/provider-mode";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { BUNDLED_REFERENCE_SAMPLES } from "@/lib/reference-samples.mjs";
+import {
+  demoArchetypeExportFilename,
+  getDemoArchetypeSample,
+} from "@/lib/demo-archetypes.mjs";
+import { getReferenceSampleByFileName } from "@/lib/reference-samples.mjs";
+import {
+  buildShareableSummary,
+  buildShareUrl,
+  encodeShareHash,
+  persistShareSummary,
+  readShareFromLocation,
+  readShareFromSession,
+} from "@/lib/share-result.mjs";
 
 interface UiFlowArtifact {
   file: {
@@ -124,12 +139,23 @@ const UiLawsCompliance = dynamic(
   },
 );
 
-export function UploadFlow() {
+export interface UploadFlowProps {
+  /** Bundled reference sample id (dashboard, auth, mobile, …) for /demo */
+  demoArchetype?: string;
+  /** Load sample + run analyze on mount (one-click demo route) */
+  autoRunDemo?: boolean;
+}
+
+export function UploadFlow({
+  demoArchetype,
+  autoRunDemo = false,
+}: UploadFlowProps = {}) {
   const pathname = usePathname();
   const observability = useObservability();
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const demoBootstrappedRef = useRef(false);
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -146,6 +172,13 @@ export function UploadFlow() {
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
     loadSessionHistory(),
   );
+  const [sharedSummary, setSharedSummary] = useState<
+    ReturnType<typeof buildShareableSummary>
+  >(() => {
+    if (typeof window === "undefined") return null;
+    return readShareFromLocation() ?? readShareFromSession();
+  });
+  const [copyingShareLink, setCopyingShareLink] = useState(false);
   const analytics = useMemo(
     () =>
       createAnalyticsClient({
@@ -163,6 +196,47 @@ export function UploadFlow() {
       }
     };
   }, []);
+
+  function rememberShareableArtifact(nextArtifact: UiFlowArtifact, fileName: string) {
+    const payload = buildShareableSummary({
+      summary: nextArtifact.summary,
+      previewStats: nextArtifact.previewStats,
+      modeLabel: nextArtifact.modeLabel,
+      file: fileName,
+    });
+    if (!payload) return null;
+    persistShareSummary(payload);
+    if (typeof window !== "undefined") {
+      const nextHash = `#${encodeShareHash(payload)}`;
+      window.history.replaceState(null, "", `${pathname}${nextHash}`);
+    }
+    return payload;
+  }
+
+  async function copyShareLink() {
+    if (!artifact?.summary) return;
+    const payload =
+      buildShareableSummary({
+        summary: artifact.summary,
+        previewStats: artifact.previewStats,
+        modeLabel: artifact.modeLabel,
+        file: file?.name ?? "screenshot",
+      }) ?? sharedSummary;
+    if (!payload || typeof window === "undefined") return;
+
+    setCopyingShareLink(true);
+    try {
+      persistShareSummary(payload);
+      const url = buildShareUrl(window.location.origin, pathname ?? "/", payload);
+      await navigator.clipboard.writeText(url);
+      window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
+      toast("Share link copied (read-only summary)", "success");
+    } catch {
+      toast("Could not copy share link", "error");
+    } finally {
+      setCopyingShareLink(false);
+    }
+  }
 
   const showSampleScreenshotButton =
     !sampleUsed && !userUploadedOwn && !file;
@@ -208,6 +282,42 @@ export function UploadFlow() {
     }
     return "Analyze & generate preview";
   }, [analyzeCtaVariant, file, providerState, stage]);
+
+  const exportFilename = useMemo(() => {
+    if (file?.name) {
+      const sample = getDemoArchetypeSample(
+        getReferenceSampleByFileName(file.name).id,
+      );
+      if (sample?.id) {
+        return demoArchetypeExportFilename(sample.id);
+      }
+    }
+    if (demoArchetype) {
+      return demoArchetypeExportFilename(demoArchetype);
+    }
+    if (file?.name) {
+      const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
+      return `generated-${base || "scaffold"}.tsx`;
+    }
+    return "generated-scaffold.tsx";
+  }, [demoArchetype, file?.name]);
+
+  useEffect(() => {
+    if (!autoRunDemo || demoBootstrappedRef.current) return;
+    demoBootstrappedRef.current = true;
+
+    const sampleId = demoArchetype ?? "dashboard";
+    void (async () => {
+      await loadBundledSample(sampleId);
+    })();
+  }, [autoRunDemo, demoArchetype]);
+
+  useEffect(() => {
+    if (!autoRunDemo || !file || stage !== "uploaded" || providerState === "loading") {
+      return;
+    }
+    void runPrimaryAction();
+  }, [autoRunDemo, file, providerState, stage]);
 
   function acceptFile(
     nextFile: File | null,
@@ -320,6 +430,13 @@ export function UploadFlow() {
       };
       saveSession(record);
       setSessions(loadSessionHistory());
+      const sharePayload = rememberShareableArtifact(
+        outcome.artifact as UiFlowArtifact,
+        file.name,
+      );
+      if (sharePayload) {
+        setSharedSummary(sharePayload);
+      }
 
       if (outcome.instantDemo) {
         toast("Instant offline demo analysis ready", "warning");
@@ -464,7 +581,7 @@ export function UploadFlow() {
   async function loadBundledSample(sampleId: string) {
     const sample =
       BUNDLED_REFERENCE_SAMPLES.find((entry) => entry.id === sampleId) ??
-      BUNDLED_REFERENCE_SAMPLES[0];
+      getDemoArchetypeSample(sampleId);
 
     setError(null);
     setLoadingSample(true);
@@ -475,7 +592,7 @@ export function UploadFlow() {
       }
       const blob = await response.blob();
       const sampleFile = new File([blob], sample.fileName, {
-        type: blob.type || "image/svg+xml",
+        type: blob.type || sample.mimeType || "image/svg+xml",
       });
       acceptFile(sampleFile, "sample");
       setSampleUsed(true);
@@ -484,7 +601,7 @@ export function UploadFlow() {
       analytics.track(AnalyticsEvent.UploadSampleLoaded, {
         source: "sample_picker",
         sampleId: sample.id,
-        fileType: sampleFile.type || "image/svg+xml",
+        fileType: sampleFile.type || sample.mimeType || "image/svg+xml",
         fileSize: sampleFile.size,
         step: "upload",
         status: "completed",
@@ -517,6 +634,40 @@ export function UploadFlow() {
             ) : null}
           </AlertDescription>
         </Alert>
+      ) : null}
+
+      {sharedSummary && !artifact ? (
+        <Card
+          className="mb-6 border-primary/30 bg-primary/5"
+          data-testid="shared-result-summary"
+        >
+          <CardHeader className="pb-2">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Link2 className="size-4 text-primary" aria-hidden />
+                  Shared analysis summary
+                </CardTitle>
+                <CardDescription className="mt-1 text-xs">
+                  Read-only link — no code or secrets included ({sharedSummary.file})
+                </CardDescription>
+              </div>
+              <Badge variant="outline">{sharedSummary.mode}</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-0">
+            <p className="text-sm text-muted-foreground">{sharedSummary.summary}</p>
+            {sharedSummary.stats.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sharedSummary.stats.map((stat) => (
+                  <Badge key={`${stat.l}-${stat.v}`} variant="secondary">
+                    {stat.l}: {stat.v}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
       ) : null}
 
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -811,8 +962,20 @@ export function UploadFlow() {
 
               {artifact.summary ? (
                 <Card className="bg-background">
-                  <CardContent className="p-4 text-sm text-muted-foreground">
-                    {artifact.summary}
+                  <CardContent className="space-y-3 p-4">
+                    <p className="text-sm text-muted-foreground">{artifact.summary}</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => void copyShareLink()}
+                      disabled={copyingShareLink}
+                      data-testid="copy-share-link"
+                    >
+                      <Share2 className="size-3.5" aria-hidden />
+                      {copyingShareLink ? "Copying…" : "Copy share link"}
+                    </Button>
                   </CardContent>
                 </Card>
               ) : null}
@@ -836,13 +999,21 @@ export function UploadFlow() {
                 stage={stage === "generated" ? "generated" : "analyzed"}
               />
 
-              {stage === "generated" ? (
-                <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-                  <Card className="relative min-w-0 overflow-hidden">
-                    <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2">
+              {artifact.generatedCode &&
+              (stage === "analyzed" || stage === "generated") ? (
+                <Card className="bg-background" data-testid="scaffold-export-panel">
+                  <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
+                    <div>
+                      <CardTitle className="text-sm">Export scaffold</CardTitle>
+                      <CardDescription className="text-xs">
+                        Copy or download the generated React + Tailwind code.
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="copy"
+                        label="Copy all"
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast("Scaffold copied", "success")}
@@ -850,13 +1021,28 @@ export function UploadFlow() {
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="export"
-                        filename="generated-dashboard.tsx"
+                        label="Download .tsx"
+                        filename={exportFilename}
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast("Scaffold exported", "success")}
                       />
                     </div>
-                    <div className="pt-12">
+                  </CardHeader>
+                  {stage === "generated" ? null : (
+                    <CardContent className="pt-0">
+                      <p className="text-xs text-muted-foreground">
+                        Generate preview to see live stats alongside the snippet.
+                      </p>
+                    </CardContent>
+                  )}
+                </Card>
+              ) : null}
+
+              {stage === "generated" ? (
+                <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+                  <Card className="relative min-w-0 overflow-hidden">
+                    <div className="p-4 pt-2">
                       <SnippetPreview
                         code={artifact.generatedCode}
                         title="Generated scaffold"

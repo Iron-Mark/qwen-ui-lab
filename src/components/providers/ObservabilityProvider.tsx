@@ -10,16 +10,23 @@ import {
 
 const ObservabilityContext = createContext<ObservabilityHooks | null>(null);
 
-function getGlobalEnv() {
-  if (typeof window === "undefined") return {};
-  return window;
+function getClientObservabilityEnv() {
+  return {
+    NEXT_PUBLIC_OBSERVABILITY_ENABLED: process.env.NEXT_PUBLIC_OBSERVABILITY_ENABLED,
+    NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+    NEXT_PUBLIC_ERROR_MONITORING_ENABLED:
+      process.env.NEXT_PUBLIC_ERROR_MONITORING_ENABLED,
+    NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE:
+      process.env.NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE,
+    NEXT_PUBLIC_OBSERVABILITY_DEBUG: process.env.NEXT_PUBLIC_OBSERVABILITY_DEBUG,
+  };
 }
 
 export function ObservabilityProvider({ children }: { children: ReactNode }) {
   const { mode } = useProviderMode();
 
   const hooks = useMemo(() => {
-    const config = createObservabilityConfig(getGlobalEnv());
+    const config = createObservabilityConfig(getClientObservabilityEnv());
     return createMonitoringHooks({ config });
   }, []);
 
