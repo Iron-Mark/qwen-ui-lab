@@ -52,6 +52,8 @@ End-to-end tests never depend on secrets or external APIs:
 | Env scrubbing | `playwright.config.ts` | Strips `DASHSCOPE_API_KEY`, `QWEN_LIVE_ANALYSIS`, etc. from dev server |
 | Clipboard stub | `stubClipboardForE2E()` | Headless Copy/Export works without native clipboard |
 | Unit mocks | `tests/analyze-fallback.test.mjs` | Injects `fetchFn` — same contract without a browser |
+| Live contract (unit) | `tests/analyze-live-contract.test.mjs` | `fetchFn` mocks upstream Qwen JSON → structured artifact |
+| Live contract (E2E) | `e2e/live-qwen-contract.spec.ts` | `page.route` on health + `/api/analyze-ui` — no API key in CI |
 
 Regenerate E2E JSON after changing demo fixtures:
 
@@ -68,6 +70,8 @@ Upload → GET /api/health
 ```
 
 Contract tests in `e2e/offline-demo-contract.spec.ts` assert that **zero** `POST /api/analyze-ui` requests occur when health returns demo mode.
+
+Live-path contract tests (`tests/analyze-live-contract.test.mjs`, `e2e/live-qwen-contract.spec.ts`) use shared fixtures in `src/lib/qwen-mock-fixtures.mjs` (exported to `e2e/fixtures/live-qwen-responses.json`). They assert that when live mode is enabled, analyze returns a structured artifact from valid mocked JSON — never real DashScope credentials.
 
 Visual baselines live in `e2e/visual-regression.spec.ts`. CI runs this spec on every `main` push (`visual-regression` job in `.github/workflows/ci.yml`); see **[CI.md](./CI.md)**. Create or refresh snapshots with:
 
