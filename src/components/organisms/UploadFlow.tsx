@@ -1033,6 +1033,13 @@ export function UploadFlow({
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast("Scaffold exported", "success")}
                       />
+                      <GistExportButton
+                        text={artifact.generatedCode}
+                        filename={exportFilename}
+                        description="qwen-ui-lab generated scaffold"
+                        analyticsSource="upload_flow"
+                        analyticsFeature="generated_scaffold"
+                      />
                     </div>
                   </CardHeader>
                   {stage === "generated" ? null : (
