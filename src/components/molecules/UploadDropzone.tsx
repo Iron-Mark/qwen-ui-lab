@@ -39,7 +39,7 @@ export function UploadDropzone({
         ref={inputRef}
         type="file"
         accept={accept}
-        className="sr-only"
+        className="sr-only upload-dropzone-input"
         disabled={disabled}
         onChange={(event) => onFile(event.target.files?.item(0) ?? null)}
       />

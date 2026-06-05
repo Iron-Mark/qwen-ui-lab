@@ -418,6 +418,11 @@ body {
   }
 }
 
+/* Hidden file inputs: caret via class avoids SSR/client inline-style hydration mismatch. */
+.upload-dropzone-input {
+  caret-color: transparent;
+}
+
 .skip-link {
   position: absolute;
   left: 0.75rem;
