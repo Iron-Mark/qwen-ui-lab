@@ -80,11 +80,52 @@ if (!health.response.ok) {
       `/api/health liveAnalysisEnabled mismatch (expected ${expectLive}, got ${liveAnalysisEnabled}).`,
     );
   }
+
+  if (expectLive) {
+    if (health.json.provider !== "qwen") {
+      failures.push(
+        `/api/health provider mismatch (expected qwen, got ${String(health.json.provider)}).`,
+      );
+    }
+    if (health.json.hasApiKey !== true) {
+      failures.push("/api/health hasApiKey must be true when live analysis is enabled.");
+    }
+    if (typeof health.json.model !== "string" || health.json.model.length === 0) {
+      failures.push("/api/health model must be set when live analysis is enabled.");
+    }
+  } else if (health.json.provider !== "demo") {
+    failures.push(
+      `/api/health provider mismatch (expected demo, got ${String(health.json.provider)}).`,
+    );
+  }
+
   console.log(
     `PASS health: provider=${health.json.provider}, liveAnalysisEnabled=${String(
       liveAnalysisEnabled,
     )}`,
   );
+}
+
+if (expectLive) {
+  const analyzeProbe = await safeFetch(new URL("/api/analyze-ui", baseUrl), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({}),
+  });
+  if (!analyzeProbe) {
+    // safeFetch already recorded failure
+  } else if (analyzeProbe.status !== 400) {
+    failures.push(
+      `/api/analyze-ui live route probe expected HTTP 400 for empty body, got ${analyzeProbe.status}.`,
+    );
+  } else {
+    const payload = await analyzeProbe.json().catch(() => null);
+    if (!payload || payload.ok !== false || typeof payload.code !== "string") {
+      failures.push("/api/analyze-ui returned unexpected error payload for invalid body.");
+    } else {
+      console.log(`PASS analyze-ui route: invalid body rejected (${payload.code})`);
+    }
+  }
 }
 
 for (const check of checks) {

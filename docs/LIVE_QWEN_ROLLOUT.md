@@ -14,6 +14,36 @@ Related: **[PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** · **[DEPL
 
 An API key **alone** does not call Qwen. Both the flag and the key are required.
 
+## Enable live on Vercel Preview (operator steps)
+
+Use this sequence to rehearse live vision on a **Preview** deployment without changing **Production** env (meetup-safe default).
+
+1. **Create or open a Preview deployment**
+   - Push a branch / open a PR so Vercel builds a preview URL (`https://<project>-<hash>.vercel.app`), or use an existing staging host.
+2. **Set server-only variables (Preview scope only)**
+   - Vercel → **Project → Settings → Environment Variables**
+   - Add to **Preview** (leave **Production** unchecked until Stage C):
+     - `QWEN_LIVE_ANALYSIS` = `true`
+     - `DASHSCOPE_API_KEY` = your Model Studio key
+     - `QWEN_MODEL` = `qwen3-vl-plus` (or your chosen VL model)
+     - Optional: `QWEN_BASE_URL` if not using the Singapore default
+   - Do **not** enable “Expose to Browser” on secrets. Do **not** set `NEXT_PUBLIC_QWEN_API_KEY`.
+3. **Redeploy Preview**
+   - **Deployments** → latest Preview → **Redeploy** (env vars apply on the next deployment, not retroactively on old builds).
+4. **Validate locally before/after promote** (same values you set in Vercel):
+   ```bash
+   npm run deploy:env:live
+   ```
+5. **Smoke the preview URL** (HTTPS required):
+   ```bash
+   DEPLOY_URL=https://<your-preview-host> node scripts/staged-live-smoke.mjs
+   ```
+   - Script refuses `http://` and the public demo production host unless `ALLOW_PRODUCTION_LIVE_SMOKE=1`.
+   - Expect: health `provider: "qwen"`, `liveAnalysisEnabled: true`, `hasApiKey: true`, non-empty `model`; `POST /api/analyze-ui` rejects invalid body with HTTP 400.
+6. **Manual UI check** on the preview `/` URL: header **Live Qwen** → sample screenshot → **Analyze** (upstream call; quota-dependent).
+
+Local rehearsal (safe, no Vercel changes): copy [`.env.example`](../.env.example) → `.env.local`, set live vars, restart `npm run dev`, then `npm run doctor`.
+
 ## Required environment (host / Vercel / equivalent)
 
 Set **server-only** variables in the deployment environment (never `NEXT_PUBLIC_*` for secrets).
@@ -56,6 +86,23 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 ```
 
 Restart the dev server after changing env files.
+
+## Live API rate limiting
+
+When **`QWEN_LIVE_ANALYSIS=true`** and **`DASHSCOPE_API_KEY`** are set (`canUseLiveQwen()`), `POST /api/analyze-ui` applies a lightweight **per-IP** limit before calling Model Studio.
+
+| Setting | Default | Purpose |
+|---------|---------|---------|
+| `ANALYZE_UI_RATE_LIMIT_MAX` | `12` | Max live analyze requests per client IP per window |
+| `ANALYZE_UI_RATE_LIMIT_WINDOW_MS` | `60000` | Fixed window length (ms) |
+
+**Behavior**
+
+- **Demo / offline:** live flag off → **no rate limit** on this route (client usually skips the route; server may still return demo artifact if called).
+- **Exceeded limit:** HTTP **429**, `code: "rate_limit_exceeded"`, `Retry-After` header (seconds), `X-RateLimit-Limit`.
+- **Serverless:** in-memory buckets are **per warm instance** (best-effort abuse guard, not a global cluster quota). For stricter caps, add edge/WAF or Redis later.
+
+**Tuning for preview rehearsal:** lower `ANALYZE_UI_RATE_LIMIT_MAX` on Preview if you expect heavy clicking during a dry run.
 
 ## Pre-promote gate: `deploy:env:live`
 
@@ -182,6 +229,9 @@ GitHub Actions: workflow_dispatch input `expect_live_analysis: true` on **Post D
 Smoke verifies:
 
 - `GET /api/health` — `ok: true` and `liveAnalysisEnabled` matches `EXPECT_LIVE_ANALYSIS`
+- When `EXPECT_LIVE_ANALYSIS=true`: `provider: "qwen"`, `hasApiKey: true`, non-empty `model`
+- When live: `POST /api/analyze-ui` with empty JSON body → HTTP **400** (route reachable, validation active)
+- `staged-live-smoke.mjs`: HTTPS only; blocks public demo production host unless `ALLOW_PRODUCTION_LIVE_SMOKE=1`
 - `/`, `/design-system`, laws-of-ux / uilaws routes, `robots.txt`, `sitemap.xml`
 
 Manual UI check on `/`:

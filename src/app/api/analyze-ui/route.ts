@@ -1,10 +1,37 @@
-import { analyzeUiImageWithQwen } from "@/lib/qwen-analyze.mjs";
+import {
+  checkAnalyzeUiRateLimit,
+  getRequestClientIp,
+} from "@/lib/analyze-ui-rate-limit.mjs";
+import { analyzeUiImageWithQwen, canUseLiveQwen } from "@/lib/qwen-analyze.mjs";
 
 export const runtime = "nodejs";
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 export async function POST(request: Request) {
+  if (canUseLiveQwen()) {
+    const rate = checkAnalyzeUiRateLimit({
+      clientKey: getRequestClientIp(request),
+    });
+
+    if (!rate.allowed) {
+      return Response.json(
+        {
+          ok: false,
+          code: "rate_limit_exceeded",
+          message: `Too many live analysis requests from this client. Try again in ${rate.retryAfterSec} seconds.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rate.retryAfterSec),
+            "X-RateLimit-Limit": String(rate.limit),
+          },
+        },
+      );
+    }
+  }
+
   let body: unknown;
 
   try {

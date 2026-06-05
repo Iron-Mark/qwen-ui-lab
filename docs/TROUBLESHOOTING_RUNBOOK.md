@@ -54,6 +54,7 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 - Error toast, then demo fallback artifact.
 - Response from `/api/analyze-ui` with `qwen_network_error`, `qwen_request_failed`, or `invalid_qwen_json`.
+- HTTP **429** with `rate_limit_exceeded` during live preview rehearsal (rapid Analyze clicks).
 
 ### Actions
 
@@ -65,6 +66,7 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
    - file size <= 4 MB
 4. Retry with a smaller image to avoid payload pressure.
 5. Use demo mode for presentation continuity while investigating.
+6. For **429 rate_limit_exceeded**: wait for `Retry-After` seconds or raise `ANALYZE_UI_RATE_LIMIT_MAX` on Preview only (see `docs/LIVE_QWEN_ROLLOUT.md`). Demo mode is never rate-limited on this route.
 
 ## Incident: `npm run doctor` fails
 
