@@ -1091,13 +1091,6 @@ export function UploadFlow({
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
                       />
-                      <GistExportButton
-                        text={artifact.generatedCode}
-                        filename={exportFilename}
-                        description="qwen-ui-lab generated scaffold"
-                        analyticsSource="upload_flow"
-                        analyticsFeature="generated_scaffold"
-                      />
                     </div>
                   </CardHeader>
                   {stage === "generated" ? null : (

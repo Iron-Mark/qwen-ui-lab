@@ -271,7 +271,7 @@ test.describe("marketing surfaces", () => {
     await expect(hero.locator(".growth-snippet")).toBeVisible();
     await expect(
       page.getByRole("link", { name: /try the live flow/i }),
-    ).toHaveAttribute("href", "#upload-flow");
+    ).toHaveAttribute("href", "/#upload-flow");
     await expect(
       page.getByRole("link", { name: /explore design system/i }),
     ).toHaveAttribute("href", "/design-system");
