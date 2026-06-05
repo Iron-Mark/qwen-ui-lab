@@ -27,17 +27,19 @@ test("raster archetypes ship PNG + WebP assets on disk", () => {
   }
 });
 
-test("dashboard, auth, and mobile bundled samples use PNG paths", () => {
-  const rasterSamples = BUNDLED_REFERENCE_SAMPLES.slice(0, 3);
+test("all bundled reference samples use PNG paths with WebP companions", () => {
   assert.deepEqual(
-    rasterSamples.map((sample) => sample.fileName),
+    BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName),
     [
       "dashboard-reference.png",
       "auth-reference.png",
       "mobile-reference.png",
+      "landing-reference.png",
+      "settings-reference.png",
+      "ecommerce-reference.png",
     ],
   );
-  for (const sample of rasterSamples) {
+  for (const sample of BUNDLED_REFERENCE_SAMPLES) {
     assert.equal(sample.mimeType, "image/png");
     assert.match(sample.hint, /PNG screenshot/i);
     assert.ok(sample.webpPath?.endsWith(".webp"));
@@ -80,4 +82,17 @@ test("getReferenceSampleByFileName resolves legacy SVG stems to raster bundle", 
   const auth = getReferenceSampleByFileName("auth-reference.svg");
   assert.equal(auth.id, "auth");
   assert.equal(auth.fileName, "auth-reference.png");
+
+  const landing = getReferenceSampleByFileName("landing-reference.svg");
+  assert.equal(landing.id, "landing");
+  assert.equal(landing.fileName, "landing-reference.png");
+});
+
+test("lookupKnownSample resolves landing PNG and WebP stems to SVG registry", () => {
+  const landingPng = lookupKnownSample("landing-reference.png");
+  const landingWebp = lookupKnownSample("landing-reference.webp");
+  assert.ok(landingPng);
+  assert.ok(landingWebp);
+  assert.match(landingPng.summary, /Marketing landing/i);
+  assert.equal(landingWebp.generatedCode, landingPng.generatedCode);
 });

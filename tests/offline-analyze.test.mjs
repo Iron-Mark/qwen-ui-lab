@@ -22,9 +22,9 @@ test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
     "dashboard-reference.png",
     "auth-reference.png",
     "mobile-reference.png",
-    "landing-reference.svg",
-    "settings-reference.svg",
-    "ecommerce-reference.svg",
+    "landing-reference.png",
+    "settings-reference.png",
+    "ecommerce-reference.png",
   ]);
 });
 
@@ -75,6 +75,24 @@ test("lookupKnownSample returns rich landing fixture", () => {
   assert.match(known.summary, /Marketing landing/i);
   assert.equal(known.previewStats[0].value, "5");
   assert.match(known.generatedCode, /PricingTable/);
+});
+
+test("lookupKnownSample resolves landing-reference.png via stem fallback", () => {
+  const known = lookupKnownSample("landing-reference.png");
+  assert.ok(known);
+  assert.match(known.summary, /Marketing landing/i);
+});
+
+test("lookupKnownSample resolves settings-reference.webp via stem fallback", () => {
+  const known = lookupKnownSample("settings-reference.webp");
+  assert.ok(known);
+  assert.match(known.summary, /Account settings/i);
+});
+
+test("lookupKnownSample resolves ecommerce-reference.png via stem fallback", () => {
+  const known = lookupKnownSample("ecommerce-reference.png");
+  assert.ok(known);
+  assert.match(known.summary, /E-commerce catalog/i);
 });
 
 test("lookupKnownSample returns rich settings fixture", () => {
