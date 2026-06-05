@@ -19,12 +19,14 @@ const ENFORCED_CONTENT_SECURITY_POLICY = [
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https:",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  // Stage B: no unsafe-eval (Next 16 prod bundles do not require eval)
+  "script-src 'self' 'unsafe-inline' https:",
   "connect-src 'self' https:",
   "object-src 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
 
+// Measures Stage C (script without unsafe-inline) beyond enforced Stage B baseline.
 const REPORT_ONLY_STANDARD_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "base-uri 'self'",

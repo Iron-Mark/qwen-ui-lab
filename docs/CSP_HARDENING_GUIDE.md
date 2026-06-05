@@ -8,7 +8,7 @@ This project uses a two-track CSP strategy:
 ## Current rollout
 
 - Enforced policy allows compatibility-focused script and style behavior while tightening low-risk directives:
-  - `script-src 'unsafe-inline' 'unsafe-eval'`
+  - `script-src 'unsafe-inline'` (no `unsafe-eval` — Stage B)
   - `style-src 'unsafe-inline'`
 - Enforced policy additionally pins:
   - `frame-src 'none'`
@@ -17,7 +17,7 @@ This project uses a two-track CSP strategy:
   - `connect-src 'self' https:` (Stage A — no `ws:` / `wss:`; app uses HTTPS `fetch` only)
   - `upgrade-insecure-requests` (Stage A — production is HTTPS-only)
 - Report-only has staged strictness levels (tests **next** tightenings beyond enforced):
-  - `standard` (default): script without `unsafe-inline` / `unsafe-eval` (`'report-sample'` only).
+  - `standard` (default): script without `unsafe-inline` (`'report-sample'` only) — measures Stage C.
   - `strict`: also removes style `unsafe-inline`, blocks script/style attributes, and reports Trusted Types requirements.
   - Reports violations to `/api/security/csp-report`
 
@@ -38,7 +38,7 @@ This project uses a two-track CSP strategy:
 4. **Reduce noise** from known third-party sources by explicit allowlisting or removal.
 5. **Promote** strict policy from report-only to enforced in stages:
    - Stage A: enforce strict `connect-src` (drop ws/wss if not required). **Done** (v0.1.6 lane).
-   - Stage B: enforce script without `unsafe-eval` (report-only `standard` is measuring this now).
+   - Stage B: enforce script without `unsafe-eval`. **Done** — e2e rehearsal showed no `eval` violations; inline script noise remains report-only.
    - Stage C: enforce script without `unsafe-inline` (nonce/hash based).
    - Stage D: enforce style without `unsafe-inline` (nonce/hash based).
    - Stage E: enforce `script-src-attr 'none'` and `style-src-attr 'none'`.
