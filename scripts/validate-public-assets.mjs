@@ -84,7 +84,21 @@ for (const rel of collectManifestIconPaths(manifest)) {
   assertUnderPublic(rel);
 }
 
+const swPath = join(PUBLIC_ROOT, "sw.js");
+const swSource = readFileSync(swPath, "utf8");
+const cacheMatch = swSource.match(/CACHE_NAME\s*=\s*"(qwen-ui-lab-v\d+)"/);
+if (!cacheMatch) {
+  fail("public/sw.js must define CACHE_NAME as qwen-ui-lab-v{N}");
+}
+if (!swSource.includes("/offline.html")) {
+  fail("public/sw.js must reference /offline.html");
+}
+if (!swSource.includes("SKIP_WAITING")) {
+  fail("public/sw.js must handle SKIP_WAITING messages");
+}
+
 console.log("manifest.json is valid JSON");
+console.log(`Service worker cache: ${cacheMatch[1]}`);
 console.log(
   `Checked ${REQUIRED_PUBLIC_PATHS.length} required assets and ${(manifest.icons ?? []).length} manifest icon entries`,
 );

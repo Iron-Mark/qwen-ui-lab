@@ -40,6 +40,7 @@ export interface AnalyticsMetadata {
   domain?: AnalyticsMetadataValue;
   level?: AnalyticsMetadataValue;
   entryId?: AnalyticsMetadataValue;
+  sampleId?: AnalyticsMetadataValue;
   queryLength?: AnalyticsMetadataValue;
   totalVisible?: AnalyticsMetadataValue;
 }

@@ -34,6 +34,8 @@ describe("service worker shell", () => {
     assert.match(sw, /\/offline\.html/);
     assert.match(sw, /\/manifest\.json/);
     assert.match(sw, /skipWaiting/);
+    assert.match(sw, /SKIP_WAITING/);
+    assert.doesNotMatch(sw, /CACHE_NAME\s*=\s*"qwen-ui-lab-v0"/);
   });
 
   it("offline page exists", () => {

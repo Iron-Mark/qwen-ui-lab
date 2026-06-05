@@ -37,26 +37,52 @@ The service worker ([public/sw.js](../public/sw.js)) uses:
 
 `/api/*` requests are never intercepted — live Qwen calls fail normally when offline.
 
+## Cache versioning
+
+Bump `CACHE_NAME` in `public/sw.js` (for example `qwen-ui-lab-v6` → `qwen-ui-lab-v7`) when:
+
+- The `PRECACHE` list changes
+- Fetch / navigation caching strategy changes
+- You need `activate` to delete stale runtime caches
+
+You do **not** need a bump for comment-only edits. Hashed Next assets under `/_next/static/` are safe across deploys; old cache buckets are removed on activate when `CACHE_NAME` changes.
+
+`npm run validate:assets` and `npm test` assert the `qwen-ui-lab-v{N}` pattern and required SW hooks.
+
 ## Updates
 
-1. Deploy a new build (cache name bumps in `sw.js`, e.g. `qwen-ui-lab-v5`).
-2. On the next visit, the browser fetches `/sw.js` with `updateViaCache: "none"`.
-3. The new worker installs, calls `skipWaiting()`, activates, and triggers a single page reload via `controllerchange`.
+1. Deploy a new build with an incremented `CACHE_NAME` in `public/sw.js`.
+2. On the next visit, the browser fetches `/sw.js` with `updateViaCache: "none"` and `Cache-Control: no-cache` from [next.config.ts](../next.config.ts).
+3. When a new worker is **waiting** while an older one still controls the page, [ServiceWorkerRegister](../src/components/providers/ServiceWorkerRegister.tsx) shows an optional bottom-left toast: **Refresh** applies the update; **Dismiss** leaves the current tab on the old build until the user refreshes manually.
+4. **Refresh** posts `{ type: "SKIP_WAITING" }` to the waiting worker (handled in `sw.js`), then reloads once on `controllerchange`.
 
-To verify locally:
+First install does not show the toast (no prior controller).
+
+### Verify locally
 
 ```bash
 npm run build
 npm run start
-# Hard refresh once, then change CACHE_NAME in public/sw.js, rebuild, reload
+# Hard refresh once, bump CACHE_NAME in public/sw.js, rebuild, reload — toast should appear
 ```
+
+### Production-server E2E
+
+Playwright’s default `test:e2e` runs against `next dev` (no SW). PWA registration is covered by:
+
+```bash
+npm run test:e2e:pwa
+```
+
+This uses [playwright.pwa.config.ts](../playwright.pwa.config.ts) to `build` + `start` on port 3000, then runs [e2e/pwa-production.spec.ts](../e2e/pwa-production.spec.ts).
 
 ## Verification
 
 ```bash
-npm run validate:assets   # manifest, icons, sw.js, offline.html
+npm run validate:assets   # manifest, icons, sw.js CACHE_NAME, offline.html
 npm test                  # tests/pwa.test.mjs
-npm run test:e2e          # manifest + sw.js reachability
+npm run test:e2e          # dev server — manifest + sw.js reachability (qa-coverage)
+npm run test:e2e:pwa      # prod server — SW registration + cache headers
 ```
 
 ## Next.js 16 notes

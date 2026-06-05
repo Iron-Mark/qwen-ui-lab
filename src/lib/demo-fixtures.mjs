@@ -1,8 +1,6 @@
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
+import { DEFAULT_REFERENCE_SAMPLE } from "./reference-samples.data.mjs";
+import { getBundledReferenceFile } from "./reference-samples.server.mjs";
 
 /** Matches GET /api/health in demo mode (production + E2E). */
 export const DEMO_HEALTH_RESPONSE = {
@@ -14,29 +12,15 @@ export const DEMO_HEALTH_RESPONSE = {
   baseUrl: null,
 };
 
-/** Bundled meetup sample used by "Use sample screenshot" and E2E. */
-export const SAMPLE_REFERENCE_NAME = "dashboard-reference.svg";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+/** Bundled meetup sample used by default sample picker option and E2E. */
+export const SAMPLE_REFERENCE_NAME = DEFAULT_REFERENCE_SAMPLE.fileName;
 
 /**
  * File metadata for the bundled dashboard reference (size read from disk when omitted).
- * @param {{ size?: number }} [options]
+ * @param {{ size?: number; fileName?: string }} [options]
  */
-export function getSampleReferenceFile({ size } = {}) {
-  const resolvedSize =
-    size ??
-    readFileSync(
-      resolve(__dirname, "../../public/references/dashboard-reference.svg"),
-    ).length;
-
-  return {
-    name: SAMPLE_REFERENCE_NAME,
-    type: "image/svg+xml",
-    size: resolvedSize,
-    width: 1200,
-    height: 720,
-  };
+export function getSampleReferenceFile({ size, fileName } = {}) {
+  return getBundledReferenceFile({ size, fileName });
 }
 
 /**

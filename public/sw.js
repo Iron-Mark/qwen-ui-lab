@@ -1,4 +1,5 @@
-const CACHE_NAME = "qwen-ui-lab-v5";
+/** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
+const CACHE_NAME = "qwen-ui-lab-v6";
 
 /** App shell and static assets safe to precache (no hashed Next chunks). */
 const PRECACHE = [
