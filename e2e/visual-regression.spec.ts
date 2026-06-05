@@ -73,9 +73,9 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
 const BUNDLED_SAMPLE_ARTIFACT_CASES = [
   { label: "Sign in", fileName: "auth-reference.png", screenshot: "post-analyze-auth-summary.png" },
   { label: "Mobile app", fileName: "mobile-reference.png", screenshot: "post-analyze-mobile-summary.png" },
-  { label: "Landing page", fileName: "landing-reference.svg", screenshot: "post-analyze-landing-summary.png" },
-  { label: "Settings", fileName: "settings-reference.svg", screenshot: "post-analyze-settings-summary.png" },
-  { label: "Shop catalog", fileName: "ecommerce-reference.svg", screenshot: "post-analyze-ecommerce-summary.png" },
+  { label: "Landing page", fileName: "landing-reference.png", screenshot: "post-analyze-landing-summary.png" },
+  { label: "Settings", fileName: "settings-reference.png", screenshot: "post-analyze-settings-summary.png" },
+  { label: "Shop catalog", fileName: "ecommerce-reference.png", screenshot: "post-analyze-ecommerce-summary.png" },
 ] as const;
 
 for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
