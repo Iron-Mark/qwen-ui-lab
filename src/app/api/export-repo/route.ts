@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   });
   const zipBytes = createStoredZip(zipEntries);
 
-  return new Response(zipBytes, {
+  return new Response(Buffer.from(zipBytes), {
     status: 200,
     headers: {
       "Content-Type": "application/zip",

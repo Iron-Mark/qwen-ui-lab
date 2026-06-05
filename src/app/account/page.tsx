@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AccountPageClient } from "@/app/account/AccountPageClient";
+import { Skeleton } from "@/components/ui/skeleton";
 import { createRouteMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createRouteMetadata({
@@ -11,5 +13,15 @@ export const metadata: Metadata = createRouteMetadata({
 });
 
 export default function AccountPage() {
-  return <AccountPageClient />;
+  return (
+    <Suspense
+      fallback={
+        <div className="py-10">
+          <Skeleton className="mx-auto h-96 max-w-2xl rounded-2xl" aria-hidden />
+        </div>
+      }
+    >
+      <AccountPageClient />
+    </Suspense>
+  );
 }

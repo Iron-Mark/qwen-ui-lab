@@ -39,31 +39,33 @@ export function deriveDisplayNameFromEmail(email) {
  * @param {Storage | null | undefined} [storage]
  * @returns {AuthState}
  */
+const GUEST_STATE = /** @type {AuthState} */ ({ mode: "guest" });
+
 export function loadAuthState(storage = getSessionStorage()) {
-  if (!storage) return { mode: "guest" };
+  if (!storage) return GUEST_STATE;
   try {
     const raw = storage.getItem(AUTH_SESSION_KEY);
-    if (!raw) return { mode: "guest" };
+    if (!raw) return GUEST_STATE;
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return { mode: "guest" };
+    if (!parsed || typeof parsed !== "object") return GUEST_STATE;
     const mode = parsed.mode;
     if (mode !== "guest" && mode !== "named" && mode !== "magic-link-pending") {
-      return { mode: "guest" };
+      return GUEST_STATE;
     }
     const displayName = normalizeDisplayName(parsed.displayName);
     const email =
       typeof parsed.email === "string" && isValidEmail(parsed.email)
         ? parsed.email.trim().toLowerCase()
         : undefined;
-    if (mode === "named" && !displayName) return { mode: "guest" };
-    if (mode === "magic-link-pending" && !email) return { mode: "guest" };
+    if (mode === "named" && !displayName) return GUEST_STATE;
+    if (mode === "magic-link-pending" && !email) return GUEST_STATE;
     return {
       mode,
       ...(displayName ? { displayName } : {}),
       ...(email ? { email } : {}),
     };
   } catch {
-    return { mode: "guest" };
+    return GUEST_STATE;
   }
 }
 
@@ -76,7 +78,7 @@ export function saveAuthState(state, storage = getSessionStorage()) {
   try {
     if (state.mode === "guest") {
       storage.removeItem(AUTH_SESSION_KEY);
-      return { mode: "guest" };
+      return /** @type {AuthState} */ ({ mode: "guest" });
     }
     storage.setItem(AUTH_SESSION_KEY, JSON.stringify(state));
   } catch {

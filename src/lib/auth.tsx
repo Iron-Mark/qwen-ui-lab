@@ -19,13 +19,8 @@ import {
   setDisplayName as persistDisplayName,
 } from "@/lib/auth.mjs";
 
-export type AuthMode = "guest" | "named" | "magic-link-pending";
-
-export type AuthState = {
-  mode: AuthMode;
-  displayName?: string;
-  email?: string;
-};
+export type { AuthMode, AuthState } from "@/lib/auth.mjs";
+import type { AuthState } from "@/lib/auth.mjs";
 
 interface AuthContextValue {
   auth: AuthState;
