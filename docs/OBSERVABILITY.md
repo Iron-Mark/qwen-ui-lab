@@ -94,6 +94,8 @@ Implementation files:
 - `src/lib/error-reporting.mjs` — generic beacon (node-testable)
 - `src/lib/error-reporting.client.ts` — lazy `@sentry/browser` init
 - `src/lib/analyze-observability.mjs` — analyze failure classification
+- `src/lib/analytics-event-buffer.mjs` — optional browser-local event ring buffer (staging QA)
+- `/admin/analytics` — docs-only funnel reference by default; live buffer when observability + analytics flags are set (`noindex`)
 
 ## Staging verification
 

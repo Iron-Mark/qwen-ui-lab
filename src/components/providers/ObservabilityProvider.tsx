@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useProviderMode } from "@/lib/provider-mode";
 import { createClientErrorDispatch } from "@/lib/error-reporting.client";
+import { appendClientAnalyticsBuffer } from "@/lib/analytics-event-buffer";
 import {
   createMonitoringHooks,
   createObservabilityConfig,
@@ -37,6 +38,13 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
     return createMonitoringHooks({
       config,
       dispatchError: dispatchError as (payload: unknown) => void,
+      dispatchEvent: (payload) => {
+        const record = payload as { eventName: string; metadata: Record<string, unknown> };
+        appendClientAnalyticsBuffer(record);
+        if (config.debugLogging) {
+          console.info("[observability:event]", record);
+        }
+      },
     });
   }, []);
 

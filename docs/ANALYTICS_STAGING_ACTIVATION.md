@@ -23,16 +23,17 @@ Notes:
 
 ## 2) QA Activation Checklist
 
-1. Open `/` and `/design-system` in staging.
-2. Complete one happy-path upload/analyze/generate flow and one forced fallback flow.
-3. Trigger copy and export actions from both upload preview and design-system cards.
-4. Verify that no event payload contains:
+1. Open `/admin/analytics` to confirm docs-only mode (default) or the live local buffer after flags are set.
+2. Open `/` and `/design-system` in staging.
+3. Complete one happy-path upload/analyze/generate flow and one forced fallback flow.
+4. Trigger copy and export actions from both upload preview and design-system cards.
+5. Verify that no event payload contains:
    - query strings in `route`
    - freeform text (`prompt`, `notes`, user-entered strings)
    - emails, API keys, raw request/response payloads
-5. Confirm event names are from the taxonomy only:
+6. Confirm event names are from the taxonomy only:
    - `upload.*`, `analysis.*`, `generate.*`, `design_system.*`, `export.triggered`
-6. Confirm demo-mode suppression:
+7. Confirm demo-mode suppression:
    - with `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false`, demo provider mode does not emit events.
 
 ## 3) Dashboard Starter Views
