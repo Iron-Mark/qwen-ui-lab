@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
   Share2,
@@ -48,6 +48,7 @@ import { getReferenceSampleByFileName } from "@/lib/reference-samples.mjs";
 import {
   buildShareableSummary,
   buildShareUrl,
+  createShortShareLink,
   encodeShareHash,
   persistShareSummary,
   readShareFromLocation,
@@ -174,6 +175,7 @@ export function UploadFlow({
   autoRunDemo = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
+  const router = useRouter();
   const { locale, dict } = useLocale();
   const t = dict.uploadFlow;
   const observability = useObservability();
@@ -228,6 +230,20 @@ export function UploadFlow({
     };
   }, []);
 
+  useEffect(() => {
+    const fromHash = readShareFromLocation();
+    if (!fromHash || typeof window === "undefined") return;
+
+    setSharedSummary(fromHash);
+    persistShareSummary(fromHash);
+
+    void createShortShareLink(window.location.origin, fromHash).then((shortLink) => {
+      if (shortLink?.url) {
+        router.replace(shortLink.url);
+      }
+    });
+  }, [router]);
+
   function rememberShareableArtifact(nextArtifact: UiFlowArtifact, fileName: string) {
     const payload = buildShareableSummary({
       summary: nextArtifact.summary,
@@ -258,10 +274,20 @@ export function UploadFlow({
     setCopyingShareLink(true);
     try {
       persistShareSummary(payload);
-      const url = buildShareUrl(window.location.origin, pathname ?? "/", payload);
+      const shortLink = await createShortShareLink(window.location.origin, payload);
+      const url =
+        shortLink?.url ??
+        buildShareUrl(window.location.origin, pathname ?? "/", payload);
       await navigator.clipboard.writeText(url);
-      window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
-      toast(t.toastShareCopied, "success");
+      if (shortLink) {
+        window.history.replaceState(null, "", shortLink.url);
+      } else {
+        window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
+      }
+      toast(
+        shortLink ? t.toastShortShareCopied : t.toastShareHashCopied,
+        "success",
+      );
     } catch {
       toast(t.toastShareFailed, "error");
     } finally {
@@ -986,7 +1012,7 @@ export function UploadFlow({
                       data-testid="copy-share-link"
                     >
                       <Share2 className="size-3.5" aria-hidden />
-                      {copyingShareLink ? t.copying : t.copyShareLink}
+                      {copyingShareLink ? t.creatingShareLink : t.copyShortShareLink}
                     </Button>
                   </CardContent>
                 </Card>
