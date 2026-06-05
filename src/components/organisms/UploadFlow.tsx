@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   ChevronRight,
   Share2,
@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
+import { GistExportButton } from "@/components/atoms/GistExportButton";
 import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
@@ -48,12 +49,21 @@ import { getReferenceSampleByFileName } from "@/lib/reference-samples.mjs";
 import {
   buildShareableSummary,
   buildShareUrl,
-  createShortShareLink,
   encodeShareHash,
   persistShareSummary,
   readShareFromLocation,
   readShareFromSession,
 } from "@/lib/share-result.mjs";
+import {
+  getAnalyzeProgressPercent,
+  getAnalyzeStepLabels,
+  getFlowStepLabels,
+  interpolate,
+  resolveAnalyzeStepIndex,
+  translateAnalyzeStep,
+  useLocale,
+  type UploadFlowDictionary,
+} from "@/lib/i18n";
 
 interface UiFlowArtifact {
   file: {
@@ -112,13 +122,26 @@ function loadAnalyzeModules() {
   return analyzeModulesPromise;
 }
 
-const ANALYZE_STEPS = [
+const ANALYZE_STEPS_EN = [
   "Reading image…",
   "Preprocessing image…",
   "Checking provider…",
   "Analyzing layout…",
   "Building artifact…",
-];
+] as const;
+
+type SampleId = keyof UploadFlowDictionary["samples"];
+
+function sampleCopy(
+  sampleId: string,
+  copy: UploadFlowDictionary,
+): { label: string; hint: string } {
+  const samples = copy.samples;
+  if (sampleId in samples) {
+    return samples[sampleId as SampleId];
+  }
+  return { label: sampleId, hint: "" };
+}
 
 const SnippetPreview = dynamic(
   () =>
@@ -152,7 +175,8 @@ export function UploadFlow({
   autoRunDemo = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { locale, dict } = useLocale();
+  const t = dict.uploadFlow;
   const observability = useObservability();
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -171,6 +195,12 @@ export function UploadFlow({
   const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
+  const flowSteps = useMemo(() => getFlowStepLabels(t), [t]);
+  const analyzeStepLabels = useMemo(() => getAnalyzeStepLabels(t), [t]);
+  const activeAnalyzeStepIndex = useMemo(
+    () => resolveAnalyzeStepIndex(analyzeStep),
+    [analyzeStep],
+  );
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
     loadSessionHistory(),
   );
@@ -199,20 +229,6 @@ export function UploadFlow({
     };
   }, []);
 
-  useEffect(() => {
-    const fromHash = readShareFromLocation();
-    if (!fromHash || typeof window === "undefined") return;
-
-    setSharedSummary(fromHash);
-    persistShareSummary(fromHash);
-
-    void createShortShareLink(window.location.origin, fromHash).then((shortLink) => {
-      if (shortLink?.url) {
-        router.replace(shortLink.url);
-      }
-    });
-  }, [router]);
-
   function rememberShareableArtifact(nextArtifact: UiFlowArtifact, fileName: string) {
     const payload = buildShareableSummary({
       summary: nextArtifact.summary,
@@ -236,31 +252,19 @@ export function UploadFlow({
         summary: artifact.summary,
         previewStats: artifact.previewStats,
         modeLabel: artifact.modeLabel,
-        file: file?.name ?? "screenshot",
+        file: file?.name ?? t.defaultScreenshotName,
       }) ?? sharedSummary;
     if (!payload || typeof window === "undefined") return;
 
     setCopyingShareLink(true);
     try {
       persistShareSummary(payload);
-      const shortLink = await createShortShareLink(window.location.origin, payload);
-      const url =
-        shortLink?.url ??
-        buildShareUrl(window.location.origin, pathname ?? "/", payload);
+      const url = buildShareUrl(window.location.origin, pathname ?? "/", payload);
       await navigator.clipboard.writeText(url);
-      if (shortLink) {
-        window.history.replaceState(null, "", shortLink.url);
-      } else {
-        window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
-      }
-      toast(
-        shortLink
-          ? "Short share link copied (read-only summary)"
-          : "Share link copied (hash fallback — read-only summary)",
-        "success",
-      );
+      window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
+      toast(t.toastShareCopied, "success");
     } catch {
-      toast("Could not copy share link", "error");
+      toast(t.toastShareFailed, "error");
     } finally {
       setCopyingShareLink(false);
     }
@@ -278,11 +282,10 @@ export function UploadFlow({
 
   const showSplitView = stage === "analyzed" || stage === "generated";
 
-  const analyzeProgress = useMemo(() => {
-    if (!analyzeStep) return 0;
-    const idx = ANALYZE_STEPS.indexOf(analyzeStep);
-    return idx >= 0 ? ((idx + 1) / ANALYZE_STEPS.length) * 100 : 0;
-  }, [analyzeStep]);
+  const analyzeProgress = useMemo(
+    () => getAnalyzeProgressPercent(analyzeStep),
+    [analyzeStep],
+  );
 
   const isBusy = providerState === "loading" || loadingSample;
   const canRunPrimary = Boolean(file) && providerState !== "loading";
@@ -300,16 +303,16 @@ export function UploadFlow({
     [experimentConfig],
   );
   const primaryCtaLabel = useMemo(() => {
-    if (providerState === "loading") return "Analyzing…";
-    if (stage === "generated") return "Regenerate preview";
-    if (stage === "analyzed") return "Generate preview";
+    if (providerState === "loading") return t.ctaAnalyzing;
+    if (stage === "generated") return t.ctaRegenerate;
+    if (stage === "analyzed") return t.ctaGenerate;
     if (file) {
       return analyzeCtaVariant === "analyze-now"
-        ? "Analyze & generate now"
-        : "Analyze & generate preview";
+        ? t.ctaAnalyzeNow
+        : t.ctaAnalyzePreview;
     }
-    return "Analyze & generate preview";
-  }, [analyzeCtaVariant, file, providerState, stage]);
+    return t.ctaAnalyzePreview;
+  }, [analyzeCtaVariant, file, providerState, stage, t]);
 
   const exportFilename = useMemo(() => {
     if (file?.name) {
@@ -1008,7 +1011,8 @@ export function UploadFlow({
                     <div>
                       <CardTitle className="text-sm">Export scaffold</CardTitle>
                       <CardDescription className="text-xs">
-                        Copy or download the generated React + Tailwind code.
+                        Copy, download, or export the generated React + Tailwind
+                        code to a GitHub Gist.
                       </CardDescription>
                     </div>
                     <div className="flex flex-wrap gap-2">
