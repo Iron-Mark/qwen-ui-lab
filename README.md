@@ -150,6 +150,7 @@ Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DE
 | `npm test` | Node unit tests (`tests/*.test.mjs`) |
 | `npm run lint` | ESLint |
 | `npm run test:e2e` | Playwright smoke (offline mocks; no live Qwen) |
+| `npm run test:e2e:visual` | Visual regression spec only (CI gate on `main`) |
 | `npm run export:demo-fixtures` | Regenerate `e2e/fixtures/demo-responses.json` from demo libs |
 | `npm run doctor` | Env, deps, optional API ping |
 | `npm run validate:assets` | Public/manifest icon paths and size budget (CI) |
@@ -158,6 +159,7 @@ Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DE
 | `npm run deploy:env:demo` | Validate demo-safe deploy env |
 | `npm run deploy:env:live` | Validate live-analysis deploy env |
 | `npm run perf:lighthouse` | Lighthouse run (see script for baseline/after) |
+| `npm run perf:lcp-budget` | Production LCP budget check (warn-only in CI) |
 
 ---
 
@@ -219,6 +221,7 @@ Engineering & ops:
 |-----|--------|
 | [docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md) | Folder tiers, catalog domains |
 | [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
+| [docs/CI.md](./docs/CI.md) | GitHub Actions (PR checks, nightly E2E, visual gate, LCP budget) |
 | [docs/OFFLINE_DEMO_E2E.md](./docs/OFFLINE_DEMO_E2E.md) | Offline demo algorithm + E2E guarantee (no AI) |
 | [docs/PWA.md](./docs/PWA.md) | Install, offline shell, service worker updates |
 | [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |

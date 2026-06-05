@@ -69,10 +69,12 @@ Upload → GET /api/health
 
 Contract tests in `e2e/offline-demo-contract.spec.ts` assert that **zero** `POST /api/analyze-ui` requests occur when health returns demo mode.
 
-Visual baselines live in `e2e/visual-regression.spec.ts`. Create or refresh snapshots with:
+Visual baselines live in `e2e/visual-regression.spec.ts`. CI runs this spec on every `main` push (`visual-regression` job in `.github/workflows/ci.yml`); see **[CI.md](./CI.md)**. Create or refresh snapshots with:
 
 ```bash
 npx playwright test e2e/visual-regression.spec.ts --update-snapshots
+# or
+npm run test:e2e:visual
 ```
 
 ## What to run before a meetup
@@ -92,6 +94,7 @@ DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 
 ## Related docs
 
+- [CI.md](./CI.md) — GitHub Actions workflows (nightly E2E, visual gate, LCP budget)
 - [DEMO.md](../DEMO.md) — live presentation script
 - [ARCHITECTURE_OVERVIEW.md](./ARCHITECTURE_OVERVIEW.md) — full runtime map
 - [POST_LAUNCH.md](./POST_LAUNCH.md) — operator checklist

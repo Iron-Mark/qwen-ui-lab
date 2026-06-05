@@ -39,5 +39,5 @@ jobs:
         run: npm run build
 
   # E2E omitted from PR gate — Playwright + dev server adds several minutes.
-  # Full CI on main push runs security, Lighthouse, and asset audits; run
-  # `npm run test:e2e` locally or via workflow_dispatch on CI when needed.
+  # Main push runs visual regression + warn-only production LCP in ci.yml;
+  # full E2E runs nightly (e2e-nightly.yml) and via workflow_dispatch.
