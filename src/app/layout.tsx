@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -136,11 +138,14 @@ const themeScript = `
   })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -148,7 +153,7 @@ export default function RootLayout({
       className={cn("font-sans", geist.variable, spaceGrotesk.variable)}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
