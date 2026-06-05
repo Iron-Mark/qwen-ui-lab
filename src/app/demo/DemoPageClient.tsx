@@ -50,7 +50,7 @@ export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
               <p className="text-sm text-muted-foreground sm:text-base">
                 This route loads a bundled reference, runs analyze, and opens the
                 scaffold export panel—ideal for stage demos. Try{" "}
-                <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">
                   ?archetype=auth|mobile|landing|settings|shop
                 </code>{" "}
                 for other layouts.

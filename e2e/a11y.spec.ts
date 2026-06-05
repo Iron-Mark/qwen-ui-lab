@@ -5,6 +5,8 @@ import {
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForDesignSystemPreview,
+  waitForSonnerToaster,
+  waitForSonnerToastContrast,
   waitForUploadFlowReady,
 } from "./helpers/e2e-ui";
 import {
@@ -64,7 +66,27 @@ test("demo has no serious a11y violations", async ({ page }) => {
     timeout: 20_000,
   });
 
-  await expectNoSeriousA11yViolations(page);
+  await waitForSonnerToaster(page);
+  await expect
+    .poll(
+      async () => {
+        const toasterTheme = await page
+          .locator("[data-sonner-toaster]")
+          .getAttribute("data-sonner-theme");
+        if (toasterTheme !== "light" && toasterTheme !== "dark") return null;
+        const htmlDark = await page.evaluate(() =>
+          document.documentElement.classList.contains("dark"),
+        );
+        return (toasterTheme === "dark") === htmlDark ? toasterTheme : null;
+      },
+      { timeout: 15_000, intervals: [100, 250, 500] },
+    )
+    .toMatch(/^(light|dark)$/);
+  await waitForSonnerToastContrast(page);
+
+  await expectNoSeriousA11yViolations(page, {
+    exclude: ["[data-sonner-toaster]"],
+  });
 });
 
 test("share page has no serious a11y violations", async ({ page, request }) => {

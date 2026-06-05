@@ -16,8 +16,15 @@ function formatViolationSummary(
 }
 
 /** Run axe and fail on critical- or serious-impact violations. */
-export async function expectNoSeriousA11yViolations(page: Page) {
-  const results = await new AxeBuilder({ page }).withTags([...AXE_TAGS]).analyze();
+export async function expectNoSeriousA11yViolations(
+  page: Page,
+  options?: { exclude?: string[] },
+) {
+  let builder = new AxeBuilder({ page }).withTags([...AXE_TAGS]);
+  for (const selector of options?.exclude ?? []) {
+    builder = builder.exclude(selector);
+  }
+  const results = await builder.analyze();
 
   const failing = results.violations.filter((v) =>
     FAILING_IMPACTS.has(v.impact ?? ""),

@@ -69,6 +69,62 @@ export async function waitForSonnerToaster(page: Page, timeoutMs = 25_000) {
     .not.toBeNull();
 }
 
+/** Wait until visible Sonner toast titles meet WCAG AA contrast (avoids theme/animation flakes). */
+export async function waitForSonnerToastContrast(page: Page, timeoutMs = 15_000) {
+  let stablePasses = 0;
+  await expect
+    .poll(
+      async () => {
+        const passes = await page.evaluate(() => {
+          const MIN_RATIO = 4.5;
+
+          const parseRgb = (color: string) => {
+            const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+            if (!match) return null;
+            return [Number(match[1]), Number(match[2]), Number(match[3])] as const;
+          };
+
+          const luminance = ([r, g, b]: readonly [number, number, number]) => {
+            const channel = (v: number) => {
+              const s = v / 255;
+              return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            };
+            return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+          };
+
+          const contrastRatio = (fg: string, bg: string) => {
+            const fgRgb = parseRgb(fg);
+            const bgRgb = parseRgb(bg);
+            if (!fgRgb || !bgRgb) return null;
+            const l1 = luminance(fgRgb) + 0.05;
+            const l2 = luminance(bgRgb) + 0.05;
+            return l1 > l2 ? l1 / l2 : l2 / l1;
+          };
+
+          const titles = document.querySelectorAll(
+            '[data-sonner-toast][data-visible="true"] [data-title]',
+          );
+          if (titles.length === 0) return true;
+
+          for (const title of titles) {
+            const toast = title.closest("[data-sonner-toast]");
+            if (!(toast instanceof HTMLElement)) continue;
+            const ratio = contrastRatio(
+              getComputedStyle(title).color,
+              getComputedStyle(toast).backgroundColor,
+            );
+            if (ratio === null || ratio < MIN_RATIO) return false;
+          }
+          return true;
+        });
+        stablePasses = passes ? stablePasses + 1 : 0;
+        return stablePasses >= 2;
+      },
+      { timeout: timeoutMs, intervals: [100, 250, 500] },
+    )
+    .toBe(true);
+}
+
 /** Home upload flow is client-rendered; wait before file picker interactions. */
 export async function waitForUploadFlowReady(page: Page, timeoutMs = 20_000) {
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible({ timeout: timeoutMs });
