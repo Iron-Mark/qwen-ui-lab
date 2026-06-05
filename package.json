@@ -8,6 +8,7 @@
     "build": "next build",
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
+    "test:e2e:visual": "playwright test e2e/visual-regression.spec.ts",
     "test:e2e:pwa": "playwright test --config=playwright.pwa.config.ts",
     "start:prod:e2e": "node scripts/start-prod-e2e.mjs",
     "doctor": "node scripts/doctor.mjs",
@@ -23,7 +24,8 @@
     "export:demo-fixtures": "node scripts/export-demo-fixtures.mjs",
     "perf:lighthouse": "node scripts/perf-lighthouse.mjs",
     "perf:lighthouse:baseline": "node scripts/perf-lighthouse.mjs baseline",
-    "perf:lighthouse:after": "node scripts/perf-lighthouse.mjs after"
+    "perf:lighthouse:after": "node scripts/perf-lighthouse.mjs after",
+    "perf:lcp-budget": "node scripts/perf-lcp-budget.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
