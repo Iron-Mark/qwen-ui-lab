@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/atoms/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
+import { localizedHref, useLocale } from "@/lib/i18n";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
 
@@ -29,18 +30,19 @@ const DemoModeSnackbar = dynamic(
 
 export function Header() {
   const pathname = usePathname();
+  const { locale, dict } = useLocale();
+  const t = dict.header;
   const designSystemVariant = useMemo(() => {
     const config = createExperimentConfig(process.env);
-    // Use a stable subject key so assignment remains deterministic.
     return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
+    <header lang={locale} className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
       <DemoModeSnackbar />
       <PageContainer className="flex h-16 items-center gap-4">
         <Link
-          href="/"
+          href={localizedHref("/", locale)}
           className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Image
@@ -52,21 +54,17 @@ export function Header() {
             fetchPriority="low"
           />
           <div className="min-w-0">
-            <p className="truncate text-lg font-bold text-card-foreground">
-              qwen-ui-lab
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              Screenshot → scaffold demo
-            </p>
+            <p className="truncate text-lg font-bold text-card-foreground">{t.siteTitle}</p>
+            <p className="truncate text-xs text-muted-foreground">{t.siteTagline}</p>
           </div>
         </Link>
         <nav
           className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto overscroll-x-contain sm:gap-2"
-          aria-label="Main"
+          aria-label={t.navMainAria}
         >
           <Link
-            href="/"
-            aria-label="Dashboard"
+            href={localizedHref("/", locale)}
+            aria-label={t.navDashboardAria}
             className={cn(
               buttonVariants({
                 variant: pathname === "/" ? "secondary" : "ghost",
@@ -77,11 +75,11 @@ export function Header() {
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <LayoutDashboard className="size-4 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">Dashboard</span>
+            <span className="hidden sm:inline">{t.navDashboard}</span>
           </Link>
           <Link
-            href="/design-system"
-            aria-label="Design system"
+            href={localizedHref("/design-system", locale)}
+            aria-label={t.navDesignSystemAria}
             className={cn(
               buttonVariants({
                 variant: pathname.startsWith("/design-system") ? "secondary" : "ghost",
@@ -92,10 +90,10 @@ export function Header() {
             aria-current={pathname.startsWith("/design-system") ? "page" : undefined}
           >
             <PanelsTopLeft className="size-4 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">Design system</span>
+            <span className="hidden sm:inline">{t.navDesignSystem}</span>
             {designSystemVariant === "with-labs-badge" ? (
               <Badge variant="secondary" className="h-5 px-1.5 text-[10px] uppercase">
-                Labs
+                {t.labsBadge}
               </Badge>
             ) : null}
           </Link>

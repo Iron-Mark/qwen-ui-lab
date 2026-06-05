@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   ArrowRight,
   Layers,
@@ -16,17 +16,16 @@ import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
-import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { localizedHref, useLocale } from "@/lib/i18n";
 import { useProviderMode } from "@/lib/provider-mode";
 import { cn } from "@/lib/utils";
 
 export function HomeMarketingHero() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { locale, dict } = useLocale();
+  const copy = dict.hero;
   const observability = useObservability();
   const { mode } = useProviderMode();
-  const locale = resolveLocale(searchParams.get("lang"));
-  const copy = getDictionary(locale).hero;
 
   const analytics = useMemo(
     () =>
@@ -77,6 +76,8 @@ export function HomeMarketingHero() {
     });
   }
 
+  const uploadFlowHref = `${localizedHref("/", locale)}#upload-flow`;
+
   return (
     <section
       data-testid="home-marketing-hero"
@@ -109,28 +110,25 @@ export function HomeMarketingHero() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Link
-                href="/demo"
+                href={localizedHref("/demo", locale)}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
                   "h-11 gap-2 px-5",
                 )}
               >
-                One-click demo
+                {copy.oneClickDemo}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link
-                href="#upload-flow"
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "h-11 gap-2 px-5",
-                )}
+                href={uploadFlowHref}
+                className={cn(buttonVariants({ size: "lg" }), "h-11 gap-2 px-5")}
                 onClick={() => trackCta("try_live_flow")}
               >
                 {copy.ctaPrimary}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link
-                href="/design-system"
+                href={localizedHref("/design-system", locale)}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
                   "h-11 gap-2 px-5",
@@ -142,14 +140,11 @@ export function HomeMarketingHero() {
             </div>
             <ul
               className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
-              aria-label="Trust signals"
+              aria-label={copy.trustSignalsAria}
             >
               {trustSignals.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2">
-                  <Icon
-                    className="size-4 shrink-0 text-primary"
-                    aria-hidden
-                  />
+                  <Icon className="size-4 shrink-0 text-primary" aria-hidden />
                   <span>{label}</span>
                 </li>
               ))}
@@ -159,7 +154,7 @@ export function HomeMarketingHero() {
 
         <ul
           className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:auto_280px]"
-          aria-label="Key benefits"
+          aria-label={copy.keyBenefitsAria}
         >
           {valueProps.map(({ icon: Icon, title, body }) => (
             <li
@@ -170,9 +165,7 @@ export function HomeMarketingHero() {
                 <Icon className="size-4" aria-hidden />
               </div>
               <p className="mt-3 text-sm font-semibold text-foreground">{title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                {body}
-              </p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
             </li>
           ))}
         </ul>

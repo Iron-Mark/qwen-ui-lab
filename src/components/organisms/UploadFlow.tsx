@@ -7,13 +7,13 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   ChevronRight,
-  Link2,
   Share2,
   Sparkles,
   UploadCloud,
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
+import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
 import {
@@ -53,6 +53,16 @@ import {
   readShareFromLocation,
   readShareFromSession,
 } from "@/lib/share-result.mjs";
+import {
+  getAnalyzeProgressPercent,
+  getAnalyzeStepLabels,
+  getFlowStepLabels,
+  interpolate,
+  resolveAnalyzeStepIndex,
+  translateAnalyzeStep,
+  useLocale,
+  type UploadFlowDictionary,
+} from "@/lib/i18n";
 
 interface UiFlowArtifact {
   file: {
@@ -111,13 +121,26 @@ function loadAnalyzeModules() {
   return analyzeModulesPromise;
 }
 
-const ANALYZE_STEPS = [
+const ANALYZE_STEPS_EN = [
   "Reading image…",
   "Preprocessing image…",
   "Checking provider…",
   "Analyzing layout…",
   "Building artifact…",
-];
+] as const;
+
+type SampleId = keyof UploadFlowDictionary["samples"];
+
+function sampleCopy(
+  sampleId: string,
+  copy: UploadFlowDictionary,
+): { label: string; hint: string } {
+  const samples = copy.samples;
+  if (sampleId in samples) {
+    return samples[sampleId as SampleId];
+  }
+  return { label: sampleId, hint: "" };
+}
 
 const SnippetPreview = dynamic(
   () =>
@@ -151,6 +174,8 @@ export function UploadFlow({
   autoRunDemo = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
+  const { locale, dict } = useLocale();
+  const t = dict.uploadFlow;
   const observability = useObservability();
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -169,6 +194,12 @@ export function UploadFlow({
   const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
+  const flowSteps = useMemo(() => getFlowStepLabels(t), [t]);
+  const analyzeStepLabels = useMemo(() => getAnalyzeStepLabels(t), [t]);
+  const activeAnalyzeStepIndex = useMemo(
+    () => resolveAnalyzeStepIndex(analyzeStep),
+    [analyzeStep],
+  );
   const [sessions, setSessions] = useState<SessionRecord[]>(() =>
     loadSessionHistory(),
   );
@@ -220,7 +251,7 @@ export function UploadFlow({
         summary: artifact.summary,
         previewStats: artifact.previewStats,
         modeLabel: artifact.modeLabel,
-        file: file?.name ?? "screenshot",
+        file: file?.name ?? t.defaultScreenshotName,
       }) ?? sharedSummary;
     if (!payload || typeof window === "undefined") return;
 
@@ -230,9 +261,9 @@ export function UploadFlow({
       const url = buildShareUrl(window.location.origin, pathname ?? "/", payload);
       await navigator.clipboard.writeText(url);
       window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
-      toast("Share link copied (read-only summary)", "success");
+      toast(t.toastShareCopied, "success");
     } catch {
-      toast("Could not copy share link", "error");
+      toast(t.toastShareFailed, "error");
     } finally {
       setCopyingShareLink(false);
     }
@@ -250,11 +281,10 @@ export function UploadFlow({
 
   const showSplitView = stage === "analyzed" || stage === "generated";
 
-  const analyzeProgress = useMemo(() => {
-    if (!analyzeStep) return 0;
-    const idx = ANALYZE_STEPS.indexOf(analyzeStep);
-    return idx >= 0 ? ((idx + 1) / ANALYZE_STEPS.length) * 100 : 0;
-  }, [analyzeStep]);
+  const analyzeProgress = useMemo(
+    () => getAnalyzeProgressPercent(analyzeStep),
+    [analyzeStep],
+  );
 
   const isBusy = providerState === "loading" || loadingSample;
   const canRunPrimary = Boolean(file) && providerState !== "loading";
@@ -272,16 +302,16 @@ export function UploadFlow({
     [experimentConfig],
   );
   const primaryCtaLabel = useMemo(() => {
-    if (providerState === "loading") return "Analyzing…";
-    if (stage === "generated") return "Regenerate preview";
-    if (stage === "analyzed") return "Generate preview";
+    if (providerState === "loading") return t.ctaAnalyzing;
+    if (stage === "generated") return t.ctaRegenerate;
+    if (stage === "analyzed") return t.ctaGenerate;
     if (file) {
       return analyzeCtaVariant === "analyze-now"
-        ? "Analyze & generate now"
-        : "Analyze & generate preview";
+        ? t.ctaAnalyzeNow
+        : t.ctaAnalyzePreview;
     }
-    return "Analyze & generate preview";
-  }, [analyzeCtaVariant, file, providerState, stage]);
+    return t.ctaAnalyzePreview;
+  }, [analyzeCtaVariant, file, providerState, stage, t]);
 
   const exportFilename = useMemo(() => {
     if (file?.name) {
@@ -337,7 +367,7 @@ export function UploadFlow({
       setUserUploadedOwn(true);
     }
     if (!nextFile.type.startsWith("image/")) {
-      setError("Upload an image file: PNG, JPG, SVG, or WebP.");
+      setError(t.errorInvalidImage);
       analytics.track(AnalyticsEvent.UploadRejected, {
         source: "upload_dropzone",
         fileType: nextFile.type || "unknown",
@@ -372,13 +402,13 @@ export function UploadFlow({
 
   async function analyzeImage() {
     if (!file) {
-      setError("Choose an image before running analysis.");
+      setError(t.errorNoImage);
       return null;
     }
 
     setError(null);
     setProviderState("loading");
-    setAnalyzeStep(ANALYZE_STEPS[0]);
+    setAnalyzeStep(ANALYZE_STEPS_EN[0]);
     const startedAt = Date.now();
     analytics.track(AnalyticsEvent.AnalyzeStarted, {
       source: "upload_flow",
@@ -390,7 +420,7 @@ export function UploadFlow({
 
     try {
       const { postAnalyzeUi, preprocessImageDataUrl } = await loadAnalyzeModules();
-      setAnalyzeStep(ANALYZE_STEPS[1]);
+      setAnalyzeStep(ANALYZE_STEPS_EN[1]);
       const rawDataUrl = await readFileAsDataUrl(file);
       const preprocessed = await preprocessImageDataUrl(rawDataUrl);
 
@@ -402,7 +432,7 @@ export function UploadFlow({
         height: preprocessed.height,
       };
 
-      setAnalyzeStep(ANALYZE_STEPS[2]);
+      setAnalyzeStep(ANALYZE_STEPS_EN[2]);
       const outcome = await postAnalyzeUi(fileMeta, preprocessed.dataUrl, {
         onProgress: (step) => setAnalyzeStep(step),
       });
@@ -419,7 +449,7 @@ export function UploadFlow({
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        modeLabel: (outcome.artifact as UiFlowArtifact).modeLabel || "Local demo mode",
+        modeLabel: (outcome.artifact as UiFlowArtifact).modeLabel || t.modeLocalDemo,
         providerState: outcome.providerState as "qwen" | "fallback",
         summary: (outcome.artifact as UiFlowArtifact).summary,
         artifact: {
@@ -441,11 +471,11 @@ export function UploadFlow({
       }
 
       if (outcome.instantDemo) {
-        toast("Instant offline demo analysis ready", "warning");
+        toast(t.toastInstantDemo, "warning");
       } else if (outcome.providerState === "qwen") {
-        toast("Qwen analysis complete", "success");
+        toast(t.toastQwenComplete, "success");
       } else {
-        toast("Fell back to offline demo analysis", "warning");
+        toast(t.toastFallback, "warning");
       }
       analytics.track(AnalyticsEvent.AnalyzeCompleted, {
         source: "upload_flow",
@@ -469,7 +499,7 @@ export function UploadFlow({
       setProviderMessage(outcome.message);
       setProviderDetail(outcome.detail);
       setStage("analyzed");
-      toast("Analysis failed — using local fallback", "error");
+      toast(t.toastAnalyzeFailed, "error");
       analytics.track(AnalyticsEvent.AnalyzeFailed, {
         source: "upload_flow",
         providerState: String(outcome.providerState ?? "fallback"),
@@ -487,7 +517,7 @@ export function UploadFlow({
 
   async function finishPreviewGeneration(
     nextArtifact: UiFlowArtifact | null,
-    toastMessage = "Preview generated",
+    toastMessage = t.toastPreviewGenerated,
   ) {
     if (!nextArtifact) return;
     setStage("generated");
@@ -520,7 +550,7 @@ export function UploadFlow({
 
   async function runPrimaryAction() {
     if (!file) {
-      setError("Choose an image before running analysis.");
+      setError(t.errorNoImage);
       return;
     }
 
@@ -533,7 +563,7 @@ export function UploadFlow({
         fileSize: file.size,
       });
       const nextArtifact = await analyzeImage();
-      await finishPreviewGeneration(nextArtifact, "Preview regenerated");
+      await finishPreviewGeneration(nextArtifact, t.toastPreviewRegenerated);
       return;
     }
 
@@ -550,14 +580,7 @@ export function UploadFlow({
         width: null,
         height: null,
       },
-      steps: [
-        { id: "upload", label: "Upload" },
-        { id: "analyze", label: "Analyze" },
-        { id: "plan", label: "Plan" },
-        { id: "generate", label: "Generate" },
-        { id: "preview", label: "Preview" },
-        { id: "export", label: "Export" },
-      ],
+      steps: flowSteps,
       plan: record.artifact.plan,
       previewStats: record.artifact.previewStats,
       generatedCode: record.artifact.generatedCode,
@@ -566,18 +589,19 @@ export function UploadFlow({
     });
     setProviderState(record.providerState === "qwen" ? "qwen" : "fallback");
     setProviderMessage(
-      record.providerState === "qwen"
-        ? "Restored Qwen analysis session"
-        : "Restored offline demo session",
+      record.providerState === "qwen" ? t.toastRestoredQwen : t.toastRestoredDemo,
     );
     setStage("analyzed");
-    toast(`Restored session: ${record.fileName}`, "default");
+    toast(
+      interpolate(t.toastRestoredSession, { fileName: record.fileName }),
+      "default",
+    );
   }
 
   function deleteSession(id: string) {
     removeSession(id);
     setSessions(loadSessionHistory());
-    toast("Session removed", "default");
+    toast(t.toastSessionRemoved, "default");
   }
 
   async function loadBundledSample(sampleId: string) {
@@ -599,7 +623,7 @@ export function UploadFlow({
       acceptFile(sampleFile, "sample");
       setSampleUsed(true);
       persistSampleUsedInSession();
-      toast(`${sample.label} sample loaded`, "success");
+      toast(interpolate(t.toastSampleLoaded, { label: sampleCopy(sample.id, t).label }), "success");
       analytics.track(AnalyticsEvent.UploadSampleLoaded, {
         source: "sample_picker",
         sampleId: sample.id,
@@ -609,29 +633,31 @@ export function UploadFlow({
         status: "completed",
       });
     } catch {
-      setError(
-        "Could not load the sample screenshot. Upload your own image instead.",
-      );
-      toast("Could not load sample screenshot", "error");
+      setError(t.errorSampleLoad);
+      toast(t.toastSampleLoadFailed, "error");
     } finally {
       setLoadingSample(false);
     }
   }
 
   return (
-    <PageContainer as="section" id="upload-flow" className="scroll-mt-20 py-8">
+    <PageContainer
+      as="section"
+      id="upload-flow"
+      lang={locale}
+      className="scroll-mt-20 py-8"
+    >
       {providerState === "fallback" ? (
         <Alert
           role="status"
           className="mb-4 border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-100"
         >
-          <AlertTitle>Offline demo mode</AlertTitle>
+          <AlertTitle>{t.alertOfflineTitle}</AlertTitle>
           <AlertDescription>
-            {providerMessage} The full Upload → Analyze → Preview flow still runs
-            locally for your presentation.
+            {providerMessage} {t.alertOfflineBody}
             {providerDetail ? (
               <span className="mt-1 block text-amber-800/80 dark:text-amber-200/80">
-                Reason: {providerDetail}
+                {interpolate(t.alertOfflineReason, { detail: providerDetail })}
               </span>
             ) : null}
           </AlertDescription>
@@ -639,53 +665,25 @@ export function UploadFlow({
       ) : null}
 
       {sharedSummary && !artifact ? (
-        <Card
-          className="mb-6 border-primary/30 bg-primary/5"
-          data-testid="shared-result-summary"
-        >
-          <CardHeader className="pb-2">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Link2 className="size-4 text-primary" aria-hidden />
-                  Shared analysis summary
-                </CardTitle>
-                <CardDescription className="mt-1 text-xs">
-                  Read-only link — no code or secrets included ({sharedSummary.file})
-                </CardDescription>
-              </div>
-              <Badge variant="outline">{sharedSummary.mode}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-0">
-            <p className="text-sm text-muted-foreground">{sharedSummary.summary}</p>
-            {sharedSummary.stats.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {sharedSummary.stats.map((stat) => (
-                  <Badge key={`${stat.l}-${stat.v}`} variant="secondary">
-                    {stat.l}: {stat.v}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <SharedSummaryCard summary={sharedSummary} />
+        </div>
       ) : null}
 
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase text-muted-foreground">
-            Live flow
+            {t.liveFlowLabel}
           </p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             {headlineVariant === "faster-first-value"
-              ? "Ship scaffold-ready UI from one screenshot"
-              : "Upload screenshot to component preview"}
+              ? t.headlineFaster
+              : t.headlineDefault}
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             {headlineVariant === "faster-first-value"
-              ? "A faster path to conversion: upload, analyze, and export reusable React/Tailwind scaffolds in minutes."
-              : "Ideal for rapid design reviews: analyze one screenshot, generate a scaffold, then reuse exported snippets across your next sprint."}
+              ? t.subtitleFaster
+              : t.subtitleDefault}
           </p>
         </div>
         <Badge
@@ -699,18 +697,18 @@ export function UploadFlow({
           )}
         >
           {artifact?.modeLabel ||
-            (providerState === "fallback"
-              ? "Local demo mode"
-              : "Qwen route ready")}
+            (providerState === "fallback" ? t.modeLocalDemo : t.modeQwenReady)}
         </Badge>
       </div>
 
       {sessions.length > 0 ? (
         <Card className="mb-6">
           <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
-            <CardTitle className="text-sm">Recent analyses</CardTitle>
+            <CardTitle className="text-sm">{t.recentAnalyses}</CardTitle>
             <CardDescription className="text-xs">
-              Stored locally (last {sessions.length})
+              {interpolate(t.recentAnalysesStored, {
+                count: String(sessions.length),
+              })}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -735,7 +733,9 @@ export function UploadFlow({
                     size="icon-sm"
                     onClick={() => deleteSession(session.id)}
                     className="text-muted-foreground hover:text-destructive"
-                    aria-label={`Remove ${session.fileName} session`}
+                    aria-label={interpolate(t.removeSessionAria, {
+                      fileName: session.fileName,
+                    })}
                   >
                     <X className="size-3.5" aria-hidden />
                   </Button>
@@ -759,13 +759,19 @@ export function UploadFlow({
             ) : (
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Uploaded reference
+                  {t.uploadedReference}
                 </p>
                 {previewUrl ? (
                   <div className="relative h-96 w-full overflow-hidden rounded-md border border-border">
                     <Image
                       src={previewUrl}
-                      alt={file ? `Uploaded UI reference: ${file.name}` : "Uploaded UI reference"}
+                      alt={
+                        file
+                          ? interpolate(t.uploadedReferenceAltNamed, {
+                              fileName: file.name,
+                            })
+                          : t.uploadedReferenceAlt
+                      }
                       className="object-contain"
                       fill
                       sizes="(max-width: 1024px) 100vw, 880px"
@@ -775,7 +781,7 @@ export function UploadFlow({
                   </div>
                 ) : (
                   <div className="flex min-h-48 items-center justify-center rounded-md border border-border bg-background text-sm text-muted-foreground">
-                    {artifact?.file.name ?? "Reference image"}
+                    {artifact?.file.name ?? t.referenceImage}
                   </div>
                 )}
               </div>
@@ -786,7 +792,8 @@ export function UploadFlow({
                 <CardContent className="p-4 text-sm">
                   <div className="break-words font-medium text-card-foreground">{file.name}</div>
                   <div className="mt-1 text-muted-foreground">
-                    {file.type || "unknown type"} · {artifact?.file.readableSize ?? "ready"}
+                    {file.type || t.fileUnknownType} ·{" "}
+                    {artifact?.file.readableSize ?? t.fileReady}
                     {artifact?.file.width && artifact?.file.height
                       ? ` · ${artifact.file.width}×${artifact.file.height}px`
                       : null}
@@ -808,32 +815,37 @@ export function UploadFlow({
                   data-testid="sample-picker"
                 >
                   <p className="text-xs font-medium text-muted-foreground">
-                    Try a bundled reference
+                    {t.tryBundledReference}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {BUNDLED_REFERENCE_SAMPLES.map((sample) => (
-                      <Button
-                        key={sample.id}
-                        type="button"
-                        variant="outline"
-                        onClick={() => void loadBundledSample(sample.id)}
-                        className="h-auto min-h-11 flex-col items-start gap-0.5 border-dashed px-3 py-2 text-left"
-                        disabled={isBusy}
-                        aria-label={`Load ${sample.label} sample`}
-                      >
-                        <span className="flex items-center gap-1.5 text-sm font-medium">
-                          <UploadCloud className="size-3.5 shrink-0" aria-hidden />
-                          {loadingSample ? "Loading…" : sample.label}
-                        </span>
-                        <span className="text-[11px] font-normal text-muted-foreground">
-                          {sample.hint}
-                        </span>
-                      </Button>
-                    ))}
+                    {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
+                      const localized = sampleCopy(sample.id, t);
+                      return (
+                        <Button
+                          key={sample.id}
+                          type="button"
+                          variant="outline"
+                          onClick={() => void loadBundledSample(sample.id)}
+                          className="h-auto min-h-11 flex-col items-start gap-0.5 border-dashed px-3 py-2 text-left"
+                          disabled={isBusy}
+                          aria-label={interpolate(t.loadSampleAria, {
+                            label: localized.label,
+                          })}
+                        >
+                          <span className="flex items-center gap-1.5 text-sm font-medium">
+                            <UploadCloud className="size-3.5 shrink-0" aria-hidden />
+                            {loadingSample ? t.loading : localized.label}
+                          </span>
+                          <span className="text-[11px] font-normal text-muted-foreground">
+                            {localized.hint}
+                          </span>
+                        </Button>
+                      );
+                    })}
                   </div>
                   {samplePathHintVariant === "show-path-hint" ? (
                     <p className="text-xs text-muted-foreground">
-                      New here? Pick a reference, then run analysis.
+                      {t.samplePathHint}
                     </p>
                   ) : null}
                 </div>
@@ -862,24 +874,29 @@ export function UploadFlow({
                 <CardContent className="space-y-3 p-4">
                   <Progress value={analyzeProgress}>
                     <ProgressLabel>
-                      {analyzeStep ?? "Analyzing…"} ({Math.round(analyzeProgress)}%)
+                      {interpolate(t.progressLabel, {
+                        step: translateAnalyzeStep(analyzeStep, t),
+                        percent: String(Math.round(analyzeProgress)),
+                      })}
                     </ProgressLabel>
                   </Progress>
                   <div className="space-y-2">
-                    {ANALYZE_STEPS.map((step) => (
-                      <div key={step} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    {ANALYZE_STEPS_EN.map((stepEn, index) => (
+                      <div
+                        key={stepEn}
+                        className="flex items-center gap-2 text-xs text-muted-foreground"
+                      >
                         <span
                           className={cn(
                             "h-2 w-2 rounded-full",
-                            analyzeStep === step
+                            analyzeStep === stepEn
                               ? "animate-pulse bg-primary"
-                              : ANALYZE_STEPS.indexOf(analyzeStep ?? "") >
-                                  ANALYZE_STEPS.indexOf(step)
+                              : activeAnalyzeStepIndex > index
                                 ? "bg-success"
                                 : "bg-border",
                           )}
                         />
-                        {step}
+                        {analyzeStepLabels[index]}
                       </div>
                     ))}
                   </div>
@@ -899,8 +916,8 @@ export function UploadFlow({
               >
                 <AlertDescription className="font-medium text-success">
                   {providerState === "qwen"
-                    ? "Qwen analysis complete — open the preview to see the scaffold."
-                    : "Demo analysis complete — open the preview to see the scaffold."}
+                    ? t.statusQwenComplete
+                    : t.statusDemoComplete}
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -910,7 +927,7 @@ export function UploadFlow({
                 className="mt-4 border-success/30 bg-success/10 text-success"
               >
                 <AlertDescription className="font-medium text-success">
-                  Preview ready — copy or export the scaffold from the panel on the right.
+                  {t.statusPreviewReady}
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -926,14 +943,7 @@ export function UploadFlow({
         <Card className="min-w-0 border-border/80 shadow-sm">
           <CardContent className="p-6">
             <div className="mb-5 flex items-center gap-2 overflow-x-auto pb-2">
-            {(artifact?.steps ?? [
-              "Upload",
-              "Analyze",
-              "Plan",
-              "Generate",
-              "Preview",
-              "Export",
-            ].map((label) => ({ id: label.toLowerCase(), label }))).map(
+            {(artifact?.steps ?? flowSteps).map(
               (step, index) => (
               <div key={step.id} className="flex shrink-0 items-center gap-2">
                   <Badge
@@ -958,7 +968,7 @@ export function UploadFlow({
             <div className="grid gap-5">
               {showSplitView && stage !== "generated" ? (
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Analysis output (reference on the left)
+                  {t.analysisOutputLabel}
                 </p>
               ) : null}
 
@@ -976,7 +986,7 @@ export function UploadFlow({
                       data-testid="copy-share-link"
                     >
                       <Share2 className="size-3.5" aria-hidden />
-                      {copyingShareLink ? "Copying…" : "Copy share link"}
+                      {copyingShareLink ? t.copying : t.copyShareLink}
                     </Button>
                   </CardContent>
                 </Card>
@@ -1006,35 +1016,35 @@ export function UploadFlow({
                 <Card className="bg-background" data-testid="scaffold-export-panel">
                   <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
                     <div>
-                      <CardTitle className="text-sm">Export scaffold</CardTitle>
+                      <CardTitle className="text-sm">{t.exportScaffold}</CardTitle>
                       <CardDescription className="text-xs">
-                        Copy or download the generated React + Tailwind code.
+                        {t.exportScaffoldDesc}
                       </CardDescription>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="copy"
-                        label="Copy all"
+                        label={t.exportCopyAll}
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
-                        onCopied={() => toast("Scaffold copied", "success")}
+                        onCopied={() => toast(t.toastScaffoldCopied, "success")}
                       />
                       <ExportButton
                         text={artifact.generatedCode}
                         variant="export"
-                        label="Download .tsx"
+                        label={t.exportDownload}
                         filename={exportFilename}
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
-                        onCopied={() => toast("Scaffold exported", "success")}
+                        onCopied={() => toast(t.toastScaffoldExported, "success")}
                       />
                     </div>
                   </CardHeader>
                   {stage === "generated" ? null : (
                     <CardContent className="pt-0">
                       <p className="text-xs text-muted-foreground">
-                        Generate preview to see live stats alongside the snippet.
+                        {t.exportGenerateHint}
                       </p>
                     </CardContent>
                   )}
@@ -1047,7 +1057,7 @@ export function UploadFlow({
                     <div className="p-4 pt-2">
                       <SnippetPreview
                         code={artifact.generatedCode}
-                        title="Generated scaffold"
+                        title={t.generatedScaffold}
                         showCopy={false}
                       />
                     </div>
@@ -1055,7 +1065,7 @@ export function UploadFlow({
 
                   <Card className="min-w-0 bg-background">
                     <CardHeader>
-                      <CardTitle className="text-sm">Live preview</CardTitle>
+                      <CardTitle className="text-sm">{t.livePreview}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -1079,7 +1089,7 @@ export function UploadFlow({
             </div>
           ) : (
             <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
-              Upload a screenshot and run analysis to see the generated plan.
+              {t.emptyState}
             </div>
           )}
           </CardContent>
