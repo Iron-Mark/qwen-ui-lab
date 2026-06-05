@@ -17,6 +17,7 @@
     "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
     "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
     "smoke:live": "node scripts/staged-live-smoke.mjs",
+    "smoke:staged": "node scripts/staged-live-smoke.mjs",
     "synthetic:health": "node scripts/synthetic-health-check.mjs",
     "start": "next start",
     "lint": "eslint",
@@ -28,7 +29,6 @@
     "perf:lighthouse": "node scripts/perf-lighthouse.mjs",
     "perf:lighthouse:baseline": "node scripts/perf-lighthouse.mjs baseline",
     "perf:lighthouse:after": "node scripts/perf-lighthouse.mjs after",
-    "perf:lcp-budget": "node scripts/perf-lcp-budget.mjs",
     "perf:lcp-budget": "node scripts/perf-lcp-budget.mjs"
   },
   "dependencies": {

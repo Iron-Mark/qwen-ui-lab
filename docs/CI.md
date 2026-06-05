@@ -13,6 +13,20 @@ GitHub Actions workflows under [`.github/workflows/`](../.github/workflows/) gat
 
 PR checks stay fast on purpose. Heavier browser work runs on main or on the nightly schedule.
 
+### Why visual regression is not on PR checks
+
+`pr-checks.yml` intentionally skips Playwright visual regression:
+
+- **Time:** building, starting the app, and running Chromium adds several minutes to every PR.
+- **Noise:** snapshot baselines are tuned for the CI production server; feature-branch UI work often produces expected diffs that block merges without catching real regressions.
+- **Coverage:** `visual-regression` in `ci.yml` runs on every `main` push (hard fail). Nightly `e2e-nightly.yml` runs the full suite.
+
+To run visual checks on a branch before merge:
+
+```bash
+npm run test:e2e:visual
+```
+
 ## E2E nightly
 
 **Workflow:** `e2e-nightly.yml`
@@ -49,29 +63,29 @@ npm run test:e2e:visual
 
 ## Production LCP budget
 
-**Job:** `perf-lcp-budget` in `ci.yml` (main push, **warn-only** initially)
+**Job:** `perf-lcp-budget` in `ci.yml` (main push, **strict** by default)
 
 Uses [`scripts/perf-lcp-budget.mjs`](../scripts/perf-lcp-budget.mjs) to run Lighthouse against the production origin. Default URL is `https://qwen-ui-lab.vercel.app`; override with repository variable `PRODUCTION_DEPLOY_URL` (same as post-deploy smoke).
 
 | Setting | Default | Notes |
 |---------|---------|-------|
 | `PERF_MAX_LCP_MS` | `2500` | Fail threshold when strict mode is on |
-| `PERF_LCP_STRICT` | `false` in CI | Warn and pass; flip to `true` to enforce |
+| `PERF_LCP_STRICT` | `true` in CI | Fails the job on breach; set repo variable `PERF_LCP_STRICT=false` to relax |
 
 Local examples:
 
 ```bash
-# Warn-only (matches current CI)
+# Warn-only (local default; script exits 0 on breach)
 npm run perf:lcp-budget
 
-# Enforce budget
+# Enforce budget (matches CI on main)
 PERF_LCP_STRICT=1 npm run perf:lcp-budget
 node scripts/perf-lcp-budget.mjs --strict --url https://qwen-ui-lab.vercel.app
 ```
 
 Reports are written to `.perf/lighthouse-lcp-budget.json` (gitignored). CI uploads this file when present.
 
-To promote warn-only to a hard gate, set `PERF_LCP_STRICT: "true"` on the **Check production LCP budget** step in `ci.yml`.
+To temporarily allow a breach without changing workflow YAML, set repository variable **`PERF_LCP_STRICT`** to `false` under **Settings → Secrets and variables → Actions → Variables**.
 
 ## Related scripts
 
