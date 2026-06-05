@@ -19,13 +19,26 @@ import { BUNDLED_REFERENCE_SAMPLES } from "../src/lib/reference-samples.mjs";
 test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
   assert.deepEqual(fileNames, [
-    "dashboard-reference.svg",
-    "auth-reference.svg",
-    "mobile-reference.svg",
+    "dashboard-reference.png",
+    "auth-reference.png",
+    "mobile-reference.png",
     "landing-reference.svg",
     "settings-reference.svg",
     "ecommerce-reference.svg",
   ]);
+});
+
+test("lookupKnownSample resolves dashboard-reference.png via stem fallback", () => {
+  const known = lookupKnownSample("dashboard-reference.png");
+  assert.ok(known);
+  assert.match(known.summary, /Admin dashboard/i);
+  assert.match(known.generatedCode, /ChartPreview/);
+});
+
+test("lookupKnownSample resolves auth-reference.webp via stem fallback", () => {
+  const known = lookupKnownSample("auth-reference.webp");
+  assert.ok(known);
+  assert.match(known.summary, /sign-in/i);
 });
 
 test("normalizeSampleKey uses basename only", () => {

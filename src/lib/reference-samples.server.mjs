@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import {
   DEFAULT_REFERENCE_SAMPLE,
   getReferenceSampleByFileName,
+  inferReferenceMimeType,
 } from "./reference-samples.data.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -23,7 +24,7 @@ export function getBundledReferenceFile({ fileName, size } = {}) {
 
   return {
     name: sample.fileName,
-    type: "image/svg+xml",
+    type: sample.mimeType ?? inferReferenceMimeType(sample.fileName),
     size: resolvedSize,
     width: sample.width,
     height: sample.height,

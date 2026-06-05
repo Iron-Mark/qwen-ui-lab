@@ -32,7 +32,7 @@ test("demo mode skips POST /api/analyze-ui entirely", async ({ page }) => {
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
   await loadBundledSample(page, "Dashboard");
-  await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
+  await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 

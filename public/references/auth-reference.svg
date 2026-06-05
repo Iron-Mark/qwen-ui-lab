@@ -5,7 +5,7 @@
   <!-- Brand -->
   <rect x="576" y="120" width="48" height="48" rx="12" fill="#18181b"/>
   <text x="600" y="190" font-family="Inter,sans-serif" font-size="22" font-weight="700" fill="#18181b" text-anchor="middle">Sign in</text>
-  <text x="600" y="214" font-family="Inter,sans-serif" font-size="13" fill="#71717a" text-anchor="middle">Welcome back  enter your credentials</text>
+  <text x="600" y="214" font-family="Inter,sans-serif" font-size="13" fill="#71717a" text-anchor="middle">Welcome back — enter your credentials</text>
   <!-- Email field -->
   <text x="432" y="258" font-family="Inter,sans-serif" font-size="13" font-weight="500" fill="#18181b">Email</text>
   <rect x="432" y="268" width="336" height="44" rx="8" fill="#fff" stroke="#e4e4e7"/>

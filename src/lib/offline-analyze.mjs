@@ -511,7 +511,10 @@ export function normalizeSampleKey(fileName) {
  * @returns {typeof KNOWN_SAMPLES[string] | null}
  */
 export function lookupKnownSample(fileName) {
-  return KNOWN_SAMPLES[normalizeSampleKey(fileName)] ?? null;
+  const key = normalizeSampleKey(fileName);
+  if (KNOWN_SAMPLES[key]) return KNOWN_SAMPLES[key];
+  const stemKey = key.replace(/\.(png|jpe?g|webp)$/i, ".svg");
+  return KNOWN_SAMPLES[stemKey] ?? null;
 }
 
 /**

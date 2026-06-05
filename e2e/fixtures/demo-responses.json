@@ -13,11 +13,11 @@
     "message": "E2E mock — live Qwen disabled"
   },
   "sampleFile": {
-    "name": "dashboard-reference.svg",
-    "type": "image/svg+xml",
-    "size": 9881,
-    "width": 1200,
-    "height": 720
+    "name": "dashboard-reference.png",
+    "type": "image/png",
+    "size": 113391,
+    "width": 1440,
+    "height": 900
   },
   "sampleArtifact": {
     "planTitles": [
