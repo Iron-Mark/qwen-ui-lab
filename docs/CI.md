@@ -7,7 +7,7 @@ GitHub Actions workflows under [`.github/workflows/`](../.github/workflows/) gat
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | [pr-checks.yml](../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, build (no E2E) |
-| [pr-e2e-smoke.yml](../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract (warn-only on PRs) |
+| [pr-e2e-smoke.yml](../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
 | [ci.yml](../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
 | [post-deploy-smoke.yml](../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route smoke against a deployed URL |
@@ -24,9 +24,15 @@ Runs a **fast subset** of Playwright specs on every pull request:
 - `e2e/a11y.spec.ts` — accessibility checks
 - `e2e/live-qwen-contract.spec.ts` — live-path contract (mocked JSON, no API key)
 
-**Warn-only on PRs:** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, build).
+**Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, build).
 
-**Strict on manual run:** **Actions → PR E2E Smoke → Run workflow** fails the workflow on test errors (useful before merge or when debugging CI).
+**Strict on PRs:** set repository variable **`PR_E2E_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables** to fail the job on test errors and block merge (same pattern as `PERF_LCP_STRICT` for the LCP budget).
+
+**Strict on manual run:** **Actions → PR E2E Smoke → Run workflow** always fails the workflow on test errors (useful before merge or when debugging CI).
+
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `PR_E2E_STRICT` | off (warn-only on PRs) | Set to `true` to hard-fail PR smoke on errors |
 
 Local equivalent:
 

@@ -16,8 +16,8 @@ jobs:
     name: E2E smoke (mobile + a11y + live contract)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Warn-only on PRs (yellow check, does not block merge). Hard fail on manual dispatch.
-    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    # Warn-only on PRs unless repo variable PR_E2E_STRICT=true. Hard fail on manual dispatch.
+    continue-on-error: ${{ github.event_name == 'pull_request' && vars.PR_E2E_STRICT != 'true' }}
     env:
       CI: true
     steps:
