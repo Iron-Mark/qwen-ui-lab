@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -237,7 +238,13 @@ export default function RootLayout({
                   />
                   <div className="flex min-h-screen flex-col">
                     <PwaInstallBanner />
-                    <Header />
+                    <Suspense
+                      fallback={
+                        <header className="sticky top-0 z-40 h-16 border-b border-border/80 bg-card/85" />
+                      }
+                    >
+                      <Header />
+                    </Suspense>
                     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
                       {children}
                     </main>

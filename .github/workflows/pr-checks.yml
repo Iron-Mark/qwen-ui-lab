@@ -38,6 +38,7 @@ jobs:
       - name: Build
         run: npm run build
 
-  # E2E omitted from PR gate — Playwright + dev server adds several minutes.
-  # Main push runs visual regression + warn-only production LCP in ci.yml;
+  # E2E and visual regression omitted from PR gate — Playwright + prod server
+  # adds several minutes and snapshot diffs are noisy on feature branches.
+  # Main push runs visual-regression (hard fail) and strict production LCP in ci.yml;
   # full E2E runs nightly (e2e-nightly.yml) and via workflow_dispatch.

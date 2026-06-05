@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/lib/provider-mode";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { interpolate, localizedHref, useLocale } from "@/lib/i18n";
 import {
   createDesignSystemSearchParams,
   DOMAIN_VALUES,
@@ -39,13 +40,6 @@ import type { AtomicCatalogEntry } from "@/data/catalog-types";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism"];
 
-const DOMAINS: { id: CatalogDomain | "all"; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "product", label: "Product" },
-  { id: "uilaws", label: "UILaws" },
-  { id: "laws-of-ux", label: "Laws of UX" },
-];
-
 const DOMAIN_SHORTCUTS = ["all", "product", "uilaws", "laws-of-ux"] as const;
 
 /** Desktop workspace below sticky site + page headers; list/preview scroll inside. */
@@ -58,8 +52,20 @@ export function DesignSystemPreview() {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
+  const { locale, dict } = useLocale();
+  const t = dict.designSystem;
   const observability = useObservability();
   const { mode } = useProviderMode();
+
+  const domains = useMemo(
+    (): { id: CatalogDomain | "all"; label: string }[] => [
+      { id: "all", label: t.domainAll },
+      { id: "product", label: t.domainProduct },
+      { id: "uilaws", label: t.domainUiLaws },
+      { id: "laws-of-ux", label: t.domainLawsOfUx },
+    ],
+    [t],
+  );
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [levelFilter, setLevelFilter] = useState<AtomicLevel | "all">(
     parseLevel(searchParams.get("level")) as AtomicLevel | "all",
@@ -127,13 +133,23 @@ export function DesignSystemPreview() {
       query: query.trim(),
       selected: selectedEntry?.id ?? null,
       previewMode,
+      lang: locale,
     });
     const current = searchParams.toString();
     const next = nextParams.toString();
     if (current === next) return;
-    const href = next ? `/design-system?${next}` : "/design-system";
+    const href = next ? `/design-system?${next}` : localizedHref("/design-system", locale);
     router.replace(href, { scroll: false });
-  }, [domainFilter, levelFilter, previewMode, query, router, searchParams, selectedEntry?.id]);
+  }, [
+    domainFilter,
+    levelFilter,
+    locale,
+    previewMode,
+    query,
+    router,
+    searchParams,
+    selectedEntry?.id,
+  ]);
 
   useEffect(() => {
     analytics.track(AnalyticsEvent.DesignSystemViewed, {
@@ -252,13 +268,13 @@ export function DesignSystemPreview() {
   }, [domainFilter, levelFilter, moveSelection, setDomain]);
 
   return (
-    <>
+    <div lang={locale}>
       <header className="rounded-2xl border border-border/70 bg-background/95 p-4">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-muted/30 px-3 py-2">
             <Search className="size-4 text-muted-foreground" />
             <Label htmlFor="catalog-search" className="sr-only">
-              Search catalog
+              {t.searchLabel}
             </Label>
             <Input
               ref={searchInputRef}
@@ -274,7 +290,7 @@ export function DesignSystemPreview() {
                   totalVisible: filtered.length,
                 });
               }}
-              placeholder="Search components…"
+              placeholder={t.searchPlaceholder}
               className="h-9 border-0 bg-transparent px-0 focus-visible:ring-0"
             />
             <kbd className="rounded border border-border/70 px-1.5 py-0.5 text-[10px] text-muted-foreground">
@@ -286,14 +302,14 @@ export function DesignSystemPreview() {
         <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
           <div className="rounded-xl border border-border/70 bg-muted/20 p-2">
             <p className="px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Domain
+              {t.domain}
             </p>
             <Tabs
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
               <TabsList className="mt-1 h-auto w-full flex-wrap justify-start gap-1.5 rounded-lg bg-background/70 p-1.5">
-                {DOMAINS.map(({ id, label }) => (
+                {domains.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
@@ -308,7 +324,7 @@ export function DesignSystemPreview() {
 
           <div className="rounded-xl border border-border/70 bg-muted/20 p-2">
             <p className="px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Tier
+              {t.tier}
             </p>
             <div className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5">
               {(["all", ...LEVELS] as const).map((level) => (
@@ -329,7 +345,7 @@ export function DesignSystemPreview() {
                   }}
                   className="min-h-10 rounded-md px-3 text-xs font-medium capitalize sm:text-sm"
                 >
-                  {level}
+                  {level === "all" ? t.tierAll : level}
                 </Button>
               ))}
             </div>
@@ -338,14 +354,11 @@ export function DesignSystemPreview() {
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
           <span className="hidden min-w-0 flex-1 basis-full sm:inline sm:basis-auto">
-            Press <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">/</kbd> to
-            search, <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">j</kbd> and{" "}
-            <kbd className="rounded border border-border/70 px-1 py-0.5 font-mono text-[10px]">k</kbd> to move through
-            the list. Alt+1–4 changes domain; Alt+Shift+0–3 changes tier.
+            {t.keyboardHelp}
           </span>
-          <span>{filtered.length} visible</span>
+          <span>{interpolate(t.visibleCount, { count: String(filtered.length) })}</span>
           <span>
-            Refs:{" "}
+            {t.refs}{" "}
             <a
               href={LAWS_OF_UX_SITE}
               target="_blank"
@@ -372,8 +385,8 @@ export function DesignSystemPreview() {
           )}
         >
           <div className="mb-3 flex shrink-0 items-center justify-between">
-            <p className="text-sm font-semibold text-foreground">Component list</p>
-            <p className="text-xs text-muted-foreground">Dense view</p>
+            <p className="text-sm font-semibold text-foreground">{t.componentList}</p>
+            <p className="text-xs text-muted-foreground">{t.denseView}</p>
           </div>
           <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
             {filtered.map((entry) => (
@@ -397,7 +410,7 @@ export function DesignSystemPreview() {
                     variant="outline"
                     className="h-5 rounded-full bg-background/40 px-2 text-[10px] font-medium capitalize text-muted-foreground"
                   >
-                    <span className="sr-only">Tier</span>
+                    <span className="sr-only">{t.tierSrOnly}</span>
                     {entry.level}
                   </Badge>
                   <span aria-hidden="true" className="text-[10px] text-muted-foreground/70">
@@ -407,7 +420,7 @@ export function DesignSystemPreview() {
                     variant="outline"
                     className="h-5 rounded-full bg-background/40 px-2 text-[10px] font-medium text-muted-foreground"
                   >
-                    <span className="sr-only">Domain</span>
+                    <span className="sr-only">{t.domainSrOnly}</span>
                     {entry.domain}
                   </Badge>
                 </div>
@@ -416,7 +429,7 @@ export function DesignSystemPreview() {
             {filtered.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center text-sm text-muted-foreground">
-                  No components match your search.
+                  {t.noResults}
                 </CardContent>
               </Card>
             ) : null}
@@ -434,14 +447,14 @@ export function DesignSystemPreview() {
         >
           <div
             role="toolbar"
-            aria-label="Preview panel actions"
+            aria-label={t.previewToolbarAria}
             className="flex shrink-0 flex-col gap-3 border-b border-border/70 bg-background/60 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/45 max-sm:sticky max-sm:top-16 max-sm:z-10 sm:flex-row sm:items-center sm:justify-between sm:px-4"
           >
             <Link
-              href="/"
+              href={localizedHref("/", locale)}
               className="order-2 inline-flex min-h-10 cursor-pointer items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:order-1"
             >
-              ← Back to dashboard demo
+              {t.backToDashboard}
             </Link>
             <div className="order-1 flex flex-wrap items-center gap-2 sm:order-2 sm:justify-end">
               <Button
@@ -455,23 +468,25 @@ export function DesignSystemPreview() {
                     trigger: "export",
                     status: "success",
                   });
-                  toast("Design system bundle downloaded", "success");
+                  toast(t.bundleDownloaded, "success");
                 }}
               >
-                Export all snippets
+                {t.exportAll}
               </Button>
               <Link
-                href="/"
+                href={localizedHref("/", locale)}
                 className={cn(buttonVariants({ variant: "outline" }), "min-h-10")}
               >
-                Try screenshot-to-scaffold workflow →
+                {t.tryWorkflow}
               </Link>
             </div>
           </div>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-3 pt-4">
             <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
               {selectedEntry ? (
-                <ErrorBoundary fallbackTitle={`Could not render ${selectedEntry.name}.`}>
+                <ErrorBoundary
+                  fallbackTitle={interpolate(t.renderError, { name: selectedEntry.name })}
+                >
                   <ComponentPreviewCard
                     id={selectedEntry.id}
                     title={selectedEntry.name}
@@ -497,7 +512,7 @@ export function DesignSystemPreview() {
                 </ErrorBoundary>
               ) : (
                 <div className="p-8 text-sm text-muted-foreground">
-                  Pick a component from the list to inspect preview, props, and snippet.
+                  {t.pickComponent}
                 </div>
               )}
             </div>
@@ -519,6 +534,6 @@ export function DesignSystemPreview() {
           </div>
         </section>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,16 +1,23 @@
+"use client";
+
+import { useLocale } from "@/lib/i18n";
+
 export function DesignSystemLcpHeader() {
+  const { locale, dict } = useLocale();
+  const t = dict.designSystem;
+
   return (
-    <header className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]">
+    <header
+      lang={locale}
+      className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]"
+    >
       <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Design system
+        {t.eyebrow}
       </p>
       <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-        Atomic component lab
+        {t.title}
       </h1>
-      <p className="growth-snippet mt-1 text-sm text-muted-foreground">
-        Filter by tier and domain, preview variants, and copy export-ready snippets for your next
-        sprint.
-      </p>
+      <p className="growth-snippet mt-1 text-sm text-muted-foreground">{t.subtitle}</p>
     </header>
   );
 }

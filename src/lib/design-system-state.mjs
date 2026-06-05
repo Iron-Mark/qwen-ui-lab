@@ -28,6 +28,9 @@ export function createDesignSystemSearchParams(state) {
   if (state.previewMode && state.previewMode !== "desktop") {
     params.set("preview", state.previewMode);
   }
+  if (state.lang && state.lang !== "en") {
+    params.set("lang", state.lang);
+  }
   return params;
 }
 

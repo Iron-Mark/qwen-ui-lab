@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { DesignSystemLcpHeader } from "@/components/design-system/DesignSystemLcpHeader";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
@@ -54,7 +56,11 @@ export default function DesignSystemPage() {
         dangerouslySetInnerHTML={structuredData}
       />
       <PageContainer className="space-y-6 py-6">
-        <DesignSystemLcpHeader />
+        <Suspense
+          fallback={<Skeleton className="h-28 w-full rounded-2xl" aria-hidden />}
+        >
+          <DesignSystemLcpHeader />
+        </Suspense>
         <DesignSystemPreviewClient />
       </PageContainer>
     </>

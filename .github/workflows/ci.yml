@@ -175,7 +175,7 @@ jobs:
           retention-days: 14
 
   perf-lcp-budget:
-    name: Production LCP budget (warn-only)
+    name: Production LCP budget
     runs-on: ubuntu-latest
     needs:
       - quality
@@ -206,7 +206,8 @@ jobs:
         run: npm run perf:lcp-budget
         env:
           PERF_URL: ${{ steps.prod.outputs.url }}
-          PERF_LCP_STRICT: "false"
+          # Strict by default on main; set repository variable PERF_LCP_STRICT=false to relax.
+          PERF_LCP_STRICT: ${{ vars.PERF_LCP_STRICT || 'true' }}
 
       - name: Upload Lighthouse report on budget breach
         if: always()
