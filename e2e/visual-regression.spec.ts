@@ -72,10 +72,10 @@ test("design-system preview panel visual baseline", async ({ page }) => {
 
   const previewPanel = page.locator("#component-preview-panel");
   await expect(previewPanel).toBeVisible();
-  // Wait for deferred preview chunk + selected component render before screenshot.
-  await expect(previewPanel.getByText(/Preview|Export|Button/i).first()).toBeVisible({
-    timeout: 30_000,
-  });
+  // Selected entry (shadcn-button) should be rendered inside the preview host.
+  await expect(
+    previewPanel.locator('[aria-label="Component preview"] button').first(),
+  ).toBeVisible({ timeout: 30_000 });
 
   await expect(previewPanel).toHaveScreenshot("design-system-preview-panel.png", {
     maxDiffPixelRatio: 0.03,

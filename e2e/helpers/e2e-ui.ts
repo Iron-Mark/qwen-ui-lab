@@ -55,10 +55,20 @@ export async function expectDemoSnackbarSessionFlag(page: Page, value: "0" | "1"
 
 /** Waits for idle-deferred DesignSystemPreview (LCP path uses a skeleton first). */
 export async function waitForDesignSystemPreview(page: Page, timeoutMs = 20_000) {
-  await page.locator("#component-preview-panel").waitFor({
+  const previewPanel = page.locator("#component-preview-panel");
+  await previewPanel.waitFor({
     state: "visible",
     timeout: timeoutMs,
   });
+
+  // Ensure IntersectionObserver in ComponentPreviewCard (deferPreview) can fire.
+  await previewPanel.scrollIntoViewIfNeeded();
+
+  // deferPreview renders an animate-pulse placeholder until the host intersects.
+  const deferredPreviewSkeleton = previewPanel.locator(
+    '[aria-label="Component preview"] .animate-pulse[aria-hidden="true"]',
+  );
+  await expect(deferredPreviewSkeleton).toHaveCount(0, { timeout: timeoutMs });
 }
 
 /** Tier filter in the design-system header (not catalog list badges). */
