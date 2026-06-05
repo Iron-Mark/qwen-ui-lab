@@ -21,7 +21,7 @@
 
 ## Live demo
 
-**[Open the live demo →](https://qwen-ui-lab.vercel.app)**
+**[Open the live demo →](https://qwen-ui-lab.vercel.app)** · **[One-click `/demo` route →](https://qwen-ui-lab.vercel.app/demo)** · **[Meetup kit (DEMO.md)](./DEMO.md)**
 
 No API key required — the public site runs **offline demo analysis** by default. On first visit you’ll see the bottom-left **Demo mode — safe for live demos** snackbar (once per session).
 
@@ -83,6 +83,7 @@ Optional: `npm run doctor` for env, deps, and API ping when a key is set.
 
 | Route | Purpose |
 |-------|---------|
+| **`/demo`** | **Meetup one-click demo** — preloaded reference, auto analyze + export panel; `?archetype=auth\|mobile\|landing\|settings\|shop` |
 | `/` | Dashboard + **UploadFlow** (screenshot → analyze → generate preview) |
 | `/design-system` | Atomic component catalog, filters, export bundle |
 | `/design-system?domain=laws-of-ux` | Laws of UX pattern slice |
@@ -95,13 +96,14 @@ Optional: `npm run doctor` for env, deps, and API ping when a key is set.
 
 ## Demo flow (30-second presenter script)
 
-Use this on stage; full click-by-click notes live in **[DEMO.md](./DEMO.md)**.
+Use this on stage; the full **10-minute script**, **`/demo` tour order**, troubleshooting table, and optional slides outline live in **[DEMO.md](./DEMO.md)**.
 
-1. Open **[qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)** — point out header **Demo mode** and the bottom-left offline-tour snackbar.
-2. Click **Use sample screenshot** → **Analyze** (instant offline path; no API wait).
-3. **Generate Preview** — reference vs plan cards, scaffold + stats.
-4. Jump to **Design system** — filter, toggle variants, mention **Laws of UX** dialog from analyze flow.
-5. Toggle **brand theme** + light/dark — charts follow tokens.
+1. Open **[qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo)** — one-click offline analyze + export (or start on `/` for manual upload).
+2. Point out header **Demo mode** and the bottom-left offline-tour snackbar.
+3. From export panel: **Copy all code** / **Download .tsx** — swap layouts with `?archetype=auth` or `?archetype=shop`.
+4. Optional: **`/`** → **Use sample screenshot** → **Analyze** → **Generate Preview** for the full home story.
+5. Jump to **Design system** — filter, toggle variants, **Laws of UX** dialog from analyze flow.
+6. Toggle **brand theme** + light/dark — charts follow tokens.
 
 **One-liner for the room:** *“Turn screenshots into production-ready React/Tailwind starting points — demo runs offline; live Qwen is one env flag when you’re ready.”*
 
@@ -211,7 +213,7 @@ Presenter and marketing-adjacent docs:
 
 | Doc | Audience |
 |-----|----------|
-| **[DEMO.md](./DEMO.md)** | Meetup script, pre-flight checklist, what to say about the API |
+| **[DEMO.md](./DEMO.md)** | 10-min meetup script, `/demo` tour order, troubleshooting table, slides outline |
 | **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** | Demo operators after production deploy |
 | **[docs/DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** | Release deploy steps |
 | **[docs/RELEASE_NOTES_DRAFT.md](./docs/RELEASE_NOTES_DRAFT.md)** | Release notes source (tag on publish) |

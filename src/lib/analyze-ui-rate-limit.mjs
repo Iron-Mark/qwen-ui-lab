@@ -1,15 +1,27 @@
 /**
- * In-memory fixed-window rate limit for POST /api/analyze-ui (live mode only).
+ * Fixed-window rate limit for POST /api/analyze-ui (live mode only).
  *
- * Serverless note: each warm instance keeps its own bucket map. Limits are
- * best-effort per instance, not a global cluster cap. Tune via env vars.
+ * Store: in-memory by default; optional Vercel KV / Upstash when KV_REST_API_* is set.
+ * See docs/LIVE_QWEN_ROLLOUT.md.
  */
+
+import {
+  resolveAnalyzeUiRateLimitStore,
+  resetDefaultMemoryRateLimitStore,
+} from "./analyze-ui-rate-limit-store.mjs";
 
 const DEFAULT_MAX_REQUESTS = 12;
 const DEFAULT_WINDOW_MS = 60_000;
 
-/** @type {Map<string, { count: number; resetAt: number }>} */
-const buckets = new Map();
+/**
+ * @typedef {object} RateLimitCheckResult
+ * @property {boolean} allowed
+ * @property {number} limit
+ * @property {number} windowMs
+ * @property {number} [remaining]
+ * @property {number} [resetAt]
+ * @property {number} [retryAfterSec]
+ */
 
 function parsePositiveInt(raw, fallback) {
   if (raw === undefined || raw === "") return fallback;
@@ -47,44 +59,28 @@ export function getRequestClientIp(request) {
 }
 
 /**
- * @param {{ clientKey: string; now?: number; env?: NodeJS.ProcessEnv }} options
+ * @param {{
+ *   clientKey: string;
+ *   now?: number;
+ *   env?: NodeJS.ProcessEnv;
+ *   store?: import("./analyze-ui-rate-limit-store.mjs").RateLimitStore;
+ * }} options
+ * @returns {Promise<RateLimitCheckResult>}
  */
-export function checkAnalyzeUiRateLimit({
+export async function checkAnalyzeUiRateLimit({
   clientKey,
   now = Date.now(),
   env = process.env,
+  store,
 }) {
   const { maxRequests, windowMs } = getAnalyzeUiRateLimitConfig(env);
   const key = clientKey || "unknown";
+  const activeStore = store ?? resolveAnalyzeUiRateLimitStore(env);
 
-  let entry = buckets.get(key);
-  if (!entry || now >= entry.resetAt) {
-    entry = { count: 0, resetAt: now + windowMs };
-    buckets.set(key, entry);
-  }
-
-  entry.count += 1;
-
-  if (entry.count > maxRequests) {
-    const retryAfterSec = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
-    return {
-      allowed: false,
-      retryAfterSec,
-      limit: maxRequests,
-      windowMs,
-    };
-  }
-
-  return {
-    allowed: true,
-    limit: maxRequests,
-    windowMs,
-    remaining: Math.max(0, maxRequests - entry.count),
-    resetAt: entry.resetAt,
-  };
+  return activeStore.consume({ key, maxRequests, windowMs, now });
 }
 
 /** @internal Test helper */
 export function resetAnalyzeUiRateLimitStore() {
-  buckets.clear();
+  resetDefaultMemoryRateLimitStore();
 }
