@@ -53,4 +53,12 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({
     timeout: 5_000,
   });
+
+  const repoZipDownloadPromise = page.waitForEvent("download");
+  await page.getByTestId("repo-export-button").click();
+  const repoZipDownload = await repoZipDownloadPromise;
+  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-scaffold.zip");
+  await expect(page.getByText(/Scaffold zip downloaded/i)).toBeVisible({
+    timeout: 5_000,
+  });
 });

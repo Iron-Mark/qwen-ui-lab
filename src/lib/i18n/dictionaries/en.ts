@@ -150,7 +150,7 @@ export const en = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "Export scaffold",
     exportScaffoldDesc:
-      "Copy, download, or export the generated React + Tailwind code to a GitHub Gist.",
+      "Copy, download, export to a GitHub Gist, or export to a repo (zip with README, or a compare link when GITHUB_TOKEN is set).",
     exportCopyAll: "Copy all",
     exportDownload: "Download .tsx",
     toastScaffoldCopied: "Scaffold copied",

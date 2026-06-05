@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
 import { GistExportButton } from "@/components/atoms/GistExportButton";
+import { RepoExportButton } from "@/components/atoms/RepoExportButton";
 import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
+import { useAuth } from "@/lib/auth";
 import {
   loadSessionHistory,
   saveSession,
@@ -189,6 +191,7 @@ export function UploadFlow({
   const previewUrlRef = useRef<string | null>(null);
   const demoBootstrappedRef = useRef<string | null>(null);
   const { toast } = useToast();
+  const { savedByLabel } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [artifact, setArtifact] = useState<UiFlowArtifact | null>(null);
@@ -495,6 +498,7 @@ export function UploadFlow({
         fileSize: file.size,
         modeLabel: (outcome.artifact as UiFlowArtifact).modeLabel || t.modeLocalDemo,
         providerState: outcome.providerState as "qwen" | "fallback",
+        savedBy: savedByLabel,
         summary: (outcome.artifact as UiFlowArtifact).summary,
         artifact: {
           plan: (outcome.artifact as UiFlowArtifact).plan,
@@ -754,6 +758,8 @@ export function UploadFlow({
               {interpolate(t.recentAnalysesStored, {
                 count: String(sessions.length),
               })}
+              {" · "}
+              {interpolate(t.recentAnalysesSavedBy, { name: savedByLabel })}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1085,6 +1091,13 @@ export function UploadFlow({
                         onCopied={() => toast(t.toastScaffoldExported, "success")}
                       />
                       <GistExportButton
+                        text={artifact.generatedCode}
+                        filename={exportFilename}
+                        description="qwen-ui-lab generated scaffold"
+                        analyticsSource="upload_flow"
+                        analyticsFeature="generated_scaffold"
+                      />
+                      <RepoExportButton
                         text={artifact.generatedCode}
                         filename={exportFilename}
                         description="qwen-ui-lab generated scaffold"

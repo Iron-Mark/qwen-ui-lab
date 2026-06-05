@@ -143,7 +143,7 @@ export const zh = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "导出脚手架",
     exportScaffoldDesc:
-      "复制、下载或将生成的 React + Tailwind 代码导出到 GitHub Gist。",
+      "复制、下载、导出到 GitHub Gist，或导出到仓库（无 token 时下载含 README 的 zip；配置 GITHUB_TOKEN 时打开 compare 链接）。",
     exportCopyAll: "复制全部",
     exportDownload: "下载 .tsx",
     toastScaffoldCopied: "脚手架已复制",
