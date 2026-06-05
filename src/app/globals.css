@@ -8,12 +8,12 @@
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.50 0 0);
   --border: oklch(0.922 0 0);
   --ring: oklch(0.64 0.17 259);
   --accent: oklch(0.95 0.03 255);
   --accent-foreground: oklch(0.28 0.08 255);
-  --success: #059669;
+  --success: #047857;
   --danger: #dc2626;
   --chart-bar: #18181b;
   --chart-line: #18181b;
@@ -22,7 +22,7 @@
   --foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.54 0.2 259);
+  --primary: oklch(0.46 0.2 259);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.95 0.02 260);
   --secondary-foreground: oklch(0.3 0.08 260);
@@ -48,7 +48,7 @@
   --syntax-string: color-mix(in oklch, var(--success) 88%, var(--foreground));
   --syntax-keyword: color-mix(in oklch, var(--primary) 82%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 68%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 58%, var(--foreground));
   --syntax-number: color-mix(in oklch, var(--danger) 70%, var(--foreground));
   --syntax-boolean: color-mix(in oklch, var(--danger) 76%, var(--foreground));
   --syntax-constant: color-mix(in oklch, var(--danger) 64%, var(--foreground));
@@ -106,7 +106,7 @@
   --syntax-string: color-mix(in oklch, var(--success) 78%, var(--foreground));
   --syntax-keyword: color-mix(in oklch, var(--primary) 82%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 74%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 78%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 60%, var(--foreground));
   --syntax-number: color-mix(in oklch, var(--danger) 74%, var(--foreground));
   --syntax-boolean: color-mix(in oklch, var(--danger) 80%, var(--foreground));
   --syntax-constant: color-mix(in oklch, var(--danger) 70%, var(--foreground));
@@ -124,7 +124,7 @@
 :root[data-brand="indigo"] {
   --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 70%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 78%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 60%, var(--foreground));
   --syntax-tag: color-mix(in oklch, var(--primary) 80%, var(--foreground));
   --syntax-attr-name: color-mix(in oklch, var(--primary) 68%, var(--foreground));
 }
@@ -132,7 +132,7 @@
 :root.dark[data-brand="indigo"] {
   --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 76%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 62%, var(--foreground));
   --syntax-tag: color-mix(in oklch, var(--primary) 86%, var(--foreground));
   --syntax-attr-name: color-mix(in oklch, var(--primary) 76%, var(--foreground));
 }
@@ -152,7 +152,7 @@
   --chart-5: oklch(0.64 0.12 130);
   --syntax-keyword: color-mix(in oklch, var(--primary) 80%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 68%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 58%, var(--foreground));
   --syntax-string: color-mix(in oklch, var(--success) 90%, var(--foreground));
   --syntax-tag: color-mix(in oklch, var(--primary) 76%, var(--foreground));
   --syntax-attr-name: color-mix(in oklch, var(--primary) 66%, var(--foreground));
@@ -174,7 +174,7 @@
   --chart-5: oklch(0.68 0.12 130);
   --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 76%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 62%, var(--foreground));
   --syntax-string: color-mix(in oklch, var(--success) 80%, var(--foreground));
   --syntax-tag: color-mix(in oklch, var(--primary) 82%, var(--foreground));
   --syntax-attr-name: color-mix(in oklch, var(--primary) 74%, var(--foreground));
@@ -196,7 +196,7 @@
   --chart-5: oklch(0.66 0.15 350);
   --syntax-keyword: color-mix(in oklch, var(--primary) 80%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 66%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 74%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 58%, var(--foreground));
   --syntax-number: color-mix(in oklch, var(--danger) 72%, var(--foreground));
   --syntax-boolean: color-mix(in oklch, var(--danger) 78%, var(--foreground));
   --syntax-constant: color-mix(in oklch, var(--danger) 68%, var(--foreground));
@@ -221,7 +221,7 @@
   --chart-5: oklch(0.7 0.15 350);
   --syntax-keyword: color-mix(in oklch, var(--primary) 84%, var(--foreground));
   --syntax-function: color-mix(in oklch, var(--primary) 72%, var(--foreground));
-  --syntax-class: color-mix(in oklch, var(--primary) 80%, var(--secondary));
+  --syntax-class: color-mix(in oklch, var(--primary) 62%, var(--foreground));
   --syntax-number: color-mix(in oklch, var(--danger) 76%, var(--foreground));
   --syntax-boolean: color-mix(in oklch, var(--danger) 82%, var(--foreground));
   --syntax-constant: color-mix(in oklch, var(--danger) 72%, var(--foreground));
@@ -451,4 +451,24 @@ body {
 
 [data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
   padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+}
+
+[data-sonner-toast][data-type="success"] {
+  --success-bg: #ecfdf3;
+  --success-border: #a7f3d0;
+  --success-text: #047857;
+  color: var(--success-text);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+[data-sonner-toast][data-rich-colors="true"][data-type="success"] {
+  background: var(--success-bg) !important;
+  border-color: var(--success-border) !important;
+  color: var(--success-text) !important;
+}
+
+[data-sonner-toast][data-rich-colors="true"][data-type="success"] [data-title],
+[data-sonner-toast][data-rich-colors="true"][data-type="success"] [data-description] {
+  color: var(--success-text) !important;
 }

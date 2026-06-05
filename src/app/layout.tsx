@@ -229,7 +229,6 @@ export default function RootLayout({
               <TooltipProvider>
                 <ToastProvider>
                   <LazyToaster
-                    richColors
                     closeButton
                     position="bottom-left"
                     offset={20}

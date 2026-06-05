@@ -17,8 +17,20 @@ const DEFAULT_SHARE_ID_LENGTH = 8;
 const DEFAULT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const KV_KEY_PREFIX = "share:";
 
-/** @type {Map<string, { payload: ShareableResultSummary; expiresAt: number }>} */
-const memoryStore = new Map();
+const SHARE_STORE_KEY = Symbol.for("qwen-ui-lab.share-store");
+
+/** @returns {Map<string, { payload: ShareableResultSummary; expiresAt: number }>} */
+function getMemoryStore() {
+  const globalStore = /** @type {typeof globalThis & Record<symbol, Map<string, unknown>>} */ (
+    globalThis
+  );
+  if (!globalStore[SHARE_STORE_KEY]) {
+    globalStore[SHARE_STORE_KEY] = new Map();
+  }
+  return /** @type {Map<string, { payload: ShareableResultSummary; expiresAt: number }>} */ (
+    globalStore[SHARE_STORE_KEY]
+  );
+}
 
 function parsePositiveInt(raw, fallback) {
   if (raw === undefined || raw === "") return fallback;
@@ -80,6 +92,7 @@ export function sanitizeSharePayload(input) {
 }
 
 function memoryGet(id) {
+  const memoryStore = getMemoryStore();
   const entry = memoryStore.get(id);
   if (!entry) return null;
   if (Date.now() >= entry.expiresAt) {
@@ -90,7 +103,7 @@ function memoryGet(id) {
 }
 
 function memorySet(id, payload, ttlMs) {
-  memoryStore.set(id, {
+  getMemoryStore().set(id, {
     payload,
     expiresAt: Date.now() + ttlMs,
   });
@@ -184,5 +197,5 @@ export async function createShareRecord(payload, options = {}) {
 }
 
 export function resetShareStore() {
-  memoryStore.clear();
+  getMemoryStore().clear();
 }

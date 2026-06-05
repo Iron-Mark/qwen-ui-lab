@@ -46,9 +46,10 @@ export function CodeHighlight({
     return (
       <pre
         className={cn(
-          "code-highlight max-h-80 overflow-auto bg-card px-4 py-4 font-mono text-[0.8125rem] leading-6 text-card-foreground sm:text-sm",
+          "code-highlight max-h-80 overflow-auto bg-card px-4 py-4 font-mono text-[0.8125rem] leading-6 text-card-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card sm:text-sm",
           className,
         )}
+        tabIndex={0}
       >
         <code className={cn(languageClass, "block whitespace-pre-wrap break-words")}>
           {code}
