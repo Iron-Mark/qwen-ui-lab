@@ -1,14 +1,7 @@
+import demoFixtures from "../fixtures/demo-responses.json" with { type: "json" };
 import type { Page } from "@playwright/test";
 
-/** Matches GET /api/health in demo mode — forces instant offline analyze. */
-export const E2E_HEALTH_JSON = {
-  ok: true,
-  provider: "demo",
-  hasApiKey: false,
-  liveAnalysisEnabled: false,
-  model: null,
-  baseUrl: null,
-} as const;
+export const E2E_HEALTH_JSON = demoFixtures.health;
 
 /**
  * Intercept analyze API routes so E2E never calls Qwen, regardless of .env.local or CI secrets.
@@ -50,11 +43,9 @@ export async function mockAnalyzeApiForE2E(page: Page) {
     await route.fulfill({
       status: 503,
       contentType: "application/json",
-      body: JSON.stringify({
-        ok: false,
-        code: "missing_qwen_api_key",
-        message: "E2E mock — live Qwen disabled",
-      }),
+      body: JSON.stringify(demoFixtures.analyzeUiError),
     });
   });
 }
+
+export const E2E_SAMPLE_ARTIFACT = demoFixtures.sampleArtifact;

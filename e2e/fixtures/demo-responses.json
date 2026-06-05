@@ -1,0 +1,51 @@
+{
+  "health": {
+    "ok": true,
+    "provider": "demo",
+    "hasApiKey": false,
+    "liveAnalysisEnabled": false,
+    "model": null,
+    "baseUrl": null
+  },
+  "analyzeUiError": {
+    "ok": false,
+    "code": "missing_qwen_api_key",
+    "message": "E2E mock — live Qwen disabled"
+  },
+  "sampleFile": {
+    "name": "dashboard-reference.svg",
+    "type": "image/svg+xml",
+    "size": 9881,
+    "width": 1200,
+    "height": 720
+  },
+  "sampleArtifact": {
+    "planTitles": [
+      "Visual Input",
+      "Layout Read",
+      "Component Map",
+      "Accessibility Pass",
+      "Human Review"
+    ],
+    "previewStats": [
+      {
+        "label": "Sections",
+        "value": "6"
+      },
+      {
+        "label": "Components",
+        "value": "11"
+      },
+      {
+        "label": "Breakpoints",
+        "value": "3"
+      },
+      {
+        "label": "Review Items",
+        "value": "4"
+      }
+    ],
+    "modeLabel": "Local demo mode",
+    "summary": "Admin dashboard shell with stat grid, revenue chart, and activity feed — tuned for live demos."
+  }
+}
