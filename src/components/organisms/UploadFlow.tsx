@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { ExportButton } from "@/components/atoms/ExportButton";
+import { GistExportButton } from "@/components/atoms/GistExportButton";
 import { SharedSummaryCard } from "@/components/molecules/SharedSummaryCard";
 import { UploadDropzone } from "@/components/molecules/UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
@@ -37,6 +38,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/lib/provider-mode";
+import {
+  buildAnalyzeFailureError,
+  isReportableAnalyzeFailure,
+} from "@/lib/analyze-observability.mjs";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { BUNDLED_REFERENCE_SAMPLES } from "@/lib/reference-samples.mjs";
@@ -221,6 +226,19 @@ export function UploadFlow({
       }),
     [mode, observability, pathname],
   );
+
+  function reportAnalyzeFailure(outcome: {
+    providerState?: string;
+    instantDemo?: boolean;
+    code?: string | null;
+  }) {
+    if (!isReportableAnalyzeFailure(outcome)) return;
+    observability?.captureError(buildAnalyzeFailureError(outcome), {
+      source: "analyze_route",
+      route: pathname ?? "/",
+      providerMode: mode,
+    });
+  }
 
   useEffect(() => {
     return () => {
@@ -468,6 +486,7 @@ export function UploadFlow({
       setProviderMessage(outcome.message);
       setProviderDetail(outcome.detail);
       setStage("analyzed");
+      reportAnalyzeFailure(outcome);
 
       const record: SessionRecord = {
         id: crypto.randomUUID(),
@@ -525,6 +544,7 @@ export function UploadFlow({
       setProviderMessage(outcome.message);
       setProviderDetail(outcome.detail);
       setStage("analyzed");
+      reportAnalyzeFailure(outcome);
       toast(t.toastAnalyzeFailed, "error");
       analytics.track(AnalyticsEvent.AnalyzeFailed, {
         source: "upload_flow",
@@ -1064,6 +1084,13 @@ export function UploadFlow({
                         analyticsSource="upload_flow"
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast(t.toastScaffoldExported, "success")}
+                      />
+                      <GistExportButton
+                        text={artifact.generatedCode}
+                        filename={exportFilename}
+                        description="qwen-ui-lab generated scaffold"
+                        analyticsSource="upload_flow"
+                        analyticsFeature="generated_scaffold"
                       />
                     </div>
                   </CardHeader>

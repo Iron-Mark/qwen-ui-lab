@@ -142,7 +142,8 @@ export const zh = {
     toastShareFailed: "无法复制分享链接",
     defaultScreenshotName: "screenshot",
     exportScaffold: "导出脚手架",
-    exportScaffoldDesc: "复制或下载生成的 React + Tailwind 代码。",
+    exportScaffoldDesc:
+      "复制、下载或将生成的 React + Tailwind 代码导出到 GitHub Gist。",
     exportCopyAll: "复制全部",
     exportDownload: "下载 .tsx",
     toastScaffoldCopied: "脚手架已复制",

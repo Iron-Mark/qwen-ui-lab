@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useProviderMode } from "@/lib/provider-mode";
+import { createClientErrorDispatch } from "@/lib/error-reporting.client";
 import {
   createMonitoringHooks,
   createObservabilityConfig,
@@ -19,6 +20,10 @@ function getClientObservabilityEnv() {
     NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE:
       process.env.NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE,
     NEXT_PUBLIC_OBSERVABILITY_DEBUG: process.env.NEXT_PUBLIC_OBSERVABILITY_DEBUG,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_ERROR_REPORTING_URL: process.env.NEXT_PUBLIC_ERROR_REPORTING_URL,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
   };
 }
 
@@ -26,8 +31,10 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
   const { mode } = useProviderMode();
 
   const hooks = useMemo(() => {
-    const config = createObservabilityConfig(getClientObservabilityEnv());
-    return createMonitoringHooks({ config });
+    const env = getClientObservabilityEnv();
+    const config = createObservabilityConfig(env);
+    const dispatchError = createClientErrorDispatch(config, env);
+    return createMonitoringHooks({ config, dispatchError });
   }, []);
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import { ActivityList } from "@/components/organisms/ActivityList";
 import { QuickActionButton } from "@/components/atoms/QuickActionButton";
 import { ChartPreview } from "@/components/organisms/ChartPreview";
 import { WorkflowBanner } from "@/components/organisms/WorkflowBanner";
-import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
+import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
 import { Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
@@ -66,12 +66,12 @@ export function DashboardShell({
             <RevenueCard data={revenueData} />
           </div>
           <div className="lg:col-span-3">
-            <ErrorBoundary fallbackTitle="Chart preview failed to render.">
+            <ObservabilityErrorBoundary fallbackTitle="Chart preview failed to render.">
               <ChartPreview
                 performanceData={performanceData}
                 channelMixData={channelMixData}
               />
-            </ErrorBoundary>
+            </ObservabilityErrorBoundary>
           </div>
         </div>
 

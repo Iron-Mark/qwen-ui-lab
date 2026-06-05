@@ -149,7 +149,8 @@ export const en = {
     toastShareFailed: "Could not copy share link",
     defaultScreenshotName: "screenshot",
     exportScaffold: "Export scaffold",
-    exportScaffoldDesc: "Copy or download the generated React + Tailwind code.",
+    exportScaffoldDesc:
+      "Copy, download, or export the generated React + Tailwind code to a GitHub Gist.",
     exportCopyAll: "Copy all",
     exportDownload: "Download .tsx",
     toastScaffoldCopied: "Scaffold copied",
