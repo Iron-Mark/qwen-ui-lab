@@ -25,6 +25,27 @@ Set **server-only** variables in the deployment environment (never `NEXT_PUBLIC_
 | `QWEN_MODEL` | **Yes** (for `deploy:env:live`) | e.g. `qwen3-vl-plus` — must be set in host env even though the app has a runtime default |
 | `QWEN_BASE_URL` | Optional | Defaults to Singapore compatible endpoint; see [`.env.example`](../.env.example) for US/Beijing URLs |
 
+### Vercel environment checklist (exact)
+
+Configure in **Vercel → Project → Settings → Environment Variables**. All Qwen secrets are **server-only** (do not enable “Expose to Browser”).
+
+| Variable | Production (public meetup) | Preview (live rehearsal) | Development |
+|----------|---------------------------|------------------------|-------------|
+| `QWEN_LIVE_ANALYSIS` | **Unset** or `false` | `true` when rehearsing live | `true` in `.env.local` only when testing live locally |
+| `USE_LIVE_QWEN` | **Unset** (alias; do not set if using `QWEN_LIVE_ANALYSIS`) | Optional alias `1` / `yes` | Same as preview |
+| `DASHSCOPE_API_KEY` | Optional unset (recommended) or set — **no upstream calls without live flag** | **Required** for live preview | Required in `.env.local` for live local tests |
+| `QWEN_MODEL` | Optional (ignored in demo mode) | **Required** — e.g. `qwen3-vl-plus` | Same as preview |
+| `QWEN_BASE_URL` | Optional | Optional — set if region ≠ Singapore default | Optional |
+| `NEXT_PUBLIC_QWEN_API_KEY` | **Must never exist** | **Must never exist** | **Must never exist** |
+
+**Vercel operator steps (live preview only — not public production):**
+
+1. Add each live variable above to **Preview** scope only (uncheck Production until Stage C).
+2. Leave **Production** `QWEN_LIVE_ANALYSIS` unset for meetup-safe default.
+3. After any env change on Vercel, **Redeploy** the affected environment (env vars apply on next deployment).
+4. Before promoting to Production live: run `npm run deploy:env:live` in CI or locally with the same values Vercel will receive.
+5. Confirm `GET /api/health` on the preview URL shows `liveAnalysisEnabled: true`, `provider: "qwen"`.
+
 Copy [`.env.example`](../.env.example) to `.env.local` for local rehearsal:
 
 ```bash
@@ -99,14 +120,32 @@ npm run deploy:env:live
 
 - Demo target with `DASHSCOPE_API_KEY` set but live flag off → warning only; still passes demo gate
 
+### Validation log (2026-06-05)
+
+Ran on `qwen-ui-lab` release branch tooling (no production live enablement):
+
+| Command | Exit | Summary |
+|---------|------|---------|
+| `npm run deploy:env:demo` (clean env) | `0` | `Live analysis requested: no`, `Live calls executable: no` |
+| `npm run deploy:env:live` (clean env) | `1` | Errors: missing `QWEN_LIVE_ANALYSIS`, `DASHSCOPE_API_KEY`, `QWEN_MODEL` |
+| `npm run deploy:env:live` (mock live env) | `0` | `Live analysis requested: yes`, `Live calls executable: yes` |
+| `npm run deploy:env:demo` with `QWEN_LIVE_ANALYSIS=true` | `1` | Demo gate blocks live flag |
+| `DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy` | `0` | `provider=demo`, `liveAnalysisEnabled=false` (production stays demo-safe) |
+| `EXPECT_LIVE_ANALYSIS=true` + same production URL | `1` | Health mismatch — confirms live smoke detects demo rollback state |
+
 ## Staged rollout
 
 1. **Stage A — Preview**
    - [ ] Set live env vars on **preview** environment only
    - [ ] `npm run deploy:env:live` in pipeline or locally with preview secrets
    - [ ] Deploy preview build
-   - [ ] `DEPLOY_URL=<preview-url> npm run smoke:deploy` (demo expectation off preview if live)
-   - [ ] `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<preview-url> npm run smoke:deploy`
+   - [ ] Demo baseline on preview (if env not yet live): `DEPLOY_URL=<preview-url> npm run smoke:deploy`
+   - [ ] **Staged live smoke** (after live env on preview):
+     ```bash
+     DEPLOY_URL=https://<preview-url> node scripts/staged-live-smoke.mjs
+     # equivalent:
+     EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=https://<preview-url> npm run smoke:deploy
+     ```
    - [ ] `GET /api/health` → `liveAnalysisEnabled: true`, `provider: "qwen"`
 
 2. **Stage B — Limited / internal**
@@ -124,9 +163,21 @@ Full release checklist: **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)**
 
 ## Post-deploy smoke (live)
 
+Use **`scripts/staged-live-smoke.mjs`** on preview or staging only until production is intentionally live:
+
+```bash
+DEPLOY_URL=https://<preview-or-staging-host> node scripts/staged-live-smoke.mjs
+# or with explicit URL flag:
+node scripts/staged-live-smoke.mjs --url=https://<preview-or-staging-host>
+```
+
+Equivalent manual form:
+
 ```bash
 EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=https://<your-deployed-host> npm run smoke:deploy
 ```
+
+GitHub Actions: workflow_dispatch input `expect_live_analysis: true` on **Post Deploy Smoke** (`.github/workflows/post-deploy-smoke.yml`).
 
 Smoke verifies:
 
@@ -146,18 +197,34 @@ Optional local health probe before deploy: `npm run doctor` (with live env loade
 Use this when live vision misbehaves, quota spikes, or you need meetup-safe behavior **without** redeploying code.
 
 1. **Disable live flag** on the host (fastest):
-   - Unset or set `QWEN_LIVE_ANALYSIS=false` (and `USE_LIVE_QWEN` if used)
-   - Redeploy or trigger env-only refresh per host (Vercel: redeploy production after env change)
-2. **Verify demo-safe policy locally** (optional, with demo-like env):
+   - Vercel: **Settings → Environment Variables** → remove or set `QWEN_LIVE_ANALYSIS=false` (and `USE_LIVE_QWEN` if used) for the affected scope (Production and/or Preview).
+   - **Deployments → … → Redeploy** so the runtime picks up the change.
+2. **Verify demo-safe policy locally** (optional, with demo-like env — unset live vars first):
    ```bash
    npm run deploy:env:demo
    ```
-3. **Verify production**:
+   Expected: exit `0`, `Live analysis requested: no`.
+3. **Verify deployed host is demo-safe**:
    ```bash
    DEPLOY_URL=https://<host> npm run smoke:deploy
    ```
-   - Expect `GET /api/health` → `liveAnalysisEnabled: false`, `provider: "demo"`
-4. If the **build** is bad, follow **[ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** (redeploy last good tag **and** keep live flag off).
+   Expected: `PASS health: provider=demo, liveAnalysisEnabled=false`.
+4. **Confirm live smoke would fail** (negative check — proves rollback stuck):
+   ```bash
+   DEPLOY_URL=https://<host> node scripts/staged-live-smoke.mjs
+   ```
+   Expected: exit `1`, `/api/health liveAnalysisEnabled mismatch (expected true, got false)`.
+5. If the **build** is bad, follow **[ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** (redeploy last good tag **and** keep live flag off).
+
+### Rollback drill results (2026-06-05, production unchanged)
+
+Public production **`https://qwen-ui-lab.vercel.app`** was **not** switched to live. Drill used current demo-safe production:
+
+| Step | Command | Result |
+|------|---------|--------|
+| Demo gate after clearing live env | `npm run deploy:env:demo` | Pass (`0`) |
+| Demo smoke on production | `DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy` | Pass — `provider=demo` |
+| Live smoke on demo production | `EXPECT_LIVE_ANALYSIS=true` + same URL | Fail (`1`) — mismatch detected |
 
 Leaving `DASHSCOPE_API_KEY` set while live flag is off is **safe** — no upstream calls until `QWEN_LIVE_ANALYSIS=true` again.
 
