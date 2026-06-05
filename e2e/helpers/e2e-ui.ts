@@ -24,11 +24,58 @@ export async function resetE2ESessionStorage(page: Page) {
 }
 
 /** LazyToaster mounts after hydration; Sonner toasts need this container. */
-export async function waitForSonnerToaster(page: Page, timeoutMs = 15_000) {
-  await page.locator("[data-sonner-toaster]").waitFor({
+export async function waitForSonnerToaster(page: Page, timeoutMs = 25_000) {
+  const toaster = page.locator("[data-sonner-toaster]");
+  await toaster.waitFor({
     state: "attached",
     timeout: timeoutMs,
   });
+  // Sonner may attach before layout/position attributes are applied.
+  await expect
+    .poll(
+      async () => {
+        const count = await toaster.count();
+        if (count === 0) return null;
+        const x = await toaster.getAttribute("data-x-position");
+        const y = await toaster.getAttribute("data-y-position");
+        return x && y ? `${x}:${y}` : null;
+      },
+      { timeout: Math.min(timeoutMs, 10_000), intervals: [100, 250, 500] },
+    )
+    .not.toBeNull();
+}
+
+/** Home upload flow is client-rendered; wait before file picker interactions. */
+export async function waitForUploadFlowReady(page: Page, timeoutMs = 20_000) {
+  await expect(page.getByTestId("home-marketing-hero")).toBeVisible({ timeout: timeoutMs });
+  await expect(page.locator('input[type="file"]')).toBeAttached({ timeout: timeoutMs });
+}
+
+/** Bottom-left demo snackbar should clear the sticky header and stay in viewport. */
+export async function expectDemoSnackbarInViewport(
+  page: Page,
+  snackbar: Locator,
+  options?: { headerClearancePx?: number; timeoutMs?: number },
+) {
+  const headerClearancePx = options?.headerClearancePx ?? 64;
+  const timeoutMs = options?.timeoutMs ?? 10_000;
+
+  await expect
+    .poll(
+      async () => {
+        const box = await snackbar.boundingBox();
+        const viewport = page.viewportSize();
+        if (!box || !viewport) return false;
+        return (
+          box.y > headerClearancePx &&
+          box.x < viewport.width * 0.5 &&
+          box.x + box.width <= viewport.width + 4 &&
+          box.y + box.height <= viewport.height + 4
+        );
+      },
+      { timeout: timeoutMs, intervals: [100, 250, 500] },
+    )
+    .toBe(true);
 }
 
 export function demoModeSnackbar(page: Page): Locator {

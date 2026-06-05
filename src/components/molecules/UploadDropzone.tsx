@@ -41,6 +41,7 @@ export function UploadDropzone({
         accept={accept}
         className="sr-only upload-dropzone-input"
         disabled={disabled}
+        suppressHydrationWarning
         onChange={(event) => onFile(event.target.files?.item(0) ?? null)}
       />
       <Button

@@ -4,6 +4,7 @@ import {
   mockAnalyzeApiForE2E,
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
+import { waitForUploadFlowReady } from "./helpers/e2e-ui";
 
 // No live Qwen: route mocks + dev server env (see playwright.config.ts).
 test.beforeEach(async ({ page }) => {
@@ -15,6 +16,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   page,
 }) => {
   await page.goto("/");
+  await waitForUploadFlowReady(page);
 
   const samplePath = path.join(
     process.cwd(),

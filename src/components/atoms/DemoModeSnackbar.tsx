@@ -35,13 +35,18 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
       }
     };
 
-    let frame = 0;
-    const maxFrames = 180;
+    const startedAt = performance.now();
+    const maxWaitMs = 20_000;
 
     const showWhenToasterReady = () => {
-      if (!document.querySelector("[data-sonner-toaster]")) {
-        frame += 1;
-        if (frame < maxFrames) {
+      const toaster = document.querySelector("[data-sonner-toaster]");
+      const toasterReady =
+        toaster instanceof HTMLElement &&
+        toaster.getAttribute("data-x-position") &&
+        toaster.getAttribute("data-y-position");
+
+      if (!toasterReady) {
+        if (performance.now() - startedAt < maxWaitMs) {
           requestAnimationFrame(showWhenToasterReady);
           return;
         }

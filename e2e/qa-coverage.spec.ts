@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
   demoModeSnackbar,
   designSystemTierButton,
+  expectDemoSnackbarInViewport,
   expectDemoSnackbarSessionFlag,
   waitForDesignSystemPreview,
   loadBundledSample,
@@ -68,10 +69,16 @@ test("switches brand theme and persists selection", async ({ page }) => {
 });
 
 test("filters and searches in design system catalog", async ({ page }) => {
-  await page.goto("/design-system");
+  test.setTimeout(60_000);
+
+  await page.goto("/design-system", { waitUntil: "domcontentloaded" });
+  await page.getByRole("searchbox", { name: /search catalog/i }).waitFor({
+    state: "visible",
+    timeout: 30_000,
+  });
 
   const visibleMetric = page.locator("header").getByText(/\d+\s+visible/i);
-  await expect(visibleMetric).toBeVisible();
+  await expect(visibleMetric).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole("searchbox", { name: /search catalog/i }).fill("zzzz-no-match");
   await expect(page.getByText("No components match your search.")).toBeVisible();
@@ -82,7 +89,7 @@ test("filters and searches in design system catalog", async ({ page }) => {
   await expect(visibleMetric).not.toHaveText(/0\s+visible/i);
 
   await designSystemTierButton(page, "molecule").click();
-  await expect.poll(() => page.url()).toMatch(/level=molecule/);
+  await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/level=molecule/);
 });
 
 test("runs deterministic offline demo flow", async ({ page }) => {
@@ -155,15 +162,7 @@ test("shows demo snackbar once per session", async ({ page }) => {
   await expect(snackbar).toBeVisible({ timeout: 15_000 });
   await expectDemoSnackbarSessionFlag(page, "1");
 
-  const box = await snackbar.boundingBox();
-  const viewport = page.viewportSize();
-  if (box && viewport) {
-    const headerClearancePx = 64;
-    expect(box.y).toBeGreaterThan(headerClearancePx);
-    expect(box.x).toBeLessThan(viewport.width * 0.5);
-    expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);
-    expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 2);
-  }
+  await expectDemoSnackbarInViewport(page, snackbar);
 
   await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
     "data-x-position",

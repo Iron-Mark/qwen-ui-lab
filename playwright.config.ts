@@ -27,10 +27,10 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "npm run dev",
+    command: process.env.CI ? "npm run build && npm run start -- -p 3000" : "npm run dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: process.env.CI ? 300_000 : 120_000,
     env: e2eDevServerEnv(),
   },
 });
