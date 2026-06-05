@@ -188,11 +188,29 @@ When **`QWEN_LIVE_ANALYSIS=true`** and **`DASHSCOPE_API_KEY`** are set (`canUseL
 | `ANALYZE_UI_RATE_LIMIT_MAX` | `12` | Max live analyze requests per client IP per window |
 | `ANALYZE_UI_RATE_LIMIT_WINDOW_MS` | `60000` | Fixed window length (ms) |
 
+### Rate limit store (pluggable)
+
+Buckets are backed by a store adapter in `src/lib/analyze-ui-rate-limit-store.mjs`:
+
+| Store | When used | Notes |
+|-------|-----------|--------|
+| **In-memory** (default) | `KV_REST_API_URL` or `KV_REST_API_TOKEN` unset | Per warm serverless instance — best-effort abuse guard |
+| **Vercel KV / Upstash Redis REST** | Both `KV_REST_API_URL` and `KV_REST_API_TOKEN` set | Shared cluster-wide cap across instances (same vars as optional share links) |
+
+**KV fallback:** if a KV read/write fails at request time, the route falls back to the in-memory store for that request so live analysis stays available.
+
 **Behavior**
 
 - **Demo / offline:** live flag off → **no rate limit** on this route (client usually skips the route; server may still return demo artifact if called).
 - **Exceeded limit:** HTTP **429**, `code: "rate_limit_exceeded"`, `Retry-After` header (seconds), `X-RateLimit-Limit`.
-- **Serverless:** in-memory buckets are **per warm instance** (best-effort abuse guard, not a global cluster quota). For stricter caps, add edge/WAF or Redis later.
+- **Serverless without KV:** in-memory buckets are **per warm instance** (not a global cluster quota).
+- **Serverless with KV:** limits apply **across all instances** for the same client IP.
+
+**Optional KV setup (Preview / Production live)**
+
+1. Vercel → **Storage** → create or link **KV** (Upstash Redis).
+2. Vercel injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` into the project env (Preview and/or Production).
+3. Redeploy. No code change required — unset vars keep in-memory mode.
 
 **Tuning for preview rehearsal:** lower `ANALYZE_UI_RATE_LIMIT_MAX` on Preview if you expect heavy clicking during a dry run.
 
