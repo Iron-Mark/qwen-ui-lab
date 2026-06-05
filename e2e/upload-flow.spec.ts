@@ -48,4 +48,9 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
+
+  await page.getByTestId("gist-export-button").click();
+  await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({
+    timeout: 5_000,
+  });
 });
