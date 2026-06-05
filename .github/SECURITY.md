@@ -35,7 +35,7 @@ Describe impact, affected routes (e.g. `/api/analyze-ui`, `/api/health`), and wh
 ## Out of scope / expectations
 
 - Issues that require `QWEN_LIVE_ANALYSIS=true` and your own API key on a self-hosted fork
-- Missing features (rate limits, WAF, full CSP enforce mode) documented as roadmap in [docs/CSP_HARDENING_GUIDE.md](../docs/CSP_HARDENING_GUIDE.md)
+- Missing features (rate limits, WAF, full strict CSP — script/style without `unsafe-*`) documented as staged roadmap in [docs/CSP_HARDENING_GUIDE.md](../docs/CSP_HARDENING_GUIDE.md); Stage A (`connect-src`, `upgrade-insecure-requests`) is enforced in production
 - Social engineering or denial-of-service against the public Vercel deployment
 
 ## Safe demo operations
