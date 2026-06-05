@@ -168,6 +168,7 @@ Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DE
 | Policy | Command / doc |
 |--------|----------------|
 | Demo-safe production (default) | `npm run deploy:env:demo` · **[docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md)** |
+| Live Qwen staged rollout | **[docs/LIVE_QWEN_ROLLOUT.md](./docs/LIVE_QWEN_ROLLOUT.md)** · `npm run deploy:env:live` |
 | Pre/post release checklist | **[docs/DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** |
 | After go-live (operators) | **[docs/POST_LAUNCH.md](./docs/POST_LAUNCH.md)** |
 
@@ -220,6 +221,7 @@ Engineering & ops:
 | [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
 | [docs/OFFLINE_DEMO_E2E.md](./docs/OFFLINE_DEMO_E2E.md) | Offline demo algorithm + E2E guarantee (no AI) |
 | [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |
+| [docs/LIVE_QWEN_ROLLOUT.md](./docs/LIVE_QWEN_ROLLOUT.md) | Live Qwen env, `deploy:env:live`, smoke, rollback |
 | [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) | Versioning and release flow |
 | [docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md) | Tag and release commands |
 | [docs/TROUBLESHOOTING_RUNBOOK.md](./docs/TROUBLESHOOTING_RUNBOOK.md) | Incidents and fixes |

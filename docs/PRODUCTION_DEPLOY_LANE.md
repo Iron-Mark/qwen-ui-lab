@@ -24,6 +24,8 @@ For a planned live rollout:
 npm run deploy:env:live
 ```
 
+Step-by-step checklist, smoke expectations, and rollback: **[docs/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**.
+
 ## Vercel-first setup
 
 1. Keep project connected to Vercel with preview + production environments.

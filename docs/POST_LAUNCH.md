@@ -33,7 +33,7 @@ DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 
 - **Analytics funnel:** follow **[docs/ANALYTICS_STAGING_ACTIVATION.md](./ANALYTICS_STAGING_ACTIVATION.md)** — set flags only in staging; never commit secrets.
 - **A/B experiments:** follow **[docs/EXPERIMENTATION.md](./EXPERIMENTATION.md)** — enable master flag, then one experiment at a time.
-- **Live Qwen:** `QWEN_LIVE_ANALYSIS=true` + `DASHSCOPE_API_KEY` in host env; run `npm run deploy:env:live` before promoting.
+- **Live Qwen:** follow **[docs/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)** — `QWEN_LIVE_ANALYSIS=true` + `DASHSCOPE_API_KEY` (+ `QWEN_MODEL`, optional `QWEN_BASE_URL`); run `npm run deploy:env:live` before promoting.
 
 ## CSP report-only monitoring
 
