@@ -75,7 +75,10 @@ This ensures demos and CI do not accidentally consume external API credits.
 Playwright is configured to avoid live provider dependency:
 
 - web server env removes Qwen-related variables.
-- e2e helpers mock analyze and health endpoints.
+- e2e helpers mock analyze and health endpoints (fixtures from `npm run export:demo-fixtures`).
+- offline demo uses `src/lib/offline-analyze.mjs` (registry + weighted archetype classifier).
+
+See **[docs/OFFLINE_DEMO_E2E.md](./OFFLINE_DEMO_E2E.md)** for the full three-layer guarantee and advanced algorithm.
 
 This keeps test runs deterministic in local and CI contexts.
 

@@ -150,6 +150,7 @@ Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DE
 | `npm test` | Node unit tests (`tests/*.test.mjs`) |
 | `npm run lint` | ESLint |
 | `npm run test:e2e` | Playwright smoke (offline mocks; no live Qwen) |
+| `npm run export:demo-fixtures` | Regenerate `e2e/fixtures/demo-responses.json` from demo libs |
 | `npm run doctor` | Env, deps, optional API ping |
 | `npm run validate:assets` | Public/manifest icon paths and size budget (CI) |
 | `npm run synthetic:health` | `/api/health` probe + latency thresholds |
@@ -217,6 +218,7 @@ Engineering & ops:
 |-----|--------|
 | [docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DESIGN.md) | Folder tiers, catalog domains |
 | [docs/ARCHITECTURE_OVERVIEW.md](./docs/ARCHITECTURE_OVERVIEW.md) | Runtime architecture |
+| [docs/OFFLINE_DEMO_E2E.md](./docs/OFFLINE_DEMO_E2E.md) | Offline demo algorithm + E2E guarantee (no AI) |
 | [docs/PRODUCTION_DEPLOY_LANE.md](./docs/PRODUCTION_DEPLOY_LANE.md) | Env policy gates, smoke hooks |
 | [docs/RELEASE_PROCESS.md](./docs/RELEASE_PROCESS.md) | Versioning and release flow |
 | [docs/RELEASE_PACKAGE_CHECKLIST.md](./docs/RELEASE_PACKAGE_CHECKLIST.md) | Tag and release commands |
