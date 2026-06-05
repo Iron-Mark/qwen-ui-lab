@@ -17,6 +17,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 ## 2) Deploy env policy validation
 
 - [ ] Validate demo-safe defaults (recommended): `npm run deploy:env:demo`
+- [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, demo-safe live)
 - [ ] For live rollout only: `npm run deploy:env:live` (see **[docs/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**)
 - [ ] `NEXT_PUBLIC_QWEN_API_KEY` is not set.
 - [ ] Runtime secrets stay server-only (no `NEXT_PUBLIC_*` prefix for secrets).

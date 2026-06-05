@@ -16,6 +16,8 @@
     "validate:assets": "node scripts/validate-public-assets.mjs",
     "deploy:env:demo": "node scripts/validate-deploy-env.mjs --target=demo",
     "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
+    "validate:prod": "node scripts/validate-prod-env.mjs --target=production",
+    "validate:prod:preview": "node scripts/validate-prod-env.mjs --target=preview",
     "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
     "smoke:live": "node scripts/staged-live-smoke.mjs",
     "smoke:staged": "node scripts/staged-live-smoke.mjs",

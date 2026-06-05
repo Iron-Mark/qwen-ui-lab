@@ -160,6 +160,61 @@ Configure in **Vercel → Project → Settings → Environment Variables**. All 
 | `QWEN_BASE_URL` | Optional | Optional — set if region ≠ Singapore default | Optional |
 | `NEXT_PUBLIC_QWEN_API_KEY` | **Must never exist** | **Must never exist** | **Must never exist** |
 
+### Copy-paste matrix: Production vs Preview (all lanes)
+
+Use this when pasting into **Vercel → Settings → Environment Variables**. Check only the column’s environment scope per row. Validate locally after pull (no Vercel API calls):
+
+```bash
+# After: vercel env pull .env.production.local  (or preview)
+npm run validate:prod
+# Preview rehearsal with live vars loaded:
+npm run validate:prod:preview
+```
+
+| Variable | Production value | Preview value | Scope notes |
+|----------|------------------|---------------|-------------|
+| `KV_REST_API_URL` | *(from Vercel KV dashboard)* | Same store URL | **Production + Preview** — required on Production for durable share links + cluster rate limits |
+| `KV_REST_API_TOKEN` | *(from KV dashboard)* | Same token | **Production + Preview** — server-only; never expose to browser |
+| `GITHUB_TOKEN` | `ghp_…` or fine-grained PAT (`gist`) | Same or separate preview PAT | **Production + Preview** — server-only gist export |
+| `NEXT_PUBLIC_OBSERVABILITY_ENABLED` | **Unset** (meetup default) | `true` only when rehearsing telemetry | Client flag |
+| `NEXT_PUBLIC_ERROR_MONITORING_ENABLED` | **Unset** unless ops enables monitoring | `true` with observability rehearsal | Requires master flag |
+| `NEXT_PUBLIC_SENTRY_DSN` | **Unset** unless row above enabled | `https://…@…ingest.sentry.io/…` when monitoring on | Required when error monitoring enabled |
+| `NEXT_PUBLIC_SENTRY_ENVIRONMENT` | `production` when Sentry on | `preview` | Optional; defaults to `VERCEL_ENV` |
+| `QWEN_LIVE_ANALYSIS` | **Unset** or `false` | `true` for Stage A live rehearsal | See live rows below |
+| `DASHSCOPE_API_KEY` | Optional (no calls without live flag) | **Required** when live on Preview | Server-only |
+| `QWEN_MODEL` | Optional | `qwen3-vl-plus` when live on Preview | Required for `deploy:env:live` |
+| `QWEN_BASE_URL` | Optional | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | Optional region override |
+| `ANALYZE_UI_RATE_LIMIT_MAX` | Optional (default `12` when live) | `12` or lower for dry runs | Preview-only tuning OK |
+| `NEXT_PUBLIC_QWEN_API_KEY` | **Never** | **Never** | Validator hard-fails if set |
+
+**Production copy-paste block (meetup-safe + platform ops):**
+
+| Key | Value | Vercel environments |
+|-----|-------|---------------------|
+| `KV_REST_API_URL` | *(paste from KV)* | Production, Preview |
+| `KV_REST_API_TOKEN` | *(paste from KV)* | Production, Preview |
+| `GITHUB_TOKEN` | `ghp_<gist-capable-token>` | Production, Preview |
+| `QWEN_LIVE_ANALYSIS` | *(leave unset)* | Production only — do not add |
+| `DASHSCOPE_API_KEY` | *(optional; omit for strictest demo)* | Production only if you accept unused key |
+
+**Preview-only live rehearsal block (Stage A — do not check Production):**
+
+| Key | Value | Vercel environments |
+|-----|-------|---------------------|
+| `QWEN_LIVE_ANALYSIS` | `true` | **Preview** only |
+| `DASHSCOPE_API_KEY` | `<your-model-studio-key>` | **Preview** only |
+| `QWEN_MODEL` | `qwen3-vl-plus` | **Preview** only |
+| `QWEN_BASE_URL` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | **Preview** only (optional) |
+
+**Preview observability rehearsal (optional):**
+
+| Key | Value | Vercel environments |
+|-----|-------|---------------------|
+| `NEXT_PUBLIC_OBSERVABILITY_ENABLED` | `true` | Preview |
+| `NEXT_PUBLIC_ERROR_MONITORING_ENABLED` | `true` | Preview |
+| `NEXT_PUBLIC_SENTRY_DSN` | `https://…@…ingest.sentry.io/…` | Preview |
+| `NEXT_PUBLIC_SENTRY_ENVIRONMENT` | `preview` | Preview |
+
 **Vercel operator steps (live preview only — not public production):**
 
 1. Add each live variable above to **Preview** scope only (uncheck Production until Stage C).
@@ -247,14 +302,30 @@ Do **not** raise limits on **Production** until you intentionally run Stage C an
 
 See also **[TROUBLESHOOTING_RUNBOOK.md](./TROUBLESHOOTING_RUNBOOK.md)** § live / 429.
 
-## Pre-promote gate: `deploy:env:live`
+## Pre-promote gate: `validate:prod` and `deploy:env:live`
 
-Run validation **in the same shell or CI job** that will deploy, with production secrets loaded:
+After `vercel env pull` (or with CI secrets loaded), confirm **platform ops** vars match the matrix above:
+
+```bash
+npm run validate:prod
+# Preview rehearsal with live + optional Sentry:
+npm run validate:prod:preview
+```
+
+**Production validator (`validate:prod`)** — exit `0` when:
+
+- `KV_REST_API_URL` + `KV_REST_API_TOKEN` set
+- `GITHUB_TOKEN` set
+- Live Qwen **demo-safe** (`QWEN_LIVE_ANALYSIS` unset/false)
+- If `NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true` (with observability master): valid `NEXT_PUBLIC_SENTRY_DSN`
+
+**Preview validator (`validate:prod:preview`)** — KV/gist warnings only; when live flag is on, requires the live trio from `deploy:env:live`.
+
+When promoting **live** Qwen (Preview Stage A+), run in the same shell or CI job:
 
 ```bash
 npm run deploy:env:live
-# equivalent:
-node scripts/validate-deploy-env.mjs --target=live
+# equivalent: node scripts/validate-deploy-env.mjs --target=live
 ```
 
 ### Expected validator behavior
