@@ -3,10 +3,21 @@ import assert from "node:assert/strict";
 
 import {
   buildShareableSummary,
+  buildShortSharePath,
+  buildShortShareUrl,
   encodeShareHash,
   decodeShareHash,
   buildShareUrl,
 } from "../src/lib/share-result.mjs";
+import {
+  createShareRecord,
+  generateShareId,
+  getShareRecord,
+  isShareKvConfigured,
+  resetShareStore,
+  sanitizeSharePayload,
+} from "../src/lib/share-store.mjs";
+import { handleShareGet, handleSharePost } from "../src/lib/share-api.mjs";
 
 const sampleArtifact = {
   summary: "Admin dashboard with stat grid and activity rail.",
@@ -19,6 +30,10 @@ const sampleArtifact = {
   generatedCode: "export const Secret = 'must-not-leak';",
   plan: [{ title: "Hidden", body: "Should not appear in share payload" }],
 };
+
+test.afterEach(() => {
+  resetShareStore();
+});
 
 test("buildShareableSummary omits code and secrets", () => {
   const payload = buildShareableSummary(sampleArtifact);
@@ -51,8 +66,118 @@ test("buildShareUrl encodes hash on home path", () => {
   assert.equal(decodeShareHash(url.split("#")[1])?.summary, payload.summary);
 });
 
+test("buildShortShareUrl builds /share/[id] path", () => {
+  assert.equal(
+    buildShortShareUrl("https://demo.example", "Ab12Cd34"),
+    "https://demo.example/share/Ab12Cd34",
+  );
+  assert.equal(buildShortSharePath("Ab12Cd34"), "/share/Ab12Cd34");
+});
+
 test("decodeShareHash rejects malformed payloads", () => {
   assert.equal(decodeShareHash("#share=not-base64"), null);
   assert.equal(decodeShareHash("#other=abc"), null);
   assert.equal(decodeShareHash(""), null);
+});
+
+test("generateShareId returns alphanumeric ids", () => {
+  const id = generateShareId(8);
+  assert.match(id, /^[A-Za-z0-9]{8}$/);
+});
+
+test("sanitizeSharePayload rejects secret fields", () => {
+  const payload = sanitizeSharePayload({
+    summary: "Safe summary only",
+    generatedCode: "leak",
+    previewStats: [{ label: "Rows", value: "3" }],
+  });
+
+  assert.ok(payload);
+  assert.equal(payload.summary, "Safe summary only");
+  assert.equal("generatedCode" in payload, false);
+});
+
+test("createShareRecord and getShareRecord round-trip in memory", async () => {
+  const payload = buildShareableSummary(sampleArtifact);
+  assert.ok(payload);
+
+  const created = await createShareRecord(payload);
+  assert.ok(created?.id);
+
+  const loaded = await getShareRecord(created.id);
+  assert.deepEqual(loaded, payload);
+});
+
+test("getShareRecord rejects invalid ids", async () => {
+  assert.equal(await getShareRecord(""), null);
+  assert.equal(await getShareRecord("bad/id"), null);
+  assert.equal(await getShareRecord("missing"), null);
+});
+
+test("isShareKvConfigured requires REST env vars", () => {
+  assert.equal(isShareKvConfigured({}), false);
+  assert.equal(
+    isShareKvConfigured({
+      KV_REST_API_URL: "https://example.upstash.io",
+      KV_REST_API_TOKEN: "token",
+    }),
+    true,
+  );
+});
+
+test("POST /api/share creates short link", async () => {
+  const payload = buildShareableSummary(sampleArtifact);
+  assert.ok(payload);
+
+  const response = await handleSharePost(
+    new Request("https://demo.example/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+    { NEXT_PUBLIC_SITE_URL: "https://demo.example" },
+  );
+
+  assert.equal(response.status, 201);
+  const body = await response.json();
+  assert.equal(body.ok, true);
+  assert.match(body.id, /^[A-Za-z0-9]{8}$/);
+  assert.match(body.url, /^https:\/\/demo\.example\/share\//);
+});
+
+test("POST /api/share rejects empty payload", async () => {
+  const response = await handleSharePost(
+    new Request("https://demo.example/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ generatedCode: "nope" }),
+    }),
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test("GET /api/share returns stored summary", async () => {
+  const payload = buildShareableSummary(sampleArtifact);
+  assert.ok(payload);
+  const created = await createShareRecord(payload);
+  assert.ok(created);
+
+  const response = await handleShareGet(
+    new Request(`https://demo.example/api/share?id=${created.id}`),
+  );
+
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.id, created.id);
+  assert.deepEqual(body.summary, payload);
+});
+
+test("GET /api/share returns 404 for missing id", async () => {
+  const response = await handleShareGet(
+    new Request("https://demo.example/api/share?id=ZZZZZZZZ"),
+  );
+
+  assert.equal(response.status, 404);
 });

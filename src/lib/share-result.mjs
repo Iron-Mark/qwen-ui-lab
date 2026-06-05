@@ -128,6 +128,45 @@ export function buildShareUrl(origin, pathname, payload) {
 }
 
 /**
+ * @param {string} origin
+ * @param {string} id
+ */
+export function buildShortShareUrl(origin, id) {
+  const base = origin.replace(/\/$/, "");
+  const safeId = encodeURIComponent(id);
+  return `${base}/share/${safeId}`;
+}
+
+/**
+ * @param {string} id
+ */
+export function buildShortSharePath(id) {
+  return `/share/${encodeURIComponent(id)}`;
+}
+
+/**
+ * @param {string} origin
+ * @param {ShareableResultSummary} payload
+ */
+export async function createShortShareLink(origin, payload) {
+  const response = await fetch(`${origin.replace(/\/$/, "")}/api/share`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  if (!data?.ok || typeof data.id !== "string") return null;
+
+  return {
+    id: data.id,
+    url: typeof data.url === "string" ? data.url : buildShortShareUrl(origin, data.id),
+  };
+}
+
+/**
  * @param {ShareableResultSummary} payload
  */
 export function persistShareSummary(payload) {
