@@ -1,4 +1,9 @@
+import bundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const CSP_REPORT_URI = "/api/security/csp-report";
 const CSP_REPORT_ONLY_LEVEL = process.env.CSP_REPORT_ONLY_LEVEL ?? "standard";
@@ -121,4 +126,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

@@ -53,5 +53,5 @@ Violations are **report-only** in production — they do not block the demo.
 
 - Scheduled synthetic health workflow (sketch in **[docs/RELIABILITY_OPS.md](./RELIABILITY_OPS.md)**).
 - Promote CSP report-only findings into enforced policy in stages (guide above).
-- Optional `npm run perf:lighthouse` before/after perf-sensitive UI changes (artifacts under `.perf/`, gitignored).
+- Optional perf checks before/after UI changes — see **[docs/PERFORMANCE.md](./PERFORMANCE.md)** (`npm run analyze` for bundles; `npm run perf:lighthouse` for Lighthouse; artifacts under `.perf/`, gitignored).
 - Release tagging per **[docs/RELEASE_PROCESS.md](./RELEASE_PROCESS.md)** when cutting a versioned milestone.

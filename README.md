@@ -158,7 +158,8 @@ Atomic tiers and catalog conventions: **[docs/ATOMIC_DESIGN.md](./docs/ATOMIC_DE
 | `npm run smoke:deploy` | Post-deploy route smoke (`DEPLOY_URL=…`) |
 | `npm run deploy:env:demo` | Validate demo-safe deploy env |
 | `npm run deploy:env:live` | Validate live-analysis deploy env |
-| `npm run perf:lighthouse` | Lighthouse run (see script for baseline/after) |
+| `npm run analyze` | Production build + `@next/bundle-analyzer` treemaps ([docs/PERFORMANCE.md](./docs/PERFORMANCE.md)) |
+| `npm run perf:lighthouse` | Lighthouse run (see [docs/PERFORMANCE.md](./docs/PERFORMANCE.md)) |
 | `npm run perf:lcp-budget` | Production LCP budget check (warn-only in CI) |
 
 ---

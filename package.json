@@ -16,15 +16,19 @@
     "deploy:env:demo": "node scripts/validate-deploy-env.mjs --target=demo",
     "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
     "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
+    "smoke:live": "node scripts/staged-live-smoke.mjs",
     "synthetic:health": "node scripts/synthetic-health-check.mjs",
     "start": "next start",
     "lint": "eslint",
     "check": "npm run lint && npm test",
     "check:full": "npm run check && npm run build",
     "export:demo-fixtures": "node scripts/export-demo-fixtures.mjs",
+    "generate:reference-rasters": "node scripts/generate-reference-rasters.mjs",
+    "analyze": "node scripts/analyze-build.mjs",
     "perf:lighthouse": "node scripts/perf-lighthouse.mjs",
     "perf:lighthouse:baseline": "node scripts/perf-lighthouse.mjs baseline",
     "perf:lighthouse:after": "node scripts/perf-lighthouse.mjs after",
+    "perf:lcp-budget": "node scripts/perf-lcp-budget.mjs",
     "perf:lcp-budget": "node scripts/perf-lcp-budget.mjs"
   },
   "dependencies": {
@@ -50,6 +54,8 @@
     "postcss": "8.5.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@next/bundle-analyzer": "^16.2.6",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
