@@ -1,0 +1,92 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { postAnalyzeUi } from "../src/lib/analyze-outcome.mjs";
+import { analyzeUiImageWithQwen } from "../src/lib/qwen-analyze.mjs";
+import {
+  MOCK_CI_API_KEY,
+  MOCK_QWEN_ANALYSIS_JSON,
+  MOCK_QWEN_BASE_URL,
+  MOCK_QWEN_MODEL,
+  buildMockLiveAnalyzeUiRouteResponse,
+  buildMockLiveQwenEnv,
+  buildMockQwenChatCompletionResponse,
+  LIVE_QWEN_HEALTH_RESPONSE,
+} from "../src/lib/qwen-mock-fixtures.mjs";
+
+const sampleFile = {
+  name: "dashboard-reference.png",
+  type: "image/png",
+  size: 245760,
+};
+
+test("analyzeUiImageWithQwen returns structured artifact when upstream mock returns valid JSON", async () => {
+  const upstreamCalls = [];
+
+  const result = await analyzeUiImageWithQwen({
+    imageDataUrl: "data:image/png;base64,abc",
+    fileName: sampleFile.name,
+    fileType: sampleFile.type,
+    fileSize: sampleFile.size,
+    env: buildMockLiveQwenEnv(),
+    fetchFn: async (url, init) => {
+      upstreamCalls.push(String(url));
+      assert.match(String(url), /\/chat\/completions$/);
+      assert.equal(
+        init?.headers?.Authorization,
+        `Bearer ${MOCK_CI_API_KEY}`,
+      );
+      return new Response(
+        JSON.stringify(buildMockQwenChatCompletionResponse()),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    },
+  });
+
+  assert.equal(upstreamCalls.length, 1);
+  assert.equal(result.ok, true);
+  assert.equal(result.artifact.modeLabel, `Qwen provider: ${MOCK_QWEN_MODEL}`);
+  assert.equal(result.artifact.plan[0].title, MOCK_QWEN_ANALYSIS_JSON.plan[0].title);
+  assert.match(result.artifact.generatedCode, /MockedQwenDashboard/);
+  assert.equal(
+    result.artifact.previewStats[0].label,
+    MOCK_QWEN_ANALYSIS_JSON.previewStats[0].label,
+  );
+  assert.equal(result.artifact.previewStats[0].value, "5");
+  assert.equal(result.provider.model, MOCK_QWEN_MODEL);
+  assert.equal(result.provider.baseUrl, MOCK_QWEN_BASE_URL);
+});
+
+test("postAnalyzeUi calls analyze-ui when health reports live mode and maps success artifact", async () => {
+  let analyzePosts = 0;
+  const routePayload = buildMockLiveAnalyzeUiRouteResponse(sampleFile);
+
+  const outcome = await postAnalyzeUi(sampleFile, "data:image/png;base64,abc", {
+    fetchFn: async (url, init) => {
+      const target = String(url);
+      if (target.includes("/api/health")) {
+        return new Response(JSON.stringify(LIVE_QWEN_HEALTH_RESPONSE), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (target.includes("/api/analyze-ui")) {
+        analyzePosts += 1;
+        assert.equal(init?.method, "POST");
+        return new Response(JSON.stringify(routePayload), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response("not found", { status: 404 });
+    },
+  });
+
+  assert.equal(analyzePosts, 1);
+  assert.equal(outcome.providerState, "qwen");
+  assert.equal(outcome.instantDemo, false);
+  assert.match(outcome.message, /qwen3-vl-plus-mock/);
+  assert.equal(outcome.artifact.plan[0].title, "Contract Layout Read");
+  assert.match(outcome.artifact.generatedCode, /MockedQwenDashboard/);
+  assert.equal(outcome.artifact.previewStats[0].label, "Contract Sections");
+});

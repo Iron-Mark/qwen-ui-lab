@@ -1,0 +1,95 @@
+{
+  "health": {
+    "ok": true,
+    "provider": "qwen",
+    "hasApiKey": true,
+    "liveAnalysisEnabled": true,
+    "model": "qwen3-vl-plus-mock",
+    "baseUrl": "https://mock.qwen.ci/v1"
+  },
+  "analyzeUiSuccess": {
+    "ok": true,
+    "artifact": {
+      "file": {
+        "name": "dashboard-reference.png",
+        "type": "image/png",
+        "size": 113391,
+        "readableSize": "110.7 KB",
+        "width": 1440,
+        "height": 900
+      },
+      "steps": [
+        {
+          "id": "upload",
+          "label": "Upload"
+        },
+        {
+          "id": "analyze",
+          "label": "Analyze"
+        },
+        {
+          "id": "plan",
+          "label": "Plan"
+        },
+        {
+          "id": "generate",
+          "label": "Generate"
+        },
+        {
+          "id": "preview",
+          "label": "Preview"
+        },
+        {
+          "id": "export",
+          "label": "Export"
+        }
+      ],
+      "plan": [
+        {
+          "title": "Contract Layout Read",
+          "body": "Header row and stat grid from mock upstream."
+        },
+        {
+          "title": "Contract Component Map",
+          "body": "Cards, chart, and activity regions from mock upstream."
+        }
+      ],
+      "previewStats": [
+        {
+          "label": "Contract Sections",
+          "value": "5"
+        },
+        {
+          "label": "Contract Components",
+          "value": "9"
+        }
+      ],
+      "generatedCode": "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
+      "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
+      "summary": "Contract test dashboard shell from mocked upstream."
+    },
+    "provider": {
+      "model": "qwen3-vl-plus-mock",
+      "baseUrl": "https://mock.qwen.ci/v1"
+    }
+  },
+  "artifactContract": {
+    "planTitles": [
+      "Contract Layout Read",
+      "Contract Component Map"
+    ],
+    "previewStats": [
+      {
+        "label": "Contract Sections",
+        "value": "5"
+      },
+      {
+        "label": "Contract Components",
+        "value": "9"
+      }
+    ],
+    "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
+    "summary": "Contract test dashboard shell from mocked upstream.",
+    "generatedCodeMarker": "MockedQwenDashboard"
+  }
+}
