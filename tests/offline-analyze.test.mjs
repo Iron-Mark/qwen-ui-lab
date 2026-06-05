@@ -26,6 +26,80 @@ test("lookupKnownSample returns rich dashboard fixture", () => {
   assert.equal(known.previewStats[0].value, "6");
 });
 
+test("lookupKnownSample returns rich auth fixture", () => {
+  const known = lookupKnownSample("auth-reference.svg");
+  assert.ok(known);
+  assert.match(known.summary, /sign-in/i);
+  assert.equal(known.previewStats[1].value, "7");
+  assert.match(known.generatedCode, /OAuthButtonRow/);
+  assert.ok(known.plan.some((section) => section.title === "Component Map"));
+});
+
+test("lookupKnownSample returns rich mobile fixture", () => {
+  const known = lookupKnownSample("mobile-reference.svg");
+  assert.ok(known);
+  assert.match(known.summary, /Mobile app shell/i);
+  assert.match(known.generatedCode, /BottomNav/);
+  assert.match(known.plan[1].body, /bottom tab bar/i);
+});
+
+test("lookupKnownSample returns rich landing fixture", () => {
+  const known = lookupKnownSample("landing-reference.svg");
+  assert.ok(known);
+  assert.match(known.summary, /Marketing landing/i);
+  assert.equal(known.previewStats[0].value, "5");
+  assert.match(known.generatedCode, /PricingTable/);
+});
+
+test("lookupKnownSample returns rich settings fixture", () => {
+  const known = lookupKnownSample("settings-reference.svg");
+  assert.ok(known);
+  assert.match(known.summary, /Account settings/i);
+  assert.match(known.generatedCode, /SaveBar/);
+  assert.match(known.plan[2].body, /ToggleRow/);
+});
+
+test("buildUiFlowArtifact uses known sample registry for auth-reference.svg", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "auth-reference.svg",
+    type: "image/svg+xml",
+    size: 4096,
+    width: 1200,
+    height: 720,
+  });
+
+  assert.match(artifact.summary, /sign-in/i);
+  assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
+  assert.equal(artifact.previewStats[1].value, "7");
+});
+
+test("buildUiFlowArtifact uses known sample registry for mobile-reference.svg", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "mobile-reference.svg",
+    type: "image/svg+xml",
+    size: 4096,
+    width: 390,
+    height: 844,
+  });
+
+  assert.match(artifact.summary, /Mobile app shell/i);
+  assert.match(artifact.generatedCode, /FloatingActionButton/);
+});
+
+test("buildUiFlowArtifact uses known sample registry for landing-reference.svg", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "landing-reference.svg",
+    type: "image/svg+xml",
+    size: 8192,
+    width: 1440,
+    height: 900,
+  });
+
+  assert.match(artifact.summary, /Marketing landing/i);
+  assert.match(artifact.generatedCode, /HeroSection/);
+  assert.doesNotMatch(artifact.summary, /confidence/i);
+});
+
 test("classifyLayoutArchetype scores auth filenames highly", () => {
   const result = classifyLayoutArchetype({
     name: "sign-in-form.png",

@@ -61,6 +61,235 @@ export function GeneratedDashboard() {
   );
 }`,
   },
+  "auth-reference.svg": {
+    summary:
+      "Centered sign-in screen with brand mark, email/password fields, OAuth row, and recovery links — tuned for live demos.",
+    previewStats: [
+      { label: "Sections", value: "4" },
+      { label: "Components", value: "7" },
+      { label: "Breakpoints", value: "2" },
+      { label: "Review Items", value: "5" },
+    ],
+    plan: [
+      {
+        title: "Visual Input",
+        body: "auth-reference.svg is the bundled meetup reference (SVG, centered authentication card on a neutral canvas).",
+      },
+      {
+        title: "Layout Read",
+        body: "Detect a centered auth card with brand header, stacked labeled inputs, inline validation slots, primary CTA, OAuth divider, and footer recovery links.",
+      },
+      {
+        title: "Component Map",
+        body: "Generate BrandMark, AuthCard, TextField (email), PasswordField, PrimaryButton, OAuthButtonRow (Google/GitHub), and FooterLinks (forgot password, sign up).",
+      },
+      {
+        title: "Accessibility Pass",
+        body: "Associate labels with inputs, expose error text via aria-describedby, 44px primary targets (Fitts), logical tab order, and visible focus rings on OAuth buttons.",
+      },
+      {
+        title: "Human Review",
+        body: "Verify spacing against the SVG reference, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
+      },
+    ],
+    generatedCode: `import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { TextField } from "@/components/molecules/TextField";
+import { PasswordField } from "@/components/molecules/PasswordField";
+import { OAuthButtonRow } from "@/components/molecules/OAuthButtonRow";
+
+export function GeneratedAuthScreen() {
+  return (
+    <main aria-label="Generated auth from auth-reference.svg" className="flex min-h-dvh items-center justify-center p-4">
+      <Card className="w-full max-w-md space-y-6 p-8">
+        <header className="text-center">
+          <BrandMark className="mx-auto mb-4" />
+          <h1 className="text-xl font-semibold">Sign in</h1>
+          <p className="text-sm text-muted-foreground">Welcome back — enter your credentials</p>
+        </header>
+        <form className="space-y-4">
+          <TextField label="Email" type="email" autoComplete="email" />
+          <PasswordField label="Password" autoComplete="current-password" />
+          <Button className="w-full min-h-11" type="submit">Continue</Button>
+        </form>
+        <OAuthButtonRow providers={["google", "github"]} />
+        <FooterLinks forgotHref="/forgot" signUpHref="/register" />
+      </Card>
+    </main>
+  );
+}`,
+  },
+  "mobile-reference.svg": {
+    summary:
+      "Mobile app shell with sticky header, stacked feed cards, floating action button, and bottom navigation — tuned for live demos.",
+    previewStats: [
+      { label: "Sections", value: "4" },
+      { label: "Components", value: "8" },
+      { label: "Breakpoints", value: "2" },
+      { label: "Review Items", value: "5" },
+    ],
+    plan: [
+      {
+        title: "Visual Input",
+        body: "mobile-reference.svg is the bundled meetup reference (SVG, portrait phone frame ~390×844).",
+      },
+      {
+        title: "Layout Read",
+        body: "Detect a mobile-first single-column shell with sticky header, scrollable stacked cards, thumb-zone FAB, and persistent bottom tab bar.",
+      },
+      {
+        title: "Component Map",
+        body: "Generate MobileHeader, StackedCardList (avatar + title + meta), FloatingActionButton, BottomNav (Home/Search/Profile), and SheetDrawer for overflow actions.",
+      },
+      {
+        title: "Accessibility Pass",
+        body: "Bottom nav uses aria-current for active tab, FAB has an accessible name, cards are keyboard-focusable, and touch targets meet 44px minimum (Fitts).",
+      },
+      {
+        title: "Human Review",
+        body: "Verify safe-area insets on iOS, test bottom nav with keyboard open, and wire real navigation routes.",
+      },
+    ],
+    generatedCode: `import { MobileHeader } from "@/components/organisms/MobileHeader";
+import { StackedCardList } from "@/components/molecules/StackedCardList";
+import { FloatingActionButton } from "@/components/atoms/FloatingActionButton";
+import { BottomNav } from "@/components/organisms/BottomNav";
+
+export function GeneratedMobileShell() {
+  return (
+    <div aria-label="Generated mobile shell from mobile-reference.svg" className="relative flex min-h-dvh flex-col bg-background">
+      <MobileHeader title="Feed" showSearch />
+      <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
+        <StackedCardList items={feedItems} />
+      </main>
+      <FloatingActionButton label="Create post" className="fixed bottom-20 right-4" />
+      <BottomNav
+        items={[
+          { id: "home", label: "Home", href: "/", current: true },
+          { id: "search", label: "Search", href: "/search" },
+          { id: "profile", label: "Profile", href: "/profile" },
+        ]}
+      />
+    </div>
+  );
+}`,
+  },
+  "landing-reference.svg": {
+    summary:
+      "Marketing landing page with hero band, three-up feature grid, testimonial row, pricing cards, and footer CTA — tuned for live demos.",
+    previewStats: [
+      { label: "Sections", value: "5" },
+      { label: "Components", value: "9" },
+      { label: "Breakpoints", value: "3" },
+      { label: "Review Items", value: "5" },
+    ],
+    plan: [
+      {
+        title: "Visual Input",
+        body: "landing-reference.svg is the bundled meetup reference (SVG, wide marketing landing ~1440×900).",
+      },
+      {
+        title: "Layout Read",
+        body: "Detect a marketing page with top nav, centered hero (headline + dual CTA), three-column feature grid, social proof strip, pricing band, and footer.",
+      },
+      {
+        title: "Component Map",
+        body: "Generate SiteNav, HeroSection, FeatureGrid (icon + title + copy), TestimonialRow, PricingTable (Free/Pro/Enterprise), and FooterCTA with newsletter slot.",
+      },
+      {
+        title: "Accessibility Pass",
+        body: "Single h1 in hero, skip link to main content, pricing cards expose plan names to screen readers, and CTA contrast meets WCAG AA.",
+      },
+      {
+        title: "Human Review",
+        body: "Verify hero copy hierarchy against the SVG reference, wire analytics on primary CTA, and validate responsive stacking at md/lg breakpoints.",
+      },
+    ],
+    generatedCode: `import { HeroSection } from "@/components/organisms/HeroSection";
+import { FeatureGrid } from "@/components/organisms/FeatureGrid";
+import { TestimonialRow } from "@/components/molecules/TestimonialRow";
+import { PricingTable } from "@/components/organisms/PricingTable";
+import { FooterCTA } from "@/components/molecules/FooterCTA";
+
+export function GeneratedLanding() {
+  return (
+    <>
+      <SiteNav logo="qwen-ui-lab" links={["Features", "Pricing", "Docs"]} />
+      <HeroSection
+        aria-label="Hero from landing-reference.svg"
+        headline="Ship UI faster with AI-assisted scaffolding"
+        primaryCta="Start free"
+        secondaryCta="View demo"
+      />
+      <FeatureGrid features={featureItems} className="py-16" />
+      <TestimonialRow quotes={testimonials} />
+      <PricingTable plans={pricingPlans} />
+      <FooterCTA headline="Ready to build?" ctaLabel="Get started" />
+    </>
+  );
+}`,
+  },
+  "settings-reference.svg": {
+    summary:
+      "Account settings panel with side nav, grouped profile fields, notification toggles, and sticky save bar — tuned for live demos.",
+    previewStats: [
+      { label: "Sections", value: "4" },
+      { label: "Components", value: "6" },
+      { label: "Breakpoints", value: "2" },
+      { label: "Review Items", value: "4" },
+    ],
+    plan: [
+      {
+        title: "Visual Input",
+        body: "settings-reference.svg is the bundled meetup reference (SVG, desktop settings layout with left rail).",
+      },
+      {
+        title: "Layout Read",
+        body: "Detect a two-column settings shell with vertical nav, grouped form sections (Profile, Notifications), toggle rows, and a sticky save/cancel bar.",
+      },
+      {
+        title: "Component Map",
+        body: "Generate SettingsNav, FormSection (Profile), TextField group, ToggleRow (email/push alerts), SelectField (timezone), and SaveBar with dirty-state handling.",
+      },
+      {
+        title: "Accessibility Pass",
+        body: "Toggle switches expose aria-checked, form sections use fieldset/legend, save bar announces unsaved changes, and focus order follows visual layout.",
+      },
+      {
+        title: "Human Review",
+        body: "Verify toggle defaults against the SVG reference, wire optimistic save feedback, and confirm mobile nav collapses to a sheet drawer.",
+      },
+    ],
+    generatedCode: `import { SettingsNav } from "@/components/organisms/SettingsNav";
+import { FormSection } from "@/components/molecules/FormSection";
+import { ToggleRow } from "@/components/molecules/ToggleRow";
+import { SaveBar } from "@/components/molecules/SaveBar";
+
+export function GeneratedSettings() {
+  return (
+    <section aria-label="Generated settings from settings-reference.svg" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+      <SettingsNav
+        sections={[
+          { id: "profile", label: "Profile", current: true },
+          { id: "notifications", label: "Notifications" },
+          { id: "billing", label: "Billing" },
+        ]}
+      />
+      <form className="space-y-8">
+        <FormSection title="Profile">
+          <TextField label="Display name" defaultValue="Alex Chen" />
+          <TextField label="Email" type="email" defaultValue="alex@example.com" />
+        </FormSection>
+        <FormSection title="Notifications">
+          <ToggleRow label="Email alerts" defaultChecked />
+          <ToggleRow label="Push notifications" />
+        </FormSection>
+        <SaveBar onSave={handleSave} onCancel={handleCancel} />
+      </form>
+    </section>
+  );
+}`,
+  },
 };
 
 /** Weighted keyword signals per UI archetype. */

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" fill="none">
+  <rect width="1440" height="900" fill="#fff"/>
+  <!-- Nav -->
+  <rect width="1440" height="64" fill="#fff" stroke="#e4e4e7"/>
+  <rect x="80" y="20" width="24" height="24" rx="6" fill="#18181b"/>
+  <text x="116" y="40" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b">qwen-ui-lab</text>
+  <text x="520" y="40" font-family="Inter,sans-serif" font-size="14" fill="#71717a">Features</text>
+  <text x="620" y="40" font-family="Inter,sans-serif" font-size="14" fill="#71717a">Pricing</text>
+  <text x="700" y="40" font-family="Inter,sans-serif" font-size="14" fill="#71717a">Docs</text>
+  <rect x="1240" y="18" width="120" height="36" rx="8" fill="#18181b"/>
+  <text x="1300" y="41" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Get started</text>
+  <!-- Hero -->
+  <text x="720" y="200" font-family="Inter,sans-serif" font-size="48" font-weight="800" fill="#18181b" text-anchor="middle">Ship UI faster with AI</text>
+  <text x="720" y="248" font-family="Inter,sans-serif" font-size="48" font-weight="800" fill="#18181b" text-anchor="middle">assisted scaffolding</text>
+  <text x="720" y="296" font-family="Inter,sans-serif" font-size="16" fill="#71717a" text-anchor="middle">Upload a screenshot, get a component plan, and export production-ready code.</text>
+  <rect x="560" y="328" width="140" height="44" rx="8" fill="#18181b"/>
+  <text x="630" y="356" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">Start free</text>
+  <rect x="720" y="328" width="140" height="44" rx="8" fill="#fff" stroke="#e4e4e7"/>
+  <text x="790" y="356" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18181b" text-anchor="middle">View demo</text>
+  <!-- Feature grid -->
+  <rect x="120" y="420" width="380" height="160" rx="10" fill="#fafafa" stroke="#e4e4e7"/>
+  <rect x="144" y="444" width="32" height="32" rx="8" fill="#18181b"/>
+  <text x="144" y="500" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b">Visual analysis</text>
+  <text x="144" y="524" font-family="Inter,sans-serif" font-size="13" fill="#71717a">Detect layout patterns from any screenshot.</text>
+  <rect x="530" y="420" width="380" height="160" rx="10" fill="#fafafa" stroke="#e4e4e7"/>
+  <rect x="554" y="444" width="32" height="32" rx="8" fill="#18181b"/>
+  <text x="554" y="500" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b">Component map</text>
+  <text x="554" y="524" font-family="Inter,sans-serif" font-size="13" fill="#71717a">Structured plan with accessibility notes.</text>
+  <rect x="940" y="420" width="380" height="160" rx="10" fill="#fafafa" stroke="#e4e4e7"/>
+  <rect x="964" y="444" width="32" height="32" rx="8" fill="#18181b"/>
+  <text x="964" y="500" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b">Export code</text>
+  <text x="964" y="524" font-family="Inter,sans-serif" font-size="13" fill="#71717a">React + Tailwind scaffold ready to iterate.</text>
+  <!-- Testimonial strip -->
+  <rect x="80" y="620" width="1280" height="80" rx="10" fill="#fafafa" stroke="#e4e4e7"/>
+  <text x="720" y="660" font-family="Inter,sans-serif" font-size="15" fill="#52525b" text-anchor="middle">"Cut our prototype time in half."  Jordan Lee, Product Design Lead</text>
+  <!-- Pricing band -->
+  <rect x="200" y="730" width="320" height="120" rx="10" fill="#fff" stroke="#e4e4e7"/>
+  <text x="360" y="768" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b" text-anchor="middle">Free</text>
+  <text x="360" y="796" font-family="Inter,sans-serif" font-size="28" font-weight="700" fill="#18181b" text-anchor="middle">$0</text>
+  <rect x="560" y="730" width="320" height="120" rx="10" fill="#18181b"/>
+  <text x="720" y="768" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle">Pro</text>
+  <text x="720" y="796" font-family="Inter,sans-serif" font-size="28" font-weight="700" fill="#fff" text-anchor="middle">$29/mo</text>
+  <rect x="920" y="730" width="320" height="120" rx="10" fill="#fff" stroke="#e4e4e7"/>
+  <text x="1080" y="768" font-family="Inter,sans-serif" font-size="16" font-weight="600" fill="#18181b" text-anchor="middle">Enterprise</text>
+  <text x="1080" y="796" font-family="Inter,sans-serif" font-size="14" fill="#71717a" text-anchor="middle">Contact sales</text>
+</svg>
