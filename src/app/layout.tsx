@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/providers/Toast";
 import { Header } from "@/components/organisms/Header";
 import { Footer } from "@/components/organisms/Footer";
 import { ServiceWorkerRegister } from "@/components/providers/ServiceWorkerRegister";
+import { PwaInstallBanner } from "@/components/providers/PwaInstallBanner";
 import { ObservabilityProvider } from "@/components/providers/ObservabilityProvider";
 import { LazyToaster } from "@/components/providers/LazyToaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -235,6 +236,7 @@ export default function RootLayout({
                     }}
                   />
                   <div className="flex min-h-screen flex-col">
+                    <PwaInstallBanner />
                     <Header />
                     <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
                       {children}

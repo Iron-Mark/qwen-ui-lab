@@ -1,5 +1,7 @@
 /** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
-const CACHE_NAME = "qwen-ui-lab-v6";
+const CACHE_NAME = "qwen-ui-lab-v7";
+
+const HEALTH_API_PATH = "/api/health";
 
 /** App shell and static assets safe to precache (no hashed Next chunks). */
 const PRECACHE = [
@@ -109,6 +111,12 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (url.pathname === HEALTH_API_PATH) {
+    event.respondWith(networkFirst(event.request));
+    return;
+  }
+
   if (url.pathname.startsWith("/api/")) return;
 
   if (url.pathname.startsWith(IMMUTABLE_PREFIX)) {

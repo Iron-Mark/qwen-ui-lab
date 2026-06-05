@@ -19,6 +19,7 @@ test.describe("PWA on production server", () => {
     const body = await sw.text();
     expect(body).toMatch(/CACHE_NAME\s*=\s*"qwen-ui-lab-v\d+"/);
     expect(body).toContain("offline.html");
+    expect(body).toContain("/api/health");
     expect(body).toContain("SKIP_WAITING");
 
     const cacheControl = sw.headers()["cache-control"] ?? "";

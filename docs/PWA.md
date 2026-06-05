@@ -21,25 +21,37 @@ qwen-ui-lab ships as an installable PWA for meetup demos. The service worker is 
 
 Requirements: valid [manifest.json](../public/manifest.json), 192/512 PNG icons, `display: standalone`, and a registered service worker over HTTPS (or `localhost` for local prod builds).
 
+### In-app install banner
+
+[PwaInstallBanner](../src/components/providers/PwaInstallBanner.tsx) shows a **dismissible top banner** when install is possible:
+
+| Platform | Trigger | Actions |
+|----------|---------|---------|
+| **Chrome / Edge / Android** | `beforeinstallprompt` (after SW + manifest criteria) | **Install** runs the deferred prompt; **Dismiss** hides until localStorage is cleared |
+| **iOS Safari** | Detected via user agent (no `beforeinstallprompt`) | Instructions: **Share → Add to Home Screen** |
+
+The banner is hidden when the app is already running standalone (`display-mode: standalone` or `navigator.standalone` on iOS). Dismiss state is stored under `qwen-ui-lab:pwa-install-dismissed`.
+
 ## Offline behavior
 
 | Layer | What works offline |
 |-------|-------------------|
 | **Demo analysis** | Client-side offline algorithm (`src/lib/offline-analyze.mjs`) — no network needed after JS loads |
 | **Cached shell** | `/`, `/design-system`, and static assets visited at least once |
+| **Health probe** | `GET /api/health` — network-first with cache fallback after at least one online visit |
 | **Navigation fallback** | Unknown routes → cached page → `/` shell → [offline.html](../public/offline.html) |
 
 The service worker ([public/sw.js](../public/sw.js)) uses:
 
 - **Precache** — manifest, icons, `/`, `/design-system`, offline page
 - **Cache-first** — `/_next/static/*` (content-hashed)
-- **Network-first** — HTML navigations and other same-origin GETs, with cache fallback
+- **Network-first** — HTML navigations, `GET /api/health`, and other same-origin GETs, with cache fallback
 
-`/api/*` requests are never intercepted — live Qwen calls fail normally when offline.
+Other `/api/*` requests are never intercepted — live Qwen calls fail normally when offline.
 
 ## Cache versioning
 
-Bump `CACHE_NAME` in `public/sw.js` (for example `qwen-ui-lab-v6` → `qwen-ui-lab-v7`) when:
+Bump `CACHE_NAME` in `public/sw.js` (for example `qwen-ui-lab-v7` → `qwen-ui-lab-v8`) when:
 
 - The `PRECACHE` list changes
 - Fetch / navigation caching strategy changes
@@ -80,7 +92,7 @@ This uses [playwright.pwa.config.ts](../playwright.pwa.config.ts) to `build` + `
 
 ```bash
 npm run validate:assets   # manifest, icons, sw.js CACHE_NAME, offline.html
-npm test                  # tests/pwa.test.mjs
+npm test                  # tests/pwa.test.mjs, tests/pwa-install.test.mjs
 npm run test:e2e          # dev server — manifest + sw.js reachability (qa-coverage)
 npm run test:e2e:pwa      # prod server — SW registration + cache headers
 ```

@@ -22,7 +22,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
     process.cwd(),
     "public",
     "references",
-    "dashboard-reference.svg",
+    "dashboard-reference.png",
   );
 
   await page.locator('input[type="file"]').setInputFiles(samplePath);

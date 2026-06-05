@@ -38,6 +38,13 @@ describe("service worker shell", () => {
     assert.doesNotMatch(sw, /CACHE_NAME\s*=\s*"qwen-ui-lab-v0"/);
   });
 
+  it("caches GET /api/health with network-first for offline repeat visits", () => {
+    const sw = readFileSync(join(PUBLIC, "sw.js"), "utf8");
+    assert.match(sw, /HEALTH_API_PATH\s*=\s*"\/api\/health"/);
+    assert.match(sw, /url\.pathname\s*===\s*HEALTH_API_PATH/);
+    assert.match(sw, /networkFirst\(event\.request\)/);
+  });
+
   it("offline page exists", () => {
     assert.ok(existsSync(join(PUBLIC, "offline.html")));
   });

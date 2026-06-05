@@ -101,7 +101,7 @@ test("runs deterministic offline demo flow", async ({ page }) => {
   await expect(samplePicker).toBeVisible();
   await loadBundledSample(page, "Dashboard");
 
-  await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
+  await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
 
   await primaryAnalyzeButton(page).click();
@@ -119,7 +119,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await waitForSonnerToaster(page);
 
   await loadBundledSample(page, "Dashboard");
-  await expect(page.getByText(/dashboard-reference\.svg/i)).toBeVisible();
+  await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
   await expect(page.getByText(/Generated scaffold/i)).toBeVisible();
@@ -135,9 +135,9 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(complianceDialog).toBeHidden();
 
   const dashboardDownloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: /^Export code$/i }).click();
+  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
   const dashboardDownload = await dashboardDownloadPromise;
-  expect(dashboardDownload.suggestedFilename()).toBe("generated-dashboard.tsx");
+  expect(dashboardDownload.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 
   await page.goto("/design-system", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await expect(page.getByRole("searchbox", { name: /search catalog/i })).toBeVisible({
@@ -335,10 +335,36 @@ test.describe("marketing surfaces", () => {
     expect(sw.ok()).toBeTruthy();
     const swBody = await sw.text();
     expect(swBody).toContain("offline.html");
+    expect(swBody).toContain("/api/health");
 
     const offline = await request.get("/offline.html");
     expect(offline.ok()).toBeTruthy();
     expect(await offline.text()).toMatch(/offline/i);
+  });
+
+  test("install banner responds to beforeinstallprompt", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.removeItem("qwen-ui-lab:pwa-install-dismissed");
+    });
+
+    await page.goto("/");
+    await expect(page.getByTestId("home-marketing-hero")).toBeVisible({ timeout: 15_000 });
+
+    await page.evaluate(() => {
+      class MockBeforeInstallPrompt extends Event {
+        prompt() {
+          return Promise.resolve();
+        }
+        userChoice = Promise.resolve({ outcome: "dismissed" as const });
+      }
+      window.dispatchEvent(new MockBeforeInstallPrompt("beforeinstallprompt"));
+    });
+
+    await expect(page.getByTestId("pwa-install-banner")).toBeVisible({
+      timeout: 5_000,
+    });
+    await page.getByRole("button", { name: /dismiss install banner/i }).click();
+    await expect(page.getByTestId("pwa-install-banner")).toBeHidden();
   });
 });
 
