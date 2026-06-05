@@ -1,7 +1,6 @@
-import { DashboardShell } from "@/components/organisms/DashboardShell";
 import { HomeMarketingHero } from "@/components/organisms/HomeMarketingHero";
-import { UploadFlow } from "@/components/organisms/UploadFlow";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import {
   stats,
   revenueData,
@@ -11,6 +10,17 @@ import {
   quickActions,
 } from "@/data/dashboard-data";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
+
+const UploadFlow = dynamic(
+  () => import("@/components/organisms/UploadFlow").then((mod) => mod.UploadFlow),
+  { ssr: true },
+);
+
+const DashboardShell = dynamic(
+  () =>
+    import("@/components/organisms/DashboardShell").then((mod) => mod.DashboardShell),
+  { ssr: true },
+);
 
 export const metadata: Metadata = createRouteMetadata({
   title: "Live Meetup Demo",
@@ -73,14 +83,16 @@ export default function Home() {
       <div className="relative">
         <HomeMarketingHero />
         <UploadFlow />
-        <DashboardShell
-          stats={stats}
-          revenueData={revenueData}
-          performanceData={performanceData}
-          channelMixData={channelMixData}
-          activities={recentActivity}
-          quickActions={quickActions}
-        />
+        <div className="[content-visibility:auto] [contain-intrinsic-size:auto_1200px]">
+          <DashboardShell
+            stats={stats}
+            revenueData={revenueData}
+            performanceData={performanceData}
+            channelMixData={channelMixData}
+            activities={recentActivity}
+            quickActions={quickActions}
+          />
+        </div>
       </div>
     </main>
   );

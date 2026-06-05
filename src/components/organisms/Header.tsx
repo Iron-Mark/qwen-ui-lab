@@ -2,17 +2,30 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { LayoutDashboard, PanelsTopLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/atoms/ThemeToggle";
-import { BrandThemeSwitcher } from "@/components/atoms/BrandThemeSwitcher";
-import { DemoModeSnackbar } from "@/components/atoms/DemoModeSnackbar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
+
+const BrandThemeSwitcher = dynamic(
+  () =>
+    import("@/components/atoms/BrandThemeSwitcher").then(
+      (mod) => mod.BrandThemeSwitcher,
+    ),
+  { ssr: false },
+);
+
+const DemoModeSnackbar = dynamic(
+  () =>
+    import("@/components/atoms/DemoModeSnackbar").then((mod) => mod.DemoModeSnackbar),
+  { ssr: false },
+);
 
 export function Header() {
   const pathname = usePathname();
@@ -36,7 +49,7 @@ export function Header() {
             width={36}
             height={36}
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
-            priority
+            fetchPriority="low"
           />
           <div className="min-w-0">
             <p className="truncate text-lg font-bold text-card-foreground">

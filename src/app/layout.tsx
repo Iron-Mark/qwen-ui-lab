@@ -25,8 +25,9 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  preload: false,
+  preload: true,
   weight: ["500", "600", "700"],
+  adjustFontFallback: true,
 });
 
 const siteUrl = getSiteUrl();
