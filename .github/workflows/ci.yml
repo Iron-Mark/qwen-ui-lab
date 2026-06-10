@@ -206,8 +206,8 @@ jobs:
         run: npm run perf:lcp-budget
         env:
           PERF_URL: ${{ steps.prod.outputs.url }}
-          # Strict by default on main; set repository variable PERF_LCP_STRICT=false to relax.
-          PERF_LCP_STRICT: ${{ vars.PERF_LCP_STRICT || 'true' }}
+          # Production probes can spike on live network/CDN variance; set PERF_LCP_STRICT=true to block.
+          PERF_LCP_STRICT: ${{ vars.PERF_LCP_STRICT || 'false' }}
 
       - name: Upload Lighthouse report on budget breach
         if: always()
