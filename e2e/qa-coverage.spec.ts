@@ -350,15 +350,22 @@ test.describe("marketing surfaces", () => {
     await page.goto("/");
     await expect(page.getByTestId("home-marketing-hero")).toBeVisible({ timeout: 15_000 });
 
-    await page.evaluate(() => {
-      class MockBeforeInstallPrompt extends Event {
-        prompt() {
-          return Promise.resolve();
-        }
-        userChoice = Promise.resolve({ outcome: "dismissed" as const });
-      }
-      window.dispatchEvent(new MockBeforeInstallPrompt("beforeinstallprompt"));
-    });
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            class MockBeforeInstallPrompt extends Event {
+              prompt() {
+                return Promise.resolve();
+              }
+              userChoice = Promise.resolve({ outcome: "dismissed" as const });
+            }
+            window.dispatchEvent(new MockBeforeInstallPrompt("beforeinstallprompt"));
+            return Boolean(document.querySelector('[data-testid="pwa-install-banner"]'));
+          }),
+        { timeout: 5_000, intervals: [100, 250, 500] },
+      )
+      .toBe(true);
 
     await expect(page.getByTestId("pwa-install-banner")).toBeVisible({
       timeout: 5_000,

@@ -118,7 +118,7 @@ Playwright’s default `test:e2e` runs against `next dev` (no SW). PWA registrat
 npm run test:e2e:pwa
 ```
 
-This uses [playwright.pwa.config.ts](../playwright.pwa.config.ts) to `build` + `start` on port 3000, then runs [e2e/pwa-production.spec.ts](../e2e/pwa-production.spec.ts).
+This uses [playwright.pwa.config.ts](../playwright.pwa.config.ts) to `build` + `start` on a dedicated PWA E2E port (`3211` by default, override with `E2E_PWA_PORT`), then runs [e2e/pwa-production.spec.ts](../e2e/pwa-production.spec.ts).
 
 ## Verification
 

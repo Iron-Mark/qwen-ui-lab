@@ -23,13 +23,25 @@ test("404 page renders zh copy with ?lang=zh", async ({ page }) => {
 
 test("laws-of-ux redirect preserves ?lang=zh", async ({ page }) => {
   await page.goto("/design-system/laws-of-ux?lang=zh");
-  await expect(page).toHaveURL(/\/design-system\?domain=laws-of-ux&lang=zh/);
+  await expect(page).toHaveURL((url) => {
+    return (
+      url.pathname === "/design-system" &&
+      url.searchParams.get("domain") === "laws-of-ux" &&
+      url.searchParams.get("lang") === "zh"
+    );
+  });
   await expect(page.getByRole("heading", { name: "原子组件实验室" })).toBeVisible();
 });
 
 test("uilaws redirect preserves ?lang=zh", async ({ page }) => {
   await page.goto("/design-system/uilaws?lang=zh");
-  await expect(page).toHaveURL(/\/design-system\?domain=uilaws&lang=zh/);
+  await expect(page).toHaveURL((url) => {
+    return (
+      url.pathname === "/design-system" &&
+      url.searchParams.get("domain") === "uilaws" &&
+      url.searchParams.get("lang") === "zh"
+    );
+  });
   await expect(page.getByRole("heading", { name: "原子组件实验室" })).toBeVisible();
 });
 

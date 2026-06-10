@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const e2ePort = process.env.E2E_PWA_PORT ?? "3211";
+const e2eBaseUrl = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${e2ePort}`;
+
 /**
  * E2E against a production build (`next build` + `next start`).
  * Service worker registration is disabled in `next dev`.
@@ -13,15 +16,19 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: e2eBaseUrl,
     trace: "on-first-retry",
     serviceWorkers: "allow",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: "npm run start:prod:e2e",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    url: e2eBaseUrl,
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === "1",
     timeout: 180_000,
+    env: {
+      ...process.env,
+      PORT: e2ePort,
+    },
   },
 });

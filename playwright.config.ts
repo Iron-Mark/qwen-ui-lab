@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const e2ePort = process.env.E2E_PORT ?? "3210";
+const e2eBaseUrl = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${e2ePort}`;
+
 function e2eDevServerEnv(): Record<string, string> {
   const env: Record<string, string> = {};
   for (const [key, value] of Object.entries(process.env)) {
@@ -22,7 +25,7 @@ export default defineConfig({
   reporter: "list",
   snapshotPathTemplate: "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: e2eBaseUrl,
     trace: "on-first-retry",
   },
   projects: [
@@ -43,9 +46,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? "npm run build && npm run start -- -p 3000" : "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    command: process.env.CI
+      ? `npm run build && npm run start -- -p ${e2ePort}`
+      : `npm run dev -- -p ${e2ePort}`,
+    url: e2eBaseUrl,
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === "1",
     timeout: process.env.CI ? 300_000 : 120_000,
     env: e2eDevServerEnv(),
   },

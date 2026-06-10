@@ -6,7 +6,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
-[![Release](https://img.shields.io/github/v/release/Iron-Mark/qwen-ui-lab?label=release)](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2)
+[![Release](https://img.shields.io/github/v/release/Iron-Mark/qwen-ui-lab?label=release)](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.8)
 
 > **Pitch (matches the live app):** Turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code—**offline-safe by default** for meetups.  
 > On `/`: hero → upload flow → dashboard charts; polish in `/design-system`.
@@ -15,7 +15,7 @@
 |---|---|
 | **Repository** | [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab) |
 | **Production** | **[qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)** |
-| **Latest release** | [v0.1.2](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2) |
+| **Latest release** | [v0.1.8](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.8) |
 
 ---
 
@@ -243,7 +243,7 @@ Engineering & ops:
 | [docs/ROLLBACK_CHECKLIST.md](./docs/ROLLBACK_CHECKLIST.md) | Rollback steps |
 | [docs/STORYBOOK.md](./docs/STORYBOOK.md) | Deferred Storybook note |
 
-**Releases:** [GitHub Releases](https://github.com/Iron-Mark/qwen-ui-lab/releases) · current **[v0.1.2](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.2)**
+**Releases:** [GitHub Releases](https://github.com/Iron-Mark/qwen-ui-lab/releases) · current **[v0.1.8](https://github.com/Iron-Mark/qwen-ui-lab/releases/tag/v0.1.8)**
 
 ---
 
