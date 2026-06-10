@@ -137,6 +137,12 @@ try {
   );
 } finally {
   if (chrome) {
-    await chrome.kill();
+    try {
+      await chrome.kill();
+    } catch (error) {
+      console.warn(
+        `WARN: Failed to clean up Lighthouse Chrome profile: ${error?.message ?? error}`,
+      );
+    }
   }
 }

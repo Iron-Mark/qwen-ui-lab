@@ -23,7 +23,8 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : process.platform === "win32" ? 3 : 4,
   reporter: "list",
-  snapshotPathTemplate: "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
+  snapshotPathTemplate:
+    "{testDir}/{testFileDir}/{testFileName}-snapshots/{platform}/{arg}{ext}",
   use: {
     baseURL: e2eBaseUrl,
     trace: "on-first-retry",
