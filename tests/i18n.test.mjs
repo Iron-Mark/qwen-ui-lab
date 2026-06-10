@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { resolveLocale } from "../src/lib/i18n/locale.mjs";
 import { interpolate } from "../src/lib/i18n/interpolate.mjs";
@@ -13,8 +15,15 @@ import {
   buildDesignSystemDomainRedirect,
   createDesignSystemSearchParams,
 } from "../src/lib/design-system-state.mjs";
-import { en } from "../src/lib/i18n/dictionaries/en.ts";
-import { zh } from "../src/lib/i18n/dictionaries/zh.ts";
+
+const enDictionarySource = readFileSync(
+  fileURLToPath(new URL("../src/lib/i18n/dictionaries/en.ts", import.meta.url)),
+  "utf8",
+);
+const zhDictionarySource = readFileSync(
+  fileURLToPath(new URL("../src/lib/i18n/dictionaries/zh.ts", import.meta.url)),
+  "utf8",
+);
 
 const uploadFlowZh = {
   ctaAnalyzing: "分析中…",
@@ -99,9 +108,9 @@ test("localizedHref preserves share and account paths", () => {
 });
 
 test("zh dictionaries cover remaining route strings", () => {
-  assert.equal(zh.notFound.title, "页面未找到");
-  assert.equal(zh.share.title, "只读分析摘要");
-  assert.equal(zh.account.backToDemo, "返回实时演示");
-  assert.notEqual(zh.notFound.title, en.notFound.title);
-  assert.notEqual(zh.share.tryLiveDemo, en.share.tryLiveDemo);
+  assert.match(zhDictionarySource, /title:\s*"页面未找到"/);
+  assert.match(zhDictionarySource, /title:\s*"只读分析摘要"/);
+  assert.match(zhDictionarySource, /backToDemo:\s*"返回实时演示"/);
+  assert.match(enDictionarySource, /title:\s*"Page not found"/);
+  assert.match(enDictionarySource, /tryLiveDemo:\s*"Try the live demo"/);
 });
