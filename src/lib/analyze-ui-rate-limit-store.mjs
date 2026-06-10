@@ -101,6 +101,16 @@ function parseBucket(raw) {
 }
 
 /**
+ * @param {RateLimitCheckResult & { entry: RateLimitBucket }} result
+ * @returns {RateLimitCheckResult}
+ */
+function omitInternalEntry(result) {
+  const check = { ...result };
+  delete check.entry;
+  return check;
+}
+
+/**
  * @returns {RateLimitStore}
  */
 export function createMemoryRateLimitStore() {
@@ -115,8 +125,7 @@ export function createMemoryRateLimitStore() {
         now,
       });
       buckets.set(key, result.entry);
-      const { entry: _entry, ...check } = result;
-      return check;
+      return omitInternalEntry(result);
     },
     reset() {
       buckets.clear();
@@ -189,8 +198,7 @@ export function createKvRateLimitStore(env = process.env, fetchFn = fetch) {
         });
       }
 
-      const { entry: _entry, ...check } = result;
-      return check;
+      return omitInternalEntry(result);
     },
   };
 }

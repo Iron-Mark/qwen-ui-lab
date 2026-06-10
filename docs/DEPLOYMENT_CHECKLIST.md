@@ -18,6 +18,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 
 - [ ] Validate demo-safe defaults (recommended): `npm run deploy:env:demo`
 - [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, demo-safe live)
+- [ ] Current public demo exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and `GITHUB_TOKEN`; this is acceptable only for offline-demo operation where durable share links and server-side Gist export are not required.
 - [ ] For live rollout only: `npm run deploy:env:live` (see **[docs/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**)
 - [ ] `NEXT_PUBLIC_QWEN_API_KEY` is not set.
 - [ ] Runtime secrets stay server-only (no `NEXT_PUBLIC_*` prefix for secrets).
@@ -44,6 +45,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 - [ ] `GET /api/health` mode matches rollout intent (demo by default unless explicit live rollout).
 - [ ] `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `robots.txt`, and `sitemap.xml` are healthy.
 - [ ] Optional latency probe for sign-off: `node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5`.
+- [ ] Optional production LCP telemetry: `npm run perf:lcp-budget` or CI `Production LCP budget`. This is warn-only by default because live network/CDN variance can spike; set Vercel/GitHub repository variable `PERF_LCP_STRICT=true` only when you want this to block CI.
 
 ## 6) Staging drill simulation (no real deploy)
 

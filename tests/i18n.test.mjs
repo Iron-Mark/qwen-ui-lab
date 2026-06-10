@@ -7,7 +7,6 @@ import { resolveLocale } from "../src/lib/i18n/locale.mjs";
 import { interpolate } from "../src/lib/i18n/interpolate.mjs";
 import { localizedHref } from "../src/lib/i18n/localized-href.mjs";
 import {
-  getAnalyzeStepLabels,
   getFlowStepLabels,
   translateAnalyzeStep,
 } from "../src/lib/i18n/translate-analyze-step.mjs";

@@ -153,7 +153,11 @@ export default async function RootLayout({
       className={cn("font-sans", geist.variable, spaceGrotesk.variable)}
     >
       <head>
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />

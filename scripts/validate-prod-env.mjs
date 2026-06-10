@@ -19,13 +19,6 @@ import {
   isLiveQwenAnalysisEnabled,
 } from "../src/lib/qwen-analyze.mjs";
 
-const TRUE_VALUES = new Set(["1", "true", "yes", "on"]);
-
-function envFlag(value) {
-  if (typeof value !== "string") return false;
-  return TRUE_VALUES.has(value.trim().toLowerCase());
-}
-
 function trim(value) {
   if (value === undefined || value === null) return "";
   return String(value).trim();

@@ -1,10 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  createGenericErrorDispatch,
-  resolveErrorReportingTargets,
-} from "../src/lib/error-reporting.mjs";
+import { resolveErrorReportingTargets } from "../src/lib/error-reporting.mjs";
 
 test("error reporting targets default to empty", () => {
   const targets = resolveErrorReportingTargets({});

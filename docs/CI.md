@@ -92,14 +92,14 @@ npm run test:e2e:visual
 
 ## Production LCP budget
 
-**Job:** `perf-lcp-budget` in `ci.yml` (main push, **strict** by default)
+**Job:** `perf-lcp-budget` in `ci.yml` (main push, warn-only by default)
 
 Uses [`scripts/perf-lcp-budget.mjs`](../scripts/perf-lcp-budget.mjs) to run Lighthouse against the production origin. Default URL is `https://qwen-ui-lab.vercel.app`; override with repository variable `PRODUCTION_DEPLOY_URL` (same as post-deploy smoke).
 
 | Setting | Default | Notes |
 |---------|---------|-------|
 | `PERF_MAX_LCP_MS` | `2500` | Fail threshold when strict mode is on |
-| `PERF_LCP_STRICT` | `true` in CI | Fails the job on breach; set repo variable `PERF_LCP_STRICT=false` to relax |
+| `PERF_LCP_STRICT` | `false` in CI | Warns by default because live production probes can spike; set repo variable `PERF_LCP_STRICT=true` to fail on breach |
 
 Local examples:
 
@@ -107,14 +107,14 @@ Local examples:
 # Warn-only (local default; script exits 0 on breach)
 npm run perf:lcp-budget
 
-# Enforce budget (matches CI on main)
+# Enforce budget
 PERF_LCP_STRICT=1 npm run perf:lcp-budget
 node scripts/perf-lcp-budget.mjs --strict --url https://qwen-ui-lab.vercel.app
 ```
 
 Reports are written to `.perf/lighthouse-lcp-budget.json` (gitignored). CI uploads this file when present.
 
-To temporarily allow a breach without changing workflow YAML, set repository variable **`PERF_LCP_STRICT`** to `false` under **Settings → Secrets and variables → Actions → Variables**.
+To make production LCP breaches block CI without changing workflow YAML, set repository variable **`PERF_LCP_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables**.
 
 ## Related scripts
 

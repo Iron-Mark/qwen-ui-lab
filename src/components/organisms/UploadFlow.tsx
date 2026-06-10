@@ -190,6 +190,10 @@ export function UploadFlow({
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
   const demoBootstrappedRef = useRef<string | null>(null);
+  const loadBundledSampleRef = useRef<(sampleId: string) => Promise<void>>(
+    async () => {},
+  );
+  const runPrimaryActionRef = useRef<() => Promise<void>>(async () => {});
   const { toast } = useToast();
   const { savedByLabel } = useAuth();
   const [file, setFile] = useState<File | null>(null);
@@ -376,26 +380,7 @@ export function UploadFlow({
       return `generated-${base || "scaffold"}.tsx`;
     }
     return "generated-scaffold.tsx";
-  }, [demoArchetype, file?.name]);
-
-  useEffect(() => {
-    if (!autoRunDemo) return;
-
-    const sampleId = demoArchetype ?? "dashboard";
-    if (demoBootstrappedRef.current === sampleId) return;
-    demoBootstrappedRef.current = sampleId;
-
-    void (async () => {
-      await loadBundledSample(sampleId);
-    })();
-  }, [autoRunDemo, demoArchetype]);
-
-  useEffect(() => {
-    if (!autoRunDemo || !file || stage !== "uploaded" || providerState === "loading") {
-      return;
-    }
-    void runPrimaryAction();
-  }, [autoRunDemo, file, providerState, stage]);
+  }, [demoArchetype, file]);
 
   function acceptFile(
     nextFile: File | null,
@@ -688,6 +673,30 @@ export function UploadFlow({
       setLoadingSample(false);
     }
   }
+
+  useEffect(() => {
+    loadBundledSampleRef.current = loadBundledSample;
+    runPrimaryActionRef.current = runPrimaryAction;
+  });
+
+  useEffect(() => {
+    if (!autoRunDemo) return;
+
+    const sampleId = demoArchetype ?? "dashboard";
+    if (demoBootstrappedRef.current === sampleId) return;
+    demoBootstrappedRef.current = sampleId;
+
+    void (async () => {
+      await loadBundledSampleRef.current(sampleId);
+    })();
+  }, [autoRunDemo, demoArchetype]);
+
+  useEffect(() => {
+    if (!autoRunDemo || !file || stage !== "uploaded" || providerState === "loading") {
+      return;
+    }
+    void runPrimaryActionRef.current();
+  }, [autoRunDemo, file, providerState, stage]);
 
   return (
     <PageContainer
