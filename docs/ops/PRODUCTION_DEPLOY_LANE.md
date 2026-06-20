@@ -2,6 +2,13 @@
 
 This lane standardizes production deployment for `qwen-ui-lab` with safe demo defaults, explicit live opt-in, and automated post-deploy smoke checks.
 
+Production branch policy:
+
+- Build normal changes on `dev`.
+- Promote production through a protected `dev` -> `main` PR.
+- Treat `main` as the production branch.
+- Create release tags only from `main` commits.
+
 ## Deploy modes
 
 - **Demo-safe (default):** no live Qwen dependency. `QWEN_LIVE_ANALYSIS` remains unset/false, even if `DASHSCOPE_API_KEY` exists.
@@ -33,7 +40,7 @@ Step-by-step checklist, smoke expectations, and rollback: **[docs/ops/LIVE_QWEN_
    - Demo-safe: leave `QWEN_LIVE_ANALYSIS` unset.
    - Live: set `QWEN_LIVE_ANALYSIS=true`, `DASHSCOPE_API_KEY`, and optional `QWEN_MODEL`, `QWEN_BASE_URL`.
 3. Never set any secret as `NEXT_PUBLIC_*`.
-4. Trigger deploy from approved branch/tag after CI passes.
+4. Trigger deploy from the approved `main` commit or release tag after CI passes.
 
 ## Common-hosting equivalents
 

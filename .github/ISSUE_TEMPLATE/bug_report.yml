@@ -46,5 +46,5 @@ body:
       options:
         - label: I searched existing issues.
           required: true
-        - label: I can still reproduce this on the latest main branch.
+        - label: I can still reproduce this on the latest production main branch.
           required: true

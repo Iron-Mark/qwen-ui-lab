@@ -20,6 +20,16 @@ Open `http://localhost:3000`.
 - `npm run test:e2e` - Playwright smoke tests.
 - `npm run doctor` - checks deps, env, sample tests, and optional live API ping.
 
+## Branch Policy
+
+Use `dev` as the normal integration branch for all product, docs, and maintenance work. Do not start feature work from `main`.
+
+- Start work from the latest `dev`.
+- Open feature or fix PRs back into `dev` unless the change is an emergency production hotfix.
+- Promote production by opening a release PR from `dev` to `main`.
+- Treat `main` as production-only. Direct pushes to `main` are blocked by branch protection.
+- Create release tags only from commits already on `main`.
+
 ## Demo vs Live Analysis (Important)
 
 `qwen-ui-lab` defaults to offline demo behavior.
@@ -82,15 +92,18 @@ npm run test:e2e
 
 ## Typical Change Workflow
 
-1. Create branch from latest default branch.
-2. Implement small focused change.
-3. Run local checks (`npm run check`, then `npm run build` for runtime-impacting changes).
-4. Update docs for any changed runtime behavior.
-5. Open PR with:
+1. Update local `dev` from `origin/dev`.
+2. Create a short-lived feature branch from `dev`, or work directly on `dev` only for small maintainer-approved docs/ops changes.
+3. Implement small focused change.
+4. Run local checks (`npm run check`, then `npm run build` for runtime-impacting changes).
+5. Update docs for any changed runtime behavior.
+6. Open PR into `dev` with:
    - What changed
    - Why it changed
    - How it was validated
    - Demo/live mode impact (if any)
+
+Production releases use a separate `dev` -> `main` PR after `dev` is ready. Do not tag or deploy from `dev`.
 
 ## Pull Requests and Issues
 

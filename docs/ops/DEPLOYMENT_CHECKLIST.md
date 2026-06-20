@@ -5,6 +5,8 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 ## 1) Pre-deploy validation
 
 - [ ] Working tree is clean (no accidental local changes, no secrets staged).
+- [ ] Release branch model is correct: work was integrated on `dev`, then promoted through a `dev` -> `main` PR.
+- [ ] Release tag, if any, points to a commit already on `main`.
 - [ ] Version and release notes are updated (`package.json`, `docs/ops/RELEASE_NOTES_DRAFT.md`).
 - [ ] Install dependencies: `npm ci`.
 - [ ] No concurrent `next build` is running in another terminal/session.
@@ -32,7 +34,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 
 ## 4) Deploy execution
 
-- [ ] Trigger deploy from approved release branch/tag.
+- [ ] Trigger deploy from the approved `main` commit or release tag.
 - [ ] Confirm build logs show successful Next.js compile/startup.
 - [ ] Confirm no missing dependency/runtime errors.
 
