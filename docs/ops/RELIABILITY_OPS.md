@@ -93,10 +93,10 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
       - run: npm ci
       - run: node scripts/synthetic-health-check.mjs --base-url "${{ secrets.SYNTHETIC_BASE_URL }}"
 ```

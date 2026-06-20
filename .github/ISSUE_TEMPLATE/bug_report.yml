@@ -31,7 +31,7 @@ body:
     attributes:
       label: Environment
       description: Browser, OS, Node version, and mode (demo/live).
-      placeholder: Windows 11, Chrome 125, Node 20, demo mode
+      placeholder: Windows 11, Chrome 125, Node 24, demo mode
     validations:
       required: true
   - type: textarea
