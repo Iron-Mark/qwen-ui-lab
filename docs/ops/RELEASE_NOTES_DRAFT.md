@@ -1,5 +1,25 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.2.1
+
+Release date: 2026-06-20
+
+Patch release that supersedes `v0.2.0` by fixing the post-merge production dependency audit gate.
+
+### Fixes
+
+- Added npm overrides for patched production transitive dependencies:
+  - `hono@4.12.26`
+  - `js-yaml@4.2.0`
+- Kept the `v0.2.0` offline pixel-signal feature unchanged.
+- Updated package metadata to `0.2.1`.
+
+### Verification snapshot
+
+- `npm audit --omit=dev --audit-level=high` - passed.
+- `npm run check:full` - lint, unit tests, and production build passed.
+- GitHub main CI should pass the Security dependency policy with the patched lockfile.
+
 ## qwen-ui-lab v0.2.0
 
 Release date: 2026-06-20

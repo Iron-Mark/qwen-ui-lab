@@ -4,11 +4,11 @@ This checklist prepares a release candidate without publishing.
 
 ## Recommended version/tag
 
-- Current package version: `0.2.0`
-- Recommendation: use `0.2.0` for the offline pixel-signal analysis feature release.
-- Recommended tag: `v0.2.0`
+- Current package version: `0.2.1`
+- Recommendation: use `0.2.1` for the production dependency audit fix-forward after the offline pixel-signal analysis feature release.
+- Recommended tag: `v0.2.1`
 - Next planned version after this release:
-  - `0.2.1` for follow-up fixes/docs-only cleanup
+  - `0.2.2` for follow-up fixes/docs-only cleanup
   - `0.3.0` for the next net-new user-facing capability
 
 ## Packaging readiness checklist
@@ -21,8 +21,8 @@ This checklist prepares a release candidate without publishing.
 
 ## Current release readiness snapshot
 
-- Scope: offline canvas pixel inspection for unknown screenshot uploads, with signal-aware fallback artifacts.
-- Local health: `npm run check:full`, `npx tsc --noEmit`, and `npm run test:e2e:pr-smoke` pass.
+- Scope: patched production transitive dependency audit findings while preserving offline canvas pixel inspection.
+- Local health: `npm audit --omit=dev --audit-level=high`, `npm run check:full`, `npx tsc --noEmit`, and `npm run test:e2e:pr-smoke` pass.
 - Fixture health: `npm run export:demo-fixtures` runs without required content changes.
 - Production policy: public demo remains provider-safe by default; live Qwen still requires explicit opt-in.
 
@@ -45,13 +45,13 @@ Do not run these until publish is explicitly approved:
 
 ```bash
 git pull --ff-only
-git tag -a v0.2.0 -m "Release v0.2.0"
+git tag -a v0.2.1 -m "Release v0.2.1"
 git push origin HEAD
-git push origin v0.2.0
+git push origin v0.2.1
 ```
 
 ## Optional GitHub release command
 
 ```bash
-gh release create v0.2.0 --title "qwen-ui-lab v0.2.0" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
+gh release create v0.2.1 --title "qwen-ui-lab v0.2.1" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
 ```
