@@ -55,6 +55,7 @@ export function fallbackReasonFromPayload(payload) {
  *     width?: number | null;
  *     height?: number | null;
  *     offlineInspection?: unknown;
+ *     svgInspection?: unknown;
  *   };
  *   payload?: unknown;
  *   responseOk?: boolean;
@@ -165,6 +166,7 @@ function sleep(ms) {
  *   width?: number | null;
  *   height?: number | null;
  *   offlineInspection?: unknown;
+ *   svgInspection?: unknown;
  * }} file
  * @param {string} imageDataUrl
  * @param {{
@@ -238,6 +240,7 @@ export async function postAnalyzeUi(
  *   width?: number | null;
  *   height?: number | null;
  *   offlineInspection?: unknown;
+ *   svgInspection?: unknown;
  * }} file
  * @param {string} imageDataUrl
  * @param {{ fetchFn?: typeof fetch; timeoutMs?: number; apiPath?: string }} options

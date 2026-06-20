@@ -6,12 +6,18 @@ import {
   classifyLayoutArchetype,
   inferFormFactor,
   lookupKnownSample,
+  lookupKnownSampleByInspection,
   normalizeSampleKey,
 } from "../src/features/analysis/lib/offline-analyze.mjs";
 import {
   contrastRatio,
   inspectImageDataPixels,
 } from "../src/features/analysis/lib/offline-image-inspection.mjs";
+import {
+  inspectSvgDataUrl,
+  inspectSvgMarkup,
+} from "../src/features/analysis/lib/offline-svg-inspection.mjs";
+import { preprocessImageDataUrl } from "../src/features/analysis/lib/image-preprocess.mjs";
 import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildDemoArtifactForFile,
@@ -33,7 +39,7 @@ function createSyntheticScreenshot(width, height) {
       } else if (x < Math.ceil(width * 0.18)) {
         color = [44, 90, 160];
       } else if (x > width * 0.42 && x < width * 0.82 && y > height * 0.36 && y < height * 0.66) {
-        color = [230, 238, 250];
+        color = [116, 148, 192];
       }
 
       data[offset] = color[0];
@@ -45,6 +51,18 @@ function createSyntheticScreenshot(width, height) {
 
   return { data, width, height, sourceWidth: 1440, sourceHeight: 900 };
 }
+
+const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
+  <title>Sign in</title>
+  <desc>Email and password authentication form</desc>
+  <g id="auth-card" aria-label="Authentication card">
+    <rect x="32" y="180" width="326" height="360" rx="24" />
+    <text x="64" y="240">Sign in</text>
+    <text x="64" y="304">Email</text>
+    <text x="64" y="376">Password</text>
+    <text x="64" y="464">Continue</text>
+  </g>
+</svg>`;
 
 test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
@@ -158,10 +176,101 @@ test("inspectImageDataPixels extracts palette, contrast, and layout bands", () =
   assert.equal(inspection.threshold.method, "otsu");
   assert.ok(inspection.layout.regions.length > 0);
   assert.ok(inspection.layout.componentSummary.navigation >= 1);
+  assert.ok(inspection.layout.regions.some((region) => region.kind === "header/nav"));
+  assert.ok(inspection.layout.regions.some((region) => region.kind === "side rail"));
+  assert.ok(
+    inspection.layout.regions.some((region) =>
+      ["content panel", "media/chart"].includes(region.kind),
+    ),
+  );
+  assert.ok(
+    inspection.layout.regions.every(
+      (region) =>
+        !(
+          region.kind === "header/nav" &&
+          region.minRow === 0 &&
+          region.maxRow === inspection.layout.gridRows - 1
+        ),
+    ),
+  );
   assert.match(inspection.designTokens.surface, /^#[0-9a-f]{6}$/i);
   assert.match(inspection.designTokens.accent, /^#[0-9a-f]{6}$/i);
+  assert.match(inspection.designTokens.accentForeground, /^#[0-9a-f]{6}$/i);
+  assert.equal(inspection.imageSignature.method, "luma-a8-d8");
+  assert.match(inspection.imageSignature.averageHash, /^[0-9a-f]{16}$/);
+  assert.match(inspection.imageSignature.differenceHash, /^[0-9a-f]{16}$/);
   assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
   assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
+});
+
+test("inspectSvgMarkup extracts labels, counts, viewBox, and archetype hints", () => {
+  const inspection = inspectSvgMarkup(AUTH_SVG);
+
+  assert.ok(inspection);
+  assert.equal(inspection.source.width, 390);
+  assert.equal(inspection.source.height, 844);
+  assert.deepEqual(inspection.source.viewBox, [0, 0, 390, 844]);
+  assert.equal(inspection.tagCounts.rect, 1);
+  assert.equal(inspection.tagCounts.text, 4);
+  assert.ok(inspection.labels.includes("Email"));
+  assert.equal(inspection.archetypeHints[0].id, "auth");
+  assert.match(inspection.recommendations.join(" "), /viewBox|labels/i);
+});
+
+test("inspectSvgMarkup treats missing or invalid viewBox as absent", () => {
+  const missing = inspectSvgMarkup(`<svg width="200" height="100"><title>Card</title></svg>`);
+  const invalid = inspectSvgMarkup(
+    `<svg width="200" height="100" viewBox="0 0"><title>Card</title></svg>`,
+  );
+
+  assert.equal(missing.source.hasViewBox, false);
+  assert.equal(missing.source.viewBox, null);
+  assert.equal(invalid.source.hasViewBox, false);
+  assert.equal(invalid.source.viewBox, null);
+});
+
+test("inspectSvgDataUrl and preprocessImageDataUrl preserve SVG structure offline", async () => {
+  const dataUrl = `data:image/svg+xml;base64,${Buffer.from(AUTH_SVG, "utf8").toString(
+    "base64",
+  )}`;
+  const direct = inspectSvgDataUrl(dataUrl);
+  const preprocessed = await preprocessImageDataUrl(dataUrl);
+
+  assert.ok(direct);
+  assert.equal(direct.labels.includes("Password"), true);
+  assert.equal(preprocessed.width, 390);
+  assert.equal(preprocessed.height, 844);
+  assert.equal(preprocessed.svgInspection?.archetypeHints[0].id, "auth");
+});
+
+test("lookupKnownSampleByInspection resolves bundled references by perceptual signature", () => {
+  const exact = lookupKnownSampleByInspection({
+    imageSignature: {
+      method: "luma-a8-d8",
+      averageHash: "3f15577169373fff",
+      differenceHash: "014529181c99beb1",
+    },
+  });
+  const nearWebp = lookupKnownSampleByInspection({
+    imageSignature: {
+      method: "luma-a8-d8",
+      averageHash: "3f15577178373fff",
+      differenceHash: "014529181c99bfb1",
+    },
+  });
+  const unrelated = lookupKnownSampleByInspection({
+    imageSignature: {
+      method: "luma-a8-d8",
+      averageHash: "0000000000000000",
+      differenceHash: "ffffffffffffffff",
+    },
+  });
+
+  assert.ok(exact);
+  assert.match(exact.summary, /Admin dashboard/i);
+  assert.ok(nearWebp);
+  assert.equal(nearWebp.generatedCode, exact.generatedCode);
+  assert.equal(unrelated, null);
 });
 
 test("buildUiFlowArtifact uses known sample registry for auth-reference.svg", () => {
@@ -242,6 +351,28 @@ test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   assert.match(advanced.generatedCode, /GeneratedCatalog/);
 });
 
+test("buildAdvancedOfflineOverrides seeds generated code from offline regions and tokens", () => {
+  const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "operator-console.png",
+      type: "image/png",
+      size: 512000,
+      width: 1440,
+      height: 900,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "1440Ã—900px landscape frame (aspect 1.60)." },
+  );
+
+  assert.match(advanced.generatedCode, /const designTokens/);
+  assert.match(advanced.generatedCode, /const layoutRegions/);
+  assert.match(advanced.generatedCode, /Local screenshot scaffold/);
+  assert.match(advanced.generatedCode, /header\/nav|side rail/);
+  assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
+  assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
+});
+
 test("buildUiFlowArtifact uses known sample registry for dashboard-reference.svg", () => {
   const file = getSampleReferenceFile();
   const artifact = buildUiFlowArtifact(file);
@@ -266,6 +397,53 @@ test("buildUiFlowArtifact uses advanced classifier for unknown uploads", () => {
   assert.match(artifact.generatedCode, /GeneratedLanding/);
 });
 
+test("buildUiFlowArtifact uses visual registry match for renamed references", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "renamed-demo-screenshot.png",
+    type: "image/png",
+    size: 113391,
+    width: 1440,
+    height: 900,
+    offlineInspection: {
+      imageSignature: {
+        method: "luma-a8-d8",
+        averageHash: "3f15577169373fff",
+        differenceHash: "014529181c99beb1",
+      },
+    },
+  });
+
+  assert.match(artifact.summary, /Admin dashboard/i);
+  assert.match(artifact.generatedCode, /ChartPreview/);
+  assert.ok(artifact.plan.some((section) => section.title === "Component Map"));
+});
+
+test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", () => {
+  const artifact = buildUiFlowArtifact({
+    name: "renamed-auth-wireframe.svg",
+    type: "image/svg+xml",
+    size: 2048,
+    width: 390,
+    height: 844,
+    svgInspection: inspectSvgMarkup(AUTH_SVG),
+  });
+
+  assert.match(artifact.summary, /Authentication/i);
+  assert.match(artifact.summary, /SVG structure/i);
+  assert.ok(artifact.plan.some((section) => section.title === "Local SVG Structure"));
+  assert.ok(artifact.plan.some((section) => section.title === "SVG Quality Checks"));
+  assert.deepEqual(
+    artifact.previewStats.map((stat) => stat.label),
+    ["Text", "Shapes", "Groups", "ViewBox"],
+  );
+  assert.match(artifact.generatedCode, /const svgLabels/);
+  assert.match(artifact.generatedCode, /const svgStructure/);
+  assert.match(artifact.generatedCode, /Local SVG scaffold/);
+  assert.match(artifact.generatedCode, /Email/);
+  assert.match(artifact.generatedCode, /Password/);
+  assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
+});
+
 test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
   const artifact = buildUiFlowArtifact({
@@ -286,6 +464,8 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
     artifact.previewStats.map((stat) => stat.label),
     ["Regions", "Controls", "Density", "Contrast"],
   );
+  assert.match(artifact.generatedCode, /const designTokens/);
+  assert.match(artifact.generatedCode, /const layoutRegions/);
 });
 
 test("buildDemoArtifactForFile matches export fixture shape", () => {

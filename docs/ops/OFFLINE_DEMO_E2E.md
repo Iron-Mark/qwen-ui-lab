@@ -18,7 +18,8 @@ When live analysis is disabled, the client **skips** `POST /api/analyze-ui` and 
 2. If `liveAnalysisEnabled` is false, `postAnalyzeUi()` calls `resolveAnalyzeOutcome()` with `instantDemo: true`.
 3. `buildUiFlowArtifact()` in `src/features/analysis/lib/ui-flow.mjs` delegates to `src/features/analysis/lib/offline-analyze.mjs`:
    - **Canvas pixel inspection** - browser uploads are sampled locally with `getImageData()` to extract palette, contrast, edge density, layout bands, connected regions, design tokens, and dense-cluster risk before any provider call.
-   - **Known sample registry** — bundled files like `dashboard-reference.svg` get rich, meetup-ready content.
+   - **SVG structure inspection** - SVG uploads are parsed locally for viewBox, labels, shape counts, groups, and text-based archetype hints before any provider call.
+   - **Known sample registry** — bundled files like `dashboard-reference.svg` get rich, meetup-ready content by filename or local visual signature.
    - **Advanced classifier** — weighted archetype scoring (dashboard, auth, mobile, settings, landing, ecommerce) using filename keywords, MIME hints, and width/height form-factor boosts.
    - **Confidence summary** — each unknown upload gets a deterministic layout label and confidence score in the artifact summary.
 
@@ -30,16 +31,20 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 
 | Stage | What it does |
 |-------|----------------|
-| **Registry lookup** | Exact match on normalized filename (e.g. `dashboard-reference.svg`) → curated plan, stats, and code |
+| **Registry lookup** | Exact match on normalized filename (e.g. `dashboard-reference.svg`) or a close local perceptual signature match → curated plan, stats, and code |
 | **Archetype scoring** | Weighted keywords per layout type; highest score wins |
 | **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide → mobile boost) |
 | **MIME hint** | Optional small boost (e.g. SVG → dashboard) |
 | **Pixel signal scan** | `src/features/analysis/lib/offline-image-inspection.mjs` samples canvas pixels, quantizes dominant colors, computes WCAG-style contrast, estimates edge density, and maps active cells on a 12x8 layout grid |
+| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed bundled references still resolve to curated offline artifacts |
+| **SVG structure scan** | SVG markup contributes viewBox, text labels, shape counts, group counts, and archetype hints even when no raster/provider analysis is available |
 | **Otsu thresholding** | A luminance histogram separates likely foreground from dominant surfaces without a fixed magic threshold |
-| **Connected regions** | Active grid cells are grouped into deterministic regions and labeled as header/nav, side rail, bottom nav, content panel, media/chart, text/list, or control cluster |
-| **Design tokens** | Local palette and contrast signals produce surface, foreground, accent, muted, border, spacing, and radius recommendations |
+| **Band-first regions** | Obvious header, bottom-nav, and side-rail bands are carved before connected components so L-shaped chrome does not collapse into one full-screen region |
+| **Connected regions** | Remaining active grid cells are grouped into deterministic regions and labeled as content panel, media/chart, text/list, or control cluster |
+| **Design tokens** | Local palette and contrast signals produce surface, foreground, accent, accent foreground, muted, border, spacing, and radius recommendations |
 | **Signal-aware output** | Unknown uploads receive `Local Vision Signals`, `Detected Structure`, `Design Tokens`, and `Local Quality Checks` plan cards plus regions/controls/density/contrast preview stats |
-| **Code templates** | Per-archetype generated React scaffold (`GeneratedDashboard`, `GeneratedAuthScreen`, etc.) |
+| **Signal-aware code templates** | Unknown inspected uploads seed generated React scaffolds with detected region grids and local design tokens; known samples still use curated per-archetype code |
+| **SVG-aware code templates** | Unknown SVG uploads seed generated scaffolds with parsed labels, local structure stats, and field/action/section guidance |
 | **Confidence** | `0.55–0.98` based on score margin; surfaced in artifact `summary` |
 
 Example: `pricing-landing-hero.png` → Marketing landing archetype with `GeneratedLanding` code.  
@@ -50,9 +55,11 @@ Unit coverage: [`tests/offline-analyze.test.mjs`](../../tests/offline-analyze.te
 Reference basis:
 
 - Canvas pixel reads use the browser Canvas 2D `getImageData()` API.
+- SVG inspection parses markup as local data only; scripts/styles are ignored and labels are used as analysis hints, not executed.
 - Contrast estimates use the WCAG relative luminance and contrast-ratio model.
+- Visual registry fallback uses luminance perceptual hashes and Hamming distance thresholds so format or filename changes do not break known-reference recognition.
 - Thresholding follows Otsu's between-class variance method on the sampled luminance histogram.
-- Region labeling uses connected-component analysis on the active layout grid.
+- Region labeling uses a lightweight top-down band pass followed by connected-component analysis on the remaining active layout grid.
 - Target-size guidance follows WCAG target-size checks as a heuristic prompt for manual review; screenshots cannot prove CSS hit-area size by themselves.
 
 ### Layer 3 — E2E isolation (Playwright)

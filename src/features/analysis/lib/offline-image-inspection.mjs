@@ -143,6 +143,7 @@ export function inspectImageDataPixels(
   const contrast = summarizeContrast(dominant, palette);
   const edgeDensity = totalPixels ? edgePixels / totalPixels : 0;
   const visualDensity = densityLabel(edgeDensity, layout.activeCellRatio);
+  const imageSignature = buildImageSignature(luminance, width, height);
   const designTokens = buildDesignTokens({ palette, contrast, visualDensity, layout });
   const recommendations = buildRecommendations({
     contrast,
@@ -162,6 +163,7 @@ export function inspectImageDataPixels(
     threshold,
     contrast,
     layout,
+    imageSignature,
     designTokens,
     edgeDensity: round(edgeDensity, 3),
     visualDensity,
@@ -347,6 +349,74 @@ function isThresholdForeground(gray, threshold) {
   return gray >= threshold.value;
 }
 
+function buildImageSignature(luminance, width, height) {
+  return {
+    method: "luma-a8-d8",
+    averageHash: buildAverageHash(luminance, width, height),
+    differenceHash: buildDifferenceHash(luminance, width, height),
+  };
+}
+
+function buildAverageHash(luminance, width, height) {
+  const cells = sampleLuminanceGrid(luminance, width, height, 8, 8);
+  const average = cells.reduce((sum, value) => sum + value, 0) / cells.length;
+  return bitsToHex(cells.map((value) => value >= average));
+}
+
+function buildDifferenceHash(luminance, width, height) {
+  const cells = sampleLuminanceGrid(luminance, width, height, 9, 8);
+  const bits = [];
+
+  for (let row = 0; row < 8; row += 1) {
+    for (let column = 0; column < 8; column += 1) {
+      bits.push(cells[row * 9 + column] > cells[row * 9 + column + 1]);
+    }
+  }
+
+  return bitsToHex(bits);
+}
+
+function sampleLuminanceGrid(luminance, width, height, columns, rows) {
+  const cells = [];
+
+  for (let row = 0; row < rows; row += 1) {
+    const yStart = Math.floor((row * height) / rows);
+    const yEnd = Math.max(yStart + 1, Math.floor(((row + 1) * height) / rows));
+
+    for (let column = 0; column < columns; column += 1) {
+      const xStart = Math.floor((column * width) / columns);
+      const xEnd = Math.max(xStart + 1, Math.floor(((column + 1) * width) / columns));
+      let sum = 0;
+      let count = 0;
+
+      for (let y = yStart; y < Math.min(height, yEnd); y += 1) {
+        for (let x = xStart; x < Math.min(width, xEnd); x += 1) {
+          sum += luminance[y * width + x];
+          count += 1;
+        }
+      }
+
+      cells.push(count ? sum / count : 0);
+    }
+  }
+
+  return cells;
+}
+
+function bitsToHex(bits) {
+  let output = "";
+
+  for (let index = 0; index < bits.length; index += 4) {
+    let value = 0;
+    for (let bit = 0; bit < 4; bit += 1) {
+      value = value * 2 + (bits[index + bit] ? 1 : 0);
+    }
+    output += value.toString(16);
+  }
+
+  return output;
+}
+
 function summarizeLayoutGrid(activeCells, { gridColumns, gridRows }) {
   const rowCounts = new Array(gridRows).fill(0);
   const columnCounts = new Array(gridColumns).fill(0);
@@ -413,6 +483,7 @@ function buildDesignTokens({ palette, contrast, visualDensity, layout }) {
     surface,
     foreground,
     accent: accentSwatch.hex,
+    accentForeground: readableTextFor(accentSwatch),
     muted: mutedSwatch.hex,
     border: mixHex(surface, foreground, 0.22),
     spacing:
@@ -428,6 +499,12 @@ function buildDesignTokens({ palette, contrast, visualDensity, layout }) {
           ? "lg"
           : "md",
   };
+}
+
+function readableTextFor(color) {
+  const black = { r: 0, g: 0, b: 0 };
+  const white = { r: 255, g: 255, b: 255 };
+  return contrastRatio(color, black) >= contrastRatio(color, white) ? "#000000" : "#ffffff";
 }
 
 function summarizeDetectedStructure(inspection) {
@@ -511,11 +588,13 @@ function summarizeComponentRegions(regions) {
 }
 
 function extractLayoutRegions(activeCells, gridColumns, gridRows) {
+  const remainingCells = activeCells.slice();
+  const bandRegions = extractStructuralBandRegions(remainingCells, gridColumns, gridRows);
   const visited = new Set();
-  const regions = [];
+  const regions = [...bandRegions];
 
-  for (let index = 0; index < activeCells.length; index += 1) {
-    if (!activeCells[index] || visited.has(index)) continue;
+  for (let index = 0; index < remainingCells.length; index += 1) {
+    if (!remainingCells[index] || visited.has(index)) continue;
     const queue = [index];
     visited.add(index);
     const cells = [];
@@ -524,7 +603,7 @@ function extractLayoutRegions(activeCells, gridColumns, gridRows) {
       const current = queue.shift();
       cells.push(current);
       for (const neighbor of getNeighbors(current, gridColumns, gridRows)) {
-        if (!activeCells[neighbor] || visited.has(neighbor)) continue;
+        if (!remainingCells[neighbor] || visited.has(neighbor)) continue;
         visited.add(neighbor);
         queue.push(neighbor);
       }
@@ -539,7 +618,104 @@ function extractLayoutRegions(activeCells, gridColumns, gridRows) {
   });
 }
 
-function buildRegion(cells, gridColumns, gridRows) {
+function extractStructuralBandRegions(activeCells, gridColumns, gridRows) {
+  const regions = [];
+  const topRows = collectEdgeRows(activeCells, gridColumns, gridRows, "top");
+  regions.push(...removeBandRegion(activeCells, topRows, [], gridColumns, gridRows, "header/nav"));
+
+  const bottomRows = collectEdgeRows(activeCells, gridColumns, gridRows, "bottom");
+  regions.push(...removeBandRegion(activeCells, bottomRows, [], gridColumns, gridRows, "bottom nav"));
+
+  const leftColumns = collectEdgeColumns(activeCells, gridColumns, gridRows, "left");
+  regions.push(...removeBandRegion(activeCells, [], leftColumns, gridColumns, gridRows, "side rail"));
+
+  const rightColumns = collectEdgeColumns(activeCells, gridColumns, gridRows, "right");
+  regions.push(...removeBandRegion(activeCells, [], rightColumns, gridColumns, gridRows, "side rail"));
+
+  return regions;
+}
+
+function collectEdgeRows(activeCells, gridColumns, gridRows, edge) {
+  const rows = [];
+  const edgeThreshold = Math.max(2, Math.ceil(gridColumns * 0.25));
+  const continuationThreshold = Math.max(edgeThreshold, Math.ceil(gridColumns * 0.45));
+  const rowOrder =
+    edge === "top"
+      ? Array.from({ length: gridRows }, (_, row) => row)
+      : Array.from({ length: gridRows }, (_, row) => gridRows - 1 - row);
+
+  for (const row of rowOrder) {
+    const count = longestActiveRunInRow(activeCells, row, gridColumns);
+    const threshold = rows.length ? continuationThreshold : edgeThreshold;
+    if (count < threshold) break;
+    rows.push(row);
+  }
+
+  return rows.sort((a, b) => a - b);
+}
+
+function collectEdgeColumns(activeCells, gridColumns, gridRows, edge) {
+  const columns = [];
+  const threshold = Math.max(2, Math.ceil(gridRows * 0.35));
+  const columnOrder =
+    edge === "left"
+      ? Array.from({ length: gridColumns }, (_, column) => column)
+      : Array.from({ length: gridColumns }, (_, column) => gridColumns - 1 - column);
+
+  for (const column of columnOrder) {
+    const count = countActiveInColumn(activeCells, column, gridColumns, gridRows);
+    if (count < threshold) break;
+    columns.push(column);
+  }
+
+  return columns.sort((a, b) => a - b);
+}
+
+function removeBandRegion(activeCells, rows, columns, gridColumns, gridRows, kind) {
+  if (!rows.length && !columns.length) return [];
+  const cells = [];
+  const rowSet = new Set(rows);
+  const columnSet = new Set(columns);
+
+  for (let index = 0; index < activeCells.length; index += 1) {
+    if (!activeCells[index]) continue;
+    const row = Math.floor(index / gridColumns);
+    const column = index % gridColumns;
+    if ((rowSet.size && rowSet.has(row)) || (columnSet.size && columnSet.has(column))) {
+      cells.push(index);
+      activeCells[index] = false;
+    }
+  }
+
+  return cells.length ? [buildRegion(cells, gridColumns, gridRows, kind)] : [];
+}
+
+function longestActiveRunInRow(activeCells, row, gridColumns) {
+  let longest = 0;
+  let current = 0;
+  const start = row * gridColumns;
+
+  for (let column = 0; column < gridColumns; column += 1) {
+    if (activeCells[start + column]) {
+      current += 1;
+      longest = Math.max(longest, current);
+    } else {
+      current = 0;
+    }
+  }
+
+  return longest;
+}
+
+function countActiveInColumn(activeCells, column, gridColumns, gridRows) {
+  let count = 0;
+  for (let row = 0; row < gridRows; row += 1) {
+    if (activeCells[row * gridColumns + column]) count += 1;
+  }
+  return count;
+}
+
+function buildRegion(cells, gridColumns, gridRows, forcedKind) {
   const rows = cells.map((index) => Math.floor(index / gridColumns));
   const columns = cells.map((index) => index % gridColumns);
   const minRow = Math.min(...rows);
@@ -551,17 +727,19 @@ function buildRegion(cells, gridColumns, gridRows) {
   const cellCount = cells.length;
 
   return {
-    kind: classifyRegion({
-      minRow,
-      maxRow,
-      minColumn,
-      maxColumn,
-      widthCells,
-      heightCells,
-      cellCount,
-      gridColumns,
-      gridRows,
-    }),
+    kind:
+      forcedKind ??
+      classifyRegion({
+        minRow,
+        maxRow,
+        minColumn,
+        maxColumn,
+        widthCells,
+        heightCells,
+        cellCount,
+        gridColumns,
+        gridRows,
+      }),
     cells: cellCount,
     minRow,
     maxRow,
