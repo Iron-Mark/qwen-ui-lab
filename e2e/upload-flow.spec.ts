@@ -62,3 +62,21 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
     timeout: 5_000,
   });
 });
+
+test("oversized uploads are rejected before analysis", async ({ page }) => {
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "oversized-dashboard.png",
+    mimeType: "image/png",
+    buffer: Buffer.alloc(4 * 1024 * 1024 + 1),
+  });
+
+  await expect(page.getByText(/Upload an image up to 4 MB/i)).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: /analyze & generate preview|generate preview|regenerate preview/i,
+    }),
+  ).toBeDisabled();
+});

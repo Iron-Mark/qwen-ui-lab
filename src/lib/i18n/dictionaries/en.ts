@@ -169,6 +169,8 @@ export const en = {
     fileUnknownType: "unknown type",
     fileReady: "ready",
     errorInvalidImage: "Upload an image file: PNG, JPG, SVG, or WebP.",
+    errorImageTooLarge:
+      "Upload an image up to {maxSize}. Larger files can freeze the browser before preprocessing.",
     errorNoImage: "Choose an image before running analysis.",
     errorSampleLoad:
       "Could not load the sample screenshot. Upload your own image instead.",
