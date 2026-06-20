@@ -1,4 +1,5 @@
 import { inspectCanvas } from "./offline-image-inspection.mjs";
+import { inspectSvgDataUrl } from "./offline-svg-inspection.mjs";
 
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
@@ -19,6 +20,7 @@ const TARGET_MAX_BYTES = 900_000;
  *   height: number | null;
  *   compressed: boolean;
  *   offlineInspection?: ReturnType<typeof inspectCanvas> | null;
+ *   svgInspection?: ReturnType<typeof inspectSvgDataUrl> | null;
  * }>}
  */
 export async function preprocessImageDataUrl(
@@ -29,13 +31,16 @@ export async function preprocessImageDataUrl(
     targetMaxBytes = TARGET_MAX_BYTES,
   } = {},
 ) {
+  const svgInspection = inspectSvgDataUrl(dataUrl);
+
   if (typeof document === "undefined" || !dataUrl.startsWith("data:image/")) {
     return {
       dataUrl,
-      width: null,
-      height: null,
+      width: svgInspection?.source.width ?? null,
+      height: svgInspection?.source.height ?? null,
       compressed: false,
       offlineInspection: null,
+      svgInspection,
     };
   }
 
@@ -58,6 +63,7 @@ export async function preprocessImageDataUrl(
         height: image.naturalHeight,
         compressed: false,
         offlineInspection: null,
+        svgInspection,
       };
     }
 
@@ -77,15 +83,19 @@ export async function preprocessImageDataUrl(
       width,
       height,
       compressed: output !== dataUrl,
-      offlineInspection,
+      offlineInspection: offlineInspection
+        ? { ...offlineInspection, svgInspection }
+        : null,
+      svgInspection,
     };
   } catch {
     return {
       dataUrl,
-      width: null,
-      height: null,
+      width: svgInspection?.source.width ?? null,
+      height: svgInspection?.source.height ?? null,
       compressed: false,
       offlineInspection: null,
+      svgInspection,
     };
   }
 }

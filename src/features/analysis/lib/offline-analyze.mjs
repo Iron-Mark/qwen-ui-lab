@@ -2,6 +2,10 @@ import {
   buildImageInspectionPlanSections,
   buildImageInspectionPreviewStats,
 } from "./offline-image-inspection.mjs";
+import {
+  buildSvgInspectionPlanSections,
+  buildSvgInspectionPreviewStats,
+} from "./offline-svg-inspection.mjs";
 
 /**
  * Advanced deterministic offline analysis — no AI, no network.
@@ -503,6 +507,90 @@ const MIME_ARCHETYPE_HINTS = {
   "image/webp": {},
 };
 
+const KNOWN_SAMPLE_SIGNATURES = {
+  dashboard: {
+    sampleKey: "dashboard-reference.svg",
+    averageHash: "3f15577169373fff",
+    differenceHash: "014529181c99beb1",
+  },
+  auth: {
+    sampleKey: "auth-reference.svg",
+    averageHash: "ffe7efffc3e7ffff",
+    differenceHash: "2054546470705c4c",
+  },
+  mobile: {
+    sampleKey: "mobile-reference.svg",
+    averageHash: "3f8f0f0ffffffcbd",
+    differenceHash: "83c1c1c961010696",
+  },
+  landing: {
+    sampleKey: "landing-reference.svg",
+    averageHash: "fec3c3ef2bffe7e7",
+    differenceHash: "237060a4a4e8f0f0",
+  },
+  settings: {
+    sampleKey: "settings-reference.svg",
+    averageHash: "001f1fdfdedeff7c",
+    differenceHash: "80c1414143434103",
+  },
+  ecommerce: {
+    sampleKey: "ecommerce-reference.svg",
+    averageHash: "7c5f408181c0edff",
+    differenceHash: "474656cacad6cae9",
+  },
+};
+
+const KNOWN_SIGNATURE_MAX_DISTANCE = 12;
+const HEX_BIT_COUNTS = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
+
+const GENERATED_COMPONENT_NAMES = {
+  auth: "GeneratedAuthScreen",
+  dashboard: "GeneratedDashboard",
+  ecommerce: "GeneratedCatalog",
+  landing: "GeneratedLanding",
+  mobile: "GeneratedMobileShell",
+  settings: "GeneratedSettings",
+};
+
+const GENERATED_REGION_TONES = {
+  "bottom nav": "accent",
+  "content panel": "muted",
+  "control cluster": "surface",
+  "header/nav": "accent",
+  "media/chart": "muted",
+  "side rail": "accent",
+  "text/list": "surface",
+};
+
+const GENERATED_REGION_GUIDANCE = {
+  "bottom nav": "Persistent mobile navigation or action shortcuts.",
+  "content panel": "Primary content container with clear heading hierarchy.",
+  "control cluster": "Grouped actions with explicit labels and large targets.",
+  "header/nav": "Top-level navigation, page title, or primary toolbar.",
+  "media/chart": "Visual content area, metric chart, or media preview.",
+  "side rail": "Secondary navigation, filters, or section index.",
+  "text/list": "Readable list, feed, or supporting copy region.",
+};
+
+const GENERATED_REGION_ROLES = {
+  "bottom nav": "navigation",
+  "control cluster": "group",
+  "header/nav": "banner",
+  "side rail": "navigation",
+};
+
+const TOKEN_SPACING_VALUES = {
+  compact: "0.75rem",
+  cozy: "1rem",
+  comfortable: "1.25rem",
+};
+
+const TOKEN_RADIUS_VALUES = {
+  sm: "0.375rem",
+  md: "0.5rem",
+  lg: "0.75rem",
+};
+
 /**
  * @param {string} fileName
  */
@@ -520,6 +608,55 @@ export function lookupKnownSample(fileName) {
   if (KNOWN_SAMPLES[key]) return KNOWN_SAMPLES[key];
   const stemKey = key.replace(/\.(png|jpe?g|webp)$/i, ".svg");
   return KNOWN_SAMPLES[stemKey] ?? null;
+}
+
+/**
+ * @param {ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null | undefined} inspection
+ * @returns {typeof KNOWN_SAMPLES[string] | null}
+ */
+export function lookupKnownSampleByInspection(inspection) {
+  const signature = inspection?.imageSignature;
+  if (!signature?.averageHash || !signature?.differenceHash) return null;
+  if (signature.method && signature.method !== "luma-a8-d8") return null;
+
+  let bestMatch = null;
+  for (const known of Object.values(KNOWN_SAMPLE_SIGNATURES)) {
+    const averageDistance = hammingDistance(signature.averageHash, known.averageHash);
+    const differenceDistance = hammingDistance(
+      signature.differenceHash,
+      known.differenceHash,
+    );
+    const distance = averageDistance + differenceDistance;
+
+    if (!bestMatch || distance < bestMatch.distance) {
+      bestMatch = { sampleKey: known.sampleKey, distance };
+    }
+  }
+
+  if (!bestMatch || bestMatch.distance > KNOWN_SIGNATURE_MAX_DISTANCE) {
+    return null;
+  }
+
+  return KNOWN_SAMPLES[bestMatch.sampleKey] ?? null;
+}
+
+function hammingDistance(first, second) {
+  const left = String(first || "");
+  const right = String(second || "");
+  const length = Math.min(left.length, right.length);
+  let distance = Math.abs(left.length - right.length) * 4;
+
+  for (let index = 0; index < length; index += 1) {
+    const leftNibble = Number.parseInt(left[index], 16);
+    const rightNibble = Number.parseInt(right[index], 16);
+    if (!Number.isFinite(leftNibble) || !Number.isFinite(rightNibble)) {
+      distance += 4;
+    } else {
+      distance += HEX_BIT_COUNTS[leftNibble ^ rightNibble];
+    }
+  }
+
+  return distance;
 }
 
 /**
@@ -549,10 +686,17 @@ export function inferFormFactor(width, height) {
  *   width?: number | null;
  *   height?: number | null;
  *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ *   svgInspection?: ReturnType<import("./offline-svg-inspection.mjs").inspectSvgMarkup> | null;
  * }} file
  */
 export function classifyLayoutArchetype(file) {
-  const haystack = normalizeSampleKey(file.name).replace(/\.[a-z0-9]+$/i, "");
+  const svgInspection = resolveSvgInspection(file);
+  const haystack = [
+    normalizeSampleKey(file.name).replace(/\.[a-z0-9]+$/i, ""),
+    ...(svgInspection?.labels ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
   const scores = /** @type {Record<string, number>} */ ({});
 
   for (const [id, archetype] of Object.entries(LAYOUT_ARCHETYPES)) {
@@ -569,6 +713,10 @@ export function classifyLayoutArchetype(file) {
   const mimeHints = MIME_ARCHETYPE_HINTS[file.type || ""] ?? {};
   for (const [archetypeId, boost] of Object.entries(mimeHints)) {
     scores[archetypeId] = (scores[archetypeId] ?? 0) + boost;
+  }
+
+  for (const hint of svgInspection?.archetypeHints ?? []) {
+    scores[hint.id] = (scores[hint.id] ?? 0) + Math.min(3, hint.score);
   }
 
   const inspection = file.offlineInspection;
@@ -617,9 +765,18 @@ export function classifyLayoutArchetype(file) {
 /**
  * @param {string} fileName
  * @param {typeof LAYOUT_ARCHETYPES.dashboard} archetype
+ * @param {ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null | undefined} inspection
+ * @param {ReturnType<import("./offline-svg-inspection.mjs").inspectSvgMarkup> | null | undefined} svgInspection
  */
-function buildGeneratedCode(fileName, archetype) {
-  const safeName = fileName.replace(/"/g, '\\"');
+function buildGeneratedCode(fileName, archetype, inspection, svgInspection) {
+  const safeName = escapeGeneratedString(fileName);
+  if (inspection) {
+    return buildSignalAwareGeneratedCode(safeName, archetype, inspection);
+  }
+  if (svgInspection) {
+    return buildSvgAwareGeneratedCode(safeName, archetype, svgInspection);
+  }
+
   switch (archetype.codeVariant) {
     case "auth":
       return `import { Button } from "@/components/ui/button";
@@ -692,6 +849,237 @@ export function GeneratedDashboard() {
   }
 }
 
+function buildSvgAwareGeneratedCode(safeName, archetype, svgInspection) {
+  const componentName =
+    GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
+  const labels = buildGeneratedSvgLabelBlueprint(svgInspection, archetype);
+  const stats = buildGeneratedSvgStats(svgInspection);
+  const layoutClass =
+    svgInspection.source.width && svgInspection.source.height && svgInspection.source.width < svgInspection.source.height
+      ? "mx-auto flex min-h-dvh max-w-md flex-col gap-4 p-4"
+      : "grid gap-4 p-6 lg:grid-cols-[16rem_1fr]";
+
+  return `const svgLabels = ${JSON.stringify(labels, null, 2)};
+
+const svgStructure = ${JSON.stringify(stats, null, 2)};
+
+export function ${componentName}() {
+  return (
+    <section aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}" className="space-y-4">
+      <header className="space-y-1">
+        <p className="text-xs font-medium uppercase">Local SVG scaffold</p>
+        <h1 className="text-xl font-semibold">{svgLabels[0]?.label ?? "${archetype.label}"}</h1>
+        <p className="text-sm text-muted-foreground">
+          {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
+          {svgStructure.textCount} labels were parsed locally.
+        </p>
+      </header>
+
+      <div className="${layoutClass}">
+        <nav aria-label="SVG labels" className="space-y-2 rounded-md border p-3">
+          {svgLabels.slice(0, 6).map((item) => (
+            <a key={item.id} className="block text-sm font-medium" href={"#" + item.id}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <main className="grid gap-3">
+          {svgLabels.map((item) => (
+            <section key={item.id} id={item.id} className="rounded-md border p-4">
+              <p className="text-xs font-medium uppercase">{item.intent}</p>
+              <h2 className="mt-2 font-semibold">{item.label}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{item.guidance}</p>
+            </section>
+          ))}
+        </main>
+      </div>
+    </section>
+  );
+}`;
+}
+
+function buildGeneratedSvgLabelBlueprint(svgInspection, archetype) {
+  const labels = svgInspection.labels.length
+    ? svgInspection.labels
+    : [archetype.label, ...archetype.components.slice(0, 4)];
+
+  return labels.slice(0, 10).map((label, index) => ({
+    id: `svg-section-${index + 1}`,
+    label,
+    intent: classifySvgLabelIntent(label),
+    guidance: svgGuidanceForLabel(label, archetype),
+  }));
+}
+
+function buildGeneratedSvgStats(svgInspection) {
+  return {
+    viewBox: svgInspection.source.viewBox?.length
+      ? svgInspection.source.viewBox.join(" ")
+      : "not provided",
+    width: svgInspection.source.width,
+    height: svgInspection.source.height,
+    shapeCount: svgInspection.shapeCount,
+    groupCount: svgInspection.groupCount,
+    textCount: svgInspection.labels.length,
+    complexity: svgInspection.complexity,
+  };
+}
+
+function classifySvgLabelIntent(label) {
+  const value = String(label || "").toLowerCase();
+  if (/email|password|name|search|filter|price|billing/.test(value)) return "field";
+  if (/continue|save|submit|checkout|start|get started|sign in|login/.test(value)) return "action";
+  if (/dashboard|settings|profile|analytics|features|pricing|catalog/.test(value)) return "section";
+  return "content";
+}
+
+function svgGuidanceForLabel(label, archetype) {
+  const intent = classifySvgLabelIntent(label);
+  if (intent === "field") {
+    return "Render as a labeled form control with helper text and aria-describedby for validation.";
+  }
+  if (intent === "action") {
+    return "Render as a primary or secondary action with a descriptive accessible name.";
+  }
+  if (intent === "section") {
+    return "Render as a semantic region heading and preserve the source SVG hierarchy.";
+  }
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} scaffold.`;
+}
+
+function buildSignalAwareGeneratedCode(safeName, archetype, inspection) {
+  const componentName =
+    GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
+  const tokens = buildGeneratedTokenBlueprint(inspection.designTokens);
+  const regions = buildGeneratedRegionBlueprint(inspection, archetype);
+  const gridRows = Math.max(1, inspection.layout.gridRows);
+  const gridColumns = Math.max(1, inspection.layout.gridColumns);
+
+  return `const designTokens = ${JSON.stringify(tokens, null, 2)};
+
+const layoutRegions = ${JSON.stringify(regions, null, 2)};
+
+export function ${componentName}() {
+  return (
+    <section
+      aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
+      className="space-y-4"
+      style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
+    >
+      <header className="space-y-1">
+        <p className="text-xs font-medium uppercase">Local screenshot scaffold</p>
+        <h1 className="text-xl font-semibold">${archetype.label}</h1>
+      </header>
+
+      <div
+        className="grid min-h-[34rem] overflow-hidden border"
+        style={{
+          borderColor: designTokens.border,
+          borderRadius: designTokens.radius,
+          gap: designTokens.space,
+          gridTemplateColumns: "repeat(${gridColumns}, minmax(0, 1fr))",
+          gridTemplateRows: "repeat(${gridRows}, minmax(3rem, auto))",
+          padding: designTokens.space,
+        }}
+      >
+        {layoutRegions.map((region) => (
+          <article
+            key={region.id}
+            aria-label={region.label}
+            role={region.role}
+            className="border text-sm shadow-sm"
+            style={{
+              backgroundColor:
+                region.tone === "accent" ? designTokens.accent : designTokens[region.tone],
+              borderColor: designTokens.border,
+              borderRadius: designTokens.radius,
+              color:
+                region.tone === "accent"
+                  ? designTokens.accentForeground
+                  : designTokens.foreground,
+              gridColumn: region.gridColumn,
+              gridRow: region.gridRow,
+              padding: designTokens.space,
+            }}
+          >
+            <p className="text-xs font-medium uppercase">{region.kind}</p>
+            <h2 className="mt-2 font-semibold">{region.label}</h2>
+            <p className="mt-1 text-xs opacity-80">{region.guidance}</p>
+            <p className="mt-3 text-[11px] opacity-70">{region.meta}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}`;
+}
+
+function buildGeneratedTokenBlueprint(designTokens) {
+  return {
+    surface: designTokens.surface,
+    foreground: designTokens.foreground,
+    accent: designTokens.accent,
+    accentForeground: designTokens.accentForeground ?? designTokens.foreground,
+    muted: designTokens.muted,
+    border: designTokens.border,
+    space: TOKEN_SPACING_VALUES[designTokens.spacing] ?? TOKEN_SPACING_VALUES.cozy,
+    radius: TOKEN_RADIUS_VALUES[designTokens.radius] ?? TOKEN_RADIUS_VALUES.md,
+  };
+}
+
+function buildGeneratedRegionBlueprint(inspection, archetype) {
+  const regions = inspection.layout.regions.slice(0, 8);
+  const sourceRegions = regions.length
+    ? regions
+    : [
+        {
+          kind: "content panel",
+          minColumn: 0,
+          maxColumn: inspection.layout.gridColumns - 1,
+          minRow: 0,
+          maxRow: Math.max(0, Math.min(inspection.layout.gridRows - 1, 3)),
+          widthCells: inspection.layout.gridColumns,
+          heightCells: Math.max(1, Math.min(inspection.layout.gridRows, 4)),
+        },
+      ];
+
+  return sourceRegions.map((region, index) => {
+    const kind = region.kind || "content panel";
+    const rowStart = region.minRow + 1;
+    const columnStart = region.minColumn + 1;
+    const rowSpan = Math.max(1, region.heightCells || region.maxRow - region.minRow + 1);
+    const columnSpan = Math.max(1, region.widthCells || region.maxColumn - region.minColumn + 1);
+
+    return {
+      id: `region-${index + 1}`,
+      kind,
+      label: `${titleCase(kind)} ${index + 1}`,
+      role: GENERATED_REGION_ROLES[kind] ?? "region",
+      tone: GENERATED_REGION_TONES[kind] ?? "muted",
+      guidance: GENERATED_REGION_GUIDANCE[kind] ?? archetype.layout,
+      meta: `Rows ${region.minRow + 1}-${region.maxRow + 1}, columns ${
+        region.minColumn + 1
+      }-${region.maxColumn + 1}`,
+      gridColumn: `${columnStart} / span ${columnSpan}`,
+      gridRow: `${rowStart} / span ${rowSpan}`,
+    };
+  });
+}
+
+function titleCase(value) {
+  return String(value)
+    .split(/[\s/-]+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+}
+
+function escapeGeneratedString(value) {
+  return String(value || "uploaded-reference")
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
+}
+
 /**
  * Advanced offline overrides when no known sample matches.
  * @param {{
@@ -701,6 +1089,7 @@ export function GeneratedDashboard() {
  *   width?: number | null;
  *   height?: number | null;
  *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ *   svgInspection?: ReturnType<import("./offline-svg-inspection.mjs").inspectSvgMarkup> | null;
  * }} file
  * @param {{ readableSize: string; dimensionLine: string | null }} context
  */
@@ -708,7 +1097,11 @@ export function buildAdvancedOfflineOverrides(file, context) {
   const fileName = file.name || "uploaded-reference";
   const { archetype, confidence, formFactor } = classifyLayoutArchetype(file);
   const componentList = archetype.components.join(", ");
-  const inspectionSections = buildImageInspectionPlanSections(file.offlineInspection);
+  const svgInspection = resolveSvgInspection(file);
+  const inspectionSections = [
+    ...buildImageInspectionPlanSections(file.offlineInspection),
+    ...buildSvgInspectionPlanSections(svgInspection),
+  ];
 
   /** @type {PlanSection[]} */
   const plan = [
@@ -745,9 +1138,11 @@ export function buildAdvancedOfflineOverrides(file, context) {
 
   const stats = archetype.stats;
   const inspectionStats = buildImageInspectionPreviewStats(file.offlineInspection);
+  const svgStats = buildSvgInspectionPreviewStats(svgInspection);
   /** @type {PreviewStat[]} */
   const previewStats =
-    inspectionStats ?? [
+    inspectionStats ??
+    svgStats ?? [
       { label: "Sections", value: String(stats.sections) },
       { label: "Components", value: String(stats.components) },
       { label: "Breakpoints", value: String(stats.breakpoints) },
@@ -757,11 +1152,36 @@ export function buildAdvancedOfflineOverrides(file, context) {
   return {
     plan,
     previewStats,
-    generatedCode: buildGeneratedCode(fileName, archetype),
-    summary: `${archetype.label} scaffold (${Math.round(confidence * 100)}% confidence, ${formFactor.label})${
-      file.offlineInspection
-        ? ` with local pixel signals (${file.offlineInspection.visualDensity} density).`
-        : "."
-    }`,
+    generatedCode: buildGeneratedCode(
+      fileName,
+      archetype,
+      file.offlineInspection,
+      svgInspection,
+    ),
+    summary: buildOfflineSummary({
+      archetype,
+      confidence,
+      formFactor,
+      offlineInspection: file.offlineInspection,
+      svgInspection,
+    }),
   };
+}
+
+function resolveSvgInspection(file) {
+  return file.svgInspection ?? file.offlineInspection?.svgInspection ?? null;
+}
+
+function buildOfflineSummary({ archetype, confidence, formFactor, offlineInspection, svgInspection }) {
+  const details = [];
+  if (offlineInspection) {
+    details.push(`local pixel signals (${offlineInspection.visualDensity} density)`);
+  }
+  if (svgInspection) {
+    details.push(`local SVG structure (${svgInspection.labels.length} labels)`);
+  }
+
+  return `${archetype.label} scaffold (${Math.round(confidence * 100)}% confidence, ${
+    formFactor.label
+  })${details.length ? ` with ${details.join(" and ")}.` : "."}`;
 }

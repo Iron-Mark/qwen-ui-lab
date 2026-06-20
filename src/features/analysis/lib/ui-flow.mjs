@@ -1,6 +1,7 @@
 import {
   buildAdvancedOfflineOverrides,
   lookupKnownSample,
+  lookupKnownSampleByInspection,
 } from "./offline-analyze.mjs";
 
 const workflowSteps = [
@@ -41,6 +42,7 @@ function dimensionHint(width, height) {
  *   width?: number | null;
  *   height?: number | null;
  *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ *   svgInspection?: ReturnType<import("./offline-svg-inspection.mjs").inspectSvgMarkup> | null;
  * }} file
  * @param {Record<string, unknown>} overrides
  */
@@ -56,6 +58,16 @@ function resolveOfflineContent(file, overrides) {
       previewStats: known.previewStats,
       generatedCode: known.generatedCode,
       summary: known.summary ?? "",
+    };
+  }
+
+  const visualKnown = lookupKnownSampleByInspection(file.offlineInspection);
+  if (visualKnown) {
+    return {
+      plan: visualKnown.plan,
+      previewStats: visualKnown.previewStats,
+      generatedCode: visualKnown.generatedCode,
+      summary: visualKnown.summary ?? "",
     };
   }
 
