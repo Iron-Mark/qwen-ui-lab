@@ -42,7 +42,7 @@ For a staging activation checklist and dashboard setup, see `docs/ops/ANALYTICS_
 ### Upload + Analyze Funnel (`/`)
 
 - `upload.selected` — user selected a valid image.
-- `upload.rejected` — invalid file type was rejected.
+- `upload.rejected` — invalid file type, empty file, or oversized file was rejected before analysis.
 - `upload.sample_loaded` — sample screenshot was loaded.
 - `analysis.started` — analyze request flow started.
 - `analysis.completed` — analyze finished (Qwen or demo path).

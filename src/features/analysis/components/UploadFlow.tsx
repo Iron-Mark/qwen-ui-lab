@@ -53,6 +53,11 @@ import {
 } from "@/features/analysis/lib/demo-archetypes.mjs";
 import { getReferenceSampleByFileName } from "@/features/analysis/lib/reference-samples.mjs";
 import {
+  formatUploadSize,
+  MAX_UPLOAD_BYTES,
+  validateUploadImageFile,
+} from "@/features/analysis/lib/upload-constraints.mjs";
+import {
   buildShareableSummary,
   buildShareUrl,
   createShortShareLink,
@@ -397,11 +402,22 @@ export function UploadFlow({
     if (source === "dropzone") {
       setUserUploadedOwn(true);
     }
-    if (!nextFile.type.startsWith("image/")) {
-      setError(t.errorInvalidImage);
+
+    const validation = validateUploadImageFile(nextFile);
+    if (!validation.ok) {
+      const message =
+        validation.reason === "size"
+          ? interpolate(t.errorImageTooLarge, {
+              maxSize: formatUploadSize(validation.maxBytes ?? MAX_UPLOAD_BYTES),
+            })
+          : t.errorInvalidImage;
+      setError(message);
       analytics.track(AnalyticsEvent.UploadRejected, {
         source: "upload_dropzone",
         fileType: nextFile.type || "unknown",
+        fileSize: nextFile.size,
+        status: "rejected",
+        result: validation.reason,
       });
       if (previewUrlRef.current) {
         URL.revokeObjectURL(previewUrlRef.current);

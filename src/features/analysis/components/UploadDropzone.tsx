@@ -4,6 +4,7 @@ import type { RefObject } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { UPLOAD_ACCEPT_ATTRIBUTE } from "@/features/analysis/lib/upload-constraints.mjs";
 
 interface UploadDropzoneProps {
   previewUrl?: string | null;
@@ -22,8 +23,6 @@ export function UploadDropzone({
   className,
   inputRef,
 }: UploadDropzoneProps) {
-  const accept = "image/png,image/jpeg,image/svg+xml,image/webp";
-
   return (
     <div
       onDragOver={(event) => event.preventDefault()}
@@ -38,7 +37,7 @@ export function UploadDropzone({
       <input
         ref={inputRef}
         type="file"
-        accept={accept}
+        accept={UPLOAD_ACCEPT_ATTRIBUTE}
         aria-label="Upload UI screenshot"
         className="sr-only upload-dropzone-input"
         disabled={disabled}

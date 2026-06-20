@@ -164,6 +164,8 @@ export const zh = {
     fileUnknownType: "未知类型",
     fileReady: "就绪",
     errorInvalidImage: "请上传图片文件：PNG、JPG、SVG 或 WebP。",
+    errorImageTooLarge:
+      "请上传不超过 {maxSize} 的图片。更大的文件可能在预处理前使浏览器卡顿。",
     errorNoImage: "运行分析前请先选择图片。",
     errorSampleLoad: "无法加载样例截图，请改用自己的图片。",
     tryBundledReference: "试用内置参考图",

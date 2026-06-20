@@ -18,12 +18,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -40,6 +40,6 @@ jobs:
 
   # E2E and visual regression omitted from the required PR gate — Playwright + prod server
   # adds several minutes and snapshot diffs are noisy on feature branches.
-  # Optional warn-only E2E smoke: pr-e2e-smoke.yml (mobile + a11y + live-qwen-contract).
+  # Optional warn-only E2E smoke: pr-e2e-smoke.yml (mobile + a11y + live-qwen-contract + upload-flow).
   # Main push runs visual-regression (hard fail) and strict production LCP in ci.yml;
   # full E2E runs nightly (e2e-nightly.yml) and via workflow_dispatch.

@@ -2,13 +2,22 @@ import {
   checkAnalyzeUiRateLimit,
   getRequestClientIp,
 } from "@/features/analysis/lib/analyze-ui-rate-limit.mjs";
+import {
+  normalizeAnalyzeRequestBody,
+  validateAnalyzeContentLength,
+} from "@/features/analysis/lib/analyze-request-validation.mjs";
 import { analyzeUiImageWithQwen, canUseLiveQwen } from "@/features/analysis/lib/qwen-analyze.mjs";
 
 export const runtime = "nodejs";
 
-const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
-
 export async function POST(request: Request) {
+  const contentLength = validateAnalyzeContentLength(
+    request.headers.get("content-length"),
+  );
+  if (!contentLength.ok) {
+    return Response.json(contentLength, { status: contentLength.status });
+  }
+
   if (canUseLiveQwen()) {
     const rate = await checkAnalyzeUiRateLimit({
       clientKey: getRequestClientIp(request),
@@ -43,10 +52,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const payload = normalizeRequestBody(body);
+  const payload = normalizeAnalyzeRequestBody(body);
 
   if (!payload.ok) {
-    return Response.json(payload, { status: 400 });
+    return Response.json(payload, { status: payload.status });
   }
 
   let result;
@@ -73,80 +82,4 @@ export async function POST(request: Request) {
   }
 
   return Response.json(result);
-}
-
-function normalizeRequestBody(body: unknown):
-  | {
-      ok: true;
-      data: {
-        imageDataUrl: string;
-        fileName: string;
-        fileType: string;
-        fileSize: number;
-      };
-    }
-  | { ok: false; code: string; message: string } {
-  if (!body || typeof body !== "object") {
-    return {
-      ok: false,
-      code: "invalid_body",
-      message: "Request body must be an object.",
-    };
-  }
-
-  const record = body as Record<string, unknown>;
-  const imageDataUrl = record.imageDataUrl;
-  const fileName = record.fileName;
-  const fileType = record.fileType;
-  const fileSize = record.fileSize;
-
-  if (
-    typeof imageDataUrl !== "string" ||
-    !imageDataUrl.startsWith("data:image/")
-  ) {
-    return {
-      ok: false,
-      code: "invalid_image",
-      message: "imageDataUrl must be an image data URL.",
-    };
-  }
-
-  if (typeof fileName !== "string" || fileName.length === 0) {
-    return {
-      ok: false,
-      code: "invalid_file_name",
-      message: "fileName is required.",
-    };
-  }
-
-  if (typeof fileType !== "string" || !fileType.startsWith("image/")) {
-    return {
-      ok: false,
-      code: "invalid_file_type",
-      message: "fileType must be an image MIME type.",
-    };
-  }
-
-  if (
-    typeof fileSize !== "number" ||
-    !Number.isFinite(fileSize) ||
-    fileSize <= 0 ||
-    fileSize > MAX_IMAGE_BYTES
-  ) {
-    return {
-      ok: false,
-      code: "invalid_file_size",
-      message: "fileSize must be between 1 byte and 4 MB.",
-    };
-  }
-
-  return {
-    ok: true,
-    data: {
-      imageDataUrl,
-      fileName,
-      fileType,
-      fileSize,
-    },
-  };
 }

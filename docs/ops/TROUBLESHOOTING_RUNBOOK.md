@@ -63,7 +63,7 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 3. Confirm request payload limits:
    - image data URL present
    - image MIME type
-   - file size <= 4 MB
+   - file size <= 4 MB (larger files are rejected in the browser before analysis starts)
 4. Retry with a smaller image to avoid payload pressure.
 5. Use demo mode for presentation continuity while investigating.
 6. For **429 rate_limit_exceeded**: wait for `Retry-After` seconds or raise `ANALYZE_UI_RATE_LIMIT_MAX` on Preview only (see `docs/ops/LIVE_QWEN_ROLLOUT.md`). Demo mode is never rate-limited on this route.

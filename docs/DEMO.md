@@ -83,7 +83,7 @@ Shorter variant when you start on `/` instead of `/demo`:
 | `/demo` stuck on "Analyzing…" | Provider mode loading or network hiccup on health check | Refresh; confirm header shows **Demo mode**; check `GET /api/health` → `liveAnalysisEnabled: false` |
 | Wrong layout after changing archetype | Browser cache or stale tab | Full navigation to new URL (don't rely on back); e.g. `/demo?archetype=shop` |
 | **Live Qwen** badge on a meetup host | `QWEN_LIVE_ANALYSIS=true` on Vercel | Unset flag on public project; redeploy; see [docs/ops/LIVE_QWEN_ROLLOUT.md](./ops/LIVE_QWEN_ROLLOUT.md) |
-| Analyze waits then errors (live mode) | Quota, network, or oversized image | Switch story to demo mode; use `/demo`; image ≤ 4 MB |
+| Analyze waits then errors (live mode) | Quota or network issue | Switch story to demo mode; use `/demo`; images above 4 MB are rejected before analysis |
 | Clipboard **Copy all code** fails | Locked-down browser / HTTP context | Use **Download .tsx code** instead |
 | Demo snackbar missing | Already dismissed this session | Clear site data or use incognito; snackbar is once-per-session |
 | `npm run dev` won't start | Port 3000 in use or deps missing | `npm install`; kill port 3000 or `PORT=3001 npm run dev` |
