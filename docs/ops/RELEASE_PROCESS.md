@@ -4,7 +4,7 @@ This project uses lightweight semantic versioning guidance with manual release a
 
 ## Versioning model
 
-Current baseline is `0.1.0` in `package.json`.
+The current package baseline is tracked in `package.json`.
 
 Until `1.0.0`, use:
 

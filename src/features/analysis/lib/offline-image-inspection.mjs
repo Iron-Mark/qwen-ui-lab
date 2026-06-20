@@ -59,6 +59,8 @@ export function inspectImageDataPixels(
   }
 
   const luminance = new Float32Array(totalPixels);
+  const grayscale = new Uint8Array(totalPixels);
+  const histogram = new Array(256).fill(0);
   const paletteBuckets = new Map();
   let opaquePixels = 0;
 
@@ -72,7 +74,11 @@ export function inspectImageDataPixels(
       g: image.data[offset + 1],
       b: image.data[offset + 2],
     };
-    luminance[index] = relativeLuminance(color);
+    const pixelLuminance = relativeLuminance(color);
+    const gray = Math.round(pixelLuminance * 255);
+    luminance[index] = pixelLuminance;
+    grayscale[index] = gray;
+    histogram[gray] += 1;
     opaquePixels += 1;
 
     const bucket = quantizeColor(color);
@@ -84,6 +90,7 @@ export function inspectImageDataPixels(
 
   const palette = buildPalette(paletteBuckets, Math.max(1, opaquePixels));
   const dominant = palette[0] ?? { hex: "#ffffff", r: 255, g: 255, b: 255, percentage: 1 };
+  const threshold = summarizeThreshold(histogram, opaquePixels, dominant);
   const cellCount = gridColumns * gridRows;
   const cellPixels = new Array(cellCount).fill(0);
   const cellInk = new Array(cellCount).fill(0);
@@ -106,6 +113,8 @@ export function inspectImageDataPixels(
         b: image.data[offset + 2],
       };
       if (colorDistance(color, dominant) > BACKGROUND_DISTANCE_THRESHOLD) {
+        cellInk[cellIndex] += 1;
+      } else if (isThresholdForeground(grayscale[index], threshold)) {
         cellInk[cellIndex] += 1;
       }
 
@@ -134,10 +143,12 @@ export function inspectImageDataPixels(
   const contrast = summarizeContrast(dominant, palette);
   const edgeDensity = totalPixels ? edgePixels / totalPixels : 0;
   const visualDensity = densityLabel(edgeDensity, layout.activeCellRatio);
+  const designTokens = buildDesignTokens({ palette, contrast, visualDensity, layout });
   const recommendations = buildRecommendations({
     contrast,
     layout,
     visualDensity,
+    designTokens,
   });
 
   return {
@@ -148,8 +159,10 @@ export function inspectImageDataPixels(
       sourceHeight: image.sourceHeight ?? height,
     },
     palette,
+    threshold,
     contrast,
     layout,
+    designTokens,
     edgeDensity: round(edgeDensity, 3),
     visualDensity,
     recommendations,
@@ -189,6 +202,18 @@ export function buildImageInspectionPlanSections(inspection) {
         .join(" "),
     },
     {
+      title: "Detected Structure",
+      body: summarizeDetectedStructure(inspection),
+    },
+    {
+      title: "Design Tokens",
+      body: [
+        `Use ${inspection.designTokens.surface} as the main surface and ${inspection.designTokens.foreground} for readable foreground text.`,
+        `Accent candidate: ${inspection.designTokens.accent}; muted surface: ${inspection.designTokens.muted}.`,
+        `Suggested spacing is ${inspection.designTokens.spacing} with ${inspection.designTokens.radius} radius.`,
+      ].join(" "),
+    },
+    {
       title: "Local Quality Checks",
       body: inspection.recommendations.join(" "),
     },
@@ -202,13 +227,10 @@ export function buildImageInspectionPreviewStats(inspection) {
   if (!inspection) return null;
 
   return [
-    { label: "Palette", value: `${inspection.palette.length} colors` },
-    { label: "Contrast", value: `${inspection.contrast.preferredTextContrast}:1` },
+    { label: "Regions", value: String(inspection.layout.estimatedRegions) },
+    { label: "Controls", value: String(inspection.layout.componentSummary.controls) },
     { label: "Density", value: inspection.visualDensity },
-    {
-      label: "Layout",
-      value: `${inspection.layout.activeColumns}/${inspection.layout.gridColumns} cols`,
-    },
+    { label: "Contrast", value: `${inspection.contrast.preferredTextContrast}:1` },
   ];
 }
 
@@ -270,6 +292,61 @@ function summarizeContrast(dominant, palette) {
   };
 }
 
+function summarizeThreshold(histogram, totalPixels, dominant) {
+  const value = otsuThreshold(histogram, totalPixels);
+  const dominantGray = Math.round(relativeLuminance(dominant) * 255);
+  return {
+    method: "otsu",
+    value,
+    foregroundPolarity: dominantGray >= value ? "dark-on-light" : "light-on-dark",
+  };
+}
+
+function otsuThreshold(histogram, totalPixels) {
+  if (!totalPixels) return 128;
+
+  let total = 0;
+  for (let level = 0; level < histogram.length; level += 1) {
+    total += level * histogram[level];
+  }
+
+  let backgroundWeight = 0;
+  let backgroundSum = 0;
+  let bestVariance = -1;
+  let threshold = 128;
+
+  for (let level = 0; level < histogram.length; level += 1) {
+    backgroundWeight += histogram[level];
+    if (backgroundWeight === 0) continue;
+
+    const foregroundWeight = totalPixels - backgroundWeight;
+    if (foregroundWeight === 0) break;
+
+    backgroundSum += level * histogram[level];
+    const backgroundMean = backgroundSum / backgroundWeight;
+    const foregroundMean = (total - backgroundSum) / foregroundWeight;
+    const betweenClassVariance =
+      backgroundWeight *
+      foregroundWeight *
+      (backgroundMean - foregroundMean) *
+      (backgroundMean - foregroundMean);
+
+    if (betweenClassVariance > bestVariance) {
+      bestVariance = betweenClassVariance;
+      threshold = level;
+    }
+  }
+
+  return threshold;
+}
+
+function isThresholdForeground(gray, threshold) {
+  if (threshold.foregroundPolarity === "dark-on-light") {
+    return gray <= threshold.value;
+  }
+  return gray >= threshold.value;
+}
+
 function summarizeLayoutGrid(activeCells, { gridColumns, gridRows }) {
   const rowCounts = new Array(gridRows).fill(0);
   const columnCounts = new Array(gridColumns).fill(0);
@@ -293,9 +370,10 @@ function summarizeLayoutGrid(activeCells, { gridColumns, gridRows }) {
   const rightRail =
     columnCounts[gridColumns - 1] + columnCounts[gridColumns - 2] >=
     Math.max(2, Math.ceil(gridRows * 0.35));
-  const components = countConnectedComponents(activeCells, gridColumns, gridRows);
-  const smallClusters = components.filter((component) => component <= 2).length;
-  const smallClusterRatio = components.length ? smallClusters / components.length : 0;
+  const regions = extractLayoutRegions(activeCells, gridColumns, gridRows);
+  const smallClusters = regions.filter((region) => region.cells <= 2).length;
+  const smallClusterRatio = regions.length ? smallClusters / regions.length : 0;
+  const componentSummary = summarizeComponentRegions(regions);
 
   return {
     gridColumns,
@@ -307,8 +385,10 @@ function summarizeLayoutGrid(activeCells, { gridColumns, gridRows }) {
     bottomBand,
     leftRail,
     rightRail,
-    estimatedRegions: components.length,
+    estimatedRegions: regions.length,
     smallClusterRatio: round(smallClusterRatio, 2),
+    regions,
+    componentSummary,
     targetRisk:
       smallClusterRatio >= 0.45
         ? "high"
@@ -318,7 +398,55 @@ function summarizeLayoutGrid(activeCells, { gridColumns, gridRows }) {
   };
 }
 
-function buildRecommendations({ contrast, layout, visualDensity }) {
+function buildDesignTokens({ palette, contrast, visualDensity, layout }) {
+  const surface = contrast.dominant;
+  const foreground = contrast.preferredText;
+  const accentSwatch =
+    palette.find((swatch) => swatch.hex !== surface && contrastRatio(swatch, { r: 255, g: 255, b: 255 }) >= 2) ??
+    palette.find((swatch) => swatch.hex !== surface) ??
+    { hex: "#2563eb", r: 37, g: 99, b: 235 };
+  const mutedSwatch =
+    palette.find((swatch) => swatch.hex !== surface && colorDistance(swatch, accentSwatch) > 30) ??
+    { hex: mixHex(surface, foreground, 0.12) };
+
+  return {
+    surface,
+    foreground,
+    accent: accentSwatch.hex,
+    muted: mutedSwatch.hex,
+    border: mixHex(surface, foreground, 0.22),
+    spacing:
+      visualDensity === "high"
+        ? "compact"
+        : visualDensity === "medium"
+          ? "cozy"
+          : "comfortable",
+    radius:
+      layout.smallClusterRatio >= 0.45
+        ? "sm"
+        : layout.estimatedRegions <= 3
+          ? "lg"
+          : "md",
+  };
+}
+
+function summarizeDetectedStructure(inspection) {
+  const regions = inspection.layout.regions.slice(0, 6);
+  const summary = inspection.layout.componentSummary;
+  const regionText = regions.length
+    ? regions
+        .map((region) => `${region.kind} at rows ${region.minRow + 1}-${region.maxRow + 1}, cols ${region.minColumn + 1}-${region.maxColumn + 1}`)
+        .join("; ")
+    : "No strong connected layout regions were found.";
+
+  return [
+    `${summary.navigation} navigation regions, ${summary.panels} content panels, and ${summary.controls} control clusters were inferred from the sampled grid.`,
+    regionText,
+    `Thresholding used ${inspection.threshold.method} level ${inspection.threshold.value} with ${inspection.threshold.foregroundPolarity} polarity.`,
+  ].join(" ");
+}
+
+function buildRecommendations({ contrast, layout, visualDensity, designTokens }) {
   const recommendations = [];
 
   if (contrast.preferredTextContrast < 4.5) {
@@ -337,6 +465,12 @@ function buildRecommendations({ contrast, layout, visualDensity }) {
     );
   }
 
+  if (layout.componentSummary.controls > 8 && visualDensity !== "low") {
+    recommendations.push(
+      "Consolidate repeated action controls or split them into grouped toolbars before generating the final scaffold.",
+    );
+  }
+
   if (visualDensity === "high") {
     recommendations.push(
       "Group dense regions into clearer sections and add whitespace before generating production components.",
@@ -351,22 +485,44 @@ function buildRecommendations({ contrast, layout, visualDensity }) {
     );
   }
 
+  recommendations.push(
+    `Seed generated components with ${designTokens.spacing} spacing and ${designTokens.accent} as the accent token.`,
+  );
+
   return recommendations;
 }
 
-function countConnectedComponents(activeCells, gridColumns, gridRows) {
+function summarizeComponentRegions(regions) {
+  return regions.reduce(
+    (summary, region) => {
+      if (["header/nav", "side rail", "bottom nav"].includes(region.kind)) {
+        summary.navigation += 1;
+      } else if (["content panel", "media/chart"].includes(region.kind)) {
+        summary.panels += 1;
+      } else if (region.kind === "control cluster") {
+        summary.controls += 1;
+      } else {
+        summary.misc += 1;
+      }
+      return summary;
+    },
+    { navigation: 0, panels: 0, controls: 0, misc: 0 },
+  );
+}
+
+function extractLayoutRegions(activeCells, gridColumns, gridRows) {
   const visited = new Set();
-  const components = [];
+  const regions = [];
 
   for (let index = 0; index < activeCells.length; index += 1) {
     if (!activeCells[index] || visited.has(index)) continue;
     const queue = [index];
     visited.add(index);
-    let size = 0;
+    const cells = [];
 
     while (queue.length) {
       const current = queue.shift();
-      size += 1;
+      cells.push(current);
       for (const neighbor of getNeighbors(current, gridColumns, gridRows)) {
         if (!activeCells[neighbor] || visited.has(neighbor)) continue;
         visited.add(neighbor);
@@ -374,10 +530,68 @@ function countConnectedComponents(activeCells, gridColumns, gridRows) {
       }
     }
 
-    components.push(size);
+    regions.push(buildRegion(cells, gridColumns, gridRows));
   }
 
-  return components;
+  return regions.sort((a, b) => {
+    if (a.minRow !== b.minRow) return a.minRow - b.minRow;
+    return a.minColumn - b.minColumn;
+  });
+}
+
+function buildRegion(cells, gridColumns, gridRows) {
+  const rows = cells.map((index) => Math.floor(index / gridColumns));
+  const columns = cells.map((index) => index % gridColumns);
+  const minRow = Math.min(...rows);
+  const maxRow = Math.max(...rows);
+  const minColumn = Math.min(...columns);
+  const maxColumn = Math.max(...columns);
+  const widthCells = maxColumn - minColumn + 1;
+  const heightCells = maxRow - minRow + 1;
+  const cellCount = cells.length;
+
+  return {
+    kind: classifyRegion({
+      minRow,
+      maxRow,
+      minColumn,
+      maxColumn,
+      widthCells,
+      heightCells,
+      cellCount,
+      gridColumns,
+      gridRows,
+    }),
+    cells: cellCount,
+    minRow,
+    maxRow,
+    minColumn,
+    maxColumn,
+    widthCells,
+    heightCells,
+  };
+}
+
+function classifyRegion(region) {
+  if (region.minRow === 0 && region.widthCells >= Math.ceil(region.gridColumns * 0.45)) {
+    return "header/nav";
+  }
+  if (
+    region.maxRow === region.gridRows - 1 &&
+    region.widthCells >= Math.ceil(region.gridColumns * 0.35)
+  ) {
+    return "bottom nav";
+  }
+  if (region.minColumn <= 1 && region.heightCells >= Math.ceil(region.gridRows * 0.35)) {
+    return "side rail";
+  }
+  if (region.cellCount <= 2 || (region.heightCells <= 1 && region.widthCells <= 3)) {
+    return "control cluster";
+  }
+  if (region.widthCells >= 3 && region.heightCells >= 2) {
+    return region.cellCount >= 8 ? "content panel" : "media/chart";
+  }
+  return "text/list";
 }
 
 function getNeighbors(index, gridColumns, gridRows) {
@@ -451,6 +665,30 @@ function toHex(color) {
   return `#${[color.r, color.g, color.b]
     .map((channel) => clamp(Math.round(channel), 0, 255).toString(16).padStart(2, "0"))
     .join("")}`;
+}
+
+function mixHex(baseHex, overlayHex, overlayWeight) {
+  const base = parseHex(baseHex);
+  const overlay = parseHex(overlayHex);
+  const weight = clamp(overlayWeight, 0, 1);
+  return toHex({
+    r: base.r * (1 - weight) + overlay.r * weight,
+    g: base.g * (1 - weight) + overlay.g * weight,
+    b: base.b * (1 - weight) + overlay.b * weight,
+  });
+}
+
+function parseHex(hex) {
+  const normalized = String(hex || "").replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) {
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  };
 }
 
 function fitDimensions(width, height, maxDimension) {

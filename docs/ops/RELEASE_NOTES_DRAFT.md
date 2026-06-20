@@ -1,5 +1,34 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.3.0
+
+Release date: 2026-06-20
+
+Minor release for richer no-provider image understanding. Unknown screenshot uploads now get deterministic structure and token hints from local pixels before any live AI provider is considered.
+
+### Highlights
+
+- Added Otsu-style luminance thresholding to separate likely foreground from dominant surfaces without fixed color assumptions.
+- Grouped active layout cells into connected regions and labeled likely header/nav, side rail, bottom nav, content panel, media/chart, text/list, and control clusters.
+- Added deterministic design-token recommendations for surface, foreground, accent, muted, border, spacing, and radius values.
+- Expanded fallback artifacts with `Detected Structure` and `Design Tokens` plan cards.
+- Updated preview stats for inspected unknown uploads to emphasize regions, controls, density, and contrast.
+- Preserved demo-safe behavior: live Qwen analysis remains opt-in and provider failures still fall back to local analysis.
+
+### Verification snapshot
+
+- `npm audit --omit=dev --audit-level=high` - passed.
+- `npm run check:full` - lint, 176 unit tests, and production build passed.
+- `npm run test:e2e` - 54 Playwright tests passed.
+- `npm run doctor` - passed; live Qwen env vars are intentionally unset for offline demo mode.
+- `git diff --check` - passed.
+
+### Versioning
+
+- Package metadata: `0.3.0`
+- Recommended tag: `v0.3.0`
+- Release type: minor, because this adds a notable no-provider analysis capability while keeping routes and APIs backward compatible.
+
 ## qwen-ui-lab v0.2.1
 
 Release date: 2026-06-20
