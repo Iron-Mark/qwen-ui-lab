@@ -9,9 +9,9 @@ import {
   RASTER_REFERENCE_STEMS,
   inferReferenceMimeType,
   getReferenceSampleByFileName,
-} from "../src/lib/reference-samples.mjs";
-import { getBundledReferenceFile } from "../src/lib/reference-samples.server.mjs";
-import { lookupKnownSample } from "../src/lib/offline-analyze.mjs";
+} from "../src/features/analysis/lib/reference-samples.mjs";
+import { getBundledReferenceFile } from "../src/features/analysis/lib/reference-samples.server.mjs";
+import { lookupKnownSample } from "../src/features/analysis/lib/offline-analyze.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REFERENCES_DIR = resolve(__dirname, "../public/references");

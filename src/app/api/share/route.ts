@@ -1,4 +1,4 @@
-import { handleShareGet, handleSharePost } from "@/lib/share-api.mjs";
+import { handleShareGet, handleSharePost } from "@/features/share/lib/share-api.mjs";
 
 export const runtime = "nodejs";
 

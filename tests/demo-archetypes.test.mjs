@@ -7,7 +7,7 @@ import {
   demoArchetypeLabel,
   getDemoArchetypeSample,
   resolveDemoArchetype,
-} from "../src/lib/demo-archetypes.mjs";
+} from "../src/features/analysis/lib/demo-archetypes.mjs";
 
 test("resolveDemoArchetype maps shop to ecommerce sample", () => {
   assert.equal(resolveDemoArchetype("shop"), "ecommerce");

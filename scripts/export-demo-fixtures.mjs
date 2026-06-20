@@ -7,12 +7,12 @@ import {
   buildDemoAnalyzeUiErrorResponse,
   buildDemoArtifactForFile,
   getSampleReferenceFile,
-} from "../src/lib/demo-fixtures.mjs";
+} from "../src/features/analysis/lib/demo-fixtures.mjs";
 import {
   LIVE_QWEN_HEALTH_RESPONSE,
   MOCK_QWEN_ANALYSIS_JSON,
   buildMockLiveAnalyzeUiRouteResponse,
-} from "../src/lib/qwen-mock-fixtures.mjs";
+} from "../src/features/analysis/lib/qwen-mock-fixtures.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = resolve(__dirname, "../e2e/fixtures");

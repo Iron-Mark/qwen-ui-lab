@@ -13,7 +13,7 @@ import {
 import {
   buildDesignSystemDomainRedirect,
   createDesignSystemSearchParams,
-} from "../src/lib/design-system-state.mjs";
+} from "../src/features/design-system/lib/design-system-state.mjs";
 
 const enDictionarySource = readFileSync(
   fileURLToPath(new URL("../src/lib/i18n/dictionaries/en.ts", import.meta.url)),

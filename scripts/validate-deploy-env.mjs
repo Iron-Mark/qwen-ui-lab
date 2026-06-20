@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { canUseLiveQwen, getQwenConfig, isLiveQwenAnalysisEnabled } from "../src/lib/qwen-analyze.mjs";
+import { canUseLiveQwen, getQwenConfig, isLiveQwenAnalysisEnabled } from "../src/features/analysis/lib/qwen-analyze.mjs";
 
 const args = process.argv.slice(2);
 const targetArg = args.find((arg) => arg.startsWith("--target="));

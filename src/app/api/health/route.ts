@@ -1,4 +1,4 @@
-import { canUseLiveQwen, getQwenConfig } from "@/lib/qwen-analyze.mjs";
+import { canUseLiveQwen, getQwenConfig } from "@/features/analysis/lib/qwen-analyze.mjs";
 
 export const runtime = "nodejs";
 

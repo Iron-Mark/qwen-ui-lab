@@ -6,7 +6,7 @@ import {
   createGithubGist,
   getGithubGistToken,
   sanitizeGistFilename,
-} from "../src/lib/github-gist.mjs";
+} from "../src/features/export/lib/github-gist.mjs";
 
 test("canUseGithubGist is false without token", () => {
   assert.equal(canUseGithubGist({}), false);

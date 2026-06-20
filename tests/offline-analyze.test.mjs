@@ -7,14 +7,14 @@ import {
   inferFormFactor,
   lookupKnownSample,
   normalizeSampleKey,
-} from "../src/lib/offline-analyze.mjs";
-import { buildUiFlowArtifact } from "../src/lib/ui-flow.mjs";
+} from "../src/features/analysis/lib/offline-analyze.mjs";
+import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildDemoArtifactForFile,
   getSampleReferenceFile,
   SAMPLE_REFERENCE_NAME,
-} from "../src/lib/demo-fixtures.mjs";
-import { BUNDLED_REFERENCE_SAMPLES } from "../src/lib/reference-samples.mjs";
+} from "../src/features/analysis/lib/demo-fixtures.mjs";
+import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
 
 test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);

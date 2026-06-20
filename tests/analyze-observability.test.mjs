@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   buildAnalyzeFailureError,
   isReportableAnalyzeFailure,
-} from "../src/lib/analyze-observability.mjs";
+} from "../src/features/analysis/lib/analyze-observability.mjs";
 
 test("expected demo analyze paths are not reported", () => {
   assert.equal(

@@ -11,14 +11,14 @@ function readProjectFile(relativePath) {
 }
 
 test("SnippetPreview uses tokenized card shell styling", () => {
-  const source = readProjectFile("src/components/molecules/SnippetPreview.tsx");
+  const source = readProjectFile("src/features/analysis/components/SnippetPreview.tsx");
 
   assert.match(source, /rounded-xl border border-border/);
   assert.match(source, /bg-muted\/40/);
 });
 
 test("CodeHighlight shell uses adaptive background and focus ring", () => {
-  const source = readProjectFile("src/components/atoms/CodeHighlight.tsx");
+  const source = readProjectFile("src/features/analysis/components/CodeHighlight.tsx");
 
   assert.match(source, /bg-card/);
   assert.match(source, /text-card-foreground/);
@@ -64,7 +64,7 @@ test("Brand themes provide syntax overrides in light and dark modes", () => {
 });
 
 test("CodeHighlight assigns Prism language classes in both states", () => {
-  const source = readProjectFile("src/components/atoms/CodeHighlight.tsx");
+  const source = readProjectFile("src/features/analysis/components/CodeHighlight.tsx");
 
   assert.match(source, /const languageClass = `language-\$\{language\.toLowerCase\(\)\}`;/);
   assert.match(source, /className=\{cn\(languageClass, "block whitespace-pre-wrap break-words"\)\}/);

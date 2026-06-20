@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { buildDesignSystemDomainRedirect } from "@/lib/design-system-state.mjs";
+import { buildDesignSystemDomainRedirect } from "@/features/design-system/lib/design-system-state.mjs";
 import { resolveLocale } from "@/lib/i18n";
 import { createRouteMetadata } from "@/lib/seo";
 

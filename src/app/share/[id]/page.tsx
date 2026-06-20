@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { SharePageClient } from "@/app/share/[id]/SharePageClient";
+import { SharePageClient } from "@/features/share/components/SharePageClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDictionary, interpolate, resolveLocale } from "@/lib/i18n";
 import { createRouteMetadata } from "@/lib/seo";
-import { getShareRecord } from "@/lib/share-store.mjs";
+import { getShareRecord } from "@/features/share/lib/share-store.mjs";
 
 export const runtime = "nodejs";
 

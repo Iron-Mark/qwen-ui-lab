@@ -64,7 +64,7 @@ import type {
   RevenueDataPoint,
   ActivityData,
   QuickActionData,
-} from "@/data/dashboard-data";
+} from "@/features/home/data/dashboard-data";
 
 interface DashboardShellProps {
   stats: StatCardData[];

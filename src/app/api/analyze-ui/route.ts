@@ -1,8 +1,8 @@
 import {
   checkAnalyzeUiRateLimit,
   getRequestClientIp,
-} from "@/lib/analyze-ui-rate-limit.mjs";
-import { analyzeUiImageWithQwen, canUseLiveQwen } from "@/lib/qwen-analyze.mjs";
+} from "@/features/analysis/lib/analyze-ui-rate-limit.mjs";
+import { analyzeUiImageWithQwen, canUseLiveQwen } from "@/features/analysis/lib/qwen-analyze.mjs";
 
 export const runtime = "nodejs";
 

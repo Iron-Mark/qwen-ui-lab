@@ -7,15 +7,15 @@ import { fileURLToPath } from "node:url";
 import {
   buildUiFlowArtifact,
   formatFileSize,
-} from "../src/lib/ui-flow.mjs";
+} from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildQwenVisionRequest,
   canUseLiveQwen,
   getQwenConfig,
   isLiveQwenAnalysisEnabled,
   parseQwenAnalysisText,
-} from "../src/lib/qwen-analyze.mjs";
-import { filterCatalogEntries } from "../src/lib/catalog-filter.mjs";
+} from "../src/features/analysis/lib/qwen-analyze.mjs";
+import { filterCatalogEntries } from "../src/features/design-system/lib/catalog-filter.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -123,7 +123,7 @@ test("parseQwenAnalysisText accepts fenced JSON from the model", () => {
 
 test("UI_LAWS includes Fitts Hick and Jakob with applications", () => {
   const source = readFileSync(
-    resolve(__dirname, "../src/data/uilaws.ts"),
+    resolve(__dirname, "../src/features/design-system/data/uilaws.ts"),
     "utf8",
   ).replace(/\r\n/g, "\n");
 

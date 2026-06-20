@@ -7,13 +7,13 @@ import {
   createMemoryRateLimitStore,
   isRateLimitKvConfigured,
   resolveAnalyzeUiRateLimitStore,
-} from "../src/lib/analyze-ui-rate-limit-store.mjs";
+} from "../src/features/analysis/lib/analyze-ui-rate-limit-store.mjs";
 import {
   checkAnalyzeUiRateLimit,
   getAnalyzeUiRateLimitConfig,
   getRequestClientIp,
   resetAnalyzeUiRateLimitStore,
-} from "../src/lib/analyze-ui-rate-limit.mjs";
+} from "../src/features/analysis/lib/analyze-ui-rate-limit.mjs";
 
 test.afterEach(() => {
   resetAnalyzeUiRateLimitStore();

@@ -8,7 +8,7 @@ import {
   encodeShareHash,
   decodeShareHash,
   buildShareUrl,
-} from "../src/lib/share-result.mjs";
+} from "../src/features/share/lib/share-result.mjs";
 import {
   createShareRecord,
   generateShareId,
@@ -16,8 +16,8 @@ import {
   isShareKvConfigured,
   resetShareStore,
   sanitizeSharePayload,
-} from "../src/lib/share-store.mjs";
-import { handleShareGet, handleSharePost } from "../src/lib/share-api.mjs";
+} from "../src/features/share/lib/share-store.mjs";
+import { handleShareGet, handleSharePost } from "../src/features/share/lib/share-api.mjs";
 
 const sampleArtifact = {
   summary: "Admin dashboard with stat grid and activity rail.",

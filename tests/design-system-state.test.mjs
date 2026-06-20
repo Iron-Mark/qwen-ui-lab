@@ -8,7 +8,7 @@ import {
   parseLevel,
   parsePreviewMode,
   pickSelectedId,
-} from "../src/lib/design-system-state.mjs";
+} from "../src/features/design-system/lib/design-system-state.mjs";
 
 test("parse helpers normalize unknown values", () => {
   assert.equal(parseDomain("invalid"), "all");

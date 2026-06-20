@@ -7,7 +7,7 @@ import {
   clearAnalyticsBuffer,
   countEventsByName,
   readAnalyticsBuffer,
-} from "../src/lib/analytics-event-buffer.mjs";
+} from "../src/features/analytics/lib/analytics-event-buffer.mjs";
 
 function createMemoryStorage() {
   /** @type {Map<string, string>} */

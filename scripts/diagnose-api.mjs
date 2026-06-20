@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from "node:fs";
-import { getQwenConfig } from "../src/lib/qwen-analyze.mjs";
+import { getQwenConfig } from "../src/features/analysis/lib/qwen-analyze.mjs";
 
 function loadEnvLocal() {
   const path = ".env.local";

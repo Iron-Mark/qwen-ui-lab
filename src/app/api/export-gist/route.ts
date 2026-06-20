@@ -5,7 +5,7 @@ import {
   GIST_FALLBACK_INSTRUCTIONS,
   GIST_FALLBACK_URL,
   sanitizeGistFilename,
-} from "@/lib/github-gist.mjs";
+} from "@/features/export/lib/github-gist.mjs";
 
 export const runtime = "nodejs";
 
