@@ -4,12 +4,12 @@ This checklist prepares a release candidate without publishing.
 
 ## Recommended version/tag
 
-- Current package version: `0.1.0`
-- Recommendation: use `0.1.1` for the current maintenance release candidate if publishing branch/CI/lint cleanup.
-- Recommended tag: `v0.1.1`
-- Next planned version after first public release:
-  - `0.1.2` for follow-up fixes/docs-only cleanup
-  - `0.2.0` for net-new user-facing capability
+- Current package version: `0.2.0`
+- Recommendation: use `0.2.0` for the offline pixel-signal analysis feature release.
+- Recommended tag: `v0.2.0`
+- Next planned version after this release:
+  - `0.2.1` for follow-up fixes/docs-only cleanup
+  - `0.3.0` for the next net-new user-facing capability
 
 ## Packaging readiness checklist
 
@@ -19,13 +19,12 @@ This checklist prepares a release candidate without publishing.
 - [ ] Version in `package.json` matches intended release tag.
 - [ ] Local verification complete (`check`, `build`, `test:e2e`, `doctor`).
 
-## Current maintenance readiness snapshot
+## Current release readiness snapshot
 
-- Branch consolidation: remote `main` is the only active repository branch after stale branch cleanup.
-- CI health: latest observed `main` CI run passed after platform-specific visual baselines and warn-only live LCP telemetry.
-- Lint health: current cleanup removes all ESLint warnings.
-- Production demo: `https://qwen-ui-lab.vercel.app` smokes green in demo mode.
-- Production env gap: Vercel currently has no project env vars configured, so full `validate:prod` remains blocked until KV and server-side Gist token are added.
+- Scope: offline canvas pixel inspection for unknown screenshot uploads, with signal-aware fallback artifacts.
+- Local health: `npm run check:full`, `npx tsc --noEmit`, and `npm run test:e2e:pr-smoke` pass.
+- Fixture health: `npm run export:demo-fixtures` runs without required content changes.
+- Production policy: public demo remains provider-safe by default; live Qwen still requires explicit opt-in.
 
 ## Exact pre-publish commands
 
@@ -46,13 +45,13 @@ Do not run these until publish is explicitly approved:
 
 ```bash
 git pull --ff-only
-git tag -a v0.1.1 -m "Release v0.1.1"
+git tag -a v0.2.0 -m "Release v0.2.0"
 git push origin HEAD
-git push origin v0.1.1
+git push origin v0.2.0
 ```
 
 ## Optional GitHub release command
 
 ```bash
-gh release create v0.1.1 --title "qwen-ui-lab v0.1.1" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
+gh release create v0.2.0 --title "qwen-ui-lab v0.2.0" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
 ```

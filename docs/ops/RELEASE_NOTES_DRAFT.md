@@ -1,5 +1,32 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.2.0
+
+Release date: 2026-06-20
+
+Minor release for a stronger no-provider analysis path. The app still defaults to demo-safe mode, but unknown screenshot uploads now get local image signals instead of relying only on filename and dimensions.
+
+### Highlights
+
+- Added deterministic canvas pixel inspection for offline analysis: palette extraction, WCAG-style contrast estimates, edge density, coarse layout bands, and dense-cluster review risk.
+- Enriched fallback artifacts for unknown uploads with `Local Vision Signals` and `Local Quality Checks` plan cards.
+- Replaced generic preview stats for inspected unknown uploads with palette, contrast, density, and layout signal stats.
+- Fed local pixel signals into archetype scoring so dashboard, mobile, landing, settings, and catalog guesses improve without AI providers.
+- Preserved the live Qwen contract: live mode remains explicit opt-in, and provider failures still fall back to local analysis.
+
+### Verification snapshot
+
+- `npm run check:full` - lint, 176 unit tests, and production build passed.
+- `npx tsc --noEmit` - passed.
+- `npm run export:demo-fixtures` - regenerated fixtures; no content changes required.
+- `npm run test:e2e:pr-smoke` - 9 Playwright smoke tests passed across mobile, a11y, and mocked live-provider flows.
+
+### Versioning
+
+- Package metadata: `0.2.0`
+- Recommended tag: `v0.2.0`
+- Release type: minor, because this adds a notable no-provider feature while keeping routes and APIs backward compatible.
+
 ## Maintenance checkpoint - 2026-06-10
 
 This checkpoint keeps the public demo stable after branch consolidation. Production remains demo-safe by default: live Qwen analysis is still opt-in, and the public Vercel deployment currently reports `provider=demo`.

@@ -48,7 +48,14 @@ export function fallbackReasonFromPayload(payload) {
 /**
  * Resolve a /api/analyze-ui response (or fetch failure) into artifact + provider state.
  * @param {{
- *   file: { name: string; type: string; size: number; width?: number | null; height?: number | null };
+ *   file: {
+ *     name: string;
+ *     type: string;
+ *     size: number;
+ *     width?: number | null;
+ *     height?: number | null;
+ *     offlineInspection?: unknown;
+ *   };
  *   payload?: unknown;
  *   responseOk?: boolean;
  *   fetchError?: string;
@@ -151,7 +158,14 @@ function sleep(ms) {
 
 /**
  * POST uploaded image metadata to /api/analyze-ui with timeout, health skip, and one retry.
- * @param {{ name: string; type: string; size: number; width?: number | null; height?: number | null }} file
+ * @param {{
+ *   name: string;
+ *   type: string;
+ *   size: number;
+ *   width?: number | null;
+ *   height?: number | null;
+ *   offlineInspection?: unknown;
+ * }} file
  * @param {string} imageDataUrl
  * @param {{
  *   fetchFn?: typeof fetch;
@@ -217,7 +231,14 @@ export async function postAnalyzeUi(
 }
 
 /**
- * @param {{ name: string; type: string; size: number; width?: number | null; height?: number | null }} file
+ * @param {{
+ *   name: string;
+ *   type: string;
+ *   size: number;
+ *   width?: number | null;
+ *   height?: number | null;
+ *   offlineInspection?: unknown;
+ * }} file
  * @param {string} imageDataUrl
  * @param {{ fetchFn?: typeof fetch; timeoutMs?: number; apiPath?: string }} options
  */
@@ -240,6 +261,8 @@ async function postAnalyzeUiOnce(
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
+        width: file.width,
+        height: file.height,
       }),
       signal: controller.signal,
     });

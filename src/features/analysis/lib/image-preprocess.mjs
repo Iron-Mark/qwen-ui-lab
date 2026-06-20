@@ -1,3 +1,5 @@
+import { inspectCanvas } from "./offline-image-inspection.mjs";
+
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
 const TARGET_MAX_BYTES = 900_000;
@@ -11,7 +13,13 @@ const TARGET_MAX_BYTES = 900_000;
  *   quality?: number;
  *   targetMaxBytes?: number;
  * }} [options]
- * @returns {Promise<{ dataUrl: string; width: number | null; height: number | null; compressed: boolean }>}
+ * @returns {Promise<{
+ *   dataUrl: string;
+ *   width: number | null;
+ *   height: number | null;
+ *   compressed: boolean;
+ *   offlineInspection?: ReturnType<typeof inspectCanvas> | null;
+ * }>}
  */
 export async function preprocessImageDataUrl(
   dataUrl,
@@ -22,7 +30,13 @@ export async function preprocessImageDataUrl(
   } = {},
 ) {
   if (typeof document === "undefined" || !dataUrl.startsWith("data:image/")) {
-    return { dataUrl, width: null, height: null, compressed: false };
+    return {
+      dataUrl,
+      width: null,
+      height: null,
+      compressed: false,
+      offlineInspection: null,
+    };
   }
 
   try {
@@ -43,10 +57,12 @@ export async function preprocessImageDataUrl(
         width: image.naturalWidth,
         height: image.naturalHeight,
         compressed: false,
+        offlineInspection: null,
       };
     }
 
     ctx.drawImage(image, 0, 0, width, height);
+    const offlineInspection = safelyInspectCanvas(canvas);
 
     let nextQuality = quality;
     let output = canvas.toDataURL("image/jpeg", nextQuality);
@@ -61,9 +77,27 @@ export async function preprocessImageDataUrl(
       width,
       height,
       compressed: output !== dataUrl,
+      offlineInspection,
     };
   } catch {
-    return { dataUrl, width: null, height: null, compressed: false };
+    return {
+      dataUrl,
+      width: null,
+      height: null,
+      compressed: false,
+      offlineInspection: null,
+    };
+  }
+}
+
+/**
+ * @param {HTMLCanvasElement} canvas
+ */
+function safelyInspectCanvas(canvas) {
+  try {
+    return inspectCanvas(canvas);
+  } catch {
+    return null;
   }
 }
 

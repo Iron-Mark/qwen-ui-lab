@@ -34,7 +34,14 @@ function dimensionHint(width, height) {
 
 /**
  * Resolve offline content: known sample registry → advanced classifier → caller overrides.
- * @param {{ name?: string; type?: string; size?: number; width?: number | null; height?: number | null }} file
+ * @param {{
+ *   name?: string;
+ *   type?: string;
+ *   size?: number;
+ *   width?: number | null;
+ *   height?: number | null;
+ *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ * }} file
  * @param {Record<string, unknown>} overrides
  */
 function resolveOfflineContent(file, overrides) {

@@ -1,3 +1,8 @@
+import {
+  buildImageInspectionPlanSections,
+  buildImageInspectionPreviewStats,
+} from "./offline-image-inspection.mjs";
+
 /**
  * Advanced deterministic offline analysis — no AI, no network.
  * Combines known-sample registry, weighted archetype scoring, and form-factor signals.
@@ -537,7 +542,14 @@ export function inferFormFactor(width, height) {
 }
 
 /**
- * @param {{ name?: string; type?: string; size?: number; width?: number | null; height?: number | null }} file
+ * @param {{
+ *   name?: string;
+ *   type?: string;
+ *   size?: number;
+ *   width?: number | null;
+ *   height?: number | null;
+ *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ * }} file
  */
 export function classifyLayoutArchetype(file) {
   const haystack = normalizeSampleKey(file.name).replace(/\.[a-z0-9]+$/i, "");
@@ -557,6 +569,30 @@ export function classifyLayoutArchetype(file) {
   const mimeHints = MIME_ARCHETYPE_HINTS[file.type || ""] ?? {};
   for (const [archetypeId, boost] of Object.entries(mimeHints)) {
     scores[archetypeId] = (scores[archetypeId] ?? 0) + boost;
+  }
+
+  const inspection = file.offlineInspection;
+  if (inspection?.layout) {
+    if (inspection.layout.topBand && inspection.layout.leftRail) {
+      scores.dashboard = (scores.dashboard ?? 0) + 2;
+      scores.settings = (scores.settings ?? 0) + 1;
+      scores.ecommerce = (scores.ecommerce ?? 0) + 1;
+    }
+    if (inspection.layout.bottomBand && formFactor.id === "mobile") {
+      scores.mobile = (scores.mobile ?? 0) + 2;
+    }
+    if (inspection.layout.activeColumns >= 10 && inspection.layout.activeRows >= 5) {
+      scores.dashboard = (scores.dashboard ?? 0) + 1;
+      scores.landing = (scores.landing ?? 0) + 1;
+    }
+    if (inspection.layout.estimatedRegions <= 3 && formFactor.id !== "mobile") {
+      scores.landing = (scores.landing ?? 0) + 1;
+      scores.auth = (scores.auth ?? 0) + 1;
+    }
+    if (inspection.visualDensity === "high") {
+      scores.dashboard = (scores.dashboard ?? 0) + 1;
+      scores.ecommerce = (scores.ecommerce ?? 0) + 1;
+    }
   }
 
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
@@ -658,13 +694,21 @@ export function GeneratedDashboard() {
 
 /**
  * Advanced offline overrides when no known sample matches.
- * @param {{ name?: string; type?: string; size?: number; width?: number | null; height?: number | null }} file
+ * @param {{
+ *   name?: string;
+ *   type?: string;
+ *   size?: number;
+ *   width?: number | null;
+ *   height?: number | null;
+ *   offlineInspection?: ReturnType<import("./offline-image-inspection.mjs").inspectImageDataPixels> | null;
+ * }} file
  * @param {{ readableSize: string; dimensionLine: string | null }} context
  */
 export function buildAdvancedOfflineOverrides(file, context) {
   const fileName = file.name || "uploaded-reference";
   const { archetype, confidence, formFactor } = classifyLayoutArchetype(file);
   const componentList = archetype.components.join(", ");
+  const inspectionSections = buildImageInspectionPlanSections(file.offlineInspection);
 
   /** @type {PlanSection[]} */
   const plan = [
@@ -684,6 +728,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
       title: "Layout Read",
       body: `Classified as ${archetype.label} (confidence ${Math.round(confidence * 100)}%) — ${archetype.layout}`,
     },
+    ...inspectionSections,
     {
       title: "Component Map",
       body: `Generate ${componentList}.`,
@@ -699,18 +744,24 @@ export function buildAdvancedOfflineOverrides(file, context) {
   ];
 
   const stats = archetype.stats;
+  const inspectionStats = buildImageInspectionPreviewStats(file.offlineInspection);
   /** @type {PreviewStat[]} */
-  const previewStats = [
-    { label: "Sections", value: String(stats.sections) },
-    { label: "Components", value: String(stats.components) },
-    { label: "Breakpoints", value: String(stats.breakpoints) },
-    { label: "Review Items", value: String(stats.reviewItems) },
-  ];
+  const previewStats =
+    inspectionStats ?? [
+      { label: "Sections", value: String(stats.sections) },
+      { label: "Components", value: String(stats.components) },
+      { label: "Breakpoints", value: String(stats.breakpoints) },
+      { label: "Review Items", value: String(stats.reviewItems) },
+    ];
 
   return {
     plan,
     previewStats,
     generatedCode: buildGeneratedCode(fileName, archetype),
-    summary: `${archetype.label} scaffold (${Math.round(confidence * 100)}% confidence, ${formFactor.label}).`,
+    summary: `${archetype.label} scaffold (${Math.round(confidence * 100)}% confidence, ${formFactor.label})${
+      file.offlineInspection
+        ? ` with local pixel signals (${file.offlineInspection.visualDensity} density).`
+        : "."
+    }`,
   };
 }

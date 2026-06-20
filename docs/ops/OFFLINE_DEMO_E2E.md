@@ -17,6 +17,7 @@ When live analysis is disabled, the client **skips** `POST /api/analyze-ui` and 
 1. `fetchAnalyzeHealth()` reads `/api/health`.
 2. If `liveAnalysisEnabled` is false, `postAnalyzeUi()` calls `resolveAnalyzeOutcome()` with `instantDemo: true`.
 3. `buildUiFlowArtifact()` in `src/features/analysis/lib/ui-flow.mjs` delegates to `src/features/analysis/lib/offline-analyze.mjs`:
+   - **Canvas pixel inspection** - browser uploads are sampled locally with `getImageData()` to extract palette, contrast, edge density, layout bands, and dense-cluster risk before any provider call.
    - **Known sample registry** — bundled files like `dashboard-reference.svg` get rich, meetup-ready content.
    - **Advanced classifier** — weighted archetype scoring (dashboard, auth, mobile, settings, landing, ecommerce) using filename keywords, MIME hints, and width/height form-factor boosts.
    - **Confidence summary** — each unknown upload gets a deterministic layout label and confidence score in the artifact summary.
@@ -33,13 +34,21 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 | **Archetype scoring** | Weighted keywords per layout type; highest score wins |
 | **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide → mobile boost) |
 | **MIME hint** | Optional small boost (e.g. SVG → dashboard) |
+| **Pixel signal scan** | `src/features/analysis/lib/offline-image-inspection.mjs` samples canvas pixels, quantizes dominant colors, computes WCAG-style contrast, estimates edge density, and maps active cells on a 12x8 layout grid |
+| **Signal-aware output** | Unknown uploads receive `Local Vision Signals` and `Local Quality Checks` plan cards plus palette/contrast/density/layout preview stats |
 | **Code templates** | Per-archetype generated React scaffold (`GeneratedDashboard`, `GeneratedAuthScreen`, etc.) |
 | **Confidence** | `0.55–0.98` based on score margin; surfaced in artifact `summary` |
 
 Example: `pricing-landing-hero.png` → Marketing landing archetype with `GeneratedLanding` code.  
 Example: `dashboard-reference.svg` → registry override with ChartPreview + ActivityList.
 
-Unit coverage: [`tests/offline-analyze.test.mjs`](../../tests/offline-analyze.test.mjs).
+Unit coverage: [`tests/offline-analyze.test.mjs`](../../tests/offline-analyze.test.mjs), including WCAG contrast math and no-provider pixel-signal artifacts.
+
+Reference basis:
+
+- Canvas pixel reads use the browser Canvas 2D `getImageData()` API.
+- Contrast estimates use the WCAG relative luminance and contrast-ratio model.
+- Target-size guidance follows WCAG target-size checks as a heuristic prompt for manual review; screenshots cannot prove CSS hit-area size by themselves.
 
 ### Layer 3 — E2E isolation (Playwright)
 

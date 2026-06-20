@@ -461,6 +461,7 @@ export function UploadFlow({
         size: file.size,
         width: preprocessed.width,
         height: preprocessed.height,
+        offlineInspection: preprocessed.offlineInspection,
       };
 
       setAnalyzeStep(ANALYZE_STEPS_EN[2]);

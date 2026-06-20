@@ -8,6 +8,10 @@ import {
   lookupKnownSample,
   normalizeSampleKey,
 } from "../src/features/analysis/lib/offline-analyze.mjs";
+import {
+  contrastRatio,
+  inspectImageDataPixels,
+} from "../src/features/analysis/lib/offline-image-inspection.mjs";
 import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildDemoArtifactForFile,
@@ -15,6 +19,32 @@ import {
   SAMPLE_REFERENCE_NAME,
 } from "../src/features/analysis/lib/demo-fixtures.mjs";
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
+
+function createSyntheticScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [245, 245, 245];
+
+      if (y < Math.ceil(height * 0.18)) {
+        color = [20, 24, 32];
+      } else if (x < Math.ceil(width * 0.18)) {
+        color = [44, 90, 160];
+      } else if (x > width * 0.42 && x < width * 0.82 && y > height * 0.36 && y < height * 0.66) {
+        color = [230, 238, 250];
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 1440, sourceHeight: 900 };
+}
 
 test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
@@ -109,6 +139,24 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.summary, /E-commerce catalog/i);
   assert.match(known.generatedCode, /ProductGrid/);
   assert.match(known.plan[2].body, /FilterSidebar/);
+});
+
+test("contrastRatio follows WCAG black/white maximum", () => {
+  assert.equal(
+    contrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }),
+    21,
+  );
+});
+
+test("inspectImageDataPixels extracts palette, contrast, and layout bands", () => {
+  const inspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+
+  assert.ok(inspection);
+  assert.ok(inspection.palette.length >= 3);
+  assert.equal(inspection.layout.topBand, true);
+  assert.equal(inspection.layout.leftRail, true);
+  assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
+  assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
 });
 
 test("buildUiFlowArtifact uses known sample registry for auth-reference.svg", () => {
@@ -211,6 +259,26 @@ test("buildUiFlowArtifact uses advanced classifier for unknown uploads", () => {
 
   assert.match(artifact.summary, /Marketing landing/i);
   assert.match(artifact.generatedCode, /GeneratedLanding/);
+});
+
+test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", () => {
+  const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+  const artifact = buildUiFlowArtifact({
+    name: "operator-console.png",
+    type: "image/png",
+    size: 8192,
+    width: 1440,
+    height: 900,
+    offlineInspection,
+  });
+
+  assert.match(artifact.summary, /local pixel signals/i);
+  assert.ok(artifact.plan.some((section) => section.title === "Local Vision Signals"));
+  assert.ok(artifact.plan.some((section) => section.title === "Local Quality Checks"));
+  assert.deepEqual(
+    artifact.previewStats.map((stat) => stat.label),
+    ["Palette", "Contrast", "Density", "Layout"],
+  );
 });
 
 test("buildDemoArtifactForFile matches export fixture shape", () => {
