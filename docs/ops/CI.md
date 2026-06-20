@@ -2,6 +2,8 @@
 
 GitHub Actions workflows under [`.github/workflows/`](../../.github/workflows/) gate merges, main-branch quality, scheduled E2E, and post-deploy smoke. Workflows run on the Node 24 action/runtime line so CI avoids deprecated Node 20 JavaScript actions.
 
+Branch policy: normal work starts on `dev`; production promotion is a protected `dev` -> `main` PR. Treat `main` as production-only, and create release tags only from `main` commits.
+
 ## Workflow map
 
 | Workflow | Trigger | Purpose |
@@ -13,6 +15,17 @@ GitHub Actions workflows under [`.github/workflows/`](../../.github/workflows/) 
 | [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route smoke against a deployed URL |
 
 PR checks stay fast on purpose. Heavier browser work runs on main or on the nightly schedule.
+
+## Protected main
+
+`main` is protected in GitHub branch settings:
+
+- Pull requests are required before changes reach `main`.
+- Required status checks must pass before merge.
+- Required checks are evaluated against the latest `main` before merge.
+- Direct pushes, force pushes, and branch deletion are blocked.
+
+Use `dev` for day-to-day work. When `dev` is ready, open the release PR into `main` and tag only after the PR has merged.
 
 ## PR E2E smoke (optional)
 
