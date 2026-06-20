@@ -1,29 +1,30 @@
-# Release Package Checklist (No Push/Tag)
+# Release Package Checklist
 
-This checklist prepares a release candidate without publishing.
+This checklist tracks the current release candidate and publish commands.
 
 ## Recommended version/tag
 
-- Current package version: `0.3.0`
-- Recommendation: use `0.3.0` for the offline connected-region and design-token analysis release.
-- Recommended tag: `v0.3.0`
+- Current package version: `0.4.1`
+- Recommendation: use `0.4.1` for the upload safety and CI runtime hardening release.
+- Recommended tag: `v0.4.1`
 - Next planned version after this release:
-  - `0.3.1` for follow-up fixes/docs-only cleanup
-  - `0.4.0` for the next net-new user-facing capability
+  - `0.4.2` for follow-up fixes/docs-only cleanup
+  - `0.5.0` for the next net-new user-facing capability
 
 ## Packaging readiness checklist
 
-- [ ] `docs/ops/RELEASE_NOTES_DRAFT.md` finalized for current scope.
-- [ ] `docs/ops/DEPLOYMENT_CHECKLIST.md` and `docs/ops/ROLLBACK_CHECKLIST.md` reviewed.
-- [ ] README release/CI references aligned with `.github/workflows`.
-- [ ] Version in `package.json` matches intended release tag.
-- [ ] Local verification complete (`check`, `build`, `test:e2e`, `doctor`).
+- [x] `docs/ops/RELEASE_NOTES_DRAFT.md` finalized for current scope.
+- [x] `docs/ops/DEPLOYMENT_CHECKLIST.md` and `docs/ops/ROLLBACK_CHECKLIST.md` reviewed for current commands.
+- [x] CI references aligned with `.github/workflows`.
+- [x] Version in `package.json` matches intended release tag.
+- [x] Local and PR verification complete for the release scope.
 
 ## Current release readiness snapshot
 
-- Scope: expanded offline canvas pixel inspection with Otsu thresholding, connected-region labels, design-token recommendations, and richer fallback plan cards.
-- Local health: `npm audit --omit=dev --audit-level=high`, `npm run check:full`, `npm run test:e2e`, `npm run doctor`, and `git diff --check` pass.
-- Fixture health: no fixture regeneration required for the deterministic inspection update.
+- Scope: shared upload constraints, API request validation, localized oversized-upload feedback, PR upload-flow smoke coverage, and GitHub Actions Node 24 runtime modernization.
+- PR health: PR #7 passed `Lint, test, build`, PR E2E smoke, and Vercel preview checks before merge.
+- Release-prep health: `npm run check:full`, `npm run test:e2e`, `npm run doctor`, `npm run deploy:env:demo`, and `git diff --check` passed.
+- Fixture health: no fixture regeneration required for upload validation or workflow changes.
 - Production policy: public demo remains provider-safe by default; live Qwen still requires explicit opt-in.
 
 ## Exact pre-publish commands
@@ -32,26 +33,25 @@ Run from repo root:
 
 ```bash
 npm ci
-npm run check
-npm run build
-npm run test:e2e
+npm run check:full
+npm run test:e2e:pr-smoke
 npm run doctor
 git status
 ```
 
-## Exact publish commands (manual approval required)
+## Exact publish commands
 
-Do not run these until publish is explicitly approved:
+Run these after `main` contains the release-prep commit:
 
 ```bash
 git pull --ff-only
-git tag -a v0.3.0 -m "Release v0.3.0"
 git push origin HEAD
-git push origin v0.3.0
+git tag -a v0.4.1 -m "Release v0.4.1"
+git push origin v0.4.1
 ```
 
 ## Optional GitHub release command
 
 ```bash
-gh release create v0.3.0 --title "qwen-ui-lab v0.3.0" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
+gh release create v0.4.1 --title "qwen-ui-lab v0.4.1" --notes-file docs/ops/RELEASE_NOTES_DRAFT.md
 ```

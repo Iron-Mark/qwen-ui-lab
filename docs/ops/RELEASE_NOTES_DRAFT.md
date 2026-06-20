@@ -1,5 +1,43 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.4.1
+
+Release date: 2026-06-21
+
+Patch release for upload safety and CI runtime reliability. This release keeps the public demo behavior unchanged while preventing oversized analysis uploads from reaching expensive client/server paths and moving GitHub Actions onto the Node 24 action/runtime line.
+
+### Fixes and hardening
+
+- Added shared upload constraints for PNG, JPEG, SVG, and WebP analysis inputs with a 4 MB cap.
+- Reused the same validation rules in the upload UI and `POST /api/analyze-ui` request normalization.
+- Added localized oversized-upload feedback before analysis starts.
+- Extended PR E2E smoke coverage with upload-flow checks for normal and oversized uploads.
+- Modernized GitHub Actions pins to Node 24-compatible action majors and added a regression test for workflow hygiene.
+- Updated CI and ops docs so the documented PR smoke suite and Node runtime match the workflows.
+
+### Verification snapshot
+
+- PR #7 checks passed on GitHub:
+  - `Lint, test, build`
+  - `E2E smoke (mobile + a11y + live contract + upload)`
+  - Vercel preview deployment and preview comments
+- Local verification before merge:
+  - `npm run check:full` - lint, 194 unit tests, and production build passed.
+  - `npm run test:e2e:pr-smoke` - 11 Playwright smoke tests passed.
+  - `git diff --check` - passed.
+- Release-prep verification on `0.4.1`:
+  - `npm run check:full` - lint, 194 unit tests, and production build passed.
+  - `npm run test:e2e` - 55 Playwright tests passed.
+  - `npm run doctor` - passed in offline demo mode.
+  - `npm run deploy:env:demo` - passed.
+  - `git diff --check` - passed.
+
+### Versioning
+
+- Package metadata: `0.4.1`
+- Recommended tag: `v0.4.1`
+- Release type: patch, because this is a backward-compatible fix/reliability release after `v0.4.0`.
+
 ## qwen-ui-lab v0.3.0
 
 Release date: 2026-06-20
