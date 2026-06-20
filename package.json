@@ -18,6 +18,7 @@
     "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
     "validate:prod": "node scripts/validate-prod-env.mjs --target=production",
     "validate:prod:preview": "node scripts/validate-prod-env.mjs --target=preview",
+    "prod:readiness": "node scripts/validate-prod-env.mjs --target=production",
     "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
     "smoke:live": "node scripts/staged-live-smoke.mjs",
     "smoke:staged": "node scripts/staged-live-smoke.mjs",

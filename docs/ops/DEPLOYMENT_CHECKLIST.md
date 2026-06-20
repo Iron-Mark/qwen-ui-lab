@@ -20,6 +20,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 
 - [ ] Validate demo-safe defaults (recommended): `npm run deploy:env:demo`
 - [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, demo-safe live)
+- [ ] Production env setup follows [PRODUCTION_ENV_READINESS.md](./PRODUCTION_ENV_READINESS.md).
 - [ ] Current public demo exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and `GITHUB_TOKEN`; this is acceptable only for offline-demo operation where durable share links and server-side Gist export are not required.
 - [ ] For live rollout only: `npm run deploy:env:live` (see **[docs/ops/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**)
 - [ ] `NEXT_PUBLIC_QWEN_API_KEY` is not set.

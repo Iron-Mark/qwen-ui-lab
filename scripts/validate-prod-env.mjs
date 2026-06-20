@@ -9,6 +9,8 @@
  */
 
 import { fileURLToPath } from "node:url";
+import fs from "node:fs";
+import path from "node:path";
 import { canUseGithubGist } from "../src/features/export/lib/github-gist.mjs";
 import { isRateLimitKvConfigured } from "../src/features/analysis/lib/analyze-ui-rate-limit-store.mjs";
 import { resolveErrorReportingTargets } from "../src/lib/error-reporting.mjs";
@@ -22,6 +24,54 @@ import {
 function trim(value) {
   if (value === undefined || value === null) return "";
   return String(value).trim();
+}
+
+/**
+ * @param {string} source
+ */
+export function parseEnvFileContent(source) {
+  const values = {};
+
+  for (const rawLine of String(source || "").split(/\r?\n/u)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+
+    const match = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$/u.exec(line);
+    if (!match) continue;
+
+    const [, key, rawValue] = match;
+    values[key] = normalizeEnvFileValue(rawValue);
+  }
+
+  return values;
+}
+
+/**
+ * @param {string} filePath
+ * @param {{ cwd?: string }} [options]
+ */
+export function loadEnvFile(filePath, { cwd = process.cwd() } = {}) {
+  const resolvedPath = path.resolve(cwd, filePath);
+  const source = fs.readFileSync(resolvedPath, "utf8");
+  return {
+    resolvedPath,
+    values: parseEnvFileContent(source),
+  };
+}
+
+function normalizeEnvFileValue(rawValue) {
+  let value = String(rawValue || "").trim();
+  const quote = value[0];
+
+  if ((quote === `"` || quote === `'`) && value.endsWith(quote)) {
+    value = value.slice(1, -1);
+    if (quote === `"`) {
+      value = value.replace(/\\n/gu, "\n").replace(/\\"/gu, `"`);
+    }
+    return value;
+  }
+
+  return value.replace(/\s+#.*$/u, "").trim();
 }
 
 function isValidUrl(raw) {
@@ -156,19 +206,32 @@ export function validateProdEnv(env = process.env, options = {}) {
   };
 }
 
-function parseTarget(argv) {
+function parseCliArgs(argv) {
   const arg = argv.find((item) => item.startsWith("--target="));
   const value = (arg ? arg.split("=")[1] : "production").toLowerCase();
   if (!["production", "preview"].includes(value)) {
     console.error("Invalid --target. Use --target=production or --target=preview.");
     process.exit(1);
   }
-  return value;
+  const envFileArg = argv.find((item) => item.startsWith("--env-file="));
+  const envFile = envFileArg ? envFileArg.split("=").slice(1).join("=") : "";
+
+  return { target: value, envFile };
 }
 
 function main() {
-  const target = parseTarget(process.argv.slice(2));
-  const result = validateProdEnv(process.env, { target });
+  const { target, envFile } = parseCliArgs(process.argv.slice(2));
+  let env = process.env;
+
+  if (envFile) {
+    const loaded = loadEnvFile(envFile);
+    env = { ...process.env, ...loaded.values };
+    console.log(
+      `Loaded env file: ${loaded.resolvedPath} (${Object.keys(loaded.values).length} keys, values hidden).`,
+    );
+  }
+
+  const result = validateProdEnv(env, { target });
 
   console.log(`Prod env validation target: ${result.target}`);
   console.log(`- KV configured: ${result.summary.kvConfigured ? "yes" : "no"}`);

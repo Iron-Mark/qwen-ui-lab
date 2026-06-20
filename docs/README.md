@@ -108,6 +108,7 @@ Operations docs:
 | [CI](./ops/CI.md) | GitHub Actions, E2E, visual, and performance gates. |
 | [Deployment checklist](./ops/DEPLOYMENT_CHECKLIST.md) | Go-live checks. |
 | [Production deploy lane](./ops/PRODUCTION_DEPLOY_LANE.md) | Demo-safe deploy policy. |
+| [Production env readiness](./ops/PRODUCTION_ENV_READINESS.md) | Required production envs and validation commands. |
 | [Live Qwen rollout](./ops/LIVE_QWEN_ROLLOUT.md) | Live-analysis rehearsal and rollback. |
 | [Offline demo E2E](./ops/OFFLINE_DEMO_E2E.md) | Deterministic test contract. |
 | [Observability](./ops/OBSERVABILITY.md) | Error and event monitoring. |

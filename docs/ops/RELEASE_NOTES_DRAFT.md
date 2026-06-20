@@ -1,5 +1,18 @@
 # Release Notes Draft
 
+## qwen-ui-lab v0.4.2 (draft)
+
+Release date: TBD
+
+Patch hardening release in progress for production readiness and branch governance.
+
+### In progress
+
+- Added explicit production env readiness docs for required KV, Gist, demo-safe live, and optional Sentry configuration.
+- Added `--env-file` support to `scripts/validate-prod-env.mjs` so private production env files can be validated locally without printing secret values.
+- Added `npm run prod:readiness` as the production env gate alias.
+- Protected `dev` against force pushes and branch deletion while keeping it lightweight for normal integration work.
+
 ## qwen-ui-lab v0.4.1
 
 Release date: 2026-06-21

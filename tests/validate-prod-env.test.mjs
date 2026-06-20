@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { validateProdEnv } from "../scripts/validate-prod-env.mjs";
+import { parseEnvFileContent, validateProdEnv } from "../scripts/validate-prod-env.mjs";
 
 const baseProd = {
   KV_REST_API_URL: "https://kv.example",
@@ -12,6 +12,36 @@ test("production passes with KV, gist, demo-safe live Qwen", () => {
   const result = validateProdEnv(baseProd, { target: "production" });
   assert.equal(result.ok, true);
   assert.equal(result.summary.liveAnalysisRequested, false);
+});
+
+test("parses production env file content without leaking comments", () => {
+  const parsed = parseEnvFileContent(`
+    # values are examples only
+    export KV_REST_API_URL=https://kv.example
+    KV_REST_API_TOKEN="token-value"
+    GITHUB_TOKEN='ghp_test'
+    NEXT_PUBLIC_OBSERVABILITY_ENABLED=false # inline comment
+  `);
+
+  assert.deepEqual(parsed, {
+    KV_REST_API_URL: "https://kv.example",
+    KV_REST_API_TOKEN: "token-value",
+    GITHUB_TOKEN: "ghp_test",
+    NEXT_PUBLIC_OBSERVABILITY_ENABLED: "false",
+  });
+});
+
+test("production validation passes with parsed env file content", () => {
+  const result = validateProdEnv(
+    parseEnvFileContent(`
+      KV_REST_API_URL=https://kv.example
+      KV_REST_API_TOKEN=token
+      GITHUB_TOKEN=ghp_test
+    `),
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, true);
 });
 
 test("production fails without KV", () => {
