@@ -155,6 +155,11 @@ test("inspectImageDataPixels extracts palette, contrast, and layout bands", () =
   assert.ok(inspection.palette.length >= 3);
   assert.equal(inspection.layout.topBand, true);
   assert.equal(inspection.layout.leftRail, true);
+  assert.equal(inspection.threshold.method, "otsu");
+  assert.ok(inspection.layout.regions.length > 0);
+  assert.ok(inspection.layout.componentSummary.navigation >= 1);
+  assert.match(inspection.designTokens.surface, /^#[0-9a-f]{6}$/i);
+  assert.match(inspection.designTokens.accent, /^#[0-9a-f]{6}$/i);
   assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
   assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
 });
@@ -274,10 +279,12 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
 
   assert.match(artifact.summary, /local pixel signals/i);
   assert.ok(artifact.plan.some((section) => section.title === "Local Vision Signals"));
+  assert.ok(artifact.plan.some((section) => section.title === "Detected Structure"));
+  assert.ok(artifact.plan.some((section) => section.title === "Design Tokens"));
   assert.ok(artifact.plan.some((section) => section.title === "Local Quality Checks"));
   assert.deepEqual(
     artifact.previewStats.map((stat) => stat.label),
-    ["Palette", "Contrast", "Density", "Layout"],
+    ["Regions", "Controls", "Density", "Contrast"],
   );
 });
 
