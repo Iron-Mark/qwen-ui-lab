@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AccountPageClient } from "@/app/account/AccountPageClient";
+import { AccountPageClient } from "@/features/account/components/AccountPageClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDictionary, resolveLocale } from "@/lib/i18n";
 import { createRouteMetadata } from "@/lib/seo";

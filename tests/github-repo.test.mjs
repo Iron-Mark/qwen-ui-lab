@@ -7,7 +7,7 @@ import {
   canUseGithubRepoExport,
   getGithubRepoExportConfig,
   parseGithubRepoSlug,
-} from "../src/lib/github-repo.mjs";
+} from "../src/features/export/lib/github-repo.mjs";
 
 test("canUseGithubRepoExport mirrors gist token detection", () => {
   assert.equal(canUseGithubRepoExport({}), false);

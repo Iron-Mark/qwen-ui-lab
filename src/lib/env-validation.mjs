@@ -1,4 +1,8 @@
-import { canUseLiveQwen, getQwenConfig, isLiveQwenAnalysisEnabled } from "./qwen-analyze.mjs";
+import {
+  canUseLiveQwen,
+  getQwenConfig,
+  isLiveQwenAnalysisEnabled,
+} from "../features/analysis/lib/qwen-analyze.mjs";
 
 const WARN_PREFIX = "[qwen-ui-lab env]";
 

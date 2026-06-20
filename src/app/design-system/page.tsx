@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { DesignSystemLcpHeader } from "@/components/design-system/DesignSystemLcpHeader";
+import { DesignSystemLcpHeader } from "@/features/design-system/components/DesignSystemLcpHeader";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 import { DesignSystemPreviewClient } from "./DesignSystemPreviewClient";
 

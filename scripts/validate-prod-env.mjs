@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Production / Preview host env validation (local or CI with env loaded).
- * Does not call Vercel APIs — compare against docs/LIVE_QWEN_ROLLOUT.md matrix.
+ * Does not call Vercel APIs — compare against docs/ops/LIVE_QWEN_ROLLOUT.md matrix.
  *
  * Usage:
  *   npm run validate:prod
@@ -9,15 +9,15 @@
  */
 
 import { fileURLToPath } from "node:url";
-import { canUseGithubGist } from "../src/lib/github-gist.mjs";
-import { isRateLimitKvConfigured } from "../src/lib/analyze-ui-rate-limit-store.mjs";
+import { canUseGithubGist } from "../src/features/export/lib/github-gist.mjs";
+import { isRateLimitKvConfigured } from "../src/features/analysis/lib/analyze-ui-rate-limit-store.mjs";
 import { resolveErrorReportingTargets } from "../src/lib/error-reporting.mjs";
 import { createObservabilityConfig } from "../src/lib/observability.mjs";
 import {
   canUseLiveQwen,
   getQwenConfig,
   isLiveQwenAnalysisEnabled,
-} from "../src/lib/qwen-analyze.mjs";
+} from "../src/features/analysis/lib/qwen-analyze.mjs";
 
 function trim(value) {
   if (value === undefined || value === null) return "";
@@ -69,7 +69,7 @@ export function validateProdEnv(env = process.env, options = {}) {
     }
     if (liveRequested) {
       failures.push(
-        "Production meetup host must stay demo-safe: unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN (see docs/LIVE_QWEN_ROLLOUT.md).",
+        "Production meetup host must stay demo-safe: unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN (see docs/ops/LIVE_QWEN_ROLLOUT.md).",
       );
     } else {
       notes.push("Live Qwen: demo-safe (flag unset/false) — documented production default.");
@@ -100,7 +100,7 @@ export function validateProdEnv(env = process.env, options = {}) {
           "Preview live env incomplete — need QWEN_LIVE_ANALYSIS=true, DASHSCOPE_API_KEY, and QWEN_MODEL.",
         );
       }
-      notes.push("Live Qwen: enabled on Preview — matches docs/LIVE_QWEN_ROLLOUT.md Stage A.");
+      notes.push("Live Qwen: enabled on Preview — matches docs/ops/LIVE_QWEN_ROLLOUT.md Stage A.");
     } else {
       notes.push("Live Qwen: disabled on Preview (demo-safe preview build).");
     }
@@ -132,7 +132,7 @@ export function validateProdEnv(env = process.env, options = {}) {
     notes.push("Sentry: DSN present but monitoring disabled (demo-safe default).");
   } else if (target === "production") {
     notes.push(
-      "Sentry: unset — demo-safe default. Enable observability + DSN per docs/OBSERVABILITY.md when ready.",
+      "Sentry: unset — demo-safe default. Enable observability + DSN per docs/ops/OBSERVABILITY.md when ready.",
     );
   } else {
     notes.push("Sentry: optional on Preview — enable with observability flags + DSN.");
@@ -194,7 +194,7 @@ function main() {
   }
 
   console.log("Prod env validation passed.");
-  console.log("See docs/LIVE_QWEN_ROLLOUT.md for the Vercel Production vs Preview matrix.");
+  console.log("See docs/ops/LIVE_QWEN_ROLLOUT.md for the Vercel Production vs Preview matrix.");
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

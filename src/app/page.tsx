@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { HomeBelowFoldClient } from "@/app/HomeBelowFoldClient";
-import { HomeMarketingHero } from "@/components/organisms/HomeMarketingHero";
+import { HomeBelowFoldClient } from "@/features/home/components/HomeBelowFoldClient";
+import { HomeMarketingHero } from "@/features/home/components/HomeMarketingHero";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
 import {
@@ -10,7 +10,7 @@ import {
   channelMixData,
   recentActivity,
   quickActions,
-} from "@/data/dashboard-data";
+} from "@/features/home/data/dashboard-data";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = createRouteMetadata({

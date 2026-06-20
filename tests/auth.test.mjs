@@ -14,7 +14,7 @@ import {
   normalizeDisplayName,
   requestMagicLink,
   setDisplayName,
-} from "../src/lib/auth.mjs";
+} from "../src/features/account/lib/auth.mjs";
 
 function createMemoryStorage() {
   /** @type {Map<string, string>} */

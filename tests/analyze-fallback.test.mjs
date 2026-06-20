@@ -8,12 +8,12 @@ import {
   fetchAnalyzeHealth,
   postAnalyzeUi,
   resolveAnalyzeOutcome,
-} from "../src/lib/analyze-outcome.mjs";
+} from "../src/features/analysis/lib/analyze-outcome.mjs";
 import {
   analyzeUiImageWithQwen,
   canUseLiveQwen,
   isLiveQwenAnalysisEnabled,
-} from "../src/lib/qwen-analyze.mjs";
+} from "../src/features/analysis/lib/qwen-analyze.mjs";
 
 const sampleFile = {
   name: "dashboard-reference.png",

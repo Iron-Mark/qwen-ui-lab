@@ -8,7 +8,7 @@ import {
   canUseLiveQwen,
   getQwenConfig,
   isLiveQwenAnalysisEnabled,
-} from "../src/lib/qwen-analyze.mjs";
+} from "../src/features/analysis/lib/qwen-analyze.mjs";
 
 function loadEnvLocal() {
   const path = ".env.local";

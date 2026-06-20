@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { DemoPageClient } from "@/app/demo/DemoPageClient";
-import { resolveDemoArchetype } from "@/lib/demo-archetypes.mjs";
+import { DemoPageClient } from "@/features/demo/components/DemoPageClient";
+import { resolveDemoArchetype } from "@/features/analysis/lib/demo-archetypes.mjs";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = createRouteMetadata({

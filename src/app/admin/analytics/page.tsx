@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createObservabilityConfig } from "@/lib/observability";
 import { createRouteMetadata } from "@/lib/seo";
-import { AnalyticsDashboardClient } from "./AnalyticsDashboardClient";
+import { AnalyticsDashboardClient } from "@/features/analytics/components/AnalyticsDashboardClient";
 
 function getServerObservabilityEnv() {
   return {

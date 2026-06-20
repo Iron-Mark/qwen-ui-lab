@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useProviderMode } from "@/lib/provider-mode";
 import { createClientErrorDispatch } from "@/lib/error-reporting.client";
-import { appendClientAnalyticsBuffer } from "@/lib/analytics-event-buffer";
+import { appendClientAnalyticsBuffer } from "@/features/analytics/lib/analytics-event-buffer";
 import {
   createMonitoringHooks,
   createObservabilityConfig,

@@ -5,7 +5,7 @@ import {
   isStandaloneDisplay,
   PWA_INSTALL_DISMISS_KEY,
   shouldOfferPwaInstall,
-} from "../src/lib/pwa-install.mjs";
+} from "../src/features/pwa/lib/pwa-install.mjs";
 
 describe("PWA install helpers", () => {
   it("exports a stable dismiss storage key", () => {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createStoredZip } from "../src/lib/scaffold-zip.mjs";
+import { createStoredZip } from "../src/features/export/lib/scaffold-zip.mjs";
 
 test("createStoredZip produces a readable zip with README and scaffold", () => {
   const archive = createStoredZip([

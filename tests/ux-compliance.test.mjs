@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildUiFlowArtifact } from "../src/lib/ui-flow.mjs";
+import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   evaluateUxCompliance,
   complianceSummary,
   inferArchetypeIdFromArtifact,
   getArchetypeHighlightLaws,
   lawOfUxCatalogHref,
-} from "../src/lib/ux-compliance.mjs";
+} from "../src/features/analysis/lib/ux-compliance.mjs";
 test("evaluateUxCompliance scores demo artifact", () => {
   const artifact = buildUiFlowArtifact({
     name: "dashboard-reference.png",

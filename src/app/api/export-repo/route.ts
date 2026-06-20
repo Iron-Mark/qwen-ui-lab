@@ -3,12 +3,12 @@ import {
   buildScaffoldZipEntries,
   canUseGithubRepoExport,
   getGithubRepoExportConfig,
-} from "@/lib/github-repo.mjs";
-import { sanitizeGistFilename } from "@/lib/github-gist.mjs";
+} from "@/features/export/lib/github-repo.mjs";
+import { sanitizeGistFilename } from "@/features/export/lib/github-gist.mjs";
 import {
   createStoredZip,
   SCAFFOLD_ZIP_FILENAME,
-} from "@/lib/scaffold-zip.mjs";
+} from "@/features/export/lib/scaffold-zip.mjs";
 
 export const runtime = "nodejs";
 

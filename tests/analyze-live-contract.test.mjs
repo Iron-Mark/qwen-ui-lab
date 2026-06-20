@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { postAnalyzeUi } from "../src/lib/analyze-outcome.mjs";
-import { analyzeUiImageWithQwen } from "../src/lib/qwen-analyze.mjs";
+import { postAnalyzeUi } from "../src/features/analysis/lib/analyze-outcome.mjs";
+import { analyzeUiImageWithQwen } from "../src/features/analysis/lib/qwen-analyze.mjs";
 import {
   MOCK_CI_API_KEY,
   MOCK_QWEN_ANALYSIS_JSON,
@@ -12,7 +12,7 @@ import {
   buildMockLiveQwenEnv,
   buildMockQwenChatCompletionResponse,
   LIVE_QWEN_HEALTH_RESPONSE,
-} from "../src/lib/qwen-mock-fixtures.mjs";
+} from "../src/features/analysis/lib/qwen-mock-fixtures.mjs";
 
 const sampleFile = {
   name: "dashboard-reference.png",
