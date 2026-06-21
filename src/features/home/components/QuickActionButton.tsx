@@ -4,7 +4,7 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
-import type { QuickActionData } from "@/features/home/data/dashboard-data";
+import type { QuickActionData } from "../data/dashboard-data";
 import { Button } from "@/components/ui/button";
 
 interface QuickActionButtonProps {

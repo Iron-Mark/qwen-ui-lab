@@ -1,9 +1,13 @@
-/** @typedef {{ v: 1; summary: string; stats: Array<{ l: string; v: string }>; mode: string; file: string }} ShareableResultSummary */
+/** @typedef {{ x: number; y: number; width: number; height: number }} ShareDetectionBox */
+/** @typedef {{ id: string; kind: string; primitive: string; confidence: number; included: boolean; userEdited: boolean; box: ShareDetectionBox }} ShareDetectionElement */
+/** @typedef {{ source: { width: number; height: number }; designTokens: Record<string, string>; quality: { confidence: number | null; ambiguity: string; strategy: string; elementCount: number }; elements: ShareDetectionElement[] }} ShareDetectionPayload */
+/** @typedef {{ v: 1; summary: string; stats: Array<{ l: string; v: string }>; mode: string; file: string; detections?: ShareDetectionPayload }} ShareableResultSummary */
 
 export const SHARE_HASH_PREFIX = "share=";
 export const SHARE_SESSION_KEY = "qwen-ui-lab:last-share";
 const MAX_SUMMARY_CHARS = 480;
 const MAX_STATS = 6;
+const MAX_DETECTION_ELEMENTS = 24;
 
 function truncate(input, max) {
   if (typeof input !== "string") return "";
@@ -14,7 +18,7 @@ function truncate(input, max) {
 
 /**
  * Build a read-only, secret-free payload from an analyze artifact.
- * @param {{ summary?: string; previewStats?: Array<{ label: string; value: string }>; modeLabel?: string; file?: { name?: string } | string }} artifact
+ * @param {{ summary?: string; previewStats?: Array<{ label: string; value: string }>; modeLabel?: string; file?: { name?: string } | string; detections?: unknown }} artifact
  * @returns {ShareableResultSummary | null}
  */
 export function buildShareableSummary(artifact) {
@@ -40,13 +44,91 @@ export function buildShareableSummary(artifact) {
         .filter((stat) => stat.l && stat.v)
     : [];
 
+  const detectionSummary = sanitizeShareDetections(artifact.detections);
+
   return {
     v: 1,
     summary,
     stats,
     mode: truncate(String(artifact.modeLabel ?? "Local demo mode"), 60),
     file: truncate(fileName, 80),
+    ...(detectionSummary ? { detections: detectionSummary } : {}),
   };
+}
+
+function sanitizeShareDetections(detections) {
+  if (!detections || typeof detections !== "object" || !Array.isArray(detections.elements)) {
+    return null;
+  }
+
+  const source = {
+    width: clampShareNumber(detections.source?.width, 1, 10000, 1440),
+    height: clampShareNumber(detections.source?.height, 1, 10000, 900),
+  };
+  const elements = detections.elements
+    .slice(0, MAX_DETECTION_ELEMENTS)
+    .map((element, index) => sanitizeShareDetectionElement(element, index, source))
+    .filter(Boolean);
+  if (!elements.length) return null;
+
+  return {
+    source,
+    designTokens: sanitizeShareDesignTokens(detections.designTokens),
+    quality: {
+      confidence:
+        typeof detections.quality?.confidence === "number"
+          ? clampShareNumber(detections.quality.confidence, 0, 1, 0)
+          : null,
+      ambiguity: truncate(String(detections.quality?.ambiguity ?? "unknown"), 24),
+      strategy: truncate(String(detections.quality?.strategy ?? "local"), 48),
+      elementCount: clampShareNumber(
+        detections.quality?.elementCount ?? elements.length,
+        0,
+        MAX_DETECTION_ELEMENTS,
+        elements.length,
+      ),
+    },
+    elements,
+  };
+}
+
+function sanitizeShareDetectionElement(element, index, source) {
+  if (!element || typeof element !== "object") return null;
+  const box = sanitizeShareBox(element.box, source);
+  if (!box) return null;
+
+  return {
+    id: truncate(String(element.id ?? `element-${index + 1}`), 40),
+    kind: truncate(String(element.kind ?? "content-block"), 40),
+    primitive: truncate(String(element.primitive ?? element.kind ?? "section"), 40),
+    confidence: clampShareNumber(element.confidence, 0, 1, 0.5),
+    included: element.included !== false,
+    userEdited: Boolean(element.userEdited),
+    box,
+  };
+}
+
+function sanitizeShareBox(box, source) {
+  if (!box || typeof box !== "object") return null;
+  const width = clampShareNumber(box.width, 1, source.width, 1);
+  const height = clampShareNumber(box.height, 1, source.height, 1);
+  return {
+    x: clampShareNumber(box.x, 0, source.width - width, 0),
+    y: clampShareNumber(box.y, 0, source.height - height, 0),
+    width,
+    height,
+  };
+}
+
+function sanitizeShareDesignTokens(tokens) {
+  const safeTokens = {};
+  for (const key of ["surface", "foreground", "accent", "accentForeground", "muted", "border"]) {
+    const value = typeof tokens?.[key] === "string" ? tokens[key] : "";
+    if (/^#[0-9a-f]{6}$/i.test(value)) {
+      safeTokens[key] = value;
+    }
+  }
+  return safeTokens;
 }
 
 function toBase64Url(value) {
@@ -111,10 +193,21 @@ export function decodeShareHash(hash) {
         .filter((stat) => stat.l && stat.v),
       mode: truncate(String(parsed.mode ?? "Local demo mode"), 60),
       file: truncate(String(parsed.file ?? "screenshot"), 80),
+      ...(sanitizeShareDetections(parsed.detections)
+        ? { detections: sanitizeShareDetections(parsed.detections) }
+        : {}),
     };
   } catch {
     return null;
   }
+}
+
+function clampShareNumber(value, min, max, fallback) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return Math.max(min, Math.min(max, fallback));
+  }
+  return Math.max(min, Math.min(max, parsed || fallback));
 }
 
 /**
@@ -164,49 +257,4 @@ export async function createShortShareLink(origin, payload) {
     id: data.id,
     url: typeof data.url === "string" ? data.url : buildShortShareUrl(origin, data.id),
   };
-}
-
-/**
- * @param {ShareableResultSummary} payload
- */
-export function persistShareSummary(payload) {
-  if (typeof sessionStorage === "undefined") return;
-  try {
-    sessionStorage.setItem(SHARE_SESSION_KEY, JSON.stringify(payload));
-  } catch {
-    // quota / private mode
-  }
-}
-
-/**
- * @returns {ShareableResultSummary | null}
- */
-export function readShareFromSession() {
-  if (typeof sessionStorage === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(SHARE_SESSION_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return buildShareableSummary({
-      summary: parsed?.summary,
-      previewStats: Array.isArray(parsed?.stats)
-        ? parsed.stats.map((stat) => ({ label: stat.l, value: stat.v }))
-        : [],
-      modeLabel: parsed?.mode,
-      file: parsed?.file,
-    });
-  } catch {
-    return null;
-  }
-}
-
-/**
- * @param {string} [hash]
- */
-export function readShareFromLocation(hash) {
-  if (typeof hash === "string") {
-    return decodeShareHash(hash);
-  }
-  if (typeof window === "undefined") return null;
-  return decodeShareHash(window.location.hash);
 }

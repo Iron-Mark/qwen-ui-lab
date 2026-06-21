@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { StatCardData } from "@/features/home/data/dashboard-data";
+import type { StatCardData } from "../data/dashboard-data";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface StatCardProps {

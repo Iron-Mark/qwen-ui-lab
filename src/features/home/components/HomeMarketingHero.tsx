@@ -15,9 +15,10 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
-import { localizedHref, useLocale } from "@/lib/i18n";
-import { useProviderMode } from "@/lib/provider-mode";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { cn } from "@/lib/utils";
 
 export function HomeMarketingHero() {

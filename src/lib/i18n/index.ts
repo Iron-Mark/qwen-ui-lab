@@ -33,7 +33,6 @@ export {
 } from "./translate-analyze-step";
 export { interpolate } from "./interpolate";
 export { localizedHref } from "./localized-href";
-export { useLocale } from "./use-locale";
 export type {
   Dictionary,
   AccountDictionary,

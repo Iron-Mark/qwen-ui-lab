@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import { ExportButton } from "@/features/export/components/ExportButton";
-import { CodeHighlight } from "@/features/analysis/components/CodeHighlight";
+import { CodeHighlight } from "./CodeHighlight";
 
 interface SnippetPreviewProps {
   code: string;

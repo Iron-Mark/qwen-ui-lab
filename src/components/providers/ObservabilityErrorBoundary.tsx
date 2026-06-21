@@ -2,9 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import type { ComponentProps } from "react";
-import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
-import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useProviderMode } from "@/lib/provider-mode";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { useObservability } from "./ObservabilityProvider";
+import { useProviderMode } from "./ProviderModeProvider";
 
 type ErrorBoundaryProps = ComponentProps<typeof ErrorBoundary>;
 

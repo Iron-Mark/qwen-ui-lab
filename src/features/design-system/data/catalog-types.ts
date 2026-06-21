@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { LawOfUxId } from "./lawsOfUx";
+import type { LawOfUxId } from "@/lib/laws-of-ux";
 import type { UiLawId } from "./uilaws";
 
 export type AtomicLevel = "atom" | "molecule" | "organism";

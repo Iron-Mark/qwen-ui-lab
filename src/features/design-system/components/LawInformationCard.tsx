@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { UiLawId } from "@/features/design-system/data/uilaws";
-import { lawNames } from "@/features/design-system/data/uilaws";
+import type { UiLawId } from "../data/uilaws";
+import { lawNames } from "../data/uilaws";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {

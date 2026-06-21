@@ -8,7 +8,7 @@ import {
   isStandaloneDisplay,
   PWA_INSTALL_DISMISS_KEY,
   shouldOfferPwaInstall,
-} from "@/features/pwa/lib/pwa-install.mjs";
+} from "../lib/pwa-install.mjs";
 import { cn } from "@/lib/utils";
 
 interface BeforeInstallPromptEvent extends Event {

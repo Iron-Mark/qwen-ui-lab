@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildGithubGistUnavailablePayload,
   canUseGithubGist,
   createGithubGist,
   getGithubGistToken,
@@ -16,6 +17,20 @@ test("canUseGithubGist is false without token", () => {
 test("canUseGithubGist is true with trimmed token", () => {
   assert.equal(canUseGithubGist({ GITHUB_TOKEN: "ghp_test" }), true);
   assert.equal(getGithubGistToken({ GITHUB_TOKEN: " ghp_test " }), "ghp_test");
+});
+
+test("buildGithubGistUnavailablePayload returns fallback instructions", () => {
+  assert.deepEqual(buildGithubGistUnavailablePayload(), {
+    ok: false,
+    code: "gist_unavailable",
+    message:
+      "GitHub Gist export is not configured. Set GITHUB_TOKEN on the server.",
+    fallback: {
+      gistUrl: "https://gist.github.com",
+      instructions:
+        "Copy your scaffold code, open gist.github.com, paste into a new secret gist, and save.",
+    },
+  });
 });
 
 test("sanitizeGistFilename normalizes unsafe names", () => {

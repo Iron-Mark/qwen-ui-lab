@@ -9,9 +9,12 @@ import {
   inferArchetypeIdFromArtifact,
   getArchetypeHighlightLaws,
   lawOfUxCatalogHref,
-} from "@/features/analysis/lib/ux-compliance.mjs";
-import type { UxComplianceArtifact } from "@/features/analysis/lib/ux-compliance.d.ts";
-import { LAWS_OF_UX_SITE, lawOfUxById } from "@/features/design-system/data/lawsOfUx";
+} from "../lib/ux-compliance.mjs";
+import type { UxComplianceArtifact } from "../lib/ux-compliance.d.ts";
+import {
+  LAWS_OF_UX_SITE,
+  lawOfUxById,
+} from "@/lib/laws-of-ux";
 import {
   Dialog,
   DialogContent,

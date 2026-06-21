@@ -1,95 +1,20 @@
-import { Suspense } from "react";
-import { HomeBelowFoldClient } from "@/features/home/components/HomeBelowFoldClient";
-import { HomeMarketingHero } from "@/features/home/components/HomeMarketingHero";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from "next";
+import { StructuredDataScript } from "@/components/layout/StructuredDataScript";
+import { HomePageContent } from "@/features/home/components/HomePageContent";
 import {
-  stats,
-  revenueData,
-  performanceData,
-  channelMixData,
-  recentActivity,
-  quickActions,
-} from "@/features/home/data/dashboard-data";
-import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
+  createHomeRouteMetadata,
+  createHomeRouteStructuredData,
+} from "@/features/home/lib/home-route";
 
-export const metadata: Metadata = createRouteMetadata({
-  title: "Live Meetup Demo",
-  description:
-    "Demo-safe workflow: upload a UI screenshot, analyze layout with Qwen3-VL, and export React + Tailwind scaffolds—no API key required on stage.",
-  path: "/",
-  keywords: [
-    "Qwen meetup demo",
-    "UI screenshot to React",
-    "Qwen3-VL scaffolding",
-    "Tailwind component generator",
-    "offline demo mode",
-  ],
-  ogImage: "/opengraph-image",
-  ogImageAlt: "qwen-ui-lab — screenshot to React scaffold meetup demo",
-  twitterImage: "/twitter-image",
-  twitterImageAlt: "qwen-ui-lab live demo for mass presentation",
-  shareSnippet:
-    "Meetup-ready demo: screenshot → analyze → React/Tailwind scaffold in minutes, offline-safe.",
-});
+export const metadata: Metadata = createHomeRouteMetadata();
 
 export default function Home() {
-  const structuredData = createRouteStructuredData({
-    title: "Live Meetup Demo",
-    description:
-      "Demo-safe workflow: upload a UI screenshot, analyze layout with Qwen3-VL, and export React + Tailwind scaffolds—no API key required on stage.",
-    path: "/",
-    breadcrumbLabel: "Live demo",
-    about: ["UI screenshot analysis", "React scaffolding", "Meetup presentation"],
-    callToAction:
-      "Turn UI screenshots into scaffold-ready React with an offline-safe meetup demo.",
-    additionalGraph: [
-      {
-        "@type": "SoftwareApplication",
-        name: "qwen-ui-lab dashboard workflow",
-        applicationCategory: "DeveloperApplication",
-        operatingSystem: "Web",
-        offers: {
-          "@type": "Offer",
-          price: "0",
-          priceCurrency: "USD",
-        },
-        featureList: [
-          "Screenshot upload flow",
-          "AI analysis summary",
-          "React + Tailwind scaffold export",
-        ],
-      },
-    ],
-  });
+  const structuredData = createHomeRouteStructuredData();
 
   return (
     <main className="relative">
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={structuredData}
-      />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(circle_at_top,oklch(0.97_0_0),transparent_65%)] dark:bg-[radial-gradient(circle_at_top,oklch(0.26_0_0),transparent_65%)]" />
-      <div className="relative">
-        <Suspense
-          fallback={
-            <div className="border-b border-border/60 bg-card/30 py-12">
-              <Skeleton className="mx-auto h-40 max-w-3xl" />
-            </div>
-          }
-        >
-          <HomeMarketingHero />
-        </Suspense>
-        <HomeBelowFoldClient
-          stats={stats}
-          revenueData={revenueData}
-          performanceData={performanceData}
-          channelMixData={channelMixData}
-          activities={recentActivity}
-          quickActions={quickActions}
-        />
-      </div>
+      <StructuredDataScript data={structuredData} />
+      <HomePageContent />
     </main>
   );
 }

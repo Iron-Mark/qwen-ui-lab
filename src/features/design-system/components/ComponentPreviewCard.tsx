@@ -9,13 +9,13 @@ import type {
   CatalogDomain,
   CatalogPropDoc,
   CatalogVariant,
-} from "@/features/design-system/data/catalog-types";
-import { lawNames, type UiLawId } from "@/features/design-system/data/uilaws";
+} from "../data/catalog-types";
+import { lawNames, type UiLawId } from "../data/uilaws";
 import { ExportButton } from "@/features/export/components/ExportButton";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useToast } from "@/components/providers/Toast";
-import { useProviderMode } from "@/lib/provider-mode";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { SnippetPreview } from "@/features/analysis/components/SnippetPreview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

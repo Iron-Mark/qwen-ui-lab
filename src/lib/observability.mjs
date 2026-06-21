@@ -60,10 +60,6 @@ function safeRoutePath(inputRoute) {
     return inputRoute.split("?")[0] ?? "/";
   }
 
-  if (typeof window !== "undefined" && window.location?.pathname) {
-    return window.location.pathname;
-  }
-
   return "/";
 }
 

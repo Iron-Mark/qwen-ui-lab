@@ -1,10 +1,10 @@
 import { PageContainer } from "@/components/layout/PageContainer";
-import { StatCard } from "@/features/home/components/StatCard";
-import { RevenueCard } from "@/features/home/components/RevenueCard";
-import { ActivityList } from "@/features/home/components/ActivityList";
-import { QuickActionButton } from "@/features/home/components/QuickActionButton";
-import { ChartPreview } from "@/features/home/components/ChartPreview";
-import { WorkflowBanner } from "@/features/home/components/WorkflowBanner";
+import { StatCard } from "./StatCard";
+import { RevenueCard } from "./RevenueCard";
+import { ActivityList } from "./ActivityList";
+import { QuickActionButton } from "./QuickActionButton";
+import { ChartPreview } from "./ChartPreview";
+import { WorkflowBanner } from "./WorkflowBanner";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
 import { Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import type {
   QuickActionData,
   PerformanceDataPoint,
   ChannelMixPoint,
-} from "@/features/home/data/dashboard-data";
+} from "../data/dashboard-data";
 
 interface DashboardShellProps {
   stats: StatCardData[];

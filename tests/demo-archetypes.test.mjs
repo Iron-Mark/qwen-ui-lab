@@ -3,11 +3,13 @@ import assert from "node:assert/strict";
 
 import {
   DEMO_ARCHETYPE_QUERY_VALUES,
-  demoArchetypeExportFilename,
   demoArchetypeLabel,
-  getDemoArchetypeSample,
   resolveDemoArchetype,
-} from "../src/features/analysis/lib/demo-archetypes.mjs";
+} from "../src/features/demo/lib/demo-archetypes.mjs";
+import {
+  getReferenceSampleById,
+  referenceSampleExportFilename,
+} from "../src/features/analysis/lib/reference-samples.mjs";
 
 test("resolveDemoArchetype maps shop to ecommerce sample", () => {
   assert.equal(resolveDemoArchetype("shop"), "ecommerce");
@@ -16,14 +18,14 @@ test("resolveDemoArchetype maps shop to ecommerce sample", () => {
   assert.equal(resolveDemoArchetype("unknown"), "dashboard");
 });
 
-test("demoArchetypeExportFilename uses readable slug", () => {
-  assert.equal(demoArchetypeExportFilename("dashboard"), "generated-dashboard.tsx");
-  assert.equal(demoArchetypeExportFilename("ecommerce"), "generated-shop.tsx");
-  assert.equal(demoArchetypeExportFilename("auth"), "generated-auth.tsx");
+test("referenceSampleExportFilename uses readable slug", () => {
+  assert.equal(referenceSampleExportFilename("dashboard"), "generated-dashboard.tsx");
+  assert.equal(referenceSampleExportFilename("ecommerce"), "generated-shop.tsx");
+  assert.equal(referenceSampleExportFilename("auth"), "generated-auth.tsx");
 });
 
-test("getDemoArchetypeSample returns bundled reference metadata", () => {
-  const sample = getDemoArchetypeSample("mobile");
+test("demo archetype labels match bundled reference metadata", () => {
+  const sample = getReferenceSampleById("mobile");
   assert.equal(sample.id, "mobile");
   assert.equal(sample.fileName, "mobile-reference.png");
   assert.ok(demoArchetypeLabel("landing").toLowerCase().includes("landing"));

@@ -1,9 +1,14 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  DEFAULT_BRAND_THEME,
+  isBrandTheme,
+  type BrandTheme,
+} from "@/lib/theme-bootstrap.client";
 
 type Theme = "light" | "dark";
-export type BrandTheme = "indigo" | "emerald" | "sunset";
+export type { BrandTheme } from "@/lib/theme-bootstrap.client";
 
 /** Light-mode `--primary` from globals.css per brand (dropdown swatches). */
 export const BRAND_THEME_SWATCH: Record<BrandTheme, string> = {
@@ -29,10 +34,10 @@ function getInitialTheme(): Theme {
 }
 
 function getInitialBrandTheme(): BrandTheme {
-  if (typeof window === "undefined") return "indigo";
-  const stored = localStorage.getItem("brand-theme") as BrandTheme | null;
-  if (stored === "indigo" || stored === "emerald" || stored === "sunset") return stored;
-  return "indigo";
+  if (typeof window === "undefined") return DEFAULT_BRAND_THEME;
+  const stored = localStorage.getItem("brand-theme");
+  if (isBrandTheme(stored)) return stored;
+  return DEFAULT_BRAND_THEME;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -71,7 +76,7 @@ export function useTheme() {
   if (!context) {
     return {
       theme: "light" as Theme,
-      brandTheme: "indigo" as BrandTheme,
+      brandTheme: DEFAULT_BRAND_THEME,
       toggleTheme: () => {},
       setBrandTheme: () => {},
     };

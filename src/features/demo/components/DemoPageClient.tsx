@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Sparkles } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/badge";
-import { demoArchetypeLabel } from "@/features/analysis/lib/demo-archetypes.mjs";
+import { demoArchetypeLabel } from "../lib/demo-archetypes.mjs";
 
 const UploadFlow = dynamic(
   () => import("@/features/analysis/components/UploadFlow").then((mod) => mod.UploadFlow),

@@ -9,6 +9,7 @@ import {
   formatFileSize,
 } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
+  buildAnalyzeHealthResponse,
   buildQwenVisionRequest,
   canUseLiveQwen,
   getQwenConfig,
@@ -80,6 +81,34 @@ test("canUseLiveQwen requires explicit QWEN_LIVE_ANALYSIS", () => {
     true,
   );
   assert.equal(isLiveQwenAnalysisEnabled({ USE_LIVE_QWEN: "yes" }), true);
+});
+
+test("buildAnalyzeHealthResponse reports demo and live provider state", () => {
+  assert.deepEqual(buildAnalyzeHealthResponse({}), {
+    ok: true,
+    provider: "demo",
+    hasApiKey: false,
+    liveAnalysisEnabled: false,
+    model: null,
+    baseUrl: null,
+  });
+
+  assert.deepEqual(
+    buildAnalyzeHealthResponse({
+      DASHSCOPE_API_KEY: "secret",
+      QWEN_LIVE_ANALYSIS: "true",
+      QWEN_MODEL: "qwen-test",
+      QWEN_BASE_URL: "https://example.test/v1",
+    }),
+    {
+      ok: true,
+      provider: "qwen",
+      hasApiKey: true,
+      liveAnalysisEnabled: true,
+      model: "qwen-test",
+      baseUrl: "https://example.test/v1",
+    },
+  );
 });
 
 test("buildQwenVisionRequest uses OpenAI-compatible image_url content", () => {

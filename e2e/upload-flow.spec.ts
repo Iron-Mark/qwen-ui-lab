@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
+import fs from "node:fs/promises";
 import path from "node:path";
 import {
   mockAnalyzeApiForE2E,
@@ -38,6 +39,94 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
     timeout: 10_000,
   });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
+  await expect(page.getByTestId("detection-overlay-count")).toContainText(/detected/i);
+  const movableDetectionIndex = await page
+    .getByTestId("detection-box")
+    .evaluateAll((boxes) => {
+      const overlay = document
+        .querySelector('[data-testid="detection-overlay"]')
+        ?.getBoundingClientRect();
+      if (!overlay) return -1;
+      return boxes.findIndex((box) => {
+        const rect = box.getBoundingClientRect();
+        return (
+          rect.width < overlay.width * 0.85 &&
+          rect.height < overlay.height * 0.85 &&
+          rect.right < overlay.right - 12 &&
+          rect.bottom < overlay.bottom - 12
+        );
+      });
+    });
+  expect(movableDetectionIndex).toBeGreaterThanOrEqual(0);
+  const firstDetectionBox = page.getByTestId("detection-box").nth(movableDetectionIndex);
+  await expect(firstDetectionBox).toBeVisible();
+  await expect(page.getByTestId("detector-quality-dashboard")).toBeVisible();
+  await expect(page.getByTestId("visual-diff-score")).toContainText(/% visual match/i);
+  await expect(page.getByTestId("undo-detection-edit")).toBeDisabled();
+
+  const initialBox = await firstDetectionBox.boundingBox();
+  expect(initialBox).toBeTruthy();
+  await dragPointerBy(firstDetectionBox, page, 24, 12);
+  await expect
+    .poll(async () => {
+      const movedBox = await firstDetectionBox.boundingBox();
+      return Math.round((movedBox?.x ?? initialBox!.x) - initialBox!.x);
+    })
+    .not.toBe(0);
+
+  const resizeHandle = firstDetectionBox.getByTestId("detection-resize-handle-se");
+  const beforeResize = await firstDetectionBox.boundingBox();
+  const resizeBox = await resizeHandle.boundingBox();
+  expect(resizeBox).toBeTruthy();
+  await dragPointerBy(resizeHandle, page, 28, 16);
+  await expect
+    .poll(async () => {
+      const afterResize = await firstDetectionBox.boundingBox();
+      return Math.round((afterResize?.width ?? beforeResize!.width) - beforeResize!.width);
+    })
+    .not.toBe(0);
+
+  const editedDetectionId = await firstDetectionBox.getAttribute("data-detection-id");
+  expect(editedDetectionId).toBeTruthy();
+  await firstDetectionBox.click();
+  await expect(page.getByTestId("detection-details")).toBeVisible();
+  await expect(page.getByTestId("detection-details")).toContainText(/confidence/i);
+  await page.getByTestId("detection-kind-select").selectOption("button-or-input");
+  await expect(page.getByTestId("undo-detection-edit")).toBeEnabled();
+  await page.getByTestId("undo-detection-edit").click();
+  await page.getByTestId("redo-detection-edit").click();
+  await expect(page.getByTestId("detection-kind-select")).toHaveValue("button-or-input");
+  await page.getByTestId("toggle-detection-include").click();
+  await expect(page.getByTestId("detection-overlay-count")).toContainText(/active/i);
+  await page.getByTestId("snap-detections-grid").click();
+
+  const jsonDownloadPromise = page.waitForEvent("download");
+  await page.getByTestId("export-detections-json").click();
+  const jsonDownload = await jsonDownloadPromise;
+  expect(jsonDownload.suggestedFilename()).toMatch(/\.detections\.json$/);
+  const jsonPath = await jsonDownload.path();
+  expect(jsonPath).toBeTruthy();
+  const exportedDetections = JSON.parse(await fs.readFile(jsonPath!, "utf8"));
+  const exportedEditedElement = exportedDetections.detections.elements.find(
+    (element: { id: string }) => element.id === editedDetectionId,
+  );
+  expect(exportedEditedElement.kind).toBe("button-or-input");
+  expect(exportedEditedElement.included).toBe(false);
+  expect(exportedEditedElement.userEdited).toBe(true);
+
+  await page.getByRole("button", {
+    name: /generate preview|regenerate preview/i,
+  }).click();
+  await expect(page.getByTestId("generated-comparison-preview")).toBeVisible();
+  await expect(page.getByTestId("generated-mock-element").first()).toBeVisible();
+  await expect(
+    page.locator(
+      `[data-testid="generated-mock-element"][data-detection-id="${editedDetectionId}"]`,
+    ),
+  ).toHaveCount(0);
+
+  await page.getByTestId("toggle-detection-overlay").click();
+  await expect(page.getByTestId("detection-box")).toHaveCount(0);
 
   await page.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Scaffold copied/i)).toBeVisible({
@@ -61,6 +150,31 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(page.getByText(/Scaffold zip downloaded/i)).toBeVisible({
     timeout: 5_000,
   });
+
+  await page.evaluate(() => {
+    (window as typeof window & { __copiedText?: string }).__copiedText = undefined;
+  });
+  await page.getByTestId("copy-share-link").click();
+  let copiedShareUrl: string | undefined;
+  await expect
+    .poll(
+      async () => {
+        copiedShareUrl = await page.evaluate(
+          () => (window as typeof window & { __copiedText?: string }).__copiedText,
+        );
+        return copiedShareUrl ?? "";
+      },
+      { timeout: 10_000 },
+    )
+    .toContain("/share/");
+  expect(copiedShareUrl).toContain("/share/");
+  await page.goto(new URL(copiedShareUrl!).pathname);
+  await expect(page.getByTestId("shared-detection-preview")).toBeVisible();
+  await expect(
+    page.locator(
+      `[data-testid="shared-detection-element"][data-detection-id="${editedDetectionId}"]`,
+    ),
+  ).toHaveCount(0);
 });
 
 test("oversized uploads are rejected before analysis", async ({ page }) => {
@@ -80,3 +194,59 @@ test("oversized uploads are rejected before analysis", async ({ page }) => {
     }),
   ).toBeDisabled();
 });
+
+async function dragPointerBy(
+  locator: Locator,
+  page: Page,
+  deltaX: number,
+  deltaY: number,
+) {
+  const box = await locator.boundingBox();
+  expect(box).toBeTruthy();
+  const startX = box!.x + box!.width / 2;
+  const startY = box!.y + box!.height / 2;
+  await locator.dispatchEvent("pointerdown", {
+    bubbles: true,
+    cancelable: true,
+    clientX: startX,
+    clientY: startY,
+    pointerId: 1,
+    pointerType: "mouse",
+    isPrimary: true,
+    buttons: 1,
+  });
+  await page.evaluate(
+    ({ clientX, clientY }) => {
+      window.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          cancelable: true,
+          clientX,
+          clientY,
+          pointerId: 1,
+          pointerType: "mouse",
+          isPrimary: true,
+          buttons: 1,
+        }),
+      );
+    },
+    { clientX: startX + deltaX, clientY: startY + deltaY },
+  );
+  await page.evaluate(
+    ({ clientX, clientY }) => {
+      window.dispatchEvent(
+        new PointerEvent("pointerup", {
+          bubbles: true,
+          cancelable: true,
+          clientX,
+          clientY,
+          pointerId: 1,
+          pointerType: "mouse",
+          isPrimary: true,
+          buttons: 0,
+        }),
+      );
+    },
+    { clientX: startX + deltaX, clientY: startY + deltaY },
+  );
+}

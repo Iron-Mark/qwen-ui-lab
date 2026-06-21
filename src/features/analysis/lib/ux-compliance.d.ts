@@ -1,4 +1,4 @@
-import type { LawOfUxId } from "@/features/design-system/data/lawsOfUx";
+import type { LawOfUxId } from "@/lib/laws-of-ux";
 
 export type ComplianceStatus = "met" | "partial" | "review";
 export type ComplianceSurface = "upload-flow" | "dashboard" | "scaffold" | "catalog";

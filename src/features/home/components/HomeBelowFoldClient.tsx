@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 import { PageContainer } from "@/components/layout/PageContainer";
-import type {
-  ActivityData,
-  ChannelMixPoint,
-  PerformanceDataPoint,
-  QuickActionData,
-  RevenueDataPoint,
-  StatCardData,
-} from "@/features/home/data/dashboard-data";
+import {
+  channelMixData,
+  performanceData,
+  quickActions,
+  recentActivity,
+  revenueData,
+  stats,
+} from "../data/dashboard-data";
 
 const UploadFlow = dynamic(
   () => import("@/features/analysis/components/UploadFlow").then((mod) => mod.UploadFlow),
@@ -30,7 +30,7 @@ const UploadFlow = dynamic(
 
 const DashboardShell = dynamic(
   () =>
-    import("@/features/home/components/DashboardShell").then((mod) => mod.DashboardShell),
+    import("./DashboardShell").then((mod) => mod.DashboardShell),
   {
     ssr: false,
     loading: () => (
@@ -41,23 +41,7 @@ const DashboardShell = dynamic(
   },
 );
 
-export interface HomeBelowFoldClientProps {
-  stats: StatCardData[];
-  revenueData: RevenueDataPoint[];
-  performanceData: PerformanceDataPoint[];
-  channelMixData: ChannelMixPoint[];
-  activities: ActivityData[];
-  quickActions: QuickActionData[];
-}
-
-export function HomeBelowFoldClient({
-  stats,
-  revenueData,
-  performanceData,
-  channelMixData,
-  activities,
-  quickActions,
-}: HomeBelowFoldClientProps) {
+export function HomeBelowFoldClient() {
   return (
     <>
       <UploadFlow />
@@ -67,7 +51,7 @@ export function HomeBelowFoldClient({
           revenueData={revenueData}
           performanceData={performanceData}
           channelMixData={channelMixData}
-          activities={activities}
+          activities={recentActivity}
           quickActions={quickActions}
         />
       </div>

@@ -10,7 +10,9 @@ export const E2E_HEALTH_JSON = demoFixtures.health;
 /** Headless Chromium often lacks a working clipboard API; stub so Copy/Export succeed. */
 export async function stubClipboardForE2E(page: Page) {
   await page.addInitScript(() => {
-    const writeText = async () => {};
+    const writeText = async (value: string) => {
+      (window as typeof window & { __copiedText?: string }).__copiedText = value;
+    };
     if (navigator.clipboard) {
       navigator.clipboard.writeText = writeText;
     } else {

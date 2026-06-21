@@ -2,10 +2,10 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { Toaster } from "@/components/ui/sonner";
+import type { Toaster } from "./SonnerToaster";
 
 const ToasterLazy = dynamic(
-  () => import("@/components/ui/sonner").then((mod) => ({ default: mod.Toaster })),
+  () => import("./SonnerToaster").then((mod) => ({ default: mod.Toaster })),
   { ssr: false },
 );
 

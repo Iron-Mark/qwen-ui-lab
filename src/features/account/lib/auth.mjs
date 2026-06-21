@@ -43,7 +43,7 @@ export function deriveDisplayNameFromEmail(email) {
  */
 const GUEST_STATE = /** @type {AuthState} */ ({ mode: "guest" });
 
-export function loadAuthState(storage = getSessionStorage()) {
+export function loadAuthState(storage = null) {
   if (!storage) return GUEST_STATE;
   try {
     const raw = storage.getItem(AUTH_SESSION_KEY);
@@ -75,7 +75,7 @@ export function loadAuthState(storage = getSessionStorage()) {
  * @param {AuthState} state
  * @param {Storage | null | undefined} [storage]
  */
-export function saveAuthState(state, storage = getSessionStorage()) {
+export function saveAuthState(state, storage = null) {
   if (!storage) return state;
   try {
     if (state.mode === "guest") {
@@ -90,7 +90,7 @@ export function saveAuthState(state, storage = getSessionStorage()) {
 }
 
 /** @param {Storage | null | undefined} [storage] */
-export function clearAuthState(storage = getSessionStorage()) {
+export function clearAuthState(storage = null) {
   return saveAuthState({ mode: "guest" }, storage);
 }
 
@@ -99,7 +99,7 @@ export function clearAuthState(storage = getSessionStorage()) {
  * @param {Storage | null | undefined} [storage]
  * @returns {AuthState}
  */
-export function setDisplayName(name, storage = getSessionStorage()) {
+export function setDisplayName(name, storage = null) {
   const displayName = normalizeDisplayName(name);
   if (!displayName) {
     return clearAuthState(storage);
@@ -113,7 +113,7 @@ export function setDisplayName(name, storage = getSessionStorage()) {
  * @param {Storage | null | undefined} [storage]
  * @returns {{ ok: true, state: AuthState } | { ok: false, error: string }}
  */
-export function requestMagicLink(email, storage = getSessionStorage()) {
+export function requestMagicLink(email, storage = null) {
   const normalized = String(email ?? "").trim().toLowerCase();
   if (!isValidEmail(normalized)) {
     return { ok: false, error: "invalid_email" };
@@ -130,7 +130,7 @@ export function requestMagicLink(email, storage = getSessionStorage()) {
  * @param {Storage | null | undefined} [storage]
  * @returns {AuthState}
  */
-export function confirmMagicLinkStub(storage = getSessionStorage()) {
+export function confirmMagicLinkStub(storage = null) {
   const current = loadAuthState(storage);
   if (current.mode !== "magic-link-pending" || !current.email) {
     return current;
@@ -151,9 +151,4 @@ export function getSavedByLabel(state = loadAuthState()) {
 /** @param {AuthState} [state] */
 export function isSignedIn(state = loadAuthState()) {
   return state.mode === "named";
-}
-
-function getSessionStorage() {
-  if (typeof sessionStorage === "undefined") return null;
-  return sessionStorage;
 }

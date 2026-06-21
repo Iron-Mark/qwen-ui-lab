@@ -6,18 +6,19 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
-import { ThemeToggle } from "@/features/shell/components/ThemeToggle";
+import { ThemeToggle } from "./ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
-import { localizedHref, useLocale } from "@/lib/i18n";
-import { useAuth } from "@/features/account/lib/auth";
+import { localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
+import { AccountNavLabel } from "@/features/account/components/AccountNavLabel";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
 
 const BrandThemeSwitcher = dynamic(
   () =>
-    import("@/features/shell/components/BrandThemeSwitcher").then(
+    import("./BrandThemeSwitcher").then(
       (mod) => mod.BrandThemeSwitcher,
     ),
   { ssr: false },
@@ -25,7 +26,7 @@ const BrandThemeSwitcher = dynamic(
 
 const DemoModeSnackbar = dynamic(
   () =>
-    import("@/features/shell/components/DemoModeSnackbar").then((mod) => mod.DemoModeSnackbar),
+    import("./DemoModeSnackbar").then((mod) => mod.DemoModeSnackbar),
   { ssr: false },
 );
 
@@ -33,7 +34,6 @@ export function Header() {
   const pathname = usePathname();
   const { locale, dict } = useLocale();
   const t = dict.header;
-  const { savedByLabel, signedIn } = useAuth();
   const designSystemVariant = useMemo(() => {
     const config = createExperimentConfig(process.env);
     return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
@@ -115,9 +115,10 @@ export function Header() {
             aria-current={pathname.startsWith("/account") ? "page" : undefined}
           >
             <UserRound className="size-4 shrink-0" aria-hidden />
-            <span className="hidden max-w-[8rem] truncate sm:inline">
-              {signedIn ? savedByLabel : t.navAccountGuest}
-            </span>
+            <AccountNavLabel
+              guestLabel={t.navAccountGuest}
+              className="hidden max-w-[8rem] truncate sm:inline"
+            />
           </Link>
           <BrandThemeSwitcher />
           <ThemeToggle />

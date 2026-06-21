@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/providers/Toast";
 import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useProviderMode } from "@/lib/provider-mode";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 type GistExportStatus = "idle" | "exporting" | "success" | "error";
 

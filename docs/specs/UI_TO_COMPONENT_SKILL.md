@@ -100,7 +100,7 @@ Use this before finalizing any generated component.
 Use this as a starting point for new components.
 
 ```tsx
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 interface ComponentNameProps {
   // Define props here

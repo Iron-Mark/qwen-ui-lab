@@ -1,4 +1,4 @@
-import type { RevenueDataPoint } from "@/features/home/data/dashboard-data";
+import type { RevenueDataPoint } from "../data/dashboard-data";
 import {
   Card,
   CardContent,

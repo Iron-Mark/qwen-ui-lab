@@ -17,8 +17,8 @@ import {
   countClientEventsByName,
   readClientAnalyticsBuffer,
   subscribeClientAnalyticsBuffer,
-} from "@/features/analytics/lib/analytics-event-buffer";
-import { ANALYTICS_FUNNEL_SLICES } from "@/features/analytics/lib/analytics-funnel-docs";
+} from "@/lib/analytics-event-buffer.client";
+import { ANALYTICS_FUNNEL_SLICES } from "../lib/analytics-funnel-docs";
 
 type AnalyticsDashboardClientProps = {
   liveDashboardEnabled: boolean;

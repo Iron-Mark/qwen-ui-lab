@@ -11,7 +11,7 @@ The `/account` page and header “saved by” label use a **client-only auth stu
 |-------|----------|----------|
 | State machine | `src/features/account/lib/auth.mjs` | Modes: `guest` → `named` (display name) or `magic-link-pending` → `named` |
 | Persistence | `sessionStorage` key `qwen-ui-lab:auth` | Tab-scoped; cleared on sign-out or empty name |
-| React context | `src/features/account/lib/auth.tsx` | `AuthProvider` wraps the app in `layout.tsx` |
+| React context | `src/features/account/components/AuthProvider.tsx` | `AuthProvider` wraps the app in `layout.tsx` |
 | UI | `src/features/account/components/AccountPageClient.tsx` | Display name form + magic-link stub (confirm without token) |
 | Consumers | `Header.tsx`, `UploadFlow.tsx` | `savedByLabel`, `signedIn` for demo personalization |
 | Tests | `tests/auth.test.mjs`, `e2e/account.spec.ts` | Unit + E2E against sessionStorage |

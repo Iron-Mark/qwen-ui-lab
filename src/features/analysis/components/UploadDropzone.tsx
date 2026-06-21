@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { UPLOAD_ACCEPT_ATTRIBUTE } from "@/features/analysis/lib/upload-constraints.mjs";
+import { UPLOAD_ACCEPT_ATTRIBUTE } from "../lib/upload-constraints.mjs";
 
 interface UploadDropzoneProps {
   previewUrl?: string | null;

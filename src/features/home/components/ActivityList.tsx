@@ -1,4 +1,4 @@
-import type { ActivityData } from "@/features/home/data/dashboard-data";
+import type { ActivityData } from "../data/dashboard-data";
 import {
   Card,
   CardContent,

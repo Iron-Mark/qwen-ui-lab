@@ -83,6 +83,7 @@ export function sanitizeSharePayload(input) {
         : [],
       modeLabel: String(record.mode ?? "Local demo mode"),
       file: String(record.file ?? "screenshot"),
+      detections: record.detections,
     });
   }
 

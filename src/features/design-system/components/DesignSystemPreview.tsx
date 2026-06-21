@@ -12,9 +12,9 @@ import {
   filterCatalog,
   type AtomicLevel,
   type CatalogDomain,
-} from "@/features/design-system/data/catalog";
-import { downloadCatalogBundle } from "@/features/design-system/lib/export-bundle";
-import { LAWS_OF_UX_SITE } from "@/features/design-system/data/lawsOfUx";
+} from "./catalog";
+import { downloadCatalogBundle } from "../lib/export-bundle.client";
+import { LAWS_OF_UX_SITE } from "@/lib/laws-of-ux";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -23,9 +23,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useProviderMode } from "@/lib/provider-mode";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
-import { interpolate, localizedHref, useLocale } from "@/lib/i18n";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { interpolate, localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
 import {
   createDesignSystemSearchParams,
   DOMAIN_VALUES,
@@ -35,8 +36,8 @@ import {
   parseLevel,
   parsePreviewMode,
   pickSelectedId,
-} from "@/features/design-system/lib/design-system-state.mjs";
-import type { AtomicCatalogEntry } from "@/features/design-system/data/catalog-types";
+} from "../lib/design-system-state.mjs";
+import type { AtomicCatalogEntry } from "../data/catalog-types";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism"];
 

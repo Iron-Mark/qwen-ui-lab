@@ -1,10 +1,10 @@
 "use client";
 
-import type { ObservabilityConfig } from "@/lib/observability";
+import type { ObservabilityConfig } from "./observability";
 import {
   createGenericErrorDispatch,
   resolveErrorReportingTargets,
-} from "@/lib/error-reporting.mjs";
+} from "./error-reporting.mjs";
 
 type SanitizedErrorPayload = {
   name: string;

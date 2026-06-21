@@ -17,8 +17,11 @@ import {
   inspectSvgDataUrl,
   inspectSvgMarkup,
 } from "../src/features/analysis/lib/offline-svg-inspection.mjs";
-import { preprocessImageDataUrl } from "../src/features/analysis/lib/image-preprocess.mjs";
-import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
+import { preprocessImageDataUrl } from "../src/features/analysis/lib/image-preprocess.client.mjs";
+import {
+  buildUiFlowArtifact,
+  regenerateArtifactFromDetections,
+} from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildDemoArtifactForFile,
   getSampleReferenceFile,
@@ -199,6 +202,20 @@ test("inspectImageDataPixels extracts palette, contrast, and layout bands", () =
   assert.equal(inspection.imageSignature.method, "luma-a8-d8");
   assert.match(inspection.imageSignature.averageHash, /^[0-9a-f]{16}$/);
   assert.match(inspection.imageSignature.differenceHash, /^[0-9a-f]{16}$/);
+  assert.ok(inspection.elements.length >= 3);
+  assert.ok(inspection.elements.some((element) => element.kind === "header"));
+  assert.ok(inspection.elements.some((element) => element.kind === "side-nav"));
+  assert.ok(inspection.elements.every((element) => element.primitive));
+  assert.ok(inspection.elements.every((element) => element.reasons.length > 0));
+  assert.ok(
+    inspection.elements.some((element) =>
+      element.reasons.some((reason) => reason.code === "primitive-snap"),
+    ),
+  );
+  assert.equal(inspection.layoutTree.strategy, "projection-groups");
+  assert.ok(inspection.layoutTree.readingOrder.length >= 3);
+  assert.equal(inspection.quality.strategy, "fine-grid-connected-components");
+  assert.ok(inspection.quality.confidence > 0);
   assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
   assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
 });
@@ -366,9 +383,10 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   );
 
   assert.match(advanced.generatedCode, /const designTokens/);
+  assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
   assert.match(advanced.generatedCode, /Local screenshot scaffold/);
-  assert.match(advanced.generatedCode, /header\/nav|side rail/);
+  assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
 });
@@ -462,10 +480,57 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
   assert.ok(artifact.plan.some((section) => section.title === "Local Quality Checks"));
   assert.deepEqual(
     artifact.previewStats.map((stat) => stat.label),
-    ["Regions", "Controls", "Density", "Contrast"],
+    ["Regions", "Elements", "Density", "Contrast"],
   );
+  assert.ok(artifact.detections.elements.length >= 3);
+  assert.ok(artifact.detections.source.width > 0);
+  assert.ok(artifact.detections.designTokens.surface);
+  assert.ok(artifact.detections.elements.every((element) => element.reasons.length > 0));
+  assert.equal(artifact.detections.layoutTree.strategy, "projection-groups");
+  assert.ok(artifact.detections.quality.confidence > 0);
   assert.match(artifact.generatedCode, /const designTokens/);
+  assert.match(artifact.generatedCode, /const detectedElements/);
   assert.match(artifact.generatedCode, /const layoutRegions/);
+});
+
+test("regenerateArtifactFromDetections uses corrected active elements", () => {
+  const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+  const artifact = buildUiFlowArtifact({
+    name: "operator-console.png",
+    type: "image/png",
+    size: 8192,
+    width: 1440,
+    height: 900,
+    offlineInspection,
+  });
+  const detections = {
+    ...artifact.detections,
+    elements: artifact.detections.elements.map((element, index) =>
+      index === 0
+        ? {
+            ...element,
+            kind: "button-or-input",
+            primitive: "field-or-action",
+            userEdited: true,
+          }
+        : index === 1
+          ? { ...element, included: false, userEdited: true }
+          : element,
+    ),
+  };
+
+  const regenerated = regenerateArtifactFromDetections(artifact, detections);
+
+  assert.match(regenerated.generatedCode, /Corrected screenshot scaffold/);
+  assert.match(regenerated.generatedCode, /field-or-action/);
+  assert.equal(
+    regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
+    String(detections.elements.length - 1),
+  );
+  assert.equal(
+    regenerated.previewStats.find((stat) => stat.label === "Edited").value,
+    "2",
+  );
 });
 
 test("buildDemoArtifactForFile matches export fixture shape", () => {

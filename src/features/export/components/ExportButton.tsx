@@ -11,15 +11,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { downloadTextFile } from "@/lib/clipboard";
+import { downloadTextFile } from "@/lib/clipboard.client";
 import { useToast } from "@/components/providers/Toast";
 import {
   useCopyToClipboard,
   type CopyStatus,
 } from "@/lib/hooks/useCopyToClipboard";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useProviderMode } from "@/lib/provider-mode";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 export type ExportButtonVariant = "copy" | "export";
 
