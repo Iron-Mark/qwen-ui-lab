@@ -1,5 +1,7 @@
 const DEFAULT_GRID_COLUMNS = 12;
 const DEFAULT_GRID_ROWS = 8;
+const SMART_GRID_COLUMNS = 24;
+const SMART_GRID_ROWS = 16;
 const EDGE_THRESHOLD = 0.18;
 const BACKGROUND_DISTANCE_THRESHOLD = 42;
 const PALETTE_BUCKET_SIZE = 32;
@@ -64,6 +66,10 @@ export function inspectImageDataPixels(
   const cellPixels = new Array(cellCount).fill(0);
   const cellInk = new Array(cellCount).fill(0);
   const cellEdges = new Array(cellCount).fill(0);
+  const smartCellCount = SMART_GRID_COLUMNS * SMART_GRID_ROWS;
+  const smartCellPixels = new Array(smartCellCount).fill(0);
+  const smartCellInk = new Array(smartCellCount).fill(0);
+  const smartCellEdges = new Array(smartCellCount).fill(0);
   let edgePixels = 0;
 
   for (let y = 0; y < height; y += 1) {
@@ -75,6 +81,8 @@ export function inspectImageDataPixels(
 
       const cellIndex = getCellIndex(x, y, width, height, gridColumns, gridRows);
       cellPixels[cellIndex] += 1;
+      const smartCellIndex = getCellIndex(x, y, width, height, SMART_GRID_COLUMNS, SMART_GRID_ROWS);
+      smartCellPixels[smartCellIndex] += 1;
 
       const color = {
         r: image.data[offset],
@@ -83,8 +91,10 @@ export function inspectImageDataPixels(
       };
       if (colorDistance(color, dominant) > BACKGROUND_DISTANCE_THRESHOLD) {
         cellInk[cellIndex] += 1;
+        smartCellInk[smartCellIndex] += 1;
       } else if (isThresholdForeground(grayscale[index], threshold)) {
         cellInk[cellIndex] += 1;
+        smartCellInk[smartCellIndex] += 1;
       }
 
       if (x === 0 || y === 0) continue;
@@ -94,6 +104,7 @@ export function inspectImageDataPixels(
       if (Math.abs(current - left) + Math.abs(current - up) >= EDGE_THRESHOLD) {
         edgePixels += 1;
         cellEdges[cellIndex] += 1;
+        smartCellEdges[smartCellIndex] += 1;
       }
     }
   }
@@ -108,6 +119,15 @@ export function inspectImageDataPixels(
     cellPixels,
     cellInk,
     cellEdges,
+  });
+  const smartDetection = summarizeSmartDetection({
+    cellPixels: smartCellPixels,
+    cellInk: smartCellInk,
+    cellEdges: smartCellEdges,
+    gridColumns: SMART_GRID_COLUMNS,
+    gridRows: SMART_GRID_ROWS,
+    sourceWidth: image.sourceWidth ?? width,
+    sourceHeight: image.sourceHeight ?? height,
   });
   const contrast = summarizeContrast(dominant, palette);
   const edgeDensity = totalPixels ? edgePixels / totalPixels : 0;
@@ -132,6 +152,9 @@ export function inspectImageDataPixels(
     threshold,
     contrast,
     layout,
+    elements: smartDetection.elements,
+    layoutTree: smartDetection.layoutTree,
+    quality: smartDetection.quality,
     imageSignature,
     designTokens,
     edgeDensity: round(edgeDensity, 3),
@@ -177,6 +200,10 @@ export function buildImageInspectionPlanSections(inspection) {
       body: summarizeDetectedStructure(inspection),
     },
     {
+      title: "Element Detection",
+      body: summarizeDetectedElements(inspection),
+    },
+    {
       title: "Design Tokens",
       body: [
         `Use ${inspection.designTokens.surface} as the main surface and ${inspection.designTokens.foreground} for readable foreground text.`,
@@ -199,7 +226,10 @@ export function buildImageInspectionPreviewStats(inspection) {
 
   return [
     { label: "Regions", value: String(inspection.layout.estimatedRegions) },
-    { label: "Controls", value: String(inspection.layout.componentSummary.controls) },
+    {
+      label: "Elements",
+      value: String(inspection.elements?.length ?? inspection.layout.componentSummary.controls),
+    },
     { label: "Density", value: inspection.visualDensity },
     { label: "Contrast", value: `${inspection.contrast.preferredTextContrast}:1` },
   ];
@@ -492,6 +522,38 @@ function summarizeDetectedStructure(inspection) {
   ].join(" ");
 }
 
+function summarizeDetectedElements(inspection) {
+  const elements = inspection.elements ?? [];
+  const tree = inspection.layoutTree;
+  if (!elements.length) {
+    return "No strong fine-grid UI elements were detected; use the coarser layout regions as the scaffold source.";
+  }
+
+  const counts = countBy(elements, "kind");
+  const countText = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([kind, count]) => `${count} ${kind}`)
+    .join(", ");
+  const topElements = elements
+    .slice(0, 6)
+    .map((element) => `${element.kind} ${element.box.x},${element.box.y} ${element.box.width}×${element.box.height}`)
+    .join("; ");
+
+  return [
+    `Fine-grid detection found ${elements.length} candidate UI elements (${countText}).`,
+    `Hierarchy has ${tree?.groups?.length ?? 0} top-level groups using ${tree?.strategy ?? "projection"} ordering.`,
+    `Top candidates: ${topElements}.`,
+  ].join(" ");
+}
+
+function countBy(items, key) {
+  return items.reduce((counts, item) => {
+    const value = item[key] ?? "unknown";
+    counts[value] = (counts[value] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
 function buildRecommendations({ contrast, layout, visualDensity, designTokens }) {
   const recommendations = [];
 
@@ -536,6 +598,234 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
   );
 
   return recommendations;
+}
+
+function summarizeSmartDetection({
+  cellPixels,
+  cellInk,
+  cellEdges,
+  gridColumns,
+  gridRows,
+  sourceWidth,
+  sourceHeight,
+}) {
+  const activeCells = cellPixels.map((pixels, index) => {
+    if (!pixels) return false;
+    return cellInk[index] / pixels >= 0.09 || cellEdges[index] / pixels >= 0.025;
+  });
+  const components = extractLayoutRegions(activeCells, gridColumns, gridRows);
+  const elements = components
+    .map((region, index) =>
+      buildDetectedElement(region, index, {
+        gridColumns,
+        gridRows,
+        sourceWidth,
+        sourceHeight,
+        cellPixels,
+        cellInk,
+        cellEdges,
+      }),
+    )
+    .filter((element) => element.confidence >= 0.42)
+    .sort(readingOrderSort)
+    .slice(0, 24)
+    .map((element, index) => ({ ...element, id: `element-${index + 1}` }));
+
+  const layoutTree = buildLayoutTree(elements, { sourceWidth, sourceHeight });
+  const confidence = elements.length
+    ? round(elements.reduce((sum, element) => sum + element.confidence, 0) / elements.length, 2)
+    : 0;
+
+  return {
+    elements,
+    layoutTree,
+    quality: {
+      strategy: "fine-grid-connected-components",
+      confidence,
+      elementCount: elements.length,
+      grid: `${gridColumns}x${gridRows}`,
+      ambiguity:
+        confidence >= 0.68
+          ? "low"
+          : confidence >= 0.5
+            ? "medium"
+            : "high",
+    },
+  };
+}
+
+function buildDetectedElement(region, index, context) {
+  const box = regionToSourceBox(region, context);
+  const cells = collectRegionCells(region, context.gridColumns);
+  const totals = cells.reduce(
+    (summary, cellIndex) => {
+      summary.pixels += context.cellPixels[cellIndex] ?? 0;
+      summary.ink += context.cellInk[cellIndex] ?? 0;
+      summary.edges += context.cellEdges[cellIndex] ?? 0;
+      return summary;
+    },
+    { pixels: 0, ink: 0, edges: 0 },
+  );
+  const inkRatio = totals.pixels ? totals.ink / totals.pixels : 0;
+  const edgeRatio = totals.pixels ? totals.edges / totals.pixels : 0;
+  const kind = classifyDetectedElement(region, box, {
+    inkRatio,
+    edgeRatio,
+    sourceWidth: context.sourceWidth,
+    sourceHeight: context.sourceHeight,
+  });
+
+  return {
+    id: `element-${index + 1}`,
+    kind,
+    confidence: scoreDetectedElement(region, kind, { inkRatio, edgeRatio }),
+    box,
+    grid: {
+      minRow: region.minRow,
+      maxRow: region.maxRow,
+      minColumn: region.minColumn,
+      maxColumn: region.maxColumn,
+    },
+    signals: {
+      inkRatio: round(inkRatio, 3),
+      edgeRatio: round(edgeRatio, 3),
+      cells: region.cells,
+    },
+  };
+}
+
+function regionToSourceBox(region, { gridColumns, gridRows, sourceWidth, sourceHeight }) {
+  const x = Math.round((region.minColumn / gridColumns) * sourceWidth);
+  const y = Math.round((region.minRow / gridRows) * sourceHeight);
+  const width = Math.max(
+    1,
+    Math.round(((region.maxColumn + 1) / gridColumns) * sourceWidth) - x,
+  );
+  const height = Math.max(
+    1,
+    Math.round(((region.maxRow + 1) / gridRows) * sourceHeight) - y,
+  );
+
+  return { x, y, width, height };
+}
+
+function collectRegionCells(region, gridColumns) {
+  const cells = [];
+  for (let row = region.minRow; row <= region.maxRow; row += 1) {
+    for (let column = region.minColumn; column <= region.maxColumn; column += 1) {
+      cells.push(row * gridColumns + column);
+    }
+  }
+  return cells;
+}
+
+function classifyDetectedElement(region, box, { inkRatio, edgeRatio, sourceWidth, sourceHeight }) {
+  const aspect = box.width / Math.max(1, box.height);
+  const yRatio = box.y / Math.max(1, sourceHeight);
+  const xRatio = box.x / Math.max(1, sourceWidth);
+  const areaRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+
+  if (yRatio <= 0.08 && box.width >= sourceWidth * 0.35) return "header";
+  if (yRatio >= 0.78 && box.width >= sourceWidth * 0.28) return "bottom-nav";
+  if (xRatio <= 0.12 && box.height >= sourceHeight * 0.32) return "side-nav";
+  if (aspect >= 3.6 && box.height <= sourceHeight * 0.12) return "input-or-button-row";
+  if (aspect >= 1.5 && aspect <= 4.5 && box.height <= sourceHeight * 0.16 && edgeRatio >= 0.018) {
+    return "button-or-input";
+  }
+  if (areaRatio >= 0.12 && edgeRatio >= 0.025) return "chart-or-media";
+  if (region.cells >= 8 || areaRatio >= 0.08) return "card-or-panel";
+  if (aspect >= 2.2 && inkRatio >= 0.08) return "text-row";
+  if (region.cells <= 2) return "control";
+  return "content-block";
+}
+
+function scoreDetectedElement(region, kind, { inkRatio, edgeRatio }) {
+  const baseScores = {
+    header: 0.82,
+    "bottom-nav": 0.78,
+    "side-nav": 0.8,
+    "input-or-button-row": 0.7,
+    "button-or-input": 0.72,
+    "chart-or-media": 0.68,
+    "card-or-panel": 0.7,
+    "text-row": 0.58,
+    control: 0.52,
+    "content-block": 0.5,
+  };
+  const signalBoost = Math.min(0.18, inkRatio * 0.7 + edgeRatio * 1.4);
+  const sizePenalty = region.cells <= 1 ? 0.1 : 0;
+
+  return round(Math.min(0.95, (baseScores[kind] ?? 0.5) + signalBoost - sizePenalty), 2);
+}
+
+function readingOrderSort(first, second) {
+  if (first.box.y !== second.box.y) return first.box.y - second.box.y;
+  return first.box.x - second.box.x;
+}
+
+function buildLayoutTree(elements, { sourceWidth, sourceHeight }) {
+  const groups = [];
+  const structuralKinds = new Set(["header", "bottom-nav", "side-nav"]);
+  const structural = elements.filter((element) => structuralKinds.has(element.kind));
+  const content = elements.filter((element) => !structuralKinds.has(element.kind));
+
+  for (const element of structural) {
+    groups.push({
+      id: `${element.id}-group`,
+      kind: element.kind,
+      box: element.box,
+      children: [element.id],
+    });
+  }
+
+  const contentGroups = groupElementsByRows(content, { sourceHeight });
+  groups.push(...contentGroups);
+
+  return {
+    strategy: "projection-groups",
+    source: { width: sourceWidth, height: sourceHeight },
+    groups,
+    readingOrder: elements.map((element) => element.id),
+  };
+}
+
+function groupElementsByRows(elements, { sourceHeight }) {
+  const rowHeight = Math.max(80, Math.round(sourceHeight / 8));
+  const buckets = new Map();
+
+  for (const element of elements) {
+    const rowKey = Math.floor(element.box.y / rowHeight);
+    const current = buckets.get(rowKey) ?? [];
+    current.push(element);
+    buckets.set(rowKey, current);
+  }
+
+  return [...buckets.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([rowKey, rowElements], index) => {
+      const boxes = rowElements.map((element) => element.box);
+      return {
+        id: `group-${index + 1}`,
+        kind: rowElements.length >= 3 ? "repeated-row" : "content-group",
+        box: mergeBoxes(boxes),
+        row: rowKey,
+        children: rowElements.map((element) => element.id),
+      };
+    });
+}
+
+function mergeBoxes(boxes) {
+  if (!boxes.length) return { x: 0, y: 0, width: 1, height: 1 };
+  const minX = Math.min(...boxes.map((box) => box.x));
+  const minY = Math.min(...boxes.map((box) => box.y));
+  const maxX = Math.max(...boxes.map((box) => box.x + box.width));
+  const maxY = Math.max(...boxes.map((box) => box.y + box.height));
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(1, maxX - minX),
+    height: Math.max(1, maxY - minY),
+  };
 }
 
 function summarizeComponentRegions(regions) {

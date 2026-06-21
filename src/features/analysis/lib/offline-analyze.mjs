@@ -553,29 +553,55 @@ const GENERATED_COMPONENT_NAMES = {
 };
 
 const GENERATED_REGION_TONES = {
+  "bottom-nav": "accent",
   "bottom nav": "accent",
+  "button-or-input": "surface",
+  "card-or-panel": "muted",
+  "chart-or-media": "muted",
   "content panel": "muted",
+  "content-block": "surface",
   "control cluster": "surface",
+  control: "surface",
+  header: "accent",
   "header/nav": "accent",
+  "input-or-button-row": "surface",
   "media/chart": "muted",
+  "side-nav": "accent",
   "side rail": "accent",
+  "text-row": "surface",
   "text/list": "surface",
 };
 
 const GENERATED_REGION_GUIDANCE = {
+  "bottom-nav": "Persistent mobile navigation or action shortcuts.",
   "bottom nav": "Persistent mobile navigation or action shortcuts.",
+  "button-or-input": "Likely form control or primary action; preserve label, focus state, and target size.",
+  "card-or-panel": "Grouped content card or panel with heading and body structure.",
+  "chart-or-media": "Visual content area, metric chart, or media preview.",
   "content panel": "Primary content container with clear heading hierarchy.",
+  "content-block": "General content block inferred from local connected components.",
   "control cluster": "Grouped actions with explicit labels and large targets.",
+  control: "Small control, icon button, checkbox, or compact action.",
+  header: "Top-level navigation, page title, or primary toolbar.",
   "header/nav": "Top-level navigation, page title, or primary toolbar.",
+  "input-or-button-row": "Wide form row, search field, or CTA strip inferred by aspect ratio.",
   "media/chart": "Visual content area, metric chart, or media preview.",
+  "side-nav": "Secondary navigation, filters, or section index.",
   "side rail": "Secondary navigation, filters, or section index.",
+  "text-row": "Text-like row or list item; preserve reading order.",
   "text/list": "Readable list, feed, or supporting copy region.",
 };
 
 const GENERATED_REGION_ROLES = {
+  "bottom-nav": "navigation",
   "bottom nav": "navigation",
+  "button-or-input": "group",
   "control cluster": "group",
+  control: "group",
+  header: "banner",
   "header/nav": "banner",
+  "input-or-button-row": "group",
+  "side-nav": "navigation",
   "side rail": "navigation",
 };
 
@@ -952,10 +978,13 @@ function buildSignalAwareGeneratedCode(safeName, archetype, inspection) {
     GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
   const tokens = buildGeneratedTokenBlueprint(inspection.designTokens);
   const regions = buildGeneratedRegionBlueprint(inspection, archetype);
+  const detectedElements = buildGeneratedElementBlueprint(inspection);
   const gridRows = Math.max(1, inspection.layout.gridRows);
   const gridColumns = Math.max(1, inspection.layout.gridColumns);
 
   return `const designTokens = ${JSON.stringify(tokens, null, 2)};
+
+const detectedElements = ${JSON.stringify(detectedElements, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
@@ -969,6 +998,9 @@ export function ${componentName}() {
       <header className="space-y-1">
         <p className="text-xs font-medium uppercase">Local screenshot scaffold</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
+        <p className="text-sm opacity-75">
+          {detectedElements.length} deterministic UI elements were detected before scaffold generation.
+        </p>
       </header>
 
       <div
@@ -1028,7 +1060,10 @@ function buildGeneratedTokenBlueprint(designTokens) {
 }
 
 function buildGeneratedRegionBlueprint(inspection, archetype) {
-  const regions = inspection.layout.regions.slice(0, 8);
+  const detectedRegions = buildRegionsFromDetectedElements(inspection);
+  const regions = detectedRegions.length
+    ? detectedRegions
+    : inspection.layout.regions.slice(0, 8);
   const sourceRegions = regions.length
     ? regions
     : [
@@ -1064,6 +1099,58 @@ function buildGeneratedRegionBlueprint(inspection, archetype) {
       gridRow: `${rowStart} / span ${rowSpan}`,
     };
   });
+}
+
+function buildGeneratedElementBlueprint(inspection) {
+  return (inspection.elements ?? []).slice(0, 12).map((element) => ({
+    id: element.id,
+    kind: element.kind,
+    confidence: element.confidence,
+    box: element.box,
+  }));
+}
+
+function buildRegionsFromDetectedElements(inspection) {
+  const elements = inspection.elements ?? [];
+  if (!elements.length) return [];
+
+  return elements.slice(0, 8).map((element) => {
+    const box = element.box;
+    const sample = inspection.sample;
+    const gridColumns = inspection.layout.gridColumns;
+    const gridRows = inspection.layout.gridRows;
+    const minColumn = clampGridIndex(
+      Math.floor((box.x / Math.max(1, sample.sourceWidth)) * gridColumns),
+      gridColumns,
+    );
+    const maxColumn = clampGridIndex(
+      Math.ceil(((box.x + box.width) / Math.max(1, sample.sourceWidth)) * gridColumns) - 1,
+      gridColumns,
+    );
+    const minRow = clampGridIndex(
+      Math.floor((box.y / Math.max(1, sample.sourceHeight)) * gridRows),
+      gridRows,
+    );
+    const maxRow = clampGridIndex(
+      Math.ceil(((box.y + box.height) / Math.max(1, sample.sourceHeight)) * gridRows) - 1,
+      gridRows,
+    );
+
+    return {
+      kind: element.kind,
+      minColumn,
+      maxColumn: Math.max(minColumn, maxColumn),
+      minRow,
+      maxRow: Math.max(minRow, maxRow),
+      widthCells: Math.max(1, maxColumn - minColumn + 1),
+      heightCells: Math.max(1, maxRow - minRow + 1),
+      confidence: element.confidence,
+    };
+  });
+}
+
+function clampGridIndex(value, length) {
+  return Math.min(Math.max(0, value), Math.max(0, length - 1));
 }
 
 function titleCase(value) {

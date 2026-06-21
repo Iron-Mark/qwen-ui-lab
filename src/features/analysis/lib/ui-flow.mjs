@@ -89,6 +89,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
   const readableSize = formatFileSize(file.size);
   const fileName = file.name || "uploaded-reference";
   const offline = resolveOfflineContent(file, overrides);
+  const detections = buildDetections(file);
 
   const plan = overrides.plan || offline.plan;
   const previewStats = normalizePreviewStats(
@@ -114,6 +115,19 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     generatedCode,
     modeLabel: overrides.modeLabel || "Local demo mode",
     summary: overrides.summary ?? offline.summary ?? "",
+    ...(detections ? { detections } : {}),
+  };
+}
+
+function buildDetections(file) {
+  if (!file.offlineInspection?.elements?.length && !file.offlineInspection?.layoutTree) {
+    return null;
+  }
+
+  return {
+    elements: file.offlineInspection.elements ?? [],
+    layoutTree: file.offlineInspection.layoutTree ?? null,
+    quality: file.offlineInspection.quality ?? null,
   };
 }
 

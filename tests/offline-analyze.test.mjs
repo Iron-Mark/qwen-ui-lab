@@ -199,6 +199,13 @@ test("inspectImageDataPixels extracts palette, contrast, and layout bands", () =
   assert.equal(inspection.imageSignature.method, "luma-a8-d8");
   assert.match(inspection.imageSignature.averageHash, /^[0-9a-f]{16}$/);
   assert.match(inspection.imageSignature.differenceHash, /^[0-9a-f]{16}$/);
+  assert.ok(inspection.elements.length >= 3);
+  assert.ok(inspection.elements.some((element) => element.kind === "header"));
+  assert.ok(inspection.elements.some((element) => element.kind === "side-nav"));
+  assert.equal(inspection.layoutTree.strategy, "projection-groups");
+  assert.ok(inspection.layoutTree.readingOrder.length >= 3);
+  assert.equal(inspection.quality.strategy, "fine-grid-connected-components");
+  assert.ok(inspection.quality.confidence > 0);
   assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
   assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
 });
@@ -366,9 +373,10 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   );
 
   assert.match(advanced.generatedCode, /const designTokens/);
+  assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
   assert.match(advanced.generatedCode, /Local screenshot scaffold/);
-  assert.match(advanced.generatedCode, /header\/nav|side rail/);
+  assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
 });
@@ -462,9 +470,13 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
   assert.ok(artifact.plan.some((section) => section.title === "Local Quality Checks"));
   assert.deepEqual(
     artifact.previewStats.map((stat) => stat.label),
-    ["Regions", "Controls", "Density", "Contrast"],
+    ["Regions", "Elements", "Density", "Contrast"],
   );
+  assert.ok(artifact.detections.elements.length >= 3);
+  assert.equal(artifact.detections.layoutTree.strategy, "projection-groups");
+  assert.ok(artifact.detections.quality.confidence > 0);
   assert.match(artifact.generatedCode, /const designTokens/);
+  assert.match(artifact.generatedCode, /const detectedElements/);
   assert.match(artifact.generatedCode, /const layoutRegions/);
 });
 
