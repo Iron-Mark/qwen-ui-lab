@@ -11,6 +11,7 @@ const appRouteConventionFiles = new Set([
   "global-error.tsx",
   "layout.tsx",
   "loading.tsx",
+  "manifest.ts",
   "not-found.tsx",
   "opengraph-image.tsx",
   "page.tsx",
@@ -435,6 +436,17 @@ test("root layout delegates viewport config to shared seo helpers", async () => 
 
 test("seo route convention files delegate crawl metadata to shared seo helpers", async () => {
   const routeFiles = [
+    {
+      file: path.join(process.cwd(), "src", "app", "manifest.ts"),
+      helper: "createManifestConfig(",
+      bannedMarkers: [
+        "start_url:",
+        "theme_color:",
+        "background_color:",
+        "icons:",
+        "shortcuts:",
+      ],
+    },
     {
       file: path.join(process.cwd(), "src", "app", "sitemap.ts"),
       helper: "createSitemapEntries(",

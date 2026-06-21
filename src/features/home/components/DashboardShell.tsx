@@ -40,14 +40,19 @@ export function DashboardShell({
         <CardHeader>
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-semibold text-muted-foreground">
             <Sparkles className="size-3.5" />
-            Live product snapshot
+            Static dashboard example
           </div>
-          <CardTitle className="mt-3 text-3xl tracking-tight sm:text-4xl">
-            Dashboard
+          <CardTitle
+            role="heading"
+            aria-level={2}
+            className="mt-3 text-3xl tracking-tight sm:text-4xl"
+          >
+            Dashboard UI support
           </CardTitle>
           <CardDescription className="max-w-2xl text-base leading-7">
-            Welcome back! Here&apos;s what&apos;s happening with your platform.
-            Metrics, activity, and generation workflow are all in one place.
+            This sample uses the same dashboard primitives the screenshot
+            analyzer can scaffold above. Generated results appear in the upload
+            flow, not in this static example section.
           </CardDescription>
         </CardHeader>
       </Card>

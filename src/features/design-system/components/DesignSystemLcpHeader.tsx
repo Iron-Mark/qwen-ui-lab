@@ -8,8 +8,9 @@ export function DesignSystemLcpHeader() {
 
   return (
     <header
+      data-testid="design-system-title-block"
       lang={locale}
-      className="sticky top-16 z-20 scroll-mt-16 rounded-2xl border border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:top-[4.5rem]"
+      className="scroll-mt-20 px-1 py-2 sm:px-2 sm:py-3"
     >
       <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         {t.eyebrow}

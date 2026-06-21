@@ -1,15 +1,18 @@
 {
   "id": "/",
-  "name": "qwen-ui-lab — meetup demo",
+  "name": "qwen-ui-lab - meetup demo",
   "short_name": "qwen-ui-lab",
   "description": "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
   "start_url": "/",
   "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "orientation": "any",
   "background_color": "#fafafa",
   "theme_color": "#18181b",
-  "categories": ["developer", "productivity"],
+  "categories": ["developer", "productivity", "utilities"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -40,12 +43,54 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live screenshot workflow",
+      "short_name": "Live flow",
+      "description": "Upload a UI screenshot and export a React scaffold.",
+      "url": "/#upload-flow",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "src": "/icons/apple-touch-icon.svg",
-      "sizes": "180x180",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "name": "Design system",
+      "short_name": "Patterns",
+      "description": "Browse component snippets and UX-law patterns.",
+      "url": "/design-system",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/references/dashboard-reference.png",
+      "sizes": "1440x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard screenshot scaffold reference"
+    },
+    {
+      "src": "/references/mobile-reference.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile app screenshot scaffold reference"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "prefer_related_applications": false
 }

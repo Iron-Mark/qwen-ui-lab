@@ -13,6 +13,44 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
+test("pasting an image on the page loads and focuses the upload dropzone", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  await page.evaluate(() => {
+    const base64Png =
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
+    const bytes = Uint8Array.from(atob(base64Png), (char) =>
+      char.charCodeAt(0),
+    );
+    const file = new File([bytes], "pasted-screenshot.png", {
+      type: "image/png",
+      lastModified: Date.now(),
+    });
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    document.dispatchEvent(
+      new ClipboardEvent("paste", {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: transfer,
+      }),
+    );
+  });
+
+  await expect(page.getByText(/pasted-screenshot\.png/i)).toBeVisible({
+    timeout: 10_000,
+  });
+  await expect(page.getByTestId("upload-dropzone-button")).toBeFocused();
+  await expect(
+    page.getByRole("button", {
+      name: /analyze & generate preview|generate preview|regenerate preview/i,
+    }),
+  ).toBeEnabled({ timeout: 10_000 });
+});
+
 test("upload → analyze → generate → copy/export smoke flow", async ({
   page,
 }) => {
@@ -150,6 +188,18 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 
+  const designMdDownloadPromise = page.waitForEvent("download");
+  await page.getByTestId("export-design-md").click();
+  const designMdDownload = await designMdDownloadPromise;
+  expect(designMdDownload.suggestedFilename()).toBe("DESIGN.md");
+  const designMdPath = await designMdDownload.path();
+  expect(designMdPath).toBeTruthy();
+  const designMd = await fs.readFile(designMdPath!, "utf8");
+  expect(designMd).toContain("# DESIGN.md");
+  expect(designMd).toContain("## Component Inventory");
+  expect(designMd).toContain("## E2E Contract");
+  expect(designMd).toContain("Download DESIGN.md");
+
   const handoffDownloadPromise = page.waitForEvent("download");
   await page.getByTestId("export-handoff-bundle").click();
   const handoffDownload = await handoffDownloadPromise;
@@ -159,6 +209,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   const handoff = JSON.parse(await fs.readFile(handoffPath!, "utf8"));
   expect(handoff.generatedCode).toContain("export function");
   expect(handoff.detections.elements.length).toBeGreaterThan(0);
+  expect(handoff.exports.designMarkdownFilename).toBe("DESIGN.md");
 
   await page.getByTestId("gist-export-button").click();
   await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({

@@ -1,5 +1,5 @@
 /** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
-const CACHE_NAME = "qwen-ui-lab-v7";
+const CACHE_NAME = "qwen-ui-lab-v9";
 
 const HEALTH_API_PATH = "/api/health";
 
@@ -9,7 +9,9 @@ const PRECACHE = [
   "/offline.html",
   "/design-system",
   "/manifest.json",
+  "/manifest.webmanifest",
   "/opengraph-image",
+  "/twitter-image",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/apple-touch-icon.png",
@@ -38,12 +40,14 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
-      )
-      .then(() => self.clients.claim()),
+    Promise.all([
+      caches
+        .keys()
+        .then((keys) =>
+          Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
+        ),
+      self.registration.navigationPreload?.enable?.(),
+    ]).then(() => self.clients.claim()),
   );
 });
 
@@ -85,8 +89,14 @@ async function cacheFirst(request) {
   return response;
 }
 
-async function navigationFallback(request) {
+async function navigationFallback(request, preloadResponsePromise) {
   try {
+    const preloadResponse = await preloadResponsePromise;
+    if (preloadResponse) {
+      void cachePut(request, preloadResponse.clone());
+      return preloadResponse;
+    }
+
     return await networkFirst(request);
   } catch {
     const cachedPage = await caches.match(request);
@@ -125,7 +135,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (isNavigationRequest(event.request)) {
-    event.respondWith(navigationFallback(event.request));
+    event.respondWith(navigationFallback(event.request, event.preloadResponse));
     return;
   }
 

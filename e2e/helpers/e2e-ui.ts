@@ -169,6 +169,7 @@ export function demoModeSnackbar(page: Page): Locator {
 export async function loadBundledSample(page: Page, label: string) {
   const picker = page.getByTestId("sample-picker");
   await expect(picker).toBeVisible();
+  await picker.getByTestId("sample-select").selectOption({ label });
   await picker.getByRole("button", { name: new RegExp(`load ${label} sample`, "i") }).click();
 }
 

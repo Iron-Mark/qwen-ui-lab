@@ -12,7 +12,13 @@ test.beforeEach(async ({ page }) => {
 test("/account loads guest mode by default", async ({ page }) => {
   await page.goto("/account");
 
-  await expect(page.getByRole("heading", { name: /local account/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /name saved work in this browser/i }),
+  ).toBeVisible();
+  await expect(page.getByText("Not a login")).toBeVisible();
+  await expect(page.getByText("This browser tab only")).toBeVisible();
+  await expect(page.getByText(/no password, oauth, server account/i)).toBeVisible();
+  await expect(page.getByText(/local account \(demo stub\)/i)).toHaveCount(0);
   await expect(page.getByTestId("account-mode-badge")).toHaveText(/guest/i);
   await expect(page.getByTestId("account-saved-by-label")).toContainText(/guest/i);
   await expect(page.getByTestId("header-account-link")).toContainText(/guest/i);
@@ -25,7 +31,7 @@ test("display name persists in sessionStorage and header", async ({ page }) => {
   await page.getByTestId("account-display-name-input").fill("Meetup Alex");
   await page.getByTestId("account-save-display-name").click();
 
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/signed in/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/local profile/i);
   await expect(page.getByTestId("header-account-link")).toContainText("Meetup Alex");
   await expect
     .poll(() =>
@@ -34,7 +40,7 @@ test("display name persists in sessionStorage and header", async ({ page }) => {
     .toContain("Meetup Alex");
 });
 
-test("magic-link demo stub signs in locally after confirm", async ({ page }) => {
+test("email demo signs in locally after confirm", async ({ page }) => {
   await page.goto("/account");
   await waitForSonnerToaster(page);
 
@@ -48,11 +54,11 @@ test("magic-link demo stub signs in locally after confirm", async ({ page }) => 
 
   await page.getByTestId("account-magic-link-confirm").click();
 
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/signed in/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/local profile/i);
   await expect(page.getByTestId("header-account-link")).toContainText("demo.stub");
 });
 
-test("sign out returns to guest mode", async ({ page }) => {
+test("clear local profile returns to guest mode", async ({ page }) => {
   await page.goto("/account");
   await waitForSonnerToaster(page);
 
@@ -60,7 +66,7 @@ test("sign out returns to guest mode", async ({ page }) => {
   await page.getByTestId("account-save-display-name").click();
   await expect(page.getByTestId("header-account-link")).toContainText("Temp User");
 
-  await page.getByRole("button", { name: /sign out/i }).click();
+  await page.getByRole("button", { name: /clear local profile/i }).click();
 
   await expect(page.getByTestId("account-mode-badge")).toHaveText(/guest/i);
   await expect(page.getByTestId("header-account-link")).toContainText(/guest/i);

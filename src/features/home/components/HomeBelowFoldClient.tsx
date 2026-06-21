@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { ProductionReadinessPanel } from "@/features/ops/components/ProductionReadinessPanel";
 import {
   channelMixData,
   performanceData,
@@ -46,7 +45,6 @@ export function HomeBelowFoldClient() {
   return (
     <>
       <UploadFlow />
-      <ProductionReadinessPanel />
       <div className="[content-visibility:auto] [contain-intrinsic-size:auto_1200px]">
         <DashboardShell
           stats={stats}

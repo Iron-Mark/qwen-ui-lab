@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -49,16 +50,19 @@ export function HomeMarketingHero() {
   const valueProps = [
     {
       icon: Upload,
+      label: copy.benefitUploadLabel,
       title: copy.benefitUploadTitle,
       body: copy.benefitUploadBody,
     },
     {
       icon: Sparkles,
+      label: copy.benefitAnalyzeLabel,
       title: copy.benefitAnalyzeTitle,
       body: copy.benefitAnalyzeBody,
     },
     {
       icon: Layers,
+      label: copy.benefitDesignLabel,
       title: copy.benefitDesignTitle,
       body: copy.benefitDesignBody,
     },
@@ -84,11 +88,27 @@ export function HomeMarketingHero() {
       data-testid="home-marketing-hero"
       lang={locale}
       aria-labelledby="home-hero-heading"
-      className="border-b border-border/60 bg-card/30"
+      className="relative isolate overflow-hidden border-b border-border/60 bg-background"
     >
-      <PageContainer className="py-8 sm:py-10 md:py-12">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl space-y-4">
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        <Image
+          data-testid="home-hero-visual"
+          src="/references/dashboard-reference.webp"
+          alt=""
+          fill
+          priority
+          unoptimized
+          sizes="100vw"
+          className="object-cover object-[66%_30%] opacity-70 saturate-[0.9] dark:opacity-45"
+        />
+        <div className="absolute inset-0 bg-background/70 dark:bg-background/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
+      <PageContainer className="flex min-h-[30rem] flex-col justify-end py-6 sm:min-h-[34rem] sm:py-10 lg:min-h-[35rem]">
+        <div className="max-w-2xl space-y-5">
+          <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="text-xs font-medium">
                 {copy.badgeDemo}
@@ -102,11 +122,11 @@ export function HomeMarketingHero() {
             </div>
             <h1
               id="home-hero-heading"
-              className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-[1.1]"
+              className="max-w-xl text-4xl font-bold leading-[1.05] text-foreground sm:text-5xl md:text-6xl"
             >
               {copy.title}
             </h1>
-            <p className="growth-snippet max-w-2xl text-base text-muted-foreground sm:text-lg">
+            <p className="growth-snippet max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
               {copy.subtitle}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -139,37 +159,55 @@ export function HomeMarketingHero() {
                 {copy.ctaSecondary}
               </Link>
             </div>
-            <ul
-              className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
-              aria-label={copy.trustSignalsAria}
-            >
-              {trustSignals.map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-2">
-                  <Icon className="size-4 shrink-0 text-primary" aria-hidden />
-                  <span>{label}</span>
-                </li>
-              ))}
-            </ul>
           </div>
+
+          <ul
+            className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
+            aria-label={copy.trustSignalsAria}
+          >
+            {trustSignals.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-center gap-2">
+                <Icon className="size-4 shrink-0 text-primary" aria-hidden />
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <ul
-          className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:auto_280px]"
+        <ol
+          data-testid="hero-benefit-rail"
+          className="mt-6 grid max-w-3xl grid-cols-3 overflow-hidden rounded-lg border border-border/60 bg-background/60 shadow-sm backdrop-blur-md sm:mt-7"
           aria-label={copy.keyBenefitsAria}
         >
-          {valueProps.map(({ icon: Icon, title, body }) => (
+          {valueProps.map(({ icon: Icon, label, title, body }, index) => (
             <li
               key={title}
-              className="rounded-xl border border-border/70 bg-background/80 p-4 shadow-sm"
+              aria-label={`${label}: ${title}. ${body}`}
+              className="relative flex min-h-14 items-center gap-2 border-l border-border/60 px-2 py-2 first:border-l-0 sm:min-h-16 sm:gap-3 sm:px-4 sm:py-3"
             >
-              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary sm:size-9">
                 <Icon className="size-4" aria-hidden />
               </div>
-              <p className="mt-3 text-sm font-semibold text-foreground">{title}</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold leading-3 text-muted-foreground sm:text-xs sm:leading-4">
+                  0{index + 1}
+                </p>
+                <p className="truncate text-xs font-semibold leading-4 text-foreground sm:text-sm sm:leading-5">
+                  {label}
+                </p>
+                <span className="sr-only">
+                  {title}. {body}
+                </span>
+              </div>
+              {index < valueProps.length - 1 ? (
+                <ArrowRight
+                  className="absolute right-3 hidden size-4 text-muted-foreground/60 lg:block"
+                  aria-hidden
+                />
+              ) : null}
             </li>
           ))}
-        </ul>
+        </ol>
       </PageContainer>
     </section>
   );

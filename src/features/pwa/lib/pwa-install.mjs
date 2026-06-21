@@ -1,4 +1,4 @@
-/** localStorage key — dismiss persists across sessions until cache clear. */
+/** localStorage key - dismiss persists across sessions until cache clear. */
 export const PWA_INSTALL_DISMISS_KEY = "qwen-ui-lab:pwa-install-dismissed";
 
 /**
@@ -9,7 +9,7 @@ export function isStandaloneDisplay({ matchStandalone = false, navigatorStandalo
   return matchStandalone || navigatorStandalone === true;
 }
 
-/** Safari on iOS/iPadOS — no beforeinstallprompt; show manual Add to Home Screen steps. */
+/** Safari on iOS/iPadOS has no beforeinstallprompt; show manual Add to Home Screen steps. */
 export function isIosSafari(userAgent) {
   const isIos =
     /iPad|iPhone|iPod/.test(userAgent) ||

@@ -13,6 +13,7 @@ interface UploadDropzoneProps {
   disabled?: boolean;
   className?: string;
   inputRef?: RefObject<HTMLInputElement | null>;
+  buttonRef?: RefObject<HTMLButtonElement | null>;
 }
 
 export function UploadDropzone({
@@ -22,6 +23,7 @@ export function UploadDropzone({
   disabled = false,
   className,
   inputRef,
+  buttonRef,
 }: UploadDropzoneProps) {
   return (
     <div
@@ -45,8 +47,10 @@ export function UploadDropzone({
         onChange={(event) => onFile(event.target.files?.item(0) ?? null)}
       />
       <Button
+        ref={buttonRef}
         type="button"
         variant="outline"
+        data-testid="upload-dropzone-button"
         disabled={disabled}
         onClick={() => inputRef?.current?.click()}
         className="flex min-h-72 h-auto w-full flex-col items-center justify-center border-dashed bg-background px-6 py-8 text-center whitespace-normal"
