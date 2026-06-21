@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
@@ -16,6 +16,7 @@ import {
   Download,
   Eye,
   EyeOff,
+  FileText,
   Grid2X2,
   PackageOpen,
   Redo2,
@@ -59,11 +60,15 @@ import {
   buildAnalyzeFailureError,
   isReportableAnalyzeFailure,
 } from "../lib/analyze-observability.mjs";
+import {
+  buildDesignMarkdown,
+  DESIGN_MD_FILENAME,
+} from "../lib/design-md.mjs";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import {
   BUNDLED_REFERENCE_SAMPLES,
-  getReferenceSampleByFileName,
+  findReferenceSampleByFileName,
   getReferenceSampleById,
   referenceSampleExportFilename,
 } from "../lib/reference-samples.mjs";
@@ -230,6 +235,37 @@ function sampleCopy(
     return samples[sampleId as SampleId];
   }
   return { label: sampleId, hint: "" };
+}
+
+function isEditablePasteTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  return Boolean(
+    target.closest(
+      'input,textarea,select,[contenteditable="true"],[role="textbox"]',
+    ),
+  );
+}
+
+function pastedImageFileFromClipboard(data: DataTransfer | null) {
+  if (!data) return null;
+  const files = [...data.files];
+  const directFile = files.find((file) => file.type.startsWith("image/"));
+  if (directFile) return normalizePastedImageFile(directFile);
+
+  const item = [...data.items].find(
+    (entry) => entry.kind === "file" && entry.type.startsWith("image/"),
+  );
+  const itemFile = item?.getAsFile();
+  return itemFile ? normalizePastedImageFile(itemFile) : null;
+}
+
+function normalizePastedImageFile(file: File) {
+  if (file.name) return file;
+  const extension = file.type.split("/")[1]?.replace("jpeg", "jpg") || "png";
+  return new File([file], `pasted-screenshot.${extension}`, {
+    type: file.type || "image/png",
+    lastModified: Date.now(),
+  });
 }
 
 const SnippetPreview = dynamic(
@@ -1399,6 +1435,7 @@ export function UploadFlow({
   const observability = useObservability();
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropzoneButtonRef = useRef<HTMLButtonElement>(null);
   const previewUrlRef = useRef<string | null>(null);
   const originalDetectionsRef = useRef<UiFlowArtifact["detections"] | null>(null);
   const detectionHistoryRef = useRef<NonNullable<UiFlowArtifact["detections"]>[]>([]);
@@ -1419,6 +1456,9 @@ export function UploadFlow({
   const [providerMessage, setProviderMessage] = useState<string | null>(null);
   const [providerDetail, setProviderDetail] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
+  const [selectedSampleId, setSelectedSampleId] = useState(
+    BUNDLED_REFERENCE_SAMPLES[0]?.id ?? "dashboard",
+  );
   const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
@@ -1545,6 +1585,14 @@ export function UploadFlow({
 
   const showSampleScreenshotButton =
     !sampleUsed && !userUploadedOwn && !file;
+  const selectedSample = useMemo(
+    () => getReferenceSampleById(selectedSampleId),
+    [selectedSampleId],
+  );
+  const selectedSampleCopy = useMemo(
+    () => sampleCopy(selectedSample.id, t),
+    [selectedSample.id, t],
+  );
 
   const activeStepIndex = useMemo(() => {
     if (stage === "empty") return -1;
@@ -1589,22 +1637,37 @@ export function UploadFlow({
 
   const exportFilename = useMemo(() => {
     if (file?.name) {
-      return referenceSampleExportFilename(getReferenceSampleByFileName(file.name).id);
+      const referenceSample = findReferenceSampleByFileName(file.name);
+      if (referenceSample) {
+        return referenceSampleExportFilename(referenceSample.id);
+      }
+
+      const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
+      return `generated-${base || "scaffold"}.tsx`;
     }
     if (demoArchetype) {
       return referenceSampleExportFilename(demoArchetype);
     }
-    if (file?.name) {
-      const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
-      return `generated-${base || "scaffold"}.tsx`;
-    }
     return "generated-scaffold.tsx";
   }, [demoArchetype, file]);
 
-  function acceptFile(
+  const resetDetectionHistory = useCallback(
+    (detections: UiFlowArtifact["detections"] | null) => {
+      const cloned = cloneDetections(detections);
+      detectionHistoryRef.current = cloned ? [cloned] : [];
+      detectionHistoryIndexRef.current = cloned ? 0 : -1;
+      setDetectionHistoryState({
+        index: detectionHistoryIndexRef.current,
+        length: detectionHistoryRef.current.length,
+      });
+    },
+    [],
+  );
+
+  const acceptFile = useCallback((
     nextFile: File | null,
     source: "dropzone" | "sample" = "dropzone",
-  ) {
+  ) => {
     setError(null);
     setArtifact(null);
     setProviderState("idle");
@@ -1661,7 +1724,29 @@ export function UploadFlow({
       step: "upload",
       status: "accepted",
     });
-  }
+  }, [analytics, resetDetectionHistory, t]);
+  useEffect(() => {
+    function focusDropzone() {
+      const button = dropzoneButtonRef.current;
+      if (!button) return;
+      button.focus({ preventScroll: true });
+      button.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    function onPaste(event: ClipboardEvent) {
+      if (isBusy || isEditablePasteTarget(event.target)) return;
+      const pastedFile = pastedImageFileFromClipboard(event.clipboardData);
+      if (!pastedFile) return;
+
+      event.preventDefault();
+      focusDropzone();
+      acceptFile(pastedFile, "dropzone");
+      window.requestAnimationFrame(focusDropzone);
+    }
+
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [acceptFile, isBusy]);
 
   async function analyzeImage() {
     if (!file) {
@@ -1834,16 +1919,6 @@ export function UploadFlow({
     });
   }
 
-  function resetDetectionHistory(detections: UiFlowArtifact["detections"] | null) {
-    const cloned = cloneDetections(detections);
-    detectionHistoryRef.current = cloned ? [cloned] : [];
-    detectionHistoryIndexRef.current = cloned ? 0 : -1;
-    setDetectionHistoryState({
-      index: detectionHistoryIndexRef.current,
-      length: detectionHistoryRef.current.length,
-    });
-  }
-
   function applyDetectionHistory(index: number) {
     const nextDetections = cloneDetections(detectionHistoryRef.current[index]);
     if (!nextDetections) return;
@@ -1906,6 +1981,27 @@ export function UploadFlow({
     );
   }
 
+  function exportDesignMarkdown() {
+    if (!artifact || typeof document === "undefined") return;
+    const designMarkdown = buildDesignMarkdown({
+      artifact,
+      componentFilename: exportFilename,
+      exportedAt: new Date(currentTimestamp()).toISOString(),
+    });
+    downloadTextFile(
+      designMarkdown,
+      DESIGN_MD_FILENAME,
+      "text/markdown;charset=utf-8",
+    );
+    analytics.track(AnalyticsEvent.ExportTriggered, {
+      source: "upload_flow",
+      feature: "design_md",
+      trigger: "export",
+      status: "success",
+    });
+    toast(t.toastDesignDocExported, "success");
+  }
+
   function exportHandoffBundle() {
     if (!artifact || typeof document === "undefined") return;
     const baseName =
@@ -1931,6 +2027,7 @@ export function UploadFlow({
       exports: {
         tsxFilename: exportFilename,
         detectionsFilename: `${baseName}.detections.json`,
+        designMarkdownFilename: DESIGN_MD_FILENAME,
       },
       detections: artifact.detections,
       shareSummary,
@@ -2248,6 +2345,7 @@ export function UploadFlow({
                 previewUrl={previewUrl}
                 onFile={acceptFile}
                 inputRef={inputRef}
+                buttonRef={dropzoneButtonRef}
                 disabled={providerState === "loading"}
               />
             ) : (
@@ -2318,38 +2416,49 @@ export function UploadFlow({
             <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               {showSampleScreenshotButton ? (
                 <div
-                  className="flex min-w-0 flex-col gap-2"
+                  className="grid min-w-0 gap-2 md:max-w-xl md:flex-1"
                   data-testid="sample-picker"
                 >
                   <p className="text-xs font-medium text-muted-foreground">
                     {t.tryBundledReference}
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
-                      const localized = sampleCopy(sample.id, t);
-                      return (
-                        <Button
-                          key={sample.id}
-                          type="button"
-                          variant="outline"
-                          onClick={() => void loadBundledSample(sample.id)}
-                          className="h-auto min-h-11 flex-col items-start gap-0.5 border-dashed px-3 py-2 text-left"
-                          disabled={isBusy}
-                          aria-label={interpolate(t.loadSampleAria, {
-                            label: localized.label,
-                          })}
-                        >
-                          <span className="flex items-center gap-1.5 text-sm font-medium">
-                            <UploadCloud className="size-3.5 shrink-0" aria-hidden />
-                            {loadingSample ? t.loading : localized.label}
-                          </span>
-                          <span className="text-[11px] font-normal text-muted-foreground">
-                            {localized.hint}
-                          </span>
-                        </Button>
-                      );
-                    })}
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
+                    <label className="min-w-0 flex-1">
+                      <span className="sr-only">{t.tryBundledReference}</span>
+                      <select
+                        value={selectedSample.id}
+                        onChange={(event) => setSelectedSampleId(event.target.value)}
+                        className="min-h-11 w-full rounded-lg border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm outline-none transition-colors hover:bg-muted/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                        data-testid="sample-select"
+                        disabled={isBusy}
+                      >
+                        {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
+                          const localized = sampleCopy(sample.id, t);
+                          return (
+                            <option key={sample.id} value={sample.id}>
+                              {localized.label}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => void loadBundledSample(selectedSample.id)}
+                      className="min-h-11 gap-2 px-3 sm:w-auto"
+                      disabled={isBusy}
+                      aria-label={interpolate(t.loadSampleAria, {
+                        label: selectedSampleCopy.label,
+                      })}
+                    >
+                      <UploadCloud className="size-4" aria-hidden />
+                      {loadingSample ? t.loading : t.loadSampleButton}
+                    </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedSampleCopy.hint}
+                  </p>
                   {samplePathHintVariant === "show-path-hint" ? (
                     <p className="text-xs text-muted-foreground">
                       {t.samplePathHint}
@@ -2546,6 +2655,17 @@ export function UploadFlow({
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast(t.toastScaffoldExported, "success")}
                       />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={exportDesignMarkdown}
+                        data-testid="export-design-md"
+                      >
+                        <FileText className="size-3.5" aria-hidden />
+                        {t.exportDesignDoc}
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"

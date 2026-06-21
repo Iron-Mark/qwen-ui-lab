@@ -48,7 +48,7 @@ test("uilaws redirect preserves ?lang=zh", async ({ page }) => {
 test("/account renders zh copy with ?lang=zh", async ({ page }) => {
   await page.goto("/account?lang=zh");
 
-  await expect(page.getByRole("heading", { name: "本地账户（演示占位）" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "为本浏览器中的作品命名" })).toBeVisible();
   await expect(page.getByTestId("account-mode-badge")).toHaveText("访客");
   await expect(page.getByTestId("header-account-link")).toContainText("访客");
 });

@@ -54,12 +54,6 @@ export default async function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: createThemeBootstrapScript() }}
         />
-        <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
-        <link rel="alternate icon" href="/icons/icon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
-        <link rel="icon" href="/icons/icon-512.png" sizes="512x512" type="image/png" />
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-        <link rel="mask-icon" href="/icons/icon-maskable.svg" color="#18181b" />
       </head>
       <body className="font-sans antialiased">
         <a href="#main" className="skip-link">

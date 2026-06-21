@@ -85,16 +85,40 @@ export function AccountPageClient() {
             <CardTitle className="text-lg">{t.statusTitle}</CardTitle>
             <CardDescription>{t.statusDesc}</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-wrap items-center gap-3">
-            <Badge
-              variant={signedIn ? "secondary" : "outline"}
-              data-testid="account-mode-badge"
-            >
-              {signedIn ? t.modeNamed : t.modeGuest}
-            </Badge>
-            <span className="text-sm text-muted-foreground" data-testid="account-saved-by-label">
-              {interpolate(t.savedScaffoldsAs, { name: savedByLabel || guestLabel })}
-            </span>
+          <CardContent className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t.currentLabelTitle}
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Badge
+                  variant={signedIn ? "secondary" : "outline"}
+                  data-testid="account-mode-badge"
+                >
+                  {signedIn ? t.modeNamed : t.modeGuest}
+                </Badge>
+                <span
+                  className="text-sm text-muted-foreground"
+                  data-testid="account-saved-by-label"
+                >
+                  {interpolate(t.savedScaffoldsAs, {
+                    name: savedByLabel || guestLabel,
+                  })}
+                </span>
+              </div>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t.storedInTitle}
+              </p>
+              <p className="mt-2 text-sm text-card-foreground">{t.storedInBody}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t.notAccountTitle}
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">{t.notAccountBody}</p>
+            </div>
           </CardContent>
         </Card>
 

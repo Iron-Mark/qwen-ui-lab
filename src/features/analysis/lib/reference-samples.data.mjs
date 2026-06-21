@@ -128,15 +128,20 @@ export function getReferenceSampleStem(fileName) {
  * @param {string} fileName
  */
 export function getReferenceSampleByFileName(fileName) {
+  return findReferenceSampleByFileName(fileName) ?? DEFAULT_REFERENCE_SAMPLE;
+}
+
+/**
+ * @param {string} fileName
+ */
+export function findReferenceSampleByFileName(fileName) {
   const key = String(fileName || "").split(/[/\\]/).pop()?.toLowerCase() ?? "";
   const direct = BUNDLED_REFERENCE_SAMPLES.find((sample) => sample.fileName === key);
   if (direct) return direct;
 
   const stem = getReferenceSampleStem(key);
-  return (
-    BUNDLED_REFERENCE_SAMPLES.find(
-      (sample) => getReferenceSampleStem(sample.fileName) === stem,
-    ) ?? DEFAULT_REFERENCE_SAMPLE
+  return BUNDLED_REFERENCE_SAMPLES.find(
+    (sample) => getReferenceSampleStem(sample.fileName) === stem,
   );
 }
 

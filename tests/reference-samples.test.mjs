@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   BUNDLED_REFERENCE_SAMPLES,
   RASTER_REFERENCE_STEMS,
+  findReferenceSampleByFileName,
   inferReferenceMimeType,
   getReferenceSampleByFileName,
 } from "../src/features/analysis/lib/reference-samples.mjs";
@@ -78,6 +79,13 @@ test("getReferenceSampleByFileName resolves raster filenames", () => {
   const auth = getReferenceSampleByFileName("auth-reference.png");
   assert.equal(auth.id, "auth");
   assert.equal(auth.path, "/references/auth-reference.png");
+});
+
+test("findReferenceSampleByFileName does not fallback for user uploads", () => {
+  const auth = findReferenceSampleByFileName("auth-reference.png");
+  assert.equal(auth.id, "auth");
+  assert.equal(findReferenceSampleByFileName("client-settings-shot.png"), undefined);
+  assert.equal(getReferenceSampleByFileName("client-settings-shot.png").id, "dashboard");
 });
 
 test("getReferenceSampleByFileName resolves legacy SVG stems to raster bundle", () => {

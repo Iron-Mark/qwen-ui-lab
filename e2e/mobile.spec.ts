@@ -25,7 +25,11 @@ test("sample picker is visible and loads bundled reference", async ({ page }) =>
 
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
-  await expect(samplePicker.getByRole("button")).toHaveCount(6);
+  await expect(samplePicker.getByTestId("sample-select")).toBeVisible();
+  await expect(samplePicker.locator("option")).toHaveCount(8);
+  await expect(
+    samplePicker.getByRole("button", { name: /load dashboard sample/i }),
+  ).toBeVisible();
 
   await loadBundledSample(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.(png|svg)/i)).toBeVisible({

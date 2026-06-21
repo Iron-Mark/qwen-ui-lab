@@ -6,6 +6,13 @@ export const SITE_TAGLINE = "Screenshot-to-scaffold meetup demo";
 export const SITE_PITCH =
   "Turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code.";
 export const DEFAULT_OG_IMAGE = "/opengraph-image";
+export const MANIFEST_PATH = "/manifest.webmanifest";
+export const LEGACY_MANIFEST_PATH = "/manifest.json";
+export const APP_ICON_SVG = "/icons/icon.svg";
+export const APP_ICON_MASKABLE_SVG = "/icons/icon-maskable.svg";
+export const APP_ICON_192 = "/icons/icon-192.png";
+export const APP_ICON_512 = "/icons/icon-512.png";
+export const APPLE_TOUCH_ICON = "/icons/apple-touch-icon.png";
 export const SITEMAP_STATIC_ROUTES = [
   "/",
   "/demo",
@@ -167,21 +174,117 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
         "max-video-preview": -1,
       },
     },
-    manifest: "/manifest.json",
+    manifest: MANIFEST_PATH,
     icons: {
+      shortcut: [{ url: "/favicon.ico", sizes: "any" }],
       icon: [
-        { url: "/icons/icon.svg", type: "image/svg+xml" },
-        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-        { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+        { url: APP_ICON_SVG, type: "image/svg+xml" },
+        { url: APP_ICON_192, sizes: "192x192", type: "image/png" },
+        { url: APP_ICON_512, sizes: "512x512", type: "image/png" },
       ],
       apple: [
-        { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+        { url: APPLE_TOUCH_ICON, sizes: "180x180", type: "image/png" },
+      ],
+      other: [
+        {
+          rel: "mask-icon",
+          url: APP_ICON_MASKABLE_SVG,
+          color: "#18181b",
+        },
       ],
     },
     appleWebApp: {
       capable: true,
       title: "qwen-ui-lab",
     },
+  };
+}
+
+export function createManifestConfig(): MetadataRoute.Manifest {
+  return {
+    id: "/",
+    name: `${SITE_NAME} - meetup demo`,
+    short_name: SITE_NAME,
+    description:
+      "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
+    start_url: "/",
+    scope: "/",
+    lang: "en-US",
+    dir: "ltr",
+    display: "standalone",
+    display_override: ["standalone", "browser"],
+    orientation: "any",
+    background_color: "#fafafa",
+    theme_color: "#18181b",
+    categories: ["developer", "productivity", "utilities"],
+    icons: [
+      {
+        src: APP_ICON_192,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: APP_ICON_512,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: APPLE_TOUCH_ICON,
+        sizes: "180x180",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: APP_ICON_SVG,
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "any",
+      },
+      {
+        src: APP_ICON_MASKABLE_SVG,
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "maskable",
+      },
+    ],
+    shortcuts: [
+      {
+        name: "Live screenshot workflow",
+        short_name: "Live flow",
+        description: "Upload a UI screenshot and export a React scaffold.",
+        url: "/#upload-flow",
+        icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
+      },
+      {
+        name: "Design system",
+        short_name: "Patterns",
+        description: "Browse component snippets and UX-law patterns.",
+        url: "/design-system",
+        icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
+      },
+    ],
+    screenshots: [
+      {
+        src: "/references/dashboard-reference.png",
+        sizes: "1440x900",
+        type: "image/png",
+        form_factor: "wide",
+        label: "Dashboard screenshot scaffold reference",
+      },
+      {
+        src: "/references/mobile-reference.png",
+        sizes: "390x844",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "Mobile app screenshot scaffold reference",
+      },
+    ],
+    launch_handler: {
+      client_mode: "focus-existing",
+    },
+    prefer_related_applications: false,
   };
 }
 

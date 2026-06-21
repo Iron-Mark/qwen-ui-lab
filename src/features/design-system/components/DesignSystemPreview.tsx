@@ -269,10 +269,16 @@ export function DesignSystemPreview() {
   }, [domainFilter, levelFilter, moveSelection, setDomain]);
 
   return (
-    <div lang={locale}>
-      <header className="rounded-2xl border border-border/70 bg-background/95 p-4">
+    <div lang={locale} className="space-y-4">
+      <header
+        data-testid="design-system-filter-controls"
+        className="space-y-4 px-1 sm:px-2"
+      >
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-muted/30 px-3 py-2">
+          <div
+            data-testid="catalog-search-shell"
+            className="flex items-center gap-2 border-b border-border/70 py-2"
+          >
             <Search className="size-4 text-muted-foreground" />
             <Label htmlFor="catalog-search" className="sr-only">
               {t.searchLabel}
@@ -294,27 +300,27 @@ export function DesignSystemPreview() {
               placeholder={t.searchPlaceholder}
               className="h-9 border-0 bg-transparent px-0 focus-visible:ring-0"
             />
-            <kbd className="rounded border border-border/70 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+            <kbd className="hidden rounded border border-border/70 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline-flex">
               /
             </kbd>
           </div>
         </div>
 
-        <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-2">
-            <p className="px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               {t.domain}
             </p>
             <Tabs
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
-              <TabsList className="mt-1 h-auto w-full flex-wrap justify-start gap-1.5 rounded-lg bg-background/70 p-1.5">
+              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-lg bg-background/70 p-1.5 group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
                 {domains.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="min-h-10 rounded-md px-3 text-xs font-medium sm:text-sm"
+                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-md px-2 text-xs font-medium sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -323,8 +329,8 @@ export function DesignSystemPreview() {
             </Tabs>
           </div>
 
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-2">
-            <p className="px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="min-w-0 md:min-w-80">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               {t.tier}
             </p>
             <div className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5">
@@ -353,7 +359,7 @@ export function DesignSystemPreview() {
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
           <span className="hidden min-w-0 flex-1 basis-full sm:inline sm:basis-auto">
             {t.keyboardHelp}
           </span>

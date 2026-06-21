@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { AppearanceMenu } from "./AppearanceMenu";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
@@ -15,14 +15,6 @@ import { useLocale } from "@/lib/i18n/use-locale.client";
 import { AccountNavLabel } from "@/features/account/components/AccountNavLabel";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
-
-const BrandThemeSwitcher = dynamic(
-  () =>
-    import("./BrandThemeSwitcher").then(
-      (mod) => mod.BrandThemeSwitcher,
-    ),
-  { ssr: false },
-);
 
 const DemoModeSnackbar = dynamic(
   () =>
@@ -42,7 +34,7 @@ export function Header() {
   return (
     <header lang={locale} className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
       <DemoModeSnackbar />
-      <PageContainer className="flex h-16 items-center gap-4">
+      <PageContainer className="flex h-16 min-w-0 items-center gap-2 px-2 sm:gap-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={localizedHref("/", locale)}
           className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -55,13 +47,13 @@ export function Header() {
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
             fetchPriority="low"
           />
-          <div className="min-w-0">
+          <div className="hidden min-w-0 sm:block">
             <p className="truncate text-lg font-bold text-card-foreground">{t.siteTitle}</p>
             <p className="truncate text-xs text-muted-foreground">{t.siteTagline}</p>
           </div>
         </Link>
         <nav
-          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto overscroll-x-contain sm:gap-2"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden md:gap-2"
           aria-label={t.navMainAria}
         >
           <Link
@@ -72,12 +64,12 @@ export function Header() {
                 variant: pathname === "/" ? "secondary" : "ghost",
                 size: "lg",
               }),
-              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
+              "size-11 min-h-11 shrink-0 gap-0 px-0 md:w-auto md:gap-2 md:px-3",
             )}
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <LayoutDashboard className="size-4 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">{t.navDashboard}</span>
+            <span className="hidden md:inline">{t.navDashboard}</span>
           </Link>
           <Link
             href={localizedHref("/design-system", locale)}
@@ -87,20 +79,20 @@ export function Header() {
                 variant: pathname.startsWith("/design-system") ? "secondary" : "ghost",
                 size: "lg",
               }),
-              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
+              "size-11 min-h-11 shrink-0 gap-0 px-0 md:w-auto md:gap-2 md:px-3",
             )}
             aria-current={pathname.startsWith("/design-system") ? "page" : undefined}
           >
             <PanelsTopLeft className="size-4 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">{t.navDesignSystem}</span>
+            <span className="hidden md:inline">{t.navDesignSystem}</span>
             {designSystemVariant === "with-labs-badge" ? (
-              <Badge variant="secondary" className="h-5 px-1.5 text-[10px] uppercase">
+              <Badge variant="secondary" className="hidden h-5 px-1.5 text-[10px] uppercase lg:inline-flex">
                 {t.labsBadge}
               </Badge>
             ) : null}
           </Link>
         </nav>
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-2">
           <Link
             href={localizedHref("/account", locale)}
             aria-label={t.navAccountAria}
@@ -110,18 +102,17 @@ export function Header() {
                 variant: pathname.startsWith("/account") ? "secondary" : "ghost",
                 size: "lg",
               }),
-              "h-11 min-h-11 shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3",
+              "size-11 min-h-11 shrink-0 gap-0 px-0 md:w-auto md:gap-2 md:px-3",
             )}
             aria-current={pathname.startsWith("/account") ? "page" : undefined}
           >
             <UserRound className="size-4 shrink-0" aria-hidden />
             <AccountNavLabel
               guestLabel={t.navAccountGuest}
-              className="hidden max-w-[8rem] truncate sm:inline"
+              className="hidden max-w-[8rem] truncate md:inline"
             />
           </Link>
-          <BrandThemeSwitcher />
-          <ThemeToggle />
+          <AppearanceMenu />
         </div>
       </PageContainer>
     </header>
