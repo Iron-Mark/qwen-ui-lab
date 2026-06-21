@@ -256,5 +256,8 @@ export async function createShortShareLink(origin, payload) {
   return {
     id: data.id,
     url: typeof data.url === "string" ? data.url : buildShortShareUrl(origin, data.id),
+    storage: data.storage === "kv" ? "kv" : "memory",
+    durable: data.durable === true,
+    warning: typeof data.warning === "string" ? data.warning : null,
   };
 }

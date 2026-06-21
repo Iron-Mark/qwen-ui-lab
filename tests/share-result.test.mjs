@@ -12,6 +12,7 @@ import {
 import {
   createShareRecord,
   generateShareId,
+  getShareStorageMode,
   getShareRecord,
   isShareKvConfigured,
   resetShareStore,
@@ -165,12 +166,20 @@ test("getShareRecord rejects invalid ids", async () => {
 
 test("isShareKvConfigured requires REST env vars", () => {
   assert.equal(isShareKvConfigured({}), false);
+  assert.equal(getShareStorageMode({}), "memory");
   assert.equal(
     isShareKvConfigured({
       KV_REST_API_URL: "https://example.upstash.io",
       KV_REST_API_TOKEN: "token",
     }),
     true,
+  );
+  assert.equal(
+    getShareStorageMode({
+      KV_REST_API_URL: "https://example.upstash.io",
+      KV_REST_API_TOKEN: "token",
+    }),
+    "kv",
   );
 });
 
@@ -192,6 +201,9 @@ test("POST /api/share creates short link", async () => {
   assert.equal(body.ok, true);
   assert.match(body.id, /^[A-Za-z0-9]{8}$/);
   assert.match(body.url, /^https:\/\/demo\.example\/share\//);
+  assert.equal(body.storage, "memory");
+  assert.equal(body.durable, false);
+  assert.match(body.warning, /KV is not configured/i);
 });
 
 test("POST /api/share rejects empty payload", async () => {
@@ -222,6 +234,8 @@ test("GET /api/share returns stored summary", async () => {
   assert.equal(body.id, created.id);
   assert.deepEqual(body.summary, payload);
   assert.equal(body.summary.detections.elements.length, 2);
+  assert.equal(body.storage, "memory");
+  assert.equal(body.durable, false);
 });
 
 test("GET /api/share returns 404 for missing id", async () => {

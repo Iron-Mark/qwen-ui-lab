@@ -52,6 +52,10 @@ export function isShareKvConfigured(env = process.env) {
   return Boolean(kvRestUrl && kvRestToken);
 }
 
+export function getShareStorageMode(env = process.env) {
+  return isShareKvConfigured(env) ? "kv" : "memory";
+}
+
 /**
  * @param {number} length
  */
@@ -163,7 +167,7 @@ export async function getShareRecord(id, env = process.env) {
 /**
  * @param {ShareableResultSummary} payload
  * @param {{ env?: NodeJS.ProcessEnv; now?: number }} [options]
- * @returns {Promise<{ id: string } | null>}
+ * @returns {Promise<{ id: string; storage: "kv" | "memory" } | null>}
  */
 export async function createShareRecord(payload, options = {}) {
   const env = options.env ?? process.env;
@@ -186,7 +190,7 @@ export async function createShareRecord(payload, options = {}) {
         ex: ttlSeconds,
       });
       if (saved?.result === "OK") {
-        return { id };
+        return { id, storage: "kv" };
       }
     } catch {
       // fall through to in-memory stub
@@ -194,7 +198,7 @@ export async function createShareRecord(payload, options = {}) {
   }
 
   memorySet(id, sanitized, ttlMs);
-  return { id };
+  return { id, storage: "memory" };
 }
 
 export function resetShareStore() {

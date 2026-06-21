@@ -53,6 +53,11 @@ export const en = {
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
     metadataTitle: "Shared summary · {file}",
+    notFoundTitle: "Share link unavailable",
+    notFoundDescription:
+      "This read-only analysis summary was not found. The link may have expired, been created on another server instance, or been cleared during a deploy.",
+    notFoundStorageHint:
+      "Production short links need KV storage. Without KV, links use temporary memory storage and may not survive cold starts.",
   },
   account: {
     eyebrow: "Account",
@@ -185,6 +190,8 @@ export const en = {
       landing: { label: "Landing page", hint: "Marketing hero + pricing" },
       settings: { label: "Settings", hint: "Profile + toggles" },
       ecommerce: { label: "Shop catalog", hint: "Filters + product grid" },
+      "stress-dashboard": { label: "Dense dashboard", hint: "Dense dashboard + table" },
+      "stress-list": { label: "Repeated list", hint: "Repeated rows + actions" },
     },
     ctaRegenerate: "Regenerate preview",
     ctaGenerate: "Generate preview",
@@ -204,6 +211,8 @@ export const en = {
     creatingShareLink: "Creating link…",
     toastShareCopied: "Share link copied (read-only summary)",
     toastShortShareCopied: "Short share link copied (read-only summary)",
+    toastShortShareMemory:
+      "Short link copied, but it uses temporary memory storage until KV is configured",
     toastShareHashCopied: "Share link copied (hash fallback — read-only summary)",
     toastShareFailed: "Could not copy share link",
     defaultScreenshotName: "screenshot",
@@ -212,8 +221,10 @@ export const en = {
       "Copy, download, export to a GitHub Gist, or export to a repo (zip with README, or a compare link when GITHUB_TOKEN is set).",
     exportCopyAll: "Copy all",
     exportDownload: "Download .tsx",
+    exportHandoffBundle: "Handoff bundle",
     toastScaffoldCopied: "Scaffold copied",
     toastScaffoldExported: "Scaffold exported",
+    toastHandoffBundleExported: "Handoff bundle exported",
     exportGenerateHint: "Generate preview to see live stats alongside the snippet.",
     generatedScaffold: "Generated scaffold",
     livePreview: "Live preview",

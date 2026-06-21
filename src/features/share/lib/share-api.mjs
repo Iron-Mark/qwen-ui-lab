@@ -1,5 +1,6 @@
 import {
   createShareRecord,
+  getShareStorageMode,
   getShareRecord,
   sanitizeSharePayload,
 } from "./share-store.mjs";
@@ -17,18 +18,37 @@ function getSiteUrlFromEnv(env = process.env) {
   return withProtocol.replace(/\/+$/, "");
 }
 
-export async function handleShareGet(request) {
+function buildShareStorageStatus(storage) {
+  const durable = storage === "kv";
+  return {
+    storage,
+    durable,
+    ...(durable
+      ? {}
+      : {
+          warning:
+            "Short share links are stored in memory because KV is not configured. Links may expire after cold starts or redeploys.",
+        }),
+  };
+}
+
+export async function handleShareGet(request, env = process.env) {
   const id = new URL(request.url).searchParams.get("id")?.trim();
   if (!id) {
     return shareJsonResponse({ ok: false, error: "Missing id query parameter" }, 400);
   }
 
-  const summary = await getShareRecord(id);
+  const summary = await getShareRecord(id, env);
   if (!summary) {
     return shareJsonResponse({ ok: false, error: "Share not found" }, 404);
   }
 
-  return shareJsonResponse({ ok: true, id, summary });
+  return shareJsonResponse({
+    ok: true,
+    id,
+    summary,
+    ...buildShareStorageStatus(getShareStorageMode(env)),
+  });
 }
 
 export async function handleSharePost(request, env = process.env) {
@@ -56,6 +76,7 @@ export async function handleSharePost(request, env = process.env) {
       ok: true,
       id: created.id,
       url: buildShortShareUrl(origin, created.id),
+      ...buildShareStorageStatus(created.storage),
     },
     201,
   );

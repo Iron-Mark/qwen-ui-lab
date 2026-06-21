@@ -84,4 +84,8 @@ DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 node scripts/synthetic-health-check.mjs --base-url https://qwen-ui-lab.vercel.app --attempts 5
 ```
 
+To publish smoke results to GitHub, set `SMOKE_GITHUB_REPORT=true` plus `SMOKE_GITHUB_REPOSITORY=owner/repo`. Add `SMOKE_GITHUB_ISSUE=<number>` to comment on an existing issue; otherwise the smoke script creates a new issue.
+
+The app also exposes `/api/readiness` and an in-app Production readiness panel on the home page. Use it to confirm which production-facing features are live and which are intentionally running in fallback mode.
+
 `npm run validate:prod` is expected to fail until `KV_REST_API_URL`, `KV_REST_API_TOKEN`, and `GITHUB_TOKEN` are configured in the environment being checked.
