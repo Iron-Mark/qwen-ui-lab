@@ -1,16 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
+  Check,
+  Download,
   Eye,
   EyeOff,
+  Grid2X2,
+  Redo2,
+  RotateCcw,
   Share2,
   Sparkles,
+  Undo2,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -97,6 +104,8 @@ interface UiFlowArtifact {
   modeLabel?: string;
   summary?: string;
   detections?: {
+    source?: { width?: number | null; height?: number | null };
+    designTokens?: DetectionDesignTokens | null;
     elements: DetectionElement[];
     layoutTree: unknown;
     quality: DetectionQuality | null;
@@ -106,8 +115,30 @@ interface UiFlowArtifact {
 type DetectionElement = {
   id: string;
   kind: string;
+  primitive?: string;
   confidence: number;
+  included?: boolean;
+  userEdited?: boolean;
+  reasons?: DetectionReason[];
   box: { x: number; y: number; width: number; height: number };
+};
+
+type DetectionReason = {
+  code: string;
+  label: string;
+  evidence: string;
+  weight: number;
+};
+
+type DetectionDesignTokens = {
+  surface?: string;
+  foreground?: string;
+  accent?: string;
+  accentForeground?: string;
+  muted?: string;
+  border?: string;
+  spacing?: string;
+  radius?: string;
 };
 
 type DetectionQuality = {
@@ -115,6 +146,10 @@ type DetectionQuality = {
   ambiguity?: string;
   elementCount?: number;
   strategy?: string;
+};
+
+type DetectionChangeOptions = {
+  recordHistory?: boolean;
 };
 
 type Stage = "empty" | "uploaded" | "analyzed" | "generated";
@@ -165,6 +200,19 @@ const ANALYZE_STEPS_EN = [
   "Building artifact…",
 ] as const;
 
+const DETECTION_KIND_OPTIONS = [
+  "header",
+  "side-nav",
+  "bottom-nav",
+  "button-or-input",
+  "input-or-button-row",
+  "card-or-panel",
+  "chart-or-media",
+  "text-row",
+  "control",
+  "content-block",
+] as const;
+
 type SampleId = keyof UploadFlowDictionary["samples"];
 
 function sampleCopy(
@@ -204,6 +252,18 @@ type DetectedReferencePreviewProps = {
   imageWidth?: number | null;
   imageHeight?: number | null;
   detections?: UiFlowArtifact["detections"];
+  copy: UploadFlowDictionary;
+  canUndoDetections?: boolean;
+  canRedoDetections?: boolean;
+  onDetectionsChange?: (
+    detections: UiFlowArtifact["detections"],
+    options?: DetectionChangeOptions,
+  ) => void;
+  onResetDetections?: () => void;
+  onUndoDetections?: () => void;
+  onRedoDetections?: () => void;
+  onSnapDetections?: () => void;
+  onExportDetections?: () => void;
 };
 
 function DetectedReferencePreview({
@@ -212,12 +272,26 @@ function DetectedReferencePreview({
   imageWidth,
   imageHeight,
   detections,
+  copy,
+  canUndoDetections = false,
+  canRedoDetections = false,
+  onDetectionsChange,
+  onResetDetections,
+  onUndoDetections,
+  onRedoDetections,
+  onSnapDetections,
+  onExportDetections,
 }: DetectedReferencePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [overlayEnabled, setOverlayEnabled] = useState(true);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const elements = detections?.elements ?? [];
+  const activeElements = elements.filter((element) => element.included !== false);
+  const selectedElement =
+    elements.find((element) => element.id === selectedElementId) ?? activeElements[0] ?? null;
   const canShowOverlay = elements.length > 0 && Boolean(imageWidth && imageHeight);
+  const qualityStats = buildDetectionQualityStats(elements, detections?.quality);
 
   useEffect(() => {
     const observedNode = containerRef.current;
@@ -257,13 +331,115 @@ function DetectedReferencePreview({
       ? `${Math.round(detections.quality.confidence * 100)}%`
       : null;
 
+  function updateElement(
+    elementId: string,
+    patch: Partial<DetectionElement>,
+    options?: DetectionChangeOptions,
+  ) {
+    if (!detections || !onDetectionsChange) return;
+    onDetectionsChange({
+      ...detections,
+      elements: elements.map((element) =>
+        element.id === elementId
+          ? {
+              ...element,
+              ...patch,
+              userEdited: true,
+              primitive:
+                patch.primitive ??
+                (patch.kind
+                  ? primitiveForKind(patch.kind)
+                  : element.primitive ?? primitiveForKind(element.kind)),
+            }
+          : element,
+      ),
+      quality: {
+        ...(detections.quality ?? {}),
+        elementCount: elements.filter((element) =>
+          element.id === elementId
+            ? (patch.included ?? element.included ?? true) !== false
+            : element.included !== false,
+        ).length,
+      },
+    }, options);
+  }
+
+  function startBoxInteraction(
+    event: ReactPointerEvent,
+    element: DetectionElement,
+    mode: "move" | "resize",
+  ) {
+    if (!imageRect || !imageWidth || !imageHeight) return;
+    const activeImageRect = imageRect;
+    const sourceImageWidth = imageWidth;
+    const sourceImageHeight = imageHeight;
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedElementId(element.id);
+
+    const startClientX = event.clientX;
+    const startClientY = event.clientY;
+    const originalBox = { ...element.box };
+    let latestBox = originalBox;
+    let moved = false;
+
+    function nextBox(clientX: number, clientY: number) {
+      const deltaX =
+        ((clientX - startClientX) / activeImageRect.width) * sourceImageWidth;
+      const deltaY =
+        ((clientY - startClientY) / activeImageRect.height) * sourceImageHeight;
+      if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
+        moved = true;
+      }
+
+      if (mode === "resize") {
+        return clampDetectionBox(
+          {
+            ...originalBox,
+            width: originalBox.width + deltaX,
+            height: originalBox.height + deltaY,
+          },
+          sourceImageWidth,
+          sourceImageHeight,
+        );
+      }
+
+      return clampDetectionBox(
+        {
+          ...originalBox,
+          x: originalBox.x + deltaX,
+          y: originalBox.y + deltaY,
+        },
+        sourceImageWidth,
+        sourceImageHeight,
+      );
+    }
+
+    function handleMove(moveEvent: PointerEvent) {
+      latestBox = nextBox(moveEvent.clientX, moveEvent.clientY);
+      updateElement(element.id, { box: latestBox }, { recordHistory: false });
+    }
+
+    function handleUp(upEvent: PointerEvent) {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      latestBox = nextBox(upEvent.clientX, upEvent.clientY);
+      if (moved) {
+        updateElement(element.id, { box: latestBox }, { recordHistory: true });
+      }
+    }
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+  }
+
   return (
     <div className="space-y-2">
       {canShowOverlay ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" data-testid="detection-overlay-count">
-              {elements.length} detected
+              {activeElements.length} active / {elements.length} detected
             </Badge>
             {confidencePercent ? (
               <span className="text-xs text-muted-foreground">
@@ -316,14 +492,17 @@ function DetectedReferencePreview({
               height: imageRect.height,
             }}
             data-testid="detection-overlay"
-            aria-hidden
           >
             {elements.slice(0, 24).map((element) => (
               <div
+                role="button"
+                tabIndex={0}
                 key={element.id}
                 className={cn(
-                  "absolute rounded-[3px] border bg-background/15 shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)]",
+                  "pointer-events-auto absolute cursor-move rounded-[3px] border bg-background/15 text-left shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)] transition",
                   detectionClassName(element.kind),
+                  element.included === false && "border-dashed opacity-35",
+                  selectedElement?.id === element.id && "ring-2 ring-foreground",
                 )}
                 style={boxToOverlayStyle(element, {
                   sourceWidth: imageWidth ?? 1,
@@ -332,15 +511,184 @@ function DetectedReferencePreview({
                   renderedHeight: imageRect.height,
                 })}
                 data-testid="detection-box"
+                data-detection-id={element.id}
+                data-kind={element.kind}
+                data-primitive={element.primitive ?? primitiveForKind(element.kind)}
+                aria-label={`Select ${element.kind}`}
+                onClick={() => setSelectedElementId(element.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setSelectedElementId(element.id);
+                  }
+                }}
+                onPointerDown={(event) => startBoxInteraction(event, element, "move")}
               >
                 <span className="absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
-                  {element.kind} · {Math.round(element.confidence * 100)}%
+                  {element.kind} - {Math.round(element.confidence * 100)}%
                 </span>
+                <span
+                  className="absolute bottom-0 right-0 size-4 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80"
+                  data-testid="detection-resize-handle-se"
+                  aria-hidden
+                  onPointerDown={(event) => startBoxInteraction(event, element, "resize")}
+                />
               </div>
             ))}
           </div>
         ) : null}
       </div>
+
+      {canShowOverlay ? (
+        <Card className="bg-background" data-testid="detector-quality-dashboard">
+          <CardContent className="space-y-3 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant={qualityStats.reviewCount ? "destructive" : "secondary"}>
+                  {qualityStats.reviewCount} review
+                </Badge>
+                <Badge variant="outline">{qualityStats.editedCount} edited</Badge>
+                <Badge variant="outline">{qualityStats.excludedCount} excluded</Badge>
+                <Badge variant="secondary" data-testid="visual-diff-score">
+                  {qualityStats.visualScore}% visual match
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={onUndoDetections}
+                  disabled={!canUndoDetections}
+                  data-testid="undo-detection-edit"
+                >
+                  <Undo2 className="size-3.5" aria-hidden />
+                  Undo
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={onRedoDetections}
+                  disabled={!canRedoDetections}
+                  data-testid="redo-detection-edit"
+                >
+                  <Redo2 className="size-3.5" aria-hidden />
+                  Redo
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={onSnapDetections}
+                  data-testid="snap-detections-grid"
+                >
+                  <Grid2X2 className="size-3.5" aria-hidden />
+                  Snap
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={onExportDetections}
+                  data-testid="export-detections-json"
+                >
+                  <Download className="size-3.5" aria-hidden />
+                  JSON
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {selectedElement ? (
+        <Card className="bg-background" data-testid="detection-details">
+          <CardContent className="space-y-3 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {copy.detectionDetails}
+                </p>
+                <p className="mt-1 text-sm font-medium text-card-foreground">
+                  {selectedElement.primitive ?? primitiveForKind(selectedElement.kind)} -{" "}
+                  {Math.round(selectedElement.confidence * 100)}% confidence
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={selectedElement.included === false ? "outline" : "secondary"}
+                  size="sm"
+                  className="gap-2"
+                  onClick={() =>
+                    updateElement(selectedElement.id, {
+                      included: selectedElement.included === false,
+                    })
+                  }
+                  data-testid="toggle-detection-include"
+                >
+                  <Check className="size-3.5" aria-hidden />
+                  {selectedElement.included === false
+                    ? copy.detectionInclude
+                    : copy.detectionIncluded}
+                </Button>
+                {onResetDetections ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={onResetDetections}
+                    data-testid="reset-detections"
+                  >
+                    <RotateCcw className="size-3.5" aria-hidden />
+                    {copy.detectionReset}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
+            <label className="grid gap-1 text-xs font-medium text-muted-foreground">
+              {copy.detectionElementType}
+              <select
+                value={selectedElement.kind}
+                onChange={(event) =>
+                  updateElement(selectedElement.id, {
+                    kind: event.target.value,
+                    primitive: primitiveForKind(event.target.value),
+                  })
+                }
+                className="min-h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                data-testid="detection-kind-select"
+              >
+                {DETECTION_KIND_OPTIONS.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {kind}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="flex flex-wrap gap-1.5">
+              {(selectedElement.reasons ?? []).slice(0, 4).map((reason) => (
+                <Badge key={reason.code} variant="outline" className="max-w-full">
+                  <span className="truncate">{reason.label}</span>
+                </Badge>
+              ))}
+            </div>
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              {(selectedElement.reasons ?? []).slice(0, 3).map((reason) => (
+                <li key={reason.code}>{reason.evidence}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }
@@ -390,11 +738,293 @@ function boxToOverlayStyle(
   };
 }
 
+function clampDetectionBox(
+  box: DetectionElement["box"],
+  sourceWidth: number,
+  sourceHeight: number,
+) {
+  const width = Math.max(8, Math.min(sourceWidth, Math.round(box.width)));
+  const height = Math.max(8, Math.min(sourceHeight, Math.round(box.height)));
+  return {
+    x: Math.max(0, Math.min(sourceWidth - width, Math.round(box.x))),
+    y: Math.max(0, Math.min(sourceHeight - height, Math.round(box.y))),
+    width,
+    height,
+  };
+}
+
+function snapDetectionBoxToGrid(
+  box: DetectionElement["box"],
+  {
+    sourceWidth,
+    sourceHeight,
+    columns,
+    rows,
+  }: {
+    sourceWidth: number;
+    sourceHeight: number;
+    columns: number;
+    rows: number;
+  },
+) {
+  const cellWidth = Math.max(1, sourceWidth / columns);
+  const cellHeight = Math.max(1, sourceHeight / rows);
+  const snapped = {
+    x: Math.round(box.x / cellWidth) * cellWidth,
+    y: Math.round(box.y / cellHeight) * cellHeight,
+    width: Math.max(cellWidth, Math.round(box.width / cellWidth) * cellWidth),
+    height: Math.max(cellHeight, Math.round(box.height / cellHeight) * cellHeight),
+  };
+  return clampDetectionBox(snapped, sourceWidth, sourceHeight);
+}
+
+function buildDetectionQualityStats(
+  elements: DetectionElement[],
+  quality?: DetectionQuality | null,
+) {
+  const active = elements.filter((element) => element.included !== false);
+  const editedCount = elements.filter((element) => element.userEdited).length;
+  const excludedCount = elements.length - active.length;
+  const lowConfidenceCount = active.filter((element) => element.confidence < 0.62).length;
+  const reviewCount =
+    lowConfidenceCount + (quality?.ambiguity === "high" ? 1 : 0) + excludedCount;
+  const visualScore = estimateVisualDiffScore(elements, quality);
+  return {
+    activeCount: active.length,
+    editedCount,
+    excludedCount,
+    reviewCount,
+    visualScore,
+  };
+}
+
+function estimateVisualDiffScore(
+  elements: DetectionElement[],
+  quality?: DetectionQuality | null,
+) {
+  const active = elements.filter((element) => element.included !== false);
+  if (!active.length) return 0;
+  const averageConfidence =
+    active.reduce((sum, element) => sum + element.confidence, 0) / active.length;
+  const editPenalty = Math.min(0.18, elements.filter((element) => element.userEdited).length * 0.02);
+  const excludedPenalty = Math.min(0.25, (elements.length - active.length) * 0.04);
+  const ambiguityPenalty =
+    quality?.ambiguity === "high" ? 0.12 : quality?.ambiguity === "medium" ? 0.06 : 0;
+  return Math.max(
+    0,
+    Math.min(100, Math.round((averageConfidence - editPenalty - excludedPenalty - ambiguityPenalty) * 100)),
+  );
+}
+
 function detectionClassName(kind: string) {
   if (/nav|header/i.test(kind)) return "border-sky-500";
   if (/button|input|control/i.test(kind)) return "border-emerald-500";
   if (/chart|media/i.test(kind)) return "border-amber-500";
   return "border-primary";
+}
+
+function primitiveForKind(kind: string) {
+  if (kind === "button-or-input" || kind === "input-or-button-row") {
+    return "field-or-action";
+  }
+  if (kind === "chart-or-media") return "media";
+  if (kind === "card-or-panel") return "card";
+  if (kind === "text-row") return "text";
+  if (kind === "content-block") return "section";
+  return kind;
+}
+
+function detectionPreviewTokens(tokens?: DetectionDesignTokens | null) {
+  return {
+    surface: tokens?.surface ?? "#ffffff",
+    foreground: tokens?.foreground ?? "#111827",
+    accent: tokens?.accent ?? "#2563eb",
+    accentForeground: tokens?.accentForeground ?? "#ffffff",
+    muted: tokens?.muted ?? "#f3f4f6",
+    border: tokens?.border ?? "#d1d5db",
+  };
+}
+
+function DetectionComparisonPreview({
+  previewUrl,
+  artifact,
+  alt,
+  copy,
+}: {
+  previewUrl: string | null;
+  artifact: UiFlowArtifact;
+  alt: string;
+  copy: UploadFlowDictionary;
+}) {
+  const detections = artifact.detections;
+  const sourceWidth = detections?.source?.width ?? artifact.file.width ?? 1;
+  const sourceHeight = detections?.source?.height ?? artifact.file.height ?? 1;
+  const tokens = detectionPreviewTokens(detections?.designTokens);
+  const activeElements = (detections?.elements ?? []).filter(
+    (element) => element.included !== false,
+  );
+
+  return (
+    <Card className="min-w-0 bg-background" data-testid="generated-comparison-preview">
+      <CardHeader>
+        <CardTitle className="text-sm">{copy.livePreview}</CardTitle>
+        <CardDescription className="text-xs">
+          {copy.comparisonPreviewDesc}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid min-w-0 gap-3 lg:grid-cols-2">
+          <div className="min-w-0">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {copy.comparisonScreenshot}
+            </p>
+            <div className="relative h-72 overflow-hidden rounded-md border border-border">
+              {previewUrl ? (
+                <Image
+                  src={previewUrl}
+                  alt={alt}
+                  className="object-contain"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 480px"
+                  unoptimized
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  {artifact.file.name}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="min-w-0">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {copy.comparisonGeneratedMock}
+            </p>
+            <div
+              className="relative h-72 overflow-hidden rounded-md border"
+              data-testid="generated-mock-canvas"
+              style={{
+                backgroundColor: tokens.surface,
+                borderColor: tokens.border,
+                color: tokens.foreground,
+              }}
+            >
+              {activeElements.slice(0, 20).map((element) => (
+                <div
+                  key={element.id}
+                  className="absolute overflow-hidden border p-1.5 text-[10px] shadow-sm"
+                  style={{
+                    left: `${(element.box.x / sourceWidth) * 100}%`,
+                    top: `${(element.box.y / sourceHeight) * 100}%`,
+                    width: `${(element.box.width / sourceWidth) * 100}%`,
+                    height: `${(element.box.height / sourceHeight) * 100}%`,
+                    minHeight: "1.75rem",
+                    borderColor: tokens.border,
+                    borderRadius: "0.375rem",
+                    backgroundColor: /header|nav|action|button|field/i.test(
+                      element.primitive ?? element.kind,
+                    )
+                      ? tokens.accent
+                      : /card|media|section/i.test(element.primitive ?? element.kind)
+                        ? tokens.muted
+                        : tokens.surface,
+                    color: /header|nav|action|button|field/i.test(
+                      element.primitive ?? element.kind,
+                    )
+                      ? tokens.accentForeground
+                      : tokens.foreground,
+                  }}
+                  data-testid="generated-mock-element"
+                  data-detection-id={element.id}
+                  data-kind={element.kind}
+                  data-primitive={element.primitive ?? primitiveForKind(element.kind)}
+                >
+                  <GeneratedMockPrimitive element={element} tokens={tokens} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {artifact.previewStats.map((stat) => (
+            <Card key={stat.label}>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
+                <div className="mt-2 text-2xl font-bold text-card-foreground">
+                  {stat.value}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function GeneratedMockPrimitive({
+  element,
+  tokens,
+}: {
+  element: DetectionElement;
+  tokens: ReturnType<typeof detectionPreviewTokens>;
+}) {
+  const primitive = element.primitive ?? primitiveForKind(element.kind);
+  const label = primitive.replace(/-/g, " ");
+
+  if (/header|nav/.test(primitive)) {
+    return (
+      <div className="flex h-full min-h-8 items-center gap-1.5">
+        <span className="h-2.5 w-8 rounded-full bg-current opacity-90" />
+        <span className="h-1.5 w-5 rounded-full bg-current opacity-55" />
+        <span className="h-1.5 w-5 rounded-full bg-current opacity-40" />
+      </div>
+    );
+  }
+
+  if (/field|action|button|input/.test(primitive)) {
+    return (
+      <div className="flex h-full min-h-8 items-center justify-between gap-2">
+        <span className="h-2 w-1/2 rounded-full bg-current opacity-55" />
+        <span
+          className="h-5 w-12 rounded-sm"
+          style={{ backgroundColor: tokens.accentForeground, opacity: 0.9 }}
+        />
+      </div>
+    );
+  }
+
+  if (/media|chart/.test(primitive)) {
+    return (
+      <div className="flex h-full min-h-10 items-end gap-1">
+        {[0.38, 0.72, 0.54, 0.9].map((height, index) => (
+          <span
+            key={index}
+            className="w-1/5 rounded-t-sm bg-current opacity-60"
+            style={{ height: `${height * 100}%` }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (/card|section|list-item/.test(primitive)) {
+    return (
+      <div className="space-y-1.5">
+        <span className="block h-2 w-2/3 rounded-full bg-current opacity-70" />
+        <span className="block h-1.5 w-full rounded-full bg-current opacity-35" />
+        <span className="block h-1.5 w-4/5 rounded-full bg-current opacity-25" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="truncate font-semibold">{label}</div>
+      <div className="truncate opacity-75">{element.kind}</div>
+    </div>
+  );
 }
 
 export interface UploadFlowProps {
@@ -416,6 +1046,9 @@ export function UploadFlow({
   const { mode } = useProviderMode();
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const originalDetectionsRef = useRef<UiFlowArtifact["detections"] | null>(null);
+  const detectionHistoryRef = useRef<NonNullable<UiFlowArtifact["detections"]>[]>([]);
+  const detectionHistoryIndexRef = useRef(-1);
   const demoBootstrappedRef = useRef<string | null>(null);
   const loadBundledSampleRef = useRef<(sampleId: string) => Promise<void>>(
     async () => {},
@@ -435,6 +1068,10 @@ export function UploadFlow({
   const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState<string | null>(null);
+  const [detectionHistoryState, setDetectionHistoryState] = useState({
+    index: -1,
+    length: 0,
+  });
   const flowSteps = useMemo(() => getFlowStepLabels(t), [t]);
   const analyzeStepLabels = useMemo(() => getAnalyzeStepLabels(t), [t]);
   const activeAnalyzeStepIndex = useMemo(
@@ -500,6 +1137,7 @@ export function UploadFlow({
       summary: nextArtifact.summary,
       previewStats: nextArtifact.previewStats,
       modeLabel: nextArtifact.modeLabel,
+      detections: nextArtifact.detections,
       file: fileName,
     });
     if (!payload) return null;
@@ -518,6 +1156,7 @@ export function UploadFlow({
         summary: artifact.summary,
         previewStats: artifact.previewStats,
         modeLabel: artifact.modeLabel,
+        detections: artifact.detections,
         file: file?.name ?? t.defaultScreenshotName,
       }) ?? sharedSummary;
     if (!payload || typeof window === "undefined") return;
@@ -613,6 +1252,8 @@ export function UploadFlow({
     setProviderState("idle");
     setProviderMessage(null);
     setProviderDetail(null);
+    originalDetectionsRef.current = null;
+    resetDetectionHistory(null);
 
     if (!nextFile) return;
 
@@ -673,7 +1314,7 @@ export function UploadFlow({
     setError(null);
     setProviderState("loading");
     setAnalyzeStep(ANALYZE_STEPS_EN[0]);
-    const startedAt = Date.now();
+    const startedAt = currentTimestamp();
     analytics.track(AnalyticsEvent.AnalyzeStarted, {
       source: "upload_flow",
       fileType: file.type || "unknown",
@@ -702,8 +1343,11 @@ export function UploadFlow({
       const outcome = await postAnalyzeUi(fileMeta, preprocessed.dataUrl, {
         onProgress: (step) => setAnalyzeStep(step),
       });
+      const nextArtifact = outcome.artifact as UiFlowArtifact;
+      originalDetectionsRef.current = cloneDetections(nextArtifact.detections);
+      resetDetectionHistory(nextArtifact.detections);
 
-      setArtifact(outcome.artifact as UiFlowArtifact);
+      setArtifact(nextArtifact);
       setProviderState(outcome.providerState as ProviderState);
       setProviderMessage(outcome.message);
       setProviderDetail(outcome.detail);
@@ -712,26 +1356,27 @@ export function UploadFlow({
 
       const record: SessionRecord = {
         id: crypto.randomUUID(),
-        timestamp: Date.now(),
+        timestamp: currentTimestamp(),
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        modeLabel: (outcome.artifact as UiFlowArtifact).modeLabel || t.modeLocalDemo,
+        modeLabel: nextArtifact.modeLabel || t.modeLocalDemo,
         providerState: outcome.providerState as "qwen" | "fallback",
         savedBy: savedByLabel,
-        summary: (outcome.artifact as UiFlowArtifact).summary,
+        summary: nextArtifact.summary,
         artifact: {
-          plan: (outcome.artifact as UiFlowArtifact).plan,
-          previewStats: (outcome.artifact as UiFlowArtifact).previewStats,
-          generatedCode: (outcome.artifact as UiFlowArtifact).generatedCode,
-          modeLabel: (outcome.artifact as UiFlowArtifact).modeLabel,
-          summary: (outcome.artifact as UiFlowArtifact).summary,
+          plan: nextArtifact.plan,
+          previewStats: nextArtifact.previewStats,
+          generatedCode: nextArtifact.generatedCode,
+          modeLabel: nextArtifact.modeLabel,
+          summary: nextArtifact.summary,
+          detections: nextArtifact.detections,
         },
       };
       saveSession(record);
       setSessions(loadSessionHistory());
       const sharePayload = rememberShareableArtifact(
-        outcome.artifact as UiFlowArtifact,
+        nextArtifact,
         file.name,
       );
       if (sharePayload) {
@@ -752,17 +1397,20 @@ export function UploadFlow({
         fileSize: file.size,
         step: "analyze",
         status: outcome.instantDemo ? "instant_demo" : "completed",
-        durationMs: Date.now() - startedAt,
+        durationMs: currentTimestamp() - startedAt,
       });
 
-      return outcome.artifact as UiFlowArtifact;
+      return nextArtifact;
     } catch {
       const { resolveAnalyzeOutcome } = await import("../lib/analyze-outcome.mjs");
       const outcome = resolveAnalyzeOutcome({
         file: { name: file.name, type: file.type, size: file.size },
         fetchError: "Could not read the uploaded image.",
       });
-      setArtifact(outcome.artifact as UiFlowArtifact);
+      const nextArtifact = outcome.artifact as UiFlowArtifact;
+      originalDetectionsRef.current = cloneDetections(nextArtifact.detections);
+      resetDetectionHistory(nextArtifact.detections);
+      setArtifact(nextArtifact);
       setProviderState(outcome.providerState as ProviderState);
       setProviderMessage(outcome.message);
       setProviderDetail(outcome.detail);
@@ -776,12 +1424,134 @@ export function UploadFlow({
         fileSize: file.size,
         step: "analyze",
         status: "fallback",
-        durationMs: Date.now() - startedAt,
+        durationMs: currentTimestamp() - startedAt,
       });
-      return outcome.artifact as UiFlowArtifact;
+      return nextArtifact;
     } finally {
       setAnalyzeStep(null);
     }
+  }
+
+  function updateArtifactDetectionsWithHistory(
+    nextDetections: UiFlowArtifact["detections"],
+    options: DetectionChangeOptions = {},
+  ) {
+    if (options.recordHistory !== false && nextDetections) {
+      pushDetectionHistory(nextDetections);
+    }
+    setArtifact((current) =>
+      current
+        ? {
+            ...current,
+            detections: nextDetections,
+          }
+        : current,
+    );
+    if (stage === "generated") {
+      setStage("analyzed");
+    }
+  }
+
+  function resetArtifactDetections() {
+    if (!originalDetectionsRef.current) return;
+    const nextDetections = cloneDetections(originalDetectionsRef.current);
+    if (nextDetections) {
+      updateArtifactDetectionsWithHistory(nextDetections, { recordHistory: true });
+    }
+  }
+
+  function pushDetectionHistory(detections: NonNullable<UiFlowArtifact["detections"]>) {
+    const cloned = cloneDetections(detections);
+    if (!cloned) return;
+    const next = detectionHistoryRef.current.slice(
+      0,
+      detectionHistoryIndexRef.current + 1,
+    );
+    next.push(cloned);
+    detectionHistoryRef.current = next.slice(-24);
+    detectionHistoryIndexRef.current = detectionHistoryRef.current.length - 1;
+    setDetectionHistoryState({
+      index: detectionHistoryIndexRef.current,
+      length: detectionHistoryRef.current.length,
+    });
+  }
+
+  function resetDetectionHistory(detections: UiFlowArtifact["detections"] | null) {
+    const cloned = cloneDetections(detections);
+    detectionHistoryRef.current = cloned ? [cloned] : [];
+    detectionHistoryIndexRef.current = cloned ? 0 : -1;
+    setDetectionHistoryState({
+      index: detectionHistoryIndexRef.current,
+      length: detectionHistoryRef.current.length,
+    });
+  }
+
+  function applyDetectionHistory(index: number) {
+    const nextDetections = cloneDetections(detectionHistoryRef.current[index]);
+    if (!nextDetections) return;
+    detectionHistoryIndexRef.current = index;
+    setDetectionHistoryState({
+      index,
+      length: detectionHistoryRef.current.length,
+    });
+    updateArtifactDetectionsWithHistory(nextDetections, { recordHistory: false });
+  }
+
+  function undoDetectionEdit() {
+    if (detectionHistoryIndexRef.current <= 0) return;
+    applyDetectionHistory(detectionHistoryIndexRef.current - 1);
+  }
+
+  function redoDetectionEdit() {
+    if (
+      detectionHistoryIndexRef.current >=
+      detectionHistoryRef.current.length - 1
+    ) {
+      return;
+    }
+    applyDetectionHistory(detectionHistoryIndexRef.current + 1);
+  }
+
+  function snapArtifactDetectionsToGrid() {
+    if (!artifact?.detections) return;
+    const sourceWidth =
+      artifact.detections.source?.width ?? artifact.file.width ?? 1;
+    const sourceHeight =
+      artifact.detections.source?.height ?? artifact.file.height ?? 1;
+    const snapped = {
+      ...artifact.detections,
+      elements: artifact.detections.elements.map((element) => ({
+        ...element,
+        box: snapDetectionBoxToGrid(element.box, {
+          sourceWidth,
+          sourceHeight,
+          columns: 12,
+          rows: 8,
+        }),
+        userEdited: true,
+      })),
+    };
+    updateArtifactDetectionsWithHistory(snapped, { recordHistory: true });
+  }
+
+  function exportArtifactDetections() {
+    if (!artifact?.detections || typeof document === "undefined") return;
+    const payload = {
+      file: artifact.file.name,
+      exportedAt: new Date(currentTimestamp()).toISOString(),
+      detections: artifact.detections,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${artifact.file.name.replace(/\.[^.]+$/, "") || "screenshot"}.detections.json`;
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   }
 
   async function finishPreviewGeneration(
@@ -789,6 +1559,29 @@ export function UploadFlow({
     toastMessage = t.toastPreviewGenerated,
   ) {
     if (!nextArtifact) return;
+    if (file) {
+      const record: SessionRecord = {
+        id: crypto.randomUUID(),
+        timestamp: currentTimestamp(),
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        modeLabel: nextArtifact.modeLabel || t.modeLocalDemo,
+        providerState: providerState === "qwen" ? "qwen" : "fallback",
+        savedBy: savedByLabel,
+        summary: nextArtifact.summary,
+        artifact: {
+          plan: nextArtifact.plan,
+          previewStats: nextArtifact.previewStats,
+          generatedCode: nextArtifact.generatedCode,
+          modeLabel: nextArtifact.modeLabel,
+          summary: nextArtifact.summary,
+          detections: nextArtifact.detections,
+        },
+      };
+      saveSession(record);
+      setSessions(loadSessionHistory());
+    }
     setStage("generated");
     toast(toastMessage, "success");
     analytics.track(AnalyticsEvent.GenerateCompleted, {
@@ -813,6 +1606,14 @@ export function UploadFlow({
     let nextArtifact = artifact;
     if (!nextArtifact) {
       nextArtifact = await analyzeImage();
+    }
+    if (nextArtifact?.detections) {
+      const { regenerateArtifactFromDetections } = await import("../lib/ui-flow.mjs");
+      nextArtifact = regenerateArtifactFromDetections(
+        nextArtifact,
+        nextArtifact.detections,
+      ) as UiFlowArtifact;
+      setArtifact(nextArtifact);
     }
     await finishPreviewGeneration(nextArtifact);
   }
@@ -855,7 +1656,12 @@ export function UploadFlow({
       generatedCode: record.artifact.generatedCode,
       modeLabel: record.modeLabel,
       summary: record.summary,
+      detections: record.artifact.detections as UiFlowArtifact["detections"],
     });
+    originalDetectionsRef.current = cloneDetections(
+      record.artifact.detections as UiFlowArtifact["detections"],
+    );
+    resetDetectionHistory(record.artifact.detections as UiFlowArtifact["detections"]);
     setProviderState(record.providerState === "qwen" ? "qwen" : "fallback");
     setProviderMessage(
       record.providerState === "qwen" ? t.toastRestoredQwen : t.toastRestoredDemo,
@@ -1074,6 +1880,18 @@ export function UploadFlow({
                     imageWidth={artifact?.file.width}
                     imageHeight={artifact?.file.height}
                     detections={artifact?.detections}
+                    copy={t}
+                    canUndoDetections={detectionHistoryState.index > 0}
+                    canRedoDetections={
+                      detectionHistoryState.index >= 0 &&
+                      detectionHistoryState.index < detectionHistoryState.length - 1
+                    }
+                    onDetectionsChange={updateArtifactDetectionsWithHistory}
+                    onResetDetections={resetArtifactDetections}
+                    onUndoDetections={undoDetectionEdit}
+                    onRedoDetections={redoDetectionEdit}
+                    onSnapDetections={snapArtifactDetectionsToGrid}
+                    onExportDetections={exportArtifactDetections}
                   />
                 ) : (
                   <div className="flex min-h-48 items-center justify-center rounded-md border border-border bg-background text-sm text-muted-foreground">
@@ -1373,27 +2191,18 @@ export function UploadFlow({
                     </div>
                   </Card>
 
-                  <Card className="min-w-0 bg-background">
-                    <CardHeader>
-                      <CardTitle className="text-sm">{t.livePreview}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {artifact.previewStats.map((stat) => (
-                          <Card key={stat.label}>
-                            <CardContent className="p-4">
-                              <div className="text-xs text-muted-foreground">
-                                {stat.label}
-                              </div>
-                              <div className="mt-2 text-2xl font-bold text-card-foreground">
-                                {stat.value}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <DetectionComparisonPreview
+                    previewUrl={previewUrl}
+                    artifact={artifact}
+                    copy={t}
+                    alt={
+                      file
+                        ? interpolate(t.uploadedReferenceAltNamed, {
+                            fileName: file.name,
+                          })
+                        : t.uploadedReferenceAlt
+                    }
+                  />
                 </div>
               ) : null}
             </div>
@@ -1428,4 +2237,15 @@ function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function cloneDetections(
+  detections: UiFlowArtifact["detections"] | null | undefined,
+) {
+  if (!detections) return null;
+  return JSON.parse(JSON.stringify(detections)) as UiFlowArtifact["detections"];
+}
+
+function currentTimestamp() {
+  return Date.now();
 }

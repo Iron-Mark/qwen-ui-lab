@@ -17,6 +17,7 @@ export interface SessionRecord {
     generatedCode: string;
     modeLabel?: string;
     summary?: string;
+    detections?: unknown;
   };
 }
 
