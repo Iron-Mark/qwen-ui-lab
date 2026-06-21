@@ -614,7 +614,7 @@ function summarizeSmartDetection({
     return cellInk[index] / pixels >= 0.09 || cellEdges[index] / pixels >= 0.025;
   });
   const components = extractLayoutRegions(activeCells, gridColumns, gridRows);
-  const elements = components
+  const detectedElements = components
     .map((region, index) =>
       buildDetectedElement(region, index, {
         gridColumns,
@@ -626,7 +626,11 @@ function summarizeSmartDetection({
         cellEdges,
       }),
     )
-    .filter((element) => element.confidence >= 0.42)
+    .filter((element) => element.confidence >= 0.42);
+  const elements = enhanceDetectedPatterns(detectedElements, {
+    sourceWidth,
+    sourceHeight,
+  })
     .sort(readingOrderSort)
     .slice(0, 24)
     .map((element, index) => ({ ...element, id: `element-${index + 1}` }));
@@ -674,11 +678,23 @@ function buildDetectedElement(region, index, context) {
     sourceWidth: context.sourceWidth,
     sourceHeight: context.sourceHeight,
   });
+  const primitive = primitiveForKind(kind);
+  const reasons = buildDetectionReasons(region, box, {
+    kind,
+    primitive,
+    inkRatio,
+    edgeRatio,
+    sourceWidth: context.sourceWidth,
+    sourceHeight: context.sourceHeight,
+  });
 
   return {
     id: `element-${index + 1}`,
     kind,
-    confidence: scoreDetectedElement(region, kind, { inkRatio, edgeRatio }),
+    primitive,
+    confidence: scoreDetectedElement(region, kind, { inkRatio, edgeRatio, reasons }),
+    included: true,
+    reasons,
     box,
     grid: {
       minRow: region.minRow,
@@ -739,7 +755,88 @@ function classifyDetectedElement(region, box, { inkRatio, edgeRatio, sourceWidth
   return "content-block";
 }
 
-function scoreDetectedElement(region, kind, { inkRatio, edgeRatio }) {
+function primitiveForKind(kind) {
+  if (kind === "button-or-input" || kind === "input-or-button-row") return "field-or-action";
+  if (kind === "chart-or-media") return "media";
+  if (kind === "card-or-panel") return "card";
+  if (kind === "text-row") return "text";
+  if (kind === "content-block") return "section";
+  return kind;
+}
+
+function buildDetectionReasons(
+  region,
+  box,
+  { kind, primitive, inkRatio, edgeRatio, sourceWidth, sourceHeight },
+) {
+  const aspect = round(box.width / Math.max(1, box.height), 2);
+  const areaRatio = round((box.width * box.height) / Math.max(1, sourceWidth * sourceHeight), 3);
+  const yRatio = box.y / Math.max(1, sourceHeight);
+  const xRatio = box.x / Math.max(1, sourceWidth);
+  const reasons = [
+    {
+      code: "primitive-snap",
+      label: `Snapped to ${primitive}`,
+      evidence: `${kind} rule matched from geometry and local pixel signals.`,
+      weight: 0.22,
+    },
+    {
+      code: "ink-density",
+      label: "Foreground density",
+      evidence: `${Math.round(inkRatio * 100)}% of sampled pixels differ from the dominant background.`,
+      weight: Math.min(0.18, round(inkRatio * 0.7, 2)),
+    },
+    {
+      code: "edge-density",
+      label: "Boundary detail",
+      evidence: `${Math.round(edgeRatio * 100)}% local edge coverage indicates UI boundaries or glyph strokes.`,
+      weight: Math.min(0.2, round(edgeRatio * 1.4, 2)),
+    },
+    {
+      code: "grid-component",
+      label: "Connected grid region",
+      evidence: `${region.cells} active fine-grid cells form one connected component.`,
+      weight: region.cells >= 4 ? 0.14 : 0.08,
+    },
+  ];
+
+  if (yRatio <= 0.08 && box.width >= sourceWidth * 0.35) {
+    reasons.push({
+      code: "top-band",
+      label: "Top band position",
+      evidence: "Wide component sits near the top edge, a common header/navigation location.",
+      weight: 0.22,
+    });
+  }
+  if (xRatio <= 0.12 && box.height >= sourceHeight * 0.32) {
+    reasons.push({
+      code: "left-rail",
+      label: "Left rail position",
+      evidence: "Tall component is anchored to the left edge, matching side navigation patterns.",
+      weight: 0.2,
+    });
+  }
+  if (aspect >= 2.2 && box.height <= sourceHeight * 0.16) {
+    reasons.push({
+      code: "text-line-shape",
+      label: "OCR-free text line",
+      evidence: `Wide shallow shape with ${aspect}:1 aspect ratio resembles text, input, or button rows.`,
+      weight: 0.16,
+    });
+  }
+  if (areaRatio >= 0.08) {
+    reasons.push({
+      code: "large-container",
+      label: "Container scale",
+      evidence: `${Math.round(areaRatio * 100)}% of the screenshot is covered by this component.`,
+      weight: 0.16,
+    });
+  }
+
+  return reasons.sort((first, second) => second.weight - first.weight).slice(0, 5);
+}
+
+function scoreDetectedElement(region, kind, { inkRatio, edgeRatio, reasons }) {
   const baseScores = {
     header: 0.82,
     "bottom-nav": 0.78,
@@ -753,9 +850,80 @@ function scoreDetectedElement(region, kind, { inkRatio, edgeRatio }) {
     "content-block": 0.5,
   };
   const signalBoost = Math.min(0.18, inkRatio * 0.7 + edgeRatio * 1.4);
+  const reasonBoost = Math.min(
+    0.12,
+    (reasons ?? []).reduce((sum, reason) => sum + Math.max(0, reason.weight), 0) / 10,
+  );
   const sizePenalty = region.cells <= 1 ? 0.1 : 0;
 
-  return round(Math.min(0.95, (baseScores[kind] ?? 0.5) + signalBoost - sizePenalty), 2);
+  return round(
+    Math.min(0.97, (baseScores[kind] ?? 0.5) + signalBoost + reasonBoost - sizePenalty),
+    2,
+  );
+}
+
+function enhanceDetectedPatterns(elements, { sourceHeight }) {
+  const byRow = new Map();
+  const rowBucketHeight = Math.max(48, Math.round(sourceHeight / 14));
+
+  for (const element of elements) {
+    const rowKey = Math.floor(element.box.y / rowBucketHeight);
+    const current = byRow.get(rowKey) ?? [];
+    current.push(element);
+    byRow.set(rowKey, current);
+  }
+
+  const repeatedIds = new Set();
+  for (const rowElements of byRow.values()) {
+    const candidates = rowElements.filter((element) => {
+      const aspect = element.box.width / Math.max(1, element.box.height);
+      return aspect >= 1.6 && element.box.height <= rowBucketHeight * 1.5;
+    });
+    if (candidates.length < 3) continue;
+    for (const element of candidates) {
+      repeatedIds.add(element.id);
+    }
+  }
+
+  return elements.map((element) => {
+    const aspect = element.box.width / Math.max(1, element.box.height);
+    const textLike = aspect >= 2.2 && element.signals.inkRatio >= 0.08;
+    const reasons = [...(element.reasons ?? [])];
+    let kind = element.kind;
+    let primitive = element.primitive;
+    let confidence = element.confidence;
+
+    if (textLike && !/header|nav|button|input/i.test(kind)) {
+      kind = "text-row";
+      primitive = "text";
+      confidence = Math.min(0.97, confidence + 0.04);
+      reasons.push({
+        code: "text-line-grouping",
+        label: "Aligned text signal",
+        evidence: "OCR-free grouping found a shallow, wide component with foreground strokes.",
+        weight: 0.14,
+      });
+    }
+
+    if (repeatedIds.has(element.id)) {
+      primitive = "list-item";
+      confidence = Math.min(0.97, confidence + 0.05);
+      reasons.push({
+        code: "repeated-list",
+        label: "Repeated list pattern",
+        evidence: "Similar shallow components repeat along the same visual row.",
+        weight: 0.18,
+      });
+    }
+
+    return {
+      ...element,
+      kind,
+      primitive,
+      confidence: round(confidence, 2),
+      reasons: reasons.sort((first, second) => second.weight - first.weight).slice(0, 5),
+    };
+  });
 }
 
 function readingOrderSort(first, second) {
