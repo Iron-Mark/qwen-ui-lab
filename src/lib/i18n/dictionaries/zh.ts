@@ -51,6 +51,11 @@ export const zh = {
     metadataNotFoundTitle: "分享未找到",
     metadataNotFoundDescription: "该只读分析摘要链接不存在或已过期。",
     metadataTitle: "共享摘要 · {file}",
+    notFoundTitle: "分享链接不可用",
+    notFoundDescription:
+      "没有找到该只读分析摘要。链接可能已过期、是在其他服务实例创建，或在部署时被清理。",
+    notFoundStorageHint:
+      "生产短链接需要 KV 存储。未配置 KV 时，链接使用临时内存存储，可能无法经历冷启动。",
   },
   account: {
     eyebrow: "账户",
@@ -179,6 +184,8 @@ export const zh = {
       landing: { label: "落地页", hint: "营销主视觉 + 定价" },
       settings: { label: "设置", hint: "个人资料 + 开关" },
       ecommerce: { label: "商品目录", hint: "筛选 + 商品网格" },
+      "stress-dashboard": { label: "密集仪表盘", hint: "密集仪表盘 + 表格" },
+      "stress-list": { label: "重复列表", hint: "重复行 + 操作" },
     },
     ctaRegenerate: "重新生成预览",
     ctaGenerate: "生成预览",
@@ -195,6 +202,8 @@ export const zh = {
     creatingShareLink: "正在创建链接…",
     toastShareCopied: "分享链接已复制（只读摘要）",
     toastShortShareCopied: "短分享链接已复制（只读摘要）",
+    toastShortShareMemory:
+      "短链接已复制；在配置 KV 之前它使用临时内存存储",
     toastShareHashCopied: "分享链接已复制（哈希回退 — 只读摘要）",
     toastShareFailed: "无法复制分享链接",
     defaultScreenshotName: "screenshot",
@@ -203,8 +212,10 @@ export const zh = {
       "复制、下载、导出到 GitHub Gist，或导出到仓库（无 token 时下载含 README 的 zip；配置 GITHUB_TOKEN 时打开 compare 链接）。",
     exportCopyAll: "复制全部",
     exportDownload: "下载 .tsx",
+    exportHandoffBundle: "交接包",
     toastScaffoldCopied: "脚手架已复制",
     toastScaffoldExported: "脚手架已导出",
+    toastHandoffBundleExported: "交接包已导出",
     exportGenerateHint: "生成预览以在片段旁查看实时统计。",
     generatedScaffold: "生成的脚手架",
     livePreview: "实时预览",

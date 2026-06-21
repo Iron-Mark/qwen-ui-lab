@@ -4,6 +4,7 @@ const args = process.argv.slice(2);
 const urlArg = args.find((arg) => arg.startsWith("--url="));
 const urlValue = urlArg ? urlArg.split("=")[1] : process.env.DEPLOY_URL;
 const expectLive = String(process.env.EXPECT_LIVE_ANALYSIS || "false").toLowerCase() === "true";
+const githubReportEnabled = parseBooleanEnv(process.env.SMOKE_GITHUB_REPORT);
 
 if (!urlValue) {
   console.error("Missing deploy URL. Pass --url=https://your-app.example or set DEPLOY_URL.");
@@ -28,6 +29,16 @@ const checks = [
 ];
 
 const failures = [];
+const passes = [];
+
+function parseBooleanEnv(value) {
+  return ["1", "true", "yes", "on"].includes(String(value || "").toLowerCase());
+}
+
+function recordPass(message) {
+  passes.push(message);
+  console.log(`PASS ${message}`);
+}
 
 async function safeFetch(url, options) {
   try {
@@ -62,7 +73,7 @@ async function checkPage(pathname, label) {
     failures.push(`${label} failed with HTTP ${response.status}`);
     return;
   }
-  console.log(`PASS ${label}: HTTP ${response.status}`);
+  recordPass(`${label}: HTTP ${response.status}`);
 }
 
 console.log(`Running post-deploy smoke checks against ${baseUrl.toString()}`);
@@ -99,8 +110,8 @@ if (!health.response.ok) {
     );
   }
 
-  console.log(
-    `PASS health: provider=${health.json.provider}, liveAnalysisEnabled=${String(
+  recordPass(
+    `health: provider=${health.json.provider}, liveAnalysisEnabled=${String(
       liveAnalysisEnabled,
     )}`,
   );
@@ -123,7 +134,7 @@ if (expectLive) {
     if (!payload || payload.ok !== false || typeof payload.code !== "string") {
       failures.push("/api/analyze-ui returned unexpected error payload for invalid body.");
     } else {
-      console.log(`PASS analyze-ui route: invalid body rejected (${payload.code})`);
+      recordPass(`analyze-ui route: invalid body rejected (${payload.code})`);
     }
   }
 }
@@ -131,6 +142,14 @@ if (expectLive) {
 for (const check of checks) {
   await checkPage(check.path, check.label);
 }
+
+await maybePublishGithubSmokeReport({
+  enabled: githubReportEnabled,
+  baseUrl,
+  expectLive,
+  passes,
+  failures,
+});
 
 if (failures.length > 0) {
   for (const failure of failures) {
@@ -140,3 +159,106 @@ if (failures.length > 0) {
 }
 
 console.log("Post-deploy smoke checks passed.");
+
+function buildGithubSmokeReport({ baseUrl, expectLive, passes, failures }) {
+  const status = failures.length > 0 ? "FAIL" : "PASS";
+  const lines = [
+    `## Post-deploy smoke: ${status}`,
+    "",
+    `- Target: ${baseUrl.toString()}`,
+    `- Expected live analysis: ${expectLive ? "yes" : "no"}`,
+    `- Result: ${status}`,
+    "",
+    "### Passing checks",
+    ...(passes.length ? passes.map((pass) => `- ${pass}`) : ["- None recorded"]),
+    "",
+    "### Failures",
+    ...(failures.length ? failures.map((failure) => `- ${failure}`) : ["- None"]),
+  ];
+  return lines.join("\n");
+}
+
+async function maybePublishGithubSmokeReport({
+  enabled,
+  baseUrl,
+  expectLive,
+  passes,
+  failures,
+}) {
+  if (!enabled) return;
+
+  const token =
+    process.env.SMOKE_GITHUB_TOKEN || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const repository =
+    process.env.SMOKE_GITHUB_REPOSITORY || process.env.GITHUB_REPOSITORY;
+  if (!token || !repository) {
+    console.warn(
+      "Skipping GitHub smoke report: set SMOKE_GITHUB_TOKEN/GITHUB_TOKEN and SMOKE_GITHUB_REPOSITORY/GITHUB_REPOSITORY.",
+    );
+    return;
+  }
+
+  const body = buildGithubSmokeReport({ baseUrl, expectLive, passes, failures });
+  const title = `Post-deploy smoke ${failures.length > 0 ? "FAIL" : "PASS"}: ${baseUrl.hostname}`;
+  const issueNumber = process.env.SMOKE_GITHUB_ISSUE;
+
+  try {
+    const result = issueNumber
+      ? await postGithubIssueComment({ token, repository, issueNumber, body })
+      : await createGithubIssue({ token, repository, title, body });
+    console.log(`GitHub smoke report published: ${result}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`GitHub smoke report failed: ${message}`);
+    if (parseBooleanEnv(process.env.SMOKE_GITHUB_REPORT_REQUIRED)) {
+      failures.push(`GitHub smoke report failed (${message})`);
+    }
+  }
+}
+
+async function postGithubIssueComment({ token, repository, issueNumber, body }) {
+  const payload = await githubRequest({
+    token,
+    path: `/repos/${repository}/issues/${issueNumber}/comments`,
+    method: "POST",
+    body: { body },
+  });
+  return payload.html_url ?? `${repository}#issuecomment-${payload.id ?? issueNumber}`;
+}
+
+async function createGithubIssue({ token, repository, title, body }) {
+  const payload = await githubRequest({
+    token,
+    path: `/repos/${repository}/issues`,
+    method: "POST",
+    body: {
+      title,
+      body,
+      labels: ["post-deploy-smoke"],
+    },
+  });
+  return payload.html_url ?? `${repository}#issue-${payload.number ?? "new"}`;
+}
+
+async function githubRequest({ token, path, method, body }) {
+  const apiBase = (process.env.GITHUB_API_URL || "https://api.github.com").replace(
+    /\/+$/,
+    "",
+  );
+  const response = await fetch(`${apiBase}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "qwen-ui-lab-smoke",
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(payload?.message || `GitHub API returned HTTP ${response.status}`);
+  }
+  return payload ?? {};
+}
