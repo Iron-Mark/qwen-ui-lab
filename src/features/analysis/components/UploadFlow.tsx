@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+} from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Bug,
   ChevronRight,
   Check,
   Download,
   Eye,
   EyeOff,
   Grid2X2,
+  PackageOpen,
   Redo2,
   RotateCcw,
   Share2,
@@ -47,6 +52,7 @@ import {
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { downloadTextFile } from "@/lib/clipboard.client";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import {
@@ -285,13 +291,22 @@ function DetectedReferencePreview({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [overlayEnabled, setOverlayEnabled] = useState(true);
+  const [debugEnabled, setDebugEnabled] = useState(false);
+  const [rasterVisualScore, setRasterVisualScore] = useState<number | null>(null);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
-  const elements = detections?.elements ?? [];
-  const activeElements = elements.filter((element) => element.included !== false);
+  const elements = useMemo(() => detections?.elements ?? [], [detections?.elements]);
+  const activeElements = useMemo(
+    () => elements.filter((element) => element.included !== false),
+    [elements],
+  );
   const selectedElement =
     elements.find((element) => element.id === selectedElementId) ?? activeElements[0] ?? null;
   const canShowOverlay = elements.length > 0 && Boolean(imageWidth && imageHeight);
-  const qualityStats = buildDetectionQualityStats(elements, detections?.quality);
+  const qualityStats = buildDetectionQualityStats(
+    elements,
+    detections?.quality,
+    canShowOverlay ? rasterVisualScore : null,
+  );
 
   useEffect(() => {
     const observedNode = containerRef.current;
@@ -315,6 +330,40 @@ function DetectedReferencePreview({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!canShowOverlay || !previewUrl || !imageWidth || !imageHeight) {
+      return;
+    }
+
+    let active = true;
+    const timer = window.setTimeout(() => {
+      setRasterVisualScore(null);
+      void estimateRasterVisualMatchScore({
+        previewUrl,
+        elements,
+        sourceWidth: imageWidth,
+        sourceHeight: imageHeight,
+        tokens: detections?.designTokens,
+      }).then((score) => {
+        if (active) {
+          setRasterVisualScore(score);
+        }
+      });
+    }, 120);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [
+    canShowOverlay,
+    detections?.designTokens,
+    elements,
+    imageHeight,
+    imageWidth,
+    previewUrl,
+  ]);
 
   const imageRect = useMemo(
     () =>
@@ -433,6 +482,48 @@ function DetectedReferencePreview({
     window.addEventListener("pointerup", handleUp);
   }
 
+  function handleDetectionBoxKeyDown(
+    event: ReactKeyboardEvent,
+    element: DetectionElement,
+  ) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setSelectedElementId(element.id);
+      return;
+    }
+
+    if (!imageWidth || !imageHeight) return;
+    const arrowDeltas: Record<string, { x: number; y: number }> = {
+      ArrowDown: { x: 0, y: 1 },
+      ArrowLeft: { x: -1, y: 0 },
+      ArrowRight: { x: 1, y: 0 },
+      ArrowUp: { x: 0, y: -1 },
+    };
+    const delta = arrowDeltas[event.key];
+    if (!delta) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedElementId(element.id);
+    const step = event.shiftKey ? 16 : 4;
+    const box = event.altKey
+      ? {
+          ...element.box,
+          width: element.box.width + delta.x * step,
+          height: element.box.height + delta.y * step,
+        }
+      : {
+          ...element.box,
+          x: element.box.x + delta.x * step,
+          y: element.box.y + delta.y * step,
+        };
+    updateElement(
+      element.id,
+      { box: clampDetectionBox(box, imageWidth, imageHeight) },
+      { recordHistory: true },
+    );
+  }
+
   return (
     <div className="space-y-2">
       {canShowOverlay ? (
@@ -514,19 +605,26 @@ function DetectedReferencePreview({
                 data-detection-id={element.id}
                 data-kind={element.kind}
                 data-primitive={element.primitive ?? primitiveForKind(element.kind)}
+                data-confidence={element.confidence}
+                data-box={`${element.box.x},${element.box.y},${element.box.width},${element.box.height}`}
                 aria-label={`Select ${element.kind}`}
                 onClick={() => setSelectedElementId(element.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedElementId(element.id);
-                  }
-                }}
+                onKeyDown={(event) => handleDetectionBoxKeyDown(event, element)}
                 onPointerDown={(event) => startBoxInteraction(event, element, "move")}
               >
                 <span className="absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
                   {element.kind} - {Math.round(element.confidence * 100)}%
                 </span>
+                {debugEnabled ? (
+                  <span
+                    className="absolute bottom-0 left-0 max-w-[calc(100%-1rem)] truncate rounded-tr-[3px] bg-background/90 px-1 py-0.5 text-[9px] font-mono leading-none text-muted-foreground shadow-sm"
+                    data-testid="detection-debug-label"
+                  >
+                    {element.primitive ?? primitiveForKind(element.kind)}{" "}
+                    {Math.round(element.box.x)},{Math.round(element.box.y)}{" "}
+                    {Math.round(element.box.width)}x{Math.round(element.box.height)}
+                  </span>
+                ) : null}
                 <span
                   className="absolute bottom-0 right-0 size-4 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80"
                   data-testid="detection-resize-handle-se"
@@ -549,11 +647,27 @@ function DetectedReferencePreview({
                 </Badge>
                 <Badge variant="outline">{qualityStats.editedCount} edited</Badge>
                 <Badge variant="outline">{qualityStats.excludedCount} excluded</Badge>
-                <Badge variant="secondary" data-testid="visual-diff-score">
+                <Badge
+                  variant="secondary"
+                  data-testid="visual-diff-score"
+                  data-visual-method={qualityStats.visualMethod}
+                >
                   {qualityStats.visualScore}% visual match
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={debugEnabled ? "secondary" : "outline"}
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setDebugEnabled((value) => !value)}
+                  aria-pressed={debugEnabled}
+                  data-testid="toggle-detector-debug"
+                >
+                  <Bug className="size-3.5" aria-hidden />
+                  Debug
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
@@ -686,9 +800,64 @@ function DetectedReferencePreview({
                 <li key={reason.code}>{reason.evidence}</li>
               ))}
             </ul>
+
+            {debugEnabled ? (
+              <div
+                className="grid gap-2 rounded-md border border-border bg-muted/30 p-3 text-xs"
+                data-testid="detection-debug-panel"
+              >
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <DebugField label="Element ID" value={selectedElement.id} />
+                  <DebugField
+                    label="Primitive"
+                    value={selectedElement.primitive ?? primitiveForKind(selectedElement.kind)}
+                  />
+                  <DebugField
+                    label="Geometry"
+                    value={`${selectedElement.box.x}, ${selectedElement.box.y}, ${selectedElement.box.width}x${selectedElement.box.height}`}
+                  />
+                  <DebugField
+                    label="Confidence"
+                    value={`${Math.round(selectedElement.confidence * 100)}%`}
+                  />
+                  <DebugField
+                    label="Included"
+                    value={selectedElement.included === false ? "false" : "true"}
+                  />
+                  <DebugField
+                    label="Visual score"
+                    value={`${qualityStats.visualScore}% ${qualityStats.visualMethod}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">Reason weights</p>
+                  {(selectedElement.reasons ?? []).map((reason) => (
+                    <div
+                      key={reason.code}
+                      className="grid gap-1 rounded-sm bg-background/70 p-2 sm:grid-cols-[8rem_1fr_4rem]"
+                    >
+                      <span className="font-mono text-muted-foreground">{reason.code}</span>
+                      <span className="truncate text-foreground">{reason.label}</span>
+                      <span className="font-mono text-muted-foreground">
+                        {Math.round(reason.weight * 100)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}
+    </div>
+  );
+}
+
+function DebugField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="font-medium text-foreground">{label}</p>
+      <p className="truncate font-mono text-muted-foreground">{value}</p>
     </div>
   );
 }
@@ -781,6 +950,7 @@ function snapDetectionBoxToGrid(
 function buildDetectionQualityStats(
   elements: DetectionElement[],
   quality?: DetectionQuality | null,
+  rasterVisualScore?: number | null,
 ) {
   const active = elements.filter((element) => element.included !== false);
   const editedCount = elements.filter((element) => element.userEdited).length;
@@ -788,14 +958,198 @@ function buildDetectionQualityStats(
   const lowConfidenceCount = active.filter((element) => element.confidence < 0.62).length;
   const reviewCount =
     lowConfidenceCount + (quality?.ambiguity === "high" ? 1 : 0) + excludedCount;
-  const visualScore = estimateVisualDiffScore(elements, quality);
+  const visualScore = rasterVisualScore ?? estimateVisualDiffScore(elements, quality);
   return {
     activeCount: active.length,
     editedCount,
     excludedCount,
     reviewCount,
     visualScore,
+    visualMethod: rasterVisualScore === null || rasterVisualScore === undefined ? "heuristic" : "raster",
   };
+}
+
+async function estimateRasterVisualMatchScore({
+  previewUrl,
+  elements,
+  sourceWidth,
+  sourceHeight,
+  tokens,
+}: {
+  previewUrl: string;
+  elements: DetectionElement[];
+  sourceWidth: number;
+  sourceHeight: number;
+  tokens?: DetectionDesignTokens | null;
+}) {
+  if (
+    typeof document === "undefined" ||
+    typeof window === "undefined" ||
+    typeof window.Image === "undefined" ||
+    !sourceWidth ||
+    !sourceHeight
+  ) {
+    return null;
+  }
+
+  const active = elements.filter((element) => element.included !== false);
+  if (!active.length) return 0;
+
+  try {
+    const image = await loadVisualDiffImage(previewUrl);
+    const maxDimension = 128;
+    const scale = Math.min(maxDimension / sourceWidth, maxDimension / sourceHeight);
+    const canvasWidth = Math.max(32, Math.round(sourceWidth * scale));
+    const canvasHeight = Math.max(32, Math.round(sourceHeight * scale));
+    const screenshotCanvas = document.createElement("canvas");
+    screenshotCanvas.width = canvasWidth;
+    screenshotCanvas.height = canvasHeight;
+    const screenshotContext = screenshotCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
+    const mockCanvas = document.createElement("canvas");
+    mockCanvas.width = canvasWidth;
+    mockCanvas.height = canvasHeight;
+    const mockContext = mockCanvas.getContext("2d", { willReadFrequently: true });
+    if (!screenshotContext || !mockContext) return null;
+
+    screenshotContext.fillStyle = "#ffffff";
+    screenshotContext.fillRect(0, 0, canvasWidth, canvasHeight);
+    screenshotContext.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+    renderDetectionMockToCanvas(mockContext, {
+      elements: active,
+      sourceWidth,
+      sourceHeight,
+      canvasWidth,
+      canvasHeight,
+      tokens,
+    });
+
+    const screenshotData = screenshotContext.getImageData(
+      0,
+      0,
+      canvasWidth,
+      canvasHeight,
+    ).data;
+    const mockData = mockContext.getImageData(0, 0, canvasWidth, canvasHeight).data;
+    const diff = compareRasterSignals(screenshotData, mockData, canvasWidth, canvasHeight);
+    const coverage = calculateDetectionCoverage(active, sourceWidth, sourceHeight);
+    const coverageAdjustment = Math.min(1, Math.max(0.72, coverage * 2.8));
+    return Math.max(0, Math.min(100, Math.round((100 - diff * 100) * coverageAdjustment)));
+  } catch {
+    return null;
+  }
+}
+
+function loadVisualDiffImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new window.Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Could not load image for visual diff"));
+    image.src = src;
+  });
+}
+
+function renderDetectionMockToCanvas(
+  context: CanvasRenderingContext2D,
+  {
+    elements,
+    sourceWidth,
+    sourceHeight,
+    canvasWidth,
+    canvasHeight,
+    tokens,
+  }: {
+    elements: DetectionElement[];
+    sourceWidth: number;
+    sourceHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
+    tokens?: DetectionDesignTokens | null;
+  },
+) {
+  const palette = detectionPreviewTokens(tokens);
+  context.fillStyle = palette.surface;
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+  for (const element of elements) {
+    const x = (element.box.x / sourceWidth) * canvasWidth;
+    const y = (element.box.y / sourceHeight) * canvasHeight;
+    const width = Math.max(1, (element.box.width / sourceWidth) * canvasWidth);
+    const height = Math.max(1, (element.box.height / sourceHeight) * canvasHeight);
+    const primitive = element.primitive ?? primitiveForKind(element.kind);
+    const isAccent = /header|nav|button|action|control|field/i.test(primitive);
+    const isMedia = /media|chart/i.test(primitive);
+
+    context.fillStyle = isAccent ? palette.accent : isMedia ? palette.muted : palette.surface;
+    context.strokeStyle = isAccent ? palette.accent : palette.border;
+    context.lineWidth = 1;
+    context.fillRect(x, y, width, height);
+    context.strokeRect(x + 0.5, y + 0.5, Math.max(0, width - 1), Math.max(0, height - 1));
+
+    if (/text|row|field|button|action/i.test(primitive)) {
+      context.fillStyle = isAccent ? palette.accentForeground : palette.foreground;
+      const lineHeight = Math.max(2, Math.min(6, height * 0.22));
+      const lineWidth = Math.max(4, width * 0.66);
+      context.fillRect(x + width * 0.12, y + height * 0.42, lineWidth, lineHeight);
+    }
+  }
+}
+
+function compareRasterSignals(
+  screenshotData: Uint8ClampedArray,
+  mockData: Uint8ClampedArray,
+  width: number,
+  height: number,
+) {
+  let totalDiff = 0;
+  let samples = 0;
+  const stride = 2;
+  for (let y = 0; y < height - stride; y += stride) {
+    for (let x = 0; x < width - stride; x += stride) {
+      const index = (y * width + x) * 4;
+      const rightIndex = (y * width + x + stride) * 4;
+      const downIndex = ((y + stride) * width + x) * 4;
+      const screenshotSignal = rasterPixelSignal(screenshotData, index, rightIndex, downIndex);
+      const mockSignal = rasterPixelSignal(mockData, index, rightIndex, downIndex);
+      totalDiff += Math.abs(screenshotSignal - mockSignal);
+      samples += 1;
+    }
+  }
+  return samples ? totalDiff / samples : 1;
+}
+
+function rasterPixelSignal(
+  data: Uint8ClampedArray,
+  index: number,
+  rightIndex: number,
+  downIndex: number,
+) {
+  const luma = pixelLuma(data, index);
+  const right = pixelLuma(data, rightIndex);
+  const down = pixelLuma(data, downIndex);
+  const edge = Math.min(1, (Math.abs(luma - right) + Math.abs(luma - down)) / 160);
+  const ink = Math.min(1, Math.abs(255 - luma) / 255);
+  return edge * 0.72 + ink * 0.28;
+}
+
+function pixelLuma(data: Uint8ClampedArray, index: number) {
+  return data[index] * 0.2126 + data[index + 1] * 0.7152 + data[index + 2] * 0.0722;
+}
+
+function calculateDetectionCoverage(
+  elements: DetectionElement[],
+  sourceWidth: number,
+  sourceHeight: number,
+) {
+  const sourceArea = Math.max(1, sourceWidth * sourceHeight);
+  const coveredArea = elements.reduce((sum, element) => {
+    const width = Math.max(0, Math.min(sourceWidth, element.box.width));
+    const height = Math.max(0, Math.min(sourceHeight, element.box.height));
+    return sum + width * height;
+  }, 0);
+  return Math.min(1, coveredArea / sourceArea);
 }
 
 function estimateVisualDiffScore(
@@ -1175,8 +1529,12 @@ export function UploadFlow({
         window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
       }
       toast(
-        shortLink ? t.toastShortShareCopied : t.toastShareHashCopied,
-        "success",
+        shortLink?.warning
+          ? t.toastShortShareMemory
+          : shortLink
+            ? t.toastShortShareCopied
+            : t.toastShareHashCopied,
+        shortLink?.warning ? "warning" : "success",
       );
     } catch {
       toast(t.toastShareFailed, "error");
@@ -1541,17 +1899,52 @@ export function UploadFlow({
       exportedAt: new Date(currentTimestamp()).toISOString(),
       detections: artifact.detections,
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${artifact.file.name.replace(/\.[^.]+$/, "") || "screenshot"}.detections.json`;
-    document.body.append(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
+    downloadTextFile(
+      JSON.stringify(payload, null, 2),
+      `${artifact.file.name.replace(/\.[^.]+$/, "") || "screenshot"}.detections.json`,
+      "application/json;charset=utf-8",
+    );
+  }
+
+  function exportHandoffBundle() {
+    if (!artifact || typeof document === "undefined") return;
+    const baseName =
+      artifact.file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-") ||
+      "screenshot";
+    const shareSummary =
+      buildShareableSummary({
+        summary: artifact.summary,
+        previewStats: artifact.previewStats,
+        modeLabel: artifact.modeLabel,
+        detections: artifact.detections,
+        file: file?.name ?? artifact.file.name ?? t.defaultScreenshotName,
+      }) ?? sharedSummary;
+    const payload = {
+      version: 1,
+      exportedAt: new Date(currentTimestamp()).toISOString(),
+      file: artifact.file,
+      modeLabel: artifact.modeLabel,
+      summary: artifact.summary,
+      previewStats: artifact.previewStats,
+      plan: artifact.plan,
+      generatedCode: artifact.generatedCode,
+      exports: {
+        tsxFilename: exportFilename,
+        detectionsFilename: `${baseName}.detections.json`,
+      },
+      detections: artifact.detections,
+      shareSummary,
+      notes: [
+        "Generated code is included for handoff only; review imports before dropping it into another app.",
+        "Detection boxes may include user edits from the current browser session.",
+      ],
+    };
+    downloadTextFile(
+      JSON.stringify(payload, null, 2),
+      `${baseName}.handoff.json`,
+      "application/json;charset=utf-8",
+    );
+    toast(t.toastHandoffBundleExported, "success");
   }
 
   async function finishPreviewGeneration(
@@ -2153,6 +2546,17 @@ export function UploadFlow({
                         analyticsFeature="generated_scaffold"
                         onCopied={() => toast(t.toastScaffoldExported, "success")}
                       />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={exportHandoffBundle}
+                        data-testid="export-handoff-bundle"
+                      >
+                        <PackageOpen className="size-3.5" aria-hidden />
+                        {t.exportHandoffBundle}
+                      </Button>
                       <GistExportButton
                         text={artifact.generatedCode}
                         filename={exportFilename}

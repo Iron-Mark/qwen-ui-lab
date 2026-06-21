@@ -91,6 +91,18 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await firstDetectionBox.click();
   await expect(page.getByTestId("detection-details")).toBeVisible();
   await expect(page.getByTestId("detection-details")).toContainText(/confidence/i);
+  await page.getByTestId("toggle-detector-debug").click();
+  await expect(page.getByTestId("detection-debug-panel")).toContainText(/Geometry/i);
+  await expect(firstDetectionBox.getByTestId("detection-debug-label")).toBeVisible();
+  const beforeKeyboardMove = await firstDetectionBox.boundingBox();
+  await firstDetectionBox.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect
+    .poll(async () => {
+      const afterKeyboardMove = await firstDetectionBox.boundingBox();
+      return Math.round((afterKeyboardMove?.x ?? beforeKeyboardMove!.x) - beforeKeyboardMove!.x);
+    })
+    .not.toBe(0);
   await page.getByTestId("detection-kind-select").selectOption("button-or-input");
   await expect(page.getByTestId("undo-detection-edit")).toBeEnabled();
   await page.getByTestId("undo-detection-edit").click();
@@ -137,6 +149,16 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
+
+  const handoffDownloadPromise = page.waitForEvent("download");
+  await page.getByTestId("export-handoff-bundle").click();
+  const handoffDownload = await handoffDownloadPromise;
+  expect(handoffDownload.suggestedFilename()).toMatch(/\.handoff\.json$/);
+  const handoffPath = await handoffDownload.path();
+  expect(handoffPath).toBeTruthy();
+  const handoff = JSON.parse(await fs.readFile(handoffPath!, "utf8"));
+  expect(handoff.generatedCode).toContain("export function");
+  expect(handoff.detections.elements.length).toBeGreaterThan(0);
 
   await page.getByTestId("gist-export-button").click();
   await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({
