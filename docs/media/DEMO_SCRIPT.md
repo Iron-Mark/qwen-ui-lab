@@ -31,19 +31,33 @@ Use this script when recording the demo video.
 
 ### [0:22–0:35] Generate preview
 
-**Action:** Click Generate Preview. Show the generated scaffold and preview cards.
+**Action:** Click Generate Preview. Show the generated scaffold, side-by-side preview, and visual match badge.
 
 **Voiceover:**
 > "The app calls a server-side Qwen route. If the key is not configured, it falls back locally so the demo still works without exposing credentials."
 
-### [0:35–0:48] Show the final dashboard
+### [0:35–0:48] Show detector controls
+
+**Action:** Turn on detector debug, click one box, then adjust it with arrow keys or the resize handle.
+
+**Voiceover:**
+> "Before generating a handoff, the detected UI boxes are editable. Debug mode shows confidence, geometry, primitive mapping, and why each region was classified."
+
+### [0:48–0:56] Export handoff
+
+**Action:** Click Handoff bundle in the export panel.
+
+**Voiceover:**
+> "The export can include generated TSX, detection JSON, and a combined handoff bundle for engineering review."
+
+### [0:56–1:08] Show the final dashboard
 
 **Action:** Scroll to the finished dashboard and click the theme toggle.
 
 **Voiceover:**
 > "Below that is the final human-refactored dashboard with dark mode, responsive grids, accessible chart meters, and reusable components."
 
-### [0:48–0:60] Closing
+### [1:08–1:15] Closing
 
 **Action:** Show the GitHub README or deployed URL.
 
@@ -62,6 +76,13 @@ If live recording fails, use these 6 screenshots in order:
 4. **Generated first-pass** — `experiments/01-dashboard/generated-first-pass.tsx` in VS Code
 5. **Refactored final** — App running in browser
 6. **Before/after** — `public/results/before-after-comparison.svg`
+
+## Advanced Feature Cutaways
+
+- Load **Dense dashboard** to stress test overlapping dashboard cards, charts, and table rows.
+- Load **Repeated list** to stress test repeated row detection and action clusters.
+- Use **Debug** in the detector dashboard to show confidence reasons and primitive snapping.
+- Use **Handoff bundle** to show the complete artifact exported without API secrets.
 
 ---
 
