@@ -76,6 +76,8 @@ test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
     "landing-reference.png",
     "settings-reference.png",
     "ecommerce-reference.png",
+    "stress-dashboard-reference.png",
+    "stress-list-reference.png",
   ]);
 });
 

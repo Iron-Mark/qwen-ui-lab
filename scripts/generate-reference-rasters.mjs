@@ -18,6 +18,8 @@ const RASTER_SOURCES = [
   { stem: "landing-reference", width: 1440, height: 900 },
   { stem: "settings-reference", width: 1200, height: 720 },
   { stem: "ecommerce-reference", width: 1200, height: 720 },
+  { stem: "stress-dashboard-reference", width: 1440, height: 900 },
+  { stem: "stress-list-reference", width: 1200, height: 720 },
 ];
 
 async function rasterize({ stem, width, height }) {

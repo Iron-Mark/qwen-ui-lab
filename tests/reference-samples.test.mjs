@@ -37,6 +37,8 @@ test("all bundled reference samples use PNG paths with WebP companions", () => {
       "landing-reference.png",
       "settings-reference.png",
       "ecommerce-reference.png",
+      "stress-dashboard-reference.png",
+      "stress-list-reference.png",
     ],
   );
   for (const sample of BUNDLED_REFERENCE_SAMPLES) {
