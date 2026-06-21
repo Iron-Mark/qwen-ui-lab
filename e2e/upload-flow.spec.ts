@@ -38,6 +38,11 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
     timeout: 10_000,
   });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
+  await expect(page.getByTestId("detection-overlay-count")).toContainText(/detected/i);
+  await expect(page.getByTestId("detection-box").first()).toBeVisible();
+
+  await page.getByTestId("toggle-detection-overlay").click();
+  await expect(page.getByTestId("detection-box")).toHaveCount(0);
 
   await page.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Scaffold copied/i)).toBeVisible({

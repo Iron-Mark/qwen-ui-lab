@@ -7,6 +7,8 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
+  Eye,
+  EyeOff,
   Share2,
   Sparkles,
   UploadCloud,
@@ -94,7 +96,26 @@ interface UiFlowArtifact {
   generatedCode: string;
   modeLabel?: string;
   summary?: string;
+  detections?: {
+    elements: DetectionElement[];
+    layoutTree: unknown;
+    quality: DetectionQuality | null;
+  };
 }
+
+type DetectionElement = {
+  id: string;
+  kind: string;
+  confidence: number;
+  box: { x: number; y: number; width: number; height: number };
+};
+
+type DetectionQuality = {
+  confidence?: number;
+  ambiguity?: string;
+  elementCount?: number;
+  strategy?: string;
+};
 
 type Stage = "empty" | "uploaded" | "analyzed" | "generated";
 type ProviderState = "idle" | "loading" | "qwen" | "fallback" | "error";
@@ -176,6 +197,205 @@ const UiLawsCompliance = dynamic(
     loading: () => <Skeleton className="h-32 w-full" />,
   },
 );
+
+type DetectedReferencePreviewProps = {
+  previewUrl: string;
+  alt: string;
+  imageWidth?: number | null;
+  imageHeight?: number | null;
+  detections?: UiFlowArtifact["detections"];
+};
+
+function DetectedReferencePreview({
+  previewUrl,
+  alt,
+  imageWidth,
+  imageHeight,
+  detections,
+}: DetectedReferencePreviewProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [overlayEnabled, setOverlayEnabled] = useState(true);
+  const elements = detections?.elements ?? [];
+  const canShowOverlay = elements.length > 0 && Boolean(imageWidth && imageHeight);
+
+  useEffect(() => {
+    const observedNode = containerRef.current;
+    if (!observedNode) return;
+    const node = observedNode;
+
+    function updateSize() {
+      setContainerSize({
+        width: node.clientWidth,
+        height: node.clientHeight,
+      });
+    }
+
+    updateSize();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateSize);
+      return () => window.removeEventListener("resize", updateSize);
+    }
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const imageRect = useMemo(
+    () =>
+      calculateObjectContainRect({
+        containerWidth: containerSize.width,
+        containerHeight: containerSize.height,
+        imageWidth: imageWidth ?? 0,
+        imageHeight: imageHeight ?? 0,
+      }),
+    [containerSize.height, containerSize.width, imageHeight, imageWidth],
+  );
+  const confidencePercent =
+    typeof detections?.quality?.confidence === "number"
+      ? `${Math.round(detections.quality.confidence * 100)}%`
+      : null;
+
+  return (
+    <div className="space-y-2">
+      {canShowOverlay ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" data-testid="detection-overlay-count">
+              {elements.length} detected
+            </Badge>
+            {confidencePercent ? (
+              <span className="text-xs text-muted-foreground">
+                {confidencePercent} confidence
+                {detections?.quality?.ambiguity
+                  ? ` · ${detections.quality.ambiguity} ambiguity`
+                  : ""}
+              </span>
+            ) : null}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => setOverlayEnabled((value) => !value)}
+            aria-pressed={overlayEnabled}
+            data-testid="toggle-detection-overlay"
+          >
+            {overlayEnabled ? (
+              <EyeOff className="size-3.5" aria-hidden />
+            ) : (
+              <Eye className="size-3.5" aria-hidden />
+            )}
+            {overlayEnabled ? "Hide detections" : "Show detections"}
+          </Button>
+        </div>
+      ) : null}
+
+      <div
+        ref={containerRef}
+        className="relative h-96 w-full overflow-hidden rounded-md border border-border"
+      >
+        <Image
+          src={previewUrl}
+          alt={alt}
+          className="object-contain"
+          fill
+          sizes="(max-width: 1024px) 100vw, 880px"
+          loading="lazy"
+          unoptimized
+        />
+        {canShowOverlay && overlayEnabled && imageRect ? (
+          <div
+            className="pointer-events-none absolute"
+            style={{
+              left: imageRect.left,
+              top: imageRect.top,
+              width: imageRect.width,
+              height: imageRect.height,
+            }}
+            data-testid="detection-overlay"
+            aria-hidden
+          >
+            {elements.slice(0, 24).map((element) => (
+              <div
+                key={element.id}
+                className={cn(
+                  "absolute rounded-[3px] border bg-background/15 shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)]",
+                  detectionClassName(element.kind),
+                )}
+                style={boxToOverlayStyle(element, {
+                  sourceWidth: imageWidth ?? 1,
+                  sourceHeight: imageHeight ?? 1,
+                  renderedWidth: imageRect.width,
+                  renderedHeight: imageRect.height,
+                })}
+                data-testid="detection-box"
+              >
+                <span className="absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
+                  {element.kind} · {Math.round(element.confidence * 100)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function calculateObjectContainRect({
+  containerWidth,
+  containerHeight,
+  imageWidth,
+  imageHeight,
+}: {
+  containerWidth: number;
+  containerHeight: number;
+  imageWidth: number;
+  imageHeight: number;
+}) {
+  if (!containerWidth || !containerHeight || !imageWidth || !imageHeight) return null;
+  const scale = Math.min(containerWidth / imageWidth, containerHeight / imageHeight);
+  const width = imageWidth * scale;
+  const height = imageHeight * scale;
+  return {
+    left: (containerWidth - width) / 2,
+    top: (containerHeight - height) / 2,
+    width,
+    height,
+  };
+}
+
+function boxToOverlayStyle(
+  element: DetectionElement,
+  {
+    sourceWidth,
+    sourceHeight,
+    renderedWidth,
+    renderedHeight,
+  }: {
+    sourceWidth: number;
+    sourceHeight: number;
+    renderedWidth: number;
+    renderedHeight: number;
+  },
+) {
+  return {
+    left: `${(element.box.x / sourceWidth) * renderedWidth}px`,
+    top: `${(element.box.y / sourceHeight) * renderedHeight}px`,
+    width: `${(element.box.width / sourceWidth) * renderedWidth}px`,
+    height: `${(element.box.height / sourceHeight) * renderedHeight}px`,
+  };
+}
+
+function detectionClassName(kind: string) {
+  if (/nav|header/i.test(kind)) return "border-sky-500";
+  if (/button|input|control/i.test(kind)) return "border-emerald-500";
+  if (/chart|media/i.test(kind)) return "border-amber-500";
+  return "border-primary";
+}
 
 export interface UploadFlowProps {
   /** Bundled reference sample id (dashboard, auth, mobile, …) for /demo */
@@ -837,23 +1057,24 @@ export function UploadFlow({
                   {t.uploadedReference}
                 </p>
                 {previewUrl ? (
-                  <div className="relative h-96 w-full overflow-hidden rounded-md border border-border">
-                    <Image
-                      src={previewUrl}
-                      alt={
-                        file
-                          ? interpolate(t.uploadedReferenceAltNamed, {
-                              fileName: file.name,
-                            })
-                          : t.uploadedReferenceAlt
-                      }
-                      className="object-contain"
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 880px"
-                      loading="lazy"
-                      unoptimized
-                    />
-                  </div>
+                  <DetectedReferencePreview
+                    key={`${artifact?.file.name ?? "reference"}-${
+                      artifact?.detections?.quality?.elementCount ??
+                      artifact?.detections?.elements.length ??
+                      0
+                    }`}
+                    previewUrl={previewUrl}
+                    alt={
+                      file
+                        ? interpolate(t.uploadedReferenceAltNamed, {
+                            fileName: file.name,
+                          })
+                        : t.uploadedReferenceAlt
+                    }
+                    imageWidth={artifact?.file.width}
+                    imageHeight={artifact?.file.height}
+                    detections={artifact?.detections}
+                  />
                 ) : (
                   <div className="flex min-h-48 items-center justify-center rounded-md border border-border bg-background text-sm text-muted-foreground">
                     {artifact?.file.name ?? t.referenceImage}
