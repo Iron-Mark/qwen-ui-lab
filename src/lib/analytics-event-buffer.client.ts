@@ -1,3 +1,5 @@
+"use client";
+
 import * as runtime from "./analytics-event-buffer.mjs";
 
 type BufferRecord = {

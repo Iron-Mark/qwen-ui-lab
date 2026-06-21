@@ -1,4 +1,4 @@
-import { inspectCanvas } from "./offline-image-inspection.mjs";
+import { inspectCanvas } from "./offline-image-inspection.client.mjs";
 import { inspectSvgDataUrl } from "./offline-svg-inspection.mjs";
 
 const MAX_DIMENSION = 1600;

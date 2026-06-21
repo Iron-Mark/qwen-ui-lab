@@ -4,6 +4,7 @@ import {
   sanitizeSharePayload,
 } from "./share-store.mjs";
 import { buildShortShareUrl } from "./share-result.mjs";
+import { readJsonRequestBody } from "../../../lib/api-request.mjs";
 
 function shareJsonResponse(body, status = 200) {
   return Response.json(body, { status });
@@ -31,14 +32,12 @@ export async function handleShareGet(request) {
 }
 
 export async function handleSharePost(request, env = process.env) {
-  let body;
-  try {
-    body = await request.json();
-  } catch {
+  const body = await readJsonRequestBody(request);
+  if (!body.ok) {
     return shareJsonResponse({ ok: false, error: "Invalid JSON body" }, 400);
   }
 
-  const summary = sanitizeSharePayload(body);
+  const summary = sanitizeSharePayload(body.body);
   if (!summary) {
     return shareJsonResponse(
       { ok: false, error: "Invalid or empty share payload" },

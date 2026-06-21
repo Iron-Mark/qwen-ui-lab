@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ComponentType } from "react";
-import { DesignSystemPreviewSkeletonBody } from "@/features/design-system/components/DesignSystemPreviewSkeleton";
+import { DesignSystemPreviewSkeletonBody } from "./DesignSystemPreviewSkeleton";
 
 type PreviewComponent = ComponentType<Record<string, never>>;
 
@@ -22,7 +22,7 @@ export function DesignSystemPreviewClient() {
   useEffect(() => {
     if (!allowImport) return;
     let cancelled = false;
-    import("@/features/design-system/components/DesignSystemPreview").then((mod) => {
+    import("./DesignSystemPreview").then((mod) => {
       if (cancelled) return;
       setPreview(() => mod.DesignSystemPreview);
     });

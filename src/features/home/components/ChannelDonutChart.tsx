@@ -9,12 +9,9 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { memo, useMemo } from "react";
-import type { ChannelMixPoint } from "@/features/home/data/dashboard-data";
-import {
-  getChartColors,
-  getChartColorsFromDocument,
-  type ChartThemeMode,
-} from "@/features/home/lib/chart-theme";
+import type { ChannelMixPoint } from "../data/dashboard-data";
+import { getChartColors, type ChartThemeMode } from "../lib/chart-theme";
+import { getChartColorsFromDocument } from "../lib/chart-theme.client";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

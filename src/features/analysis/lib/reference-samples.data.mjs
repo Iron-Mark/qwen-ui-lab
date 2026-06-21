@@ -125,3 +125,13 @@ export function getReferenceSampleById(id) {
     DEFAULT_REFERENCE_SAMPLE
   );
 }
+
+/**
+ * Suggested export filename for a bundled reference sample id.
+ * @param {string} sampleId
+ */
+export function referenceSampleExportFilename(sampleId) {
+  const sample = getReferenceSampleById(sampleId);
+  const slug = sample.id === "ecommerce" ? "shop" : sample.id;
+  return `generated-${slug}.tsx`;
+}

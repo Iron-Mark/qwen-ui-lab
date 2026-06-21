@@ -16,15 +16,15 @@ import { ExportButton } from "@/features/export/components/ExportButton";
 import { GistExportButton } from "@/features/export/components/GistExportButton";
 import { RepoExportButton } from "@/features/export/components/RepoExportButton";
 import { SharedSummaryCard } from "@/features/share/components/SharedSummaryCard";
-import { UploadDropzone } from "@/features/analysis/components/UploadDropzone";
+import { UploadDropzone } from "./UploadDropzone";
 import { useToast } from "@/components/providers/Toast";
-import { useAuth } from "@/features/account/lib/auth";
+import { useAccountIdentity } from "@/features/account/components/useAccountIdentity";
 import {
   loadSessionHistory,
   saveSession,
   removeSession,
   type SessionRecord,
-} from "@/features/analysis/lib/session-history";
+} from "../lib/session-history.client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,33 +39,35 @@ import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useProviderMode } from "@/lib/provider-mode";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import {
   buildAnalyzeFailureError,
   isReportableAnalyzeFailure,
-} from "@/features/analysis/lib/analyze-observability.mjs";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics";
+} from "../lib/analyze-observability.mjs";
+import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
-import { BUNDLED_REFERENCE_SAMPLES } from "@/features/analysis/lib/reference-samples.mjs";
 import {
-  demoArchetypeExportFilename,
-  getDemoArchetypeSample,
-} from "@/features/analysis/lib/demo-archetypes.mjs";
-import { getReferenceSampleByFileName } from "@/features/analysis/lib/reference-samples.mjs";
+  BUNDLED_REFERENCE_SAMPLES,
+  getReferenceSampleByFileName,
+  getReferenceSampleById,
+  referenceSampleExportFilename,
+} from "../lib/reference-samples.mjs";
 import {
   formatUploadSize,
   MAX_UPLOAD_BYTES,
   validateUploadImageFile,
-} from "@/features/analysis/lib/upload-constraints.mjs";
+} from "../lib/upload-constraints.mjs";
 import {
   buildShareableSummary,
   buildShareUrl,
   createShortShareLink,
   encodeShareHash,
+} from "@/features/share/lib/share-result.mjs";
+import {
   persistShareSummary,
   readShareFromLocation,
   readShareFromSession,
-} from "@/features/share/lib/share-result.mjs";
+} from "@/features/share/lib/share-result.client";
 import {
   getAnalyzeProgressPercent,
   getAnalyzeStepLabels,
@@ -73,9 +75,9 @@ import {
   interpolate,
   resolveAnalyzeStepIndex,
   translateAnalyzeStep,
-  useLocale,
   type UploadFlowDictionary,
 } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
 
 interface UiFlowArtifact {
   file: {
@@ -117,16 +119,16 @@ function persistSampleUsedInSession() {
 }
 
 type AnalyzeModules = {
-  postAnalyzeUi: typeof import("@/features/analysis/lib/analyze-outcome.mjs").postAnalyzeUi;
-  preprocessImageDataUrl: typeof import("@/features/analysis/lib/image-preprocess.mjs").preprocessImageDataUrl;
+  postAnalyzeUi: typeof import("../lib/analyze-outcome.mjs").postAnalyzeUi;
+  preprocessImageDataUrl: typeof import("../lib/image-preprocess.client.mjs").preprocessImageDataUrl;
 };
 
 let analyzeModulesPromise: Promise<AnalyzeModules> | null = null;
 
 function loadAnalyzeModules() {
   analyzeModulesPromise ??= Promise.all([
-    import("@/features/analysis/lib/analyze-outcome.mjs"),
-    import("@/features/analysis/lib/image-preprocess.mjs"),
+    import("../lib/analyze-outcome.mjs"),
+    import("../lib/image-preprocess.client.mjs"),
   ]).then(([analyze, preprocess]) => ({
     postAnalyzeUi: analyze.postAnalyzeUi,
     preprocessImageDataUrl: preprocess.preprocessImageDataUrl,
@@ -157,7 +159,7 @@ function sampleCopy(
 
 const SnippetPreview = dynamic(
   () =>
-    import("@/features/analysis/components/SnippetPreview").then((mod) => ({
+    import("./SnippetPreview").then((mod) => ({
       default: mod.SnippetPreview,
     })),
   {
@@ -167,7 +169,7 @@ const SnippetPreview = dynamic(
 
 const UiLawsCompliance = dynamic(
   () =>
-    import("@/features/analysis/components/UiLawsCompliance").then((mod) => ({
+    import("./UiLawsCompliance").then((mod) => ({
       default: mod.UiLawsCompliance,
     })),
   {
@@ -200,7 +202,7 @@ export function UploadFlow({
   );
   const runPrimaryActionRef = useRef<() => Promise<void>>(async () => {});
   const { toast } = useToast();
-  const { savedByLabel } = useAuth();
+  const { savedByLabel } = useAccountIdentity();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [artifact, setArtifact] = useState<UiFlowArtifact | null>(null);
@@ -370,15 +372,10 @@ export function UploadFlow({
 
   const exportFilename = useMemo(() => {
     if (file?.name) {
-      const sample = getDemoArchetypeSample(
-        getReferenceSampleByFileName(file.name).id,
-      );
-      if (sample?.id) {
-        return demoArchetypeExportFilename(sample.id);
-      }
+      return referenceSampleExportFilename(getReferenceSampleByFileName(file.name).id);
     }
     if (demoArchetype) {
-      return demoArchetypeExportFilename(demoArchetype);
+      return referenceSampleExportFilename(demoArchetype);
     }
     if (file?.name) {
       const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
@@ -540,7 +537,7 @@ export function UploadFlow({
 
       return outcome.artifact as UiFlowArtifact;
     } catch {
-      const { resolveAnalyzeOutcome } = await import("@/features/analysis/lib/analyze-outcome.mjs");
+      const { resolveAnalyzeOutcome } = await import("../lib/analyze-outcome.mjs");
       const outcome = resolveAnalyzeOutcome({
         file: { name: file.name, type: file.type, size: file.size },
         fetchError: "Could not read the uploaded image.",
@@ -659,7 +656,7 @@ export function UploadFlow({
   async function loadBundledSample(sampleId: string) {
     const sample =
       BUNDLED_REFERENCE_SAMPLES.find((entry) => entry.id === sampleId) ??
-      getDemoArchetypeSample(sampleId);
+      getReferenceSampleById(sampleId);
 
     setError(null);
     setLoadingSample(true);

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import type { LawOfUx } from "@/features/design-system/data/lawsOfUx";
-import { lawOfUxUrl, LAWS_OF_UX_SITE } from "@/features/design-system/data/lawsOfUx";
-import { lawNames } from "@/features/design-system/data/uilaws";
+import type { LawOfUx } from "@/lib/laws-of-ux";
+import { lawOfUxUrl, LAWS_OF_UX_SITE } from "@/lib/laws-of-ux";
+import { lawNames } from "../data/uilaws";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
-import { LawOfUxDemo } from "@/features/design-system/components/LawOfUxDemos";
+import { LawOfUxDemo } from "./LawOfUxDemos";
 
 const SURFACE_LABELS = {
   upload: "Upload flow",

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import type { ChannelMixPoint, PerformanceDataPoint } from "@/features/home/data/dashboard-data";
+import type { ChannelMixPoint, PerformanceDataPoint } from "../data/dashboard-data";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 
 const PerformanceLineChart = dynamic(
   () =>
-    import("@/features/home/components/PerformanceLineChart").then((mod) => ({
+    import("./PerformanceLineChart").then((mod) => ({
       default: mod.PerformanceLineChart,
     })),
   {
@@ -25,7 +25,7 @@ const PerformanceLineChart = dynamic(
 
 const ChannelDonutChart = dynamic(
   () =>
-    import("@/features/home/components/ChannelDonutChart").then((mod) => ({
+    import("./ChannelDonutChart").then((mod) => ({
       default: mod.ChannelDonutChart,
     })),
   {

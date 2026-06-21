@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import type { LawOfUxId } from "@/features/design-system/data/lawsOfUx";
-import { cn } from "@/lib/cn";
+import type { LawOfUxId } from "@/lib/laws-of-ux";
+import { cn } from "@/lib/utils";
 
 function FittsDemo() {
   return (

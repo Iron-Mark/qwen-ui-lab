@@ -3,7 +3,7 @@
  * (visual-design principles + component library patterns).
  *
  * Ergonomics laws (Fitts, Hick, Jakob, Miller, …) are catalogued under
- * Laws of UX — https://lawsofux.com — see src/features/design-system/data/lawsOfUx.ts.
+ * Laws of UX — https://lawsofux.com — see src/lib/laws-of-ux.ts.
  */
 
 export const UILAWS_SITE = "https://www.uilaws.com";

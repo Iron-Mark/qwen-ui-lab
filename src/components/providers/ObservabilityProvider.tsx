@@ -1,9 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
-import { useProviderMode } from "@/lib/provider-mode";
+import { usePathname } from "next/navigation";
+import { useProviderMode } from "./ProviderModeProvider";
 import { createClientErrorDispatch } from "@/lib/error-reporting.client";
-import { appendClientAnalyticsBuffer } from "@/features/analytics/lib/analytics-event-buffer";
+import { appendClientAnalyticsBuffer } from "@/lib/analytics-event-buffer.client";
 import {
   createMonitoringHooks,
   createObservabilityConfig,
@@ -30,6 +31,7 @@ function getClientObservabilityEnv() {
 
 export function ObservabilityProvider({ children }: { children: ReactNode }) {
   const { mode } = useProviderMode();
+  const pathname = usePathname();
 
   const hooks = useMemo(() => {
     const env = getClientObservabilityEnv();
@@ -52,6 +54,7 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
     const onError = (event: ErrorEvent) => {
       hooks.captureError(event.error ?? new Error(event.message), {
         source: "window.error",
+        route: pathname ?? "/",
         providerMode: mode,
       });
     };
@@ -60,6 +63,7 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
       const reason = event.reason instanceof Error ? event.reason : new Error("Unhandled promise rejection");
       hooks.captureError(reason, {
         source: "window.unhandledrejection",
+        route: pathname ?? "/",
         providerMode: mode,
       });
     };
@@ -70,7 +74,7 @@ export function ObservabilityProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("error", onError);
       window.removeEventListener("unhandledrejection", onUnhandledRejection);
     };
-  }, [hooks, mode]);
+  }, [hooks, mode, pathname]);
 
   return <ObservabilityContext.Provider value={hooks}>{children}</ObservabilityContext.Provider>;
 }

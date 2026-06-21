@@ -1,9 +1,7 @@
 /**
- * Laws of UX — canonical reference: https://lawsofux.com (Jon Yablonski).
- * Complements uilaws.com design-principle data in ./uilaws.ts (symmetry, white space, etc.).
+ * Laws of UX - canonical reference: https://lawsofux.com (Jon Yablonski).
+ * Shared reference data used by analysis and design-system surfaces.
  */
-
-import type { UiLawId } from "./uilaws";
 
 export const LAWS_OF_UX_SITE = "https://lawsofux.com";
 export const LAWS_OF_UX_AUTHOR = "Jon Yablonski";
@@ -27,6 +25,21 @@ export type LawOfUxId =
 
 export type LawDemoSurface = "upload" | "dashboard" | "catalog";
 
+export type RelatedUiLawId =
+  | "symmetry"
+  | "rule-of-thirds"
+  | "white-space"
+  | "color-theory"
+  | "typography-hierarchy"
+  | "consistency"
+  | "proximity"
+  | "contrast"
+  | "closure"
+  | "continuity"
+  | "fitts"
+  | "hick"
+  | "jakob";
+
 export interface LawOfUx {
   id: LawOfUxId;
   name: string;
@@ -38,7 +51,7 @@ export interface LawOfUx {
   /** Cross-link into this repo */
   inAppHref: string;
   /** Overlap with uilaws.com principles where both apply */
-  relatedUiLawIds?: UiLawId[];
+  relatedUiLawIds?: RelatedUiLawId[];
 }
 
 export function lawOfUxUrl(slug: string) {
@@ -87,7 +100,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     name: "Jakob's Law",
     slug: "jakobs-law",
     summary:
-      "Users spend most of their time on other sites — they expect yours to work the same way.",
+      "Users spend most of their time on other sites - they expect yours to work the same way.",
     application:
       "Familiar dashboard shell, file upload, and SaaS-style nav in the header.",
     demoSurface: "dashboard",
@@ -205,7 +218,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "The tendency to approach a goal increases with proximity to the goal.",
     application:
-      "Step chips advance color as Upload → Analyze → Generate → Export progresses.",
+      "Step chips advance color as Upload -> Analyze -> Generate -> Export progresses.",
     demoSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["continuity"],

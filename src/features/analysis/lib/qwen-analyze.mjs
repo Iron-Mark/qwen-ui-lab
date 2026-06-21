@@ -17,6 +17,20 @@ export function canUseLiveQwen(env = process.env) {
   return getQwenConfig(env).ok && isLiveQwenAnalysisEnabled(env);
 }
 
+export function buildAnalyzeHealthResponse(env = process.env) {
+  const config = getQwenConfig(env);
+  const liveAnalysisEnabled = canUseLiveQwen(env);
+
+  return {
+    ok: true,
+    provider: liveAnalysisEnabled ? "qwen" : "demo",
+    hasApiKey: config.ok,
+    liveAnalysisEnabled,
+    model: liveAnalysisEnabled ? config.model : null,
+    baseUrl: liveAnalysisEnabled ? config.baseUrl : null,
+  };
+}
+
 export function buildDemoAnalyzeResponse({ fileName, fileType, fileSize }) {
   return {
     ok: true,

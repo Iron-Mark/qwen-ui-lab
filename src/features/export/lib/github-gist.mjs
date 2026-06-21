@@ -7,6 +7,19 @@ export const GIST_FALLBACK_URL = "https://gist.github.com";
 export const GIST_FALLBACK_INSTRUCTIONS =
   "Copy your scaffold code, open gist.github.com, paste into a new secret gist, and save.";
 
+export function buildGithubGistUnavailablePayload() {
+  return {
+    ok: false,
+    code: "gist_unavailable",
+    message:
+      "GitHub Gist export is not configured. Set GITHUB_TOKEN on the server.",
+    fallback: {
+      gistUrl: GIST_FALLBACK_URL,
+      instructions: GIST_FALLBACK_INSTRUCTIONS,
+    },
+  };
+}
+
 /**
  * @param {Record<string, string | undefined>} [env]
  */

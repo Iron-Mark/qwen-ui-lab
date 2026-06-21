@@ -53,7 +53,7 @@ export function appendAnalyticsBuffer(storage, payload) {
   try {
     storage.setItem(ANALYTICS_BUFFER_STORAGE_KEY, JSON.stringify(next));
   } catch {
-    // Quota or private mode — ignore silently.
+    // Quota or private mode: ignore silently.
   }
 }
 

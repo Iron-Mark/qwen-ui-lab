@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { UI_LAWS, UILAWS_SITE, type UiLawId } from "@/features/design-system/data/uilaws";
-import { cn } from "@/lib/cn";
+import { UI_LAWS, UILAWS_SITE, type UiLawId } from "../data/uilaws";
+import { cn } from "@/lib/utils";
 
 const ROUTE_HINTS: Partial<Record<UiLawId, { label: string; href: string }>> = {
   fitts: { label: "Design system → Export controls", href: "/design-system" },

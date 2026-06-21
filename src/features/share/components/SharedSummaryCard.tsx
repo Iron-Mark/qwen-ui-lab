@@ -10,8 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { interpolate, useLocale } from "@/lib/i18n";
-import { buildShareableSummary } from "@/features/share/lib/share-result.mjs";
+import { interpolate } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
+import { buildShareableSummary } from "../lib/share-result.mjs";
 
 type SharedSummaryCardProps = {
   summary: NonNullable<ReturnType<typeof buildShareableSummary>>;

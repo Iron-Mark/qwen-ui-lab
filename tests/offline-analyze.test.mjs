@@ -17,7 +17,7 @@ import {
   inspectSvgDataUrl,
   inspectSvgMarkup,
 } from "../src/features/analysis/lib/offline-svg-inspection.mjs";
-import { preprocessImageDataUrl } from "../src/features/analysis/lib/image-preprocess.mjs";
+import { preprocessImageDataUrl } from "../src/features/analysis/lib/image-preprocess.client.mjs";
 import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
   buildDemoArtifactForFile,

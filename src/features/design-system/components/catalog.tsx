@@ -2,38 +2,34 @@
 
 import { ThemeToggle } from "@/features/shell/components/ThemeToggle";
 import { ExportButton } from "@/features/export/components/ExportButton";
-import { QuickActionButton } from "@/features/home/components/QuickActionButton";
 import { SnippetPreview } from "@/features/analysis/components/SnippetPreview";
 import { UploadDropzone } from "@/features/analysis/components/UploadDropzone";
-import { StatCard } from "@/features/home/components/StatCard";
-import { RevenueCard } from "@/features/home/components/RevenueCard";
-import { ThemedChartPreview } from "@/features/home/components/ThemedChartPreview";
-import { LawInformationCard } from "@/features/design-system/components/LawInformationCard";
-import { LawOfUxCard } from "@/features/design-system/components/LawOfUxCard";
+import { LawInformationCard } from "./LawInformationCard";
+import { LawOfUxCard } from "./LawOfUxCard";
 import { Header } from "@/features/shell/components/Header";
 import { WorkflowBanner } from "@/features/home/components/WorkflowBanner";
-import { ActivityList } from "@/features/home/components/ActivityList";
-import { ChartPreview } from "@/features/home/components/ChartPreview";
-import { UiLawComplianceChecklist } from "@/features/design-system/components/UiLawComplianceChecklist";
-import { LawReferencePanel } from "@/features/design-system/components/LawReferencePanel";
+import {
+  DashboardActivityListCatalogPreview,
+  DashboardChannelDonutCatalogPreview,
+  DashboardChartCatalogPreview,
+  DashboardPerformanceLineCatalogPreview,
+  DashboardQuickActionCatalogPreview,
+  DashboardRevenueCatalogPreview,
+  DashboardStatTrendDownCatalogPreview,
+  DashboardStatTrendUpCatalogPreview,
+} from "@/features/home/components/DashboardCatalogPreviews";
+import { UiLawComplianceChecklist } from "./UiLawComplianceChecklist";
+import { LawReferencePanel } from "./LawReferencePanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  stats,
-  recentActivity,
-  quickActions,
-  performanceData,
-  channelMixData,
-  revenueData,
-} from "@/features/home/data/dashboard-data";
-import { LAWS_OF_UX } from "@/features/design-system/data/lawsOfUx";
-import { filterCatalogEntries } from "@/features/design-system/lib/catalog-filter.mjs";
+import { LAWS_OF_UX } from "@/lib/laws-of-ux";
+import { filterCatalogEntries } from "../lib/catalog-filter.mjs";
 import type {
   AtomicCatalogEntry,
   AtomicLevel,
   CatalogDomain,
-} from "./catalog-types";
+} from "../data/catalog-types";
 
 export type {
   AtomicCatalogEntry,
@@ -41,7 +37,7 @@ export type {
   CatalogDomain,
   CatalogPropDoc,
   CatalogVariant,
-} from "./catalog-types";
+} from "../data/catalog-types";
 
 const statSnippet = `import { StatCard } from "@/features/home/components/StatCard";
 
@@ -214,7 +210,7 @@ export function ExampleExportButton() {
     props: [
       { name: "action", type: "{ label: string; icon: string }", description: "Shortcut metadata." },
     ],
-    preview: <QuickActionButton action={quickActions[0]} />,
+    preview: <DashboardQuickActionCatalogPreview />,
     code: `import { QuickActionButton } from "@/features/home/components/QuickActionButton";
 
 export function ExampleQuickAction() {
@@ -269,10 +265,10 @@ export function ExampleSnippetPreview() {
       { name: "stat", type: "Stat", description: "Metric payload from dashboard-data." },
     ],
     variants: [
-      { id: "up", label: "Trend up", preview: <StatCard stat={stats[0]} />, code: statSnippet },
-      { id: "down", label: "Trend down", preview: <StatCard stat={stats[3]} />, code: statDownSnippet },
+      { id: "up", label: "Trend up", preview: <DashboardStatTrendUpCatalogPreview />, code: statSnippet },
+      { id: "down", label: "Trend down", preview: <DashboardStatTrendDownCatalogPreview />, code: statDownSnippet },
     ],
-    preview: <StatCard stat={stats[0]} />,
+    preview: <DashboardStatTrendUpCatalogPreview />,
     code: statSnippet,
     exportFilename: "StatCard.tsx",
   },
@@ -287,12 +283,17 @@ export function ExampleSnippetPreview() {
     props: [
       { name: "data", type: "RevenuePoint[]", description: "Monthly revenue series." },
     ],
-    preview: <RevenueCard data={revenueData} />,
+    preview: <DashboardRevenueCatalogPreview />,
     code: `import { RevenueCard } from "@/features/home/components/RevenueCard";
-import { revenueData } from "@/features/home/data/dashboard-data";
+
+const revenuePreviewData = [
+  { month: "Jan", revenue: 4000 },
+  { month: "Feb", revenue: 3000 },
+  { month: "Mar", revenue: 5000 },
+] satisfies Array<{ month: string; revenue: number }>;
 
 export function ExampleRevenueCard() {
-  return <RevenueCard data={revenueData} />;
+  return <RevenueCard data={revenuePreviewData} />;
 }`,
     exportFilename: "RevenueCard.tsx",
   },
@@ -333,16 +334,19 @@ export function ExampleUploadDropzone() {
       { name: "data", type: "PerformanceDataPoint[]", description: "Weekly session series." },
       { name: "theme", type: '"light" | "dark"', description: "Chart palette mode." },
     ],
-    preview: (
-      <ThemedChartPreview performanceData={performanceData} channelMixData={channelMixData} compact />
-    ),
+    preview: <DashboardPerformanceLineCatalogPreview />,
     code: `import { PerformanceLineChart } from "@/features/home/components/PerformanceLineChart";
-import { performanceData } from "@/features/home/data/dashboard-data";
 import { useTheme } from "@/components/providers/ThemeProvider";
+
+const performancePreviewData = [
+  { week: "W1", sessions: 2100 },
+  { week: "W2", sessions: 2450 },
+  { week: "W3", sessions: 2280 },
+] satisfies Array<{ week: string; sessions: number }>;
 
 export function ExamplePerformanceLine() {
   const { theme } = useTheme();
-  return <PerformanceLineChart data={performanceData} theme={theme} />;
+  return <PerformanceLineChart data={performancePreviewData} theme={theme} />;
 }`,
     exportFilename: "PerformanceLineChart.tsx",
   },
@@ -358,19 +362,19 @@ export function ExamplePerformanceLine() {
       { name: "data", type: "ChannelMixPoint[]", description: "Channel share percentages." },
       { name: "theme", type: '"light" | "dark"', description: "Chart palette mode." },
     ],
-    preview: (
-      <ThemedChartPreview
-        performanceData={performanceData.slice(0, 1)}
-        channelMixData={channelMixData}
-      />
-    ),
+    preview: <DashboardChannelDonutCatalogPreview />,
     code: `import { ChannelDonutChart } from "@/features/home/components/ChannelDonutChart";
-import { channelMixData } from "@/features/home/data/dashboard-data";
 import { useTheme } from "@/components/providers/ThemeProvider";
+
+const channelMixPreviewData = [
+  { channel: "Organic", share: 42 },
+  { channel: "Paid", share: 28 },
+  { channel: "Referral", share: 18 },
+] satisfies Array<{ channel: string; share: number }>;
 
 export function ExampleChannelDonut() {
   const { theme } = useTheme();
-  return <ChannelDonutChart data={channelMixData} theme={theme} />;
+  return <ChannelDonutChart data={channelMixPreviewData} theme={theme} />;
 }`,
     exportFilename: "ChannelDonutChart.tsx",
   },
@@ -421,12 +425,25 @@ export function ExampleWorkflowBanner() {
     props: [
       { name: "activities", type: "Activity[]", description: "Recent events list." },
     ],
-    preview: <ActivityList activities={recentActivity.slice(0, 3)} />,
+    preview: <DashboardActivityListCatalogPreview />,
     code: `import { ActivityList } from "@/features/home/components/ActivityList";
-import { recentActivity } from "@/features/home/data/dashboard-data";
+
+const activityPreviewData = [
+  {
+    id: "1",
+    user: "Olivia Martin",
+    action: "Upgraded to Pro plan",
+    timestamp: "2 min ago",
+  },
+] satisfies Array<{
+  id: string;
+  user: string;
+  action: string;
+  timestamp: string;
+}>;
 
 export function ExampleActivityList() {
-  return <ActivityList activities={recentActivity} />;
+  return <ActivityList activities={activityPreviewData} />;
 }`,
     exportFilename: "ActivityList.tsx",
   },
@@ -442,17 +459,26 @@ export function ExampleActivityList() {
       { name: "performanceData", type: "PerformanceDataPoint[]", description: "Line chart input." },
       { name: "channelMixData", type: "ChannelMixPoint[]", description: "Donut chart input." },
     ],
-    preview: (
-      <ChartPreview performanceData={performanceData} channelMixData={channelMixData} />
-    ),
+    preview: <DashboardChartCatalogPreview />,
     code: `import { ChartPreview } from "@/features/home/components/ChartPreview";
-import { performanceData, channelMixData } from "@/features/home/data/dashboard-data";
+
+const performancePreviewData = [
+  { week: "W1", sessions: 2100 },
+  { week: "W2", sessions: 2450 },
+  { week: "W3", sessions: 2280 },
+] satisfies Array<{ week: string; sessions: number }>;
+
+const channelMixPreviewData = [
+  { channel: "Organic", share: 42 },
+  { channel: "Paid", share: 28 },
+  { channel: "Referral", share: 18 },
+] satisfies Array<{ channel: string; share: number }>;
 
 export function ExampleChartPreview() {
   return (
     <ChartPreview
-      performanceData={performanceData}
-      channelMixData={channelMixData}
+      performanceData={performancePreviewData}
+      channelMixData={channelMixPreviewData}
     />
   );
 }`,
@@ -545,7 +571,7 @@ const lawsOfUxCatalog: AtomicCatalogEntry[] = LAWS_OF_UX.map((law) => ({
   principles: law.relatedUiLawIds,
   preview: <LawOfUxCard law={law} />,
   code: `import { LawOfUxCard } from "@/features/design-system/components/LawOfUxCard";
-import { lawOfUxById } from "@/features/design-system/data/lawsOfUx";
+import { lawOfUxById } from "@/lib/laws-of-ux";
 
 export function Example${law.id.replace(/-/g, "")}() {
   const law = lawOfUxById("${law.id}");
@@ -559,18 +585,6 @@ export const unifiedCatalog: AtomicCatalogEntry[] = [
   ...uilawsCatalog,
   ...lawsOfUxCatalog,
 ];
-
-/** Product-only entries (backward compatible). */
-export const atomicCatalog = productCatalog;
-
-export function catalogByLevel(level: AtomicLevel) {
-  return unifiedCatalog.filter((entry) => entry.level === level);
-}
-
-export function catalogByDomain(domain: CatalogDomain | "all") {
-  if (domain === "all") return unifiedCatalog;
-  return unifiedCatalog.filter((entry) => entry.domain === domain);
-}
 
 export function filterCatalog(
   query: string,

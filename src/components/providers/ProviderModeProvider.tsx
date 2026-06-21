@@ -7,8 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-export type ProviderMode = "unknown" | "live" | "demo";
+import type { ProviderMode } from "@/lib/provider-mode";
 
 interface ProviderModeContextValue {
   mode: ProviderMode;

@@ -17,10 +17,10 @@ import {
   loadAuthState,
   requestMagicLink,
   setDisplayName as persistDisplayName,
-} from "@/features/account/lib/auth.mjs";
+} from "../lib/auth.client.mjs";
 
-export type { AuthMode, AuthState } from "@/features/account/lib/auth.mjs";
-import type { AuthState } from "@/features/account/lib/auth.mjs";
+export type { AuthMode, AuthState } from "../lib/auth.mjs";
+import type { AuthState } from "../lib/auth.mjs";
 
 interface AuthContextValue {
   auth: AuthState;

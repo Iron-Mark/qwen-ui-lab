@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, MetadataRoute, Viewport } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
@@ -6,6 +6,14 @@ export const SITE_TAGLINE = "Screenshot-to-scaffold meetup demo";
 export const SITE_PITCH =
   "Turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code.";
 export const DEFAULT_OG_IMAGE = "/opengraph-image";
+export const SITEMAP_STATIC_ROUTES = [
+  "/",
+  "/demo",
+  "/account",
+  "/design-system",
+  "/design-system/laws-of-ux",
+  "/design-system/uilaws",
+] as const;
 
 function normalizeUrl(rawUrl: string): string {
   const withProtocol = rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`;
@@ -98,6 +106,122 @@ export function createRouteMetadata({
   };
 }
 
+export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
+  const siteUrl = getSiteUrl();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${SITE_NAME} | ${SITE_TAGLINE}`,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description:
+      "Meetup-ready demo: turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code - offline-safe by default, no API key on stage.",
+    applicationName: SITE_NAME,
+    category: "Developer Tools",
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    authors: [{ name: SITE_NAME }],
+    keywords: [
+      "Qwen UI Lab",
+      "AI UI scaffolding",
+      "screenshot to component",
+      "React Tailwind generator",
+      "design system demo",
+    ],
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+      description:
+        "Live meetup demo - screenshot to React/Tailwind scaffold in minutes. Offline-safe; enable live Qwen only when you choose.",
+      type: "website",
+      url: "/",
+      siteName: SITE_NAME,
+      locale: "en_US",
+      images: [
+        {
+          url: ogImagePath,
+          width: 1200,
+          height: 630,
+          alt: "qwen-ui-lab AI-assisted UI scaffolding",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+      description:
+        "Mass-presentation demo: upload, analyze, and export scaffold-ready UI - no production API required.",
+      images: [ogImagePath],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+    manifest: "/manifest.json",
+    icons: {
+      icon: [
+        { url: "/icons/icon.svg", type: "image/svg+xml" },
+        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: [
+        { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+    },
+    appleWebApp: {
+      capable: true,
+      title: "qwen-ui-lab",
+    },
+  };
+}
+
+export function createSiteViewport(): Viewport {
+  return {
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+      { media: "(prefers-color-scheme: dark)", color: "#18181b" },
+    ],
+    viewportFit: "cover",
+  };
+}
+
+export function createSitemapEntries(
+  lastModified = new Date(),
+): MetadataRoute.Sitemap {
+  const siteUrl = getSiteUrl();
+
+  return SITEMAP_STATIC_ROUTES.map((route) => ({
+    url: `${siteUrl}${route}`,
+    lastModified,
+    changeFrequency: route === "/" ? "daily" : "weekly",
+    priority: route === "/" ? 1 : 0.7,
+  }));
+}
+
+export function createRobotsConfig(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
+
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/api/"],
+    },
+    sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
+  };
+}
+
 type StructuredDataThing = Record<string, unknown>;
 
 type RouteStructuredDataInput = {
@@ -170,6 +294,71 @@ export function createRouteStructuredData({
             ]
           : []),
         ...additionalGraph,
+      ],
+    }),
+  };
+}
+
+export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __html: string } {
+  const siteUrl = getSiteUrl();
+  const organizationId = `${siteUrl}#organization`;
+  const websiteId = `${siteUrl}#website`;
+
+  return {
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": websiteId,
+          name: SITE_NAME,
+          url: siteUrl,
+          description:
+            "Meetup demo for converting UI screenshots into React/Tailwind scaffolds with Qwen3-VL and Qwen Code.",
+          inLanguage: "en-US",
+          publisher: {
+            "@id": organizationId,
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${toAbsoluteUrl("/design-system")}?q={query}`,
+            "query-input": "required name=query",
+          },
+        },
+        {
+          "@type": "WebApplication",
+          "@id": `${siteUrl}#webapp`,
+          name: SITE_NAME,
+          applicationCategory: "DeveloperApplication",
+          operatingSystem: "Web",
+          url: siteUrl,
+          description:
+            "Offline-safe meetup workflow: screenshot upload, layout analysis, and React/Tailwind scaffold export.",
+          image: toAbsoluteUrl(ogImagePath),
+          offers: {
+            "@type": "Offer",
+            availability: "https://schema.org/InStock",
+            price: "0",
+            priceCurrency: "USD",
+          },
+          publisher: {
+            "@id": organizationId,
+          },
+        },
+        {
+          "@type": "Organization",
+          "@id": organizationId,
+          name: SITE_NAME,
+          url: siteUrl,
+          logo: {
+            "@type": "ImageObject",
+            url: toAbsoluteUrl("/icons/icon-512.png"),
+          },
+          sameAs: [
+            "https://github.com/QwenLM",
+            "https://github.com/Iron-Mark/qwen-ui-lab",
+          ],
+        },
       ],
     }),
   };

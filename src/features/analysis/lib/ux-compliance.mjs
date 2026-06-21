@@ -2,7 +2,7 @@
  * Heuristic compliance mapping for analyze/generate scaffolds vs Laws of UX.
  * @typedef {'met' | 'partial' | 'review'} ComplianceStatus
  * @typedef {'upload-flow' | 'dashboard' | 'scaffold' | 'catalog'} ComplianceSurface
- * @typedef {import('../../design-system/data/lawsOfUx').LawOfUxId} LawOfUxId
+ * @typedef {import('../../../lib/laws-of-ux').LawOfUxId} LawOfUxId
  */
 
 import { classifyLayoutArchetype, lookupKnownSample } from "./offline-analyze.mjs";

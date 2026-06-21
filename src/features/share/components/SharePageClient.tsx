@@ -3,10 +3,11 @@
 import Link from "next/link";
 
 import { PageContainer } from "@/components/layout/PageContainer";
-import { SharedSummaryCard } from "@/features/share/components/SharedSummaryCard";
+import { SharedSummaryCard } from "./SharedSummaryCard";
 import { buttonVariants } from "@/components/ui/button";
-import { localizedHref, useLocale } from "@/lib/i18n";
-import type { buildShareableSummary } from "@/features/share/lib/share-result.mjs";
+import { localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
+import type { buildShareableSummary } from "../lib/share-result.mjs";
 import { cn } from "@/lib/utils";
 
 type SharePageClientProps = {

@@ -1,17 +1,7 @@
-import { canUseLiveQwen, getQwenConfig } from "@/features/analysis/lib/qwen-analyze.mjs";
+import { handleAnalyzeHealthGet } from "@/features/analysis/lib/analyze-health-api.mjs";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  const config = getQwenConfig();
-  const liveAnalysisEnabled = canUseLiveQwen();
-
-  return Response.json({
-    ok: true,
-    provider: liveAnalysisEnabled ? "qwen" : "demo",
-    hasApiKey: config.ok,
-    liveAnalysisEnabled,
-    model: liveAnalysisEnabled ? config.model : null,
-    baseUrl: liveAnalysisEnabled ? config.baseUrl : null,
-  });
+  return handleAnalyzeHealthGet();
 }

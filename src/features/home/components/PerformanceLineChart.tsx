@@ -11,12 +11,9 @@ import {
   YAxis,
 } from "recharts";
 import { memo, useMemo } from "react";
-import type { PerformanceDataPoint } from "@/features/home/data/dashboard-data";
-import {
-  getChartColors,
-  getChartColorsFromDocument,
-  type ChartThemeMode,
-} from "@/features/home/lib/chart-theme";
+import type { PerformanceDataPoint } from "../data/dashboard-data";
+import { getChartColors, type ChartThemeMode } from "../lib/chart-theme";
+import { getChartColorsFromDocument } from "../lib/chart-theme.client";
 
 interface PerformanceLineChartProps {
   data: PerformanceDataPoint[];

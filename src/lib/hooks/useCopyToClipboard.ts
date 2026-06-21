@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { copyTextToClipboard } from "@/lib/clipboard";
+import { copyTextToClipboard } from "../clipboard.client";
 
 export type CopyStatus = "idle" | "copying" | "success" | "error";
 

@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import { Info, X } from "lucide-react";
 import { toast } from "sonner";
-import { useLocale } from "@/lib/i18n";
-import { useProviderMode } from "@/lib/provider-mode";
+import { useLocale } from "@/lib/i18n/use-locale.client";
+import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

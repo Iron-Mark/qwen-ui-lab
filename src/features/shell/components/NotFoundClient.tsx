@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { buttonVariants } from "@/components/ui/button";
-import { localizedHref, useLocale } from "@/lib/i18n";
+import { localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
 import { cn } from "@/lib/utils";
 
 export function NotFoundClient() {

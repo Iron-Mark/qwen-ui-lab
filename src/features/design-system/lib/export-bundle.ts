@@ -1,5 +1,4 @@
-import type { AtomicCatalogEntry } from "@/features/design-system/data/catalog-types";
-import { downloadTextFile } from "@/lib/clipboard";
+import type { AtomicCatalogEntry } from "../data/catalog-types";
 
 export function buildCatalogBundle(entries: AtomicCatalogEntry[]) {
   const header = `// qwen-ui-lab design system bundle
@@ -14,15 +13,4 @@ export function buildCatalogBundle(entries: AtomicCatalogEntry[]) {
     .join("\n");
 
   return header + body;
-}
-
-export function downloadCatalogBundle(
-  entries: AtomicCatalogEntry[],
-  filename = "qwen-ui-lab-design-system-bundle.tsx",
-) {
-  downloadTextFile(
-    buildCatalogBundle(entries),
-    filename,
-    "text/plain;charset=utf-8",
-  );
 }

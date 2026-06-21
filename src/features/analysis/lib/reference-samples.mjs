@@ -5,4 +5,5 @@ export {
   getReferenceSampleByFileName,
   getReferenceSampleById,
   inferReferenceMimeType,
+  referenceSampleExportFilename,
 } from "./reference-samples.data.mjs";

@@ -3,7 +3,7 @@
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { PerformanceLineChart } from "./PerformanceLineChart";
 import { ChannelDonutChart } from "./ChannelDonutChart";
-import type { ChannelMixPoint, PerformanceDataPoint } from "@/features/home/data/dashboard-data";
+import type { ChannelMixPoint, PerformanceDataPoint } from "../data/dashboard-data";
 
 interface ThemedChartPreviewProps {
   performanceData: PerformanceDataPoint[];

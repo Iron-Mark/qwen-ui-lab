@@ -1,39 +1,8 @@
-const DEFAULT_SAMPLE_DIMENSION = 144;
 const DEFAULT_GRID_COLUMNS = 12;
 const DEFAULT_GRID_ROWS = 8;
 const EDGE_THRESHOLD = 0.18;
 const BACKGROUND_DISTANCE_THRESHOLD = 42;
 const PALETTE_BUCKET_SIZE = 32;
-
-/**
- * Inspect an already-rendered canvas without network calls or provider APIs.
- * @param {HTMLCanvasElement} canvas
- * @param {{ maxSampleDimension?: number }} [options]
- */
-export function inspectCanvas(canvas, { maxSampleDimension = DEFAULT_SAMPLE_DIMENSION } = {}) {
-  if (typeof document === "undefined" || !canvas?.width || !canvas?.height) {
-    return null;
-  }
-
-  const sample = fitDimensions(canvas.width, canvas.height, maxSampleDimension);
-  const sampleCanvas = document.createElement("canvas");
-  sampleCanvas.width = sample.width;
-  sampleCanvas.height = sample.height;
-
-  const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
-  if (!sampleCtx) return null;
-
-  sampleCtx.drawImage(canvas, 0, 0, sample.width, sample.height);
-  const imageData = sampleCtx.getImageData(0, 0, sample.width, sample.height);
-
-  return inspectImageDataPixels({
-    data: imageData.data,
-    width: sample.width,
-    height: sample.height,
-    sourceWidth: canvas.width,
-    sourceHeight: canvas.height,
-  });
-}
 
 /**
  * Deterministic, dependency-free screenshot signals for offline UI analysis.
@@ -866,18 +835,6 @@ function parseHex(hex) {
     r: Number.parseInt(normalized.slice(0, 2), 16),
     g: Number.parseInt(normalized.slice(2, 4), 16),
     b: Number.parseInt(normalized.slice(4, 6), 16),
-  };
-}
-
-function fitDimensions(width, height, maxDimension) {
-  if (width <= maxDimension && height <= maxDimension) {
-    return { width, height };
-  }
-
-  const scale = maxDimension / Math.max(width, height);
-  return {
-    width: Math.max(1, Math.round(width * scale)),
-    height: Math.max(1, Math.round(height * scale)),
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
 
 export function DesignSystemLcpHeader() {
   const { locale, dict } = useLocale();

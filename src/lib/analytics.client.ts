@@ -1,7 +1,7 @@
 "use client";
 
-import type { ProviderMode } from "@/lib/provider-mode";
-import type { ObservabilityHooks } from "@/lib/observability";
+import type { ProviderMode } from "./provider-mode";
+import type { ObservabilityHooks } from "./observability";
 
 export const AnalyticsEvent = {
   UploadSelected: "upload.selected",
