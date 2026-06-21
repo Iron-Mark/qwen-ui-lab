@@ -27,6 +27,45 @@ const sampleArtifact = {
     { label: "Components", value: "6" },
     { label: "Sections", value: "4" },
   ],
+  detections: {
+    source: { width: 1440, height: 900 },
+    designTokens: {
+      surface: "#ffffff",
+      foreground: "#111827",
+      accent: "#2563eb",
+      accentForeground: "#ffffff",
+      muted: "#f3f4f6",
+      border: "#d1d5db",
+      unsafe: "not-exported",
+    },
+    quality: {
+      confidence: 0.73,
+      ambiguity: "low",
+      strategy: "fine-grid-connected-components",
+      elementCount: 2,
+    },
+    elements: [
+      {
+        id: "element-1",
+        kind: "header",
+        primitive: "header",
+        confidence: 0.9,
+        included: true,
+        userEdited: false,
+        box: { x: 0, y: 0, width: 1440, height: 112 },
+        reasons: [{ evidence: "Should not appear" }],
+      },
+      {
+        id: "element-2",
+        kind: "button-or-input",
+        primitive: "field-or-action",
+        confidence: 0.7,
+        included: false,
+        userEdited: true,
+        box: { x: 120, y: 225, width: 360, height: 90 },
+      },
+    ],
+  },
   generatedCode: "export const Secret = 'must-not-leak';",
   plan: [{ title: "Hidden", body: "Should not appear in share payload" }],
 };
@@ -46,6 +85,12 @@ test("buildShareableSummary omits code and secrets", () => {
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
   ]);
+  assert.equal(payload.detections.elements.length, 2);
+  assert.equal(payload.detections.elements[1].included, false);
+  assert.equal(payload.detections.elements[1].userEdited, true);
+  assert.equal(payload.detections.quality.confidence, 0.73);
+  assert.equal(payload.detections.designTokens.unsafe, undefined);
+  assert.equal("reasons" in payload.detections.elements[0], false);
   assert.equal("generatedCode" in payload, false);
   assert.equal("plan" in payload, false);
 });
@@ -90,10 +135,13 @@ test("sanitizeSharePayload rejects secret fields", () => {
     summary: "Safe summary only",
     generatedCode: "leak",
     previewStats: [{ label: "Rows", value: "3" }],
+    detections: sampleArtifact.detections,
   });
 
   assert.ok(payload);
   assert.equal(payload.summary, "Safe summary only");
+  assert.equal(payload.detections.elements.length, 2);
+  assert.equal(payload.detections.elements[1].primitive, "field-or-action");
   assert.equal("generatedCode" in payload, false);
 });
 
@@ -106,6 +154,7 @@ test("createShareRecord and getShareRecord round-trip in memory", async () => {
 
   const loaded = await getShareRecord(created.id);
   assert.deepEqual(loaded, payload);
+  assert.equal(loaded.detections.elements[1].included, false);
 });
 
 test("getShareRecord rejects invalid ids", async () => {
@@ -172,6 +221,7 @@ test("GET /api/share returns stored summary", async () => {
   assert.equal(body.ok, true);
   assert.equal(body.id, created.id);
   assert.deepEqual(body.summary, payload);
+  assert.equal(body.summary.detections.elements.length, 2);
 });
 
 test("GET /api/share returns 404 for missing id", async () => {

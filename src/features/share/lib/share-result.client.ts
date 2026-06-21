@@ -31,6 +31,7 @@ export function readShareFromSession(): ShareableResultSummary | null {
         : [],
       modeLabel: parsed?.mode,
       file: parsed?.file,
+      detections: parsed?.detections,
     });
   } catch {
     return null;
