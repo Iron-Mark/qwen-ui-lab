@@ -66,6 +66,28 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     height: 720,
     hint: "PNG screenshot · Filters + product grid",
   },
+  {
+    id: "stress-dashboard",
+    label: "Dense dashboard",
+    fileName: "stress-dashboard-reference.png",
+    path: "/references/stress-dashboard-reference.png",
+    webpPath: "/references/stress-dashboard-reference.webp",
+    mimeType: "image/png",
+    width: 1440,
+    height: 900,
+    hint: "PNG screenshot · Dense dashboard + table",
+  },
+  {
+    id: "stress-list",
+    label: "Repeated list",
+    fileName: "stress-list-reference.png",
+    path: "/references/stress-list-reference.png",
+    webpPath: "/references/stress-list-reference.webp",
+    mimeType: "image/png",
+    width: 1200,
+    height: 720,
+    hint: "PNG screenshot · Repeated rows + actions",
+  },
 ];
 
 /** Archetypes shipped as PNG + WebP rasters (SVG sources kept for regeneration). */
@@ -76,6 +98,8 @@ export const RASTER_REFERENCE_STEMS = [
   "landing-reference",
   "settings-reference",
   "ecommerce-reference",
+  "stress-dashboard-reference",
+  "stress-list-reference",
 ];
 
 /** Default sample for E2E fixtures and backward-compatible helpers. */

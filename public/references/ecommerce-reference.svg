@@ -5,7 +5,7 @@
   <rect x="24" y="16" width="24" height="24" rx="6" fill="#18181b"/>
   <text x="60" y="36" font-family="Inter,sans-serif" font-size="15" font-weight="600" fill="#18181b">Shop</text>
   <rect x="900" y="14" width="200" height="28" rx="8" fill="#f4f4f5" stroke="#e4e4e7"/>
-  <text x="916" y="33" font-family="Inter,sans-serif" font-size="12" fill="#a1a1aa">Search products&</text>
+  <text x="916" y="33" font-family="Inter,sans-serif" font-size="12" fill="#a1a1aa">Search products&amp;</text>
   <circle cx="1156" cy="28" r="14" fill="#18181b"/>
   <text x="1156" y="32" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">3</text>
 
