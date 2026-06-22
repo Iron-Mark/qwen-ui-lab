@@ -6,7 +6,7 @@ Use this checklist before treating a deployment as production-ready.
 
 - `npm run check:full` passes locally or in CI.
 - `npm run prod:readiness` passes against the production env.
-- `/api/readiness` shows `Durable share links`, `GitHub Gist export`, and `GitHub repo export` as ready.
+- `/api/readiness` shows `Canonical site URL`, `Durable share links`, `GitHub Gist export`, and `GitHub repo export` as ready.
 - `/api/health` reports `provider=demo` unless a staged live Qwen rollout is approved.
 - The home page readiness panel shows only expected fallbacks.
 
@@ -17,6 +17,10 @@ Configure these as server-only environment variables:
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`
 - `GITHUB_TOKEN`
+
+Configure this public environment variable with the deployed HTTPS origin:
+
+- `NEXT_PUBLIC_SITE_URL`
 
 Live Qwen is optional and should remain off by default:
 

@@ -5,10 +5,7 @@ import {
   getShareStoreConfig,
   isShareKvConfigured,
 } from "../../share/lib/share-store.mjs";
-
-function present(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
+import { resolvePublicSiteUrl } from "../../../lib/public-site-url.mjs";
 
 function statusRank(status) {
   if (status === "ready") return 3;
@@ -33,8 +30,18 @@ export function buildProductionReadiness(env = process.env) {
   const kvConfigured = isShareKvConfigured(env);
   const gistConfigured = canUseGithubGist(env);
   const repoExportConfigured = canUseGithubRepoExport(env);
-  const publicSiteConfigured =
-    present(env.NEXT_PUBLIC_SITE_URL) || present(env.VERCEL_PROJECT_PRODUCTION_URL);
+  const publicSite = resolvePublicSiteUrl(env);
+  const publicSiteReady =
+    publicSite.configured &&
+    publicSite.valid &&
+    publicSite.https &&
+    !publicSite.local &&
+    publicSite.originOnly;
+  const publicSiteMisconfigured =
+    publicSite.configured &&
+    (!publicSite.valid ||
+      !publicSite.originOnly ||
+      (!publicSite.local && !publicSite.https));
 
   const checks = [
     createCheck({
@@ -90,11 +97,19 @@ export function buildProductionReadiness(env = process.env) {
     createCheck({
       id: "public-site-url",
       label: "Canonical site URL",
-      status: publicSiteConfigured ? "ready" : "fallback",
-      active: publicSiteConfigured,
-      detail: publicSiteConfigured
-        ? "Short share URLs can be built with the configured host."
-        : "Short share URLs fall back to localhost unless NEXT_PUBLIC_SITE_URL or Vercel production URL is set.",
+      status: publicSiteReady
+        ? "ready"
+        : publicSiteMisconfigured
+          ? "missing"
+          : "fallback",
+      active: publicSiteReady,
+      detail: publicSiteReady
+        ? `Canonical metadata and short share URLs use ${publicSite.normalized}.`
+        : publicSiteMisconfigured
+          ? `${publicSite.source} must be a valid HTTPS public origin.`
+          : publicSite.local
+            ? "Canonical URLs are pointing at localhost; set NEXT_PUBLIC_SITE_URL before production deploys."
+            : "Short share URLs fall back to localhost unless NEXT_PUBLIC_SITE_URL or Vercel production URL is set.",
     }),
   ];
 
@@ -119,6 +134,7 @@ export function buildProductionReadiness(env = process.env) {
     liveAnalysisEnabled: health.liveAnalysisEnabled,
     hasQwenApiKey: health.hasApiKey,
     qwenModel: health.model,
+    publicSiteUrl: publicSite.valid ? publicSite.normalized : null,
     shareStorage: kvConfigured ? "kv" : "memory",
     durableShareLinks: kvConfigured,
     overallStatus: lowestStatus,
