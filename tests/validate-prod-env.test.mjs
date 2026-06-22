@@ -6,6 +6,7 @@ const baseProd = {
   KV_REST_API_URL: "https://kv.example",
   KV_REST_API_TOKEN: "token",
   GITHUB_TOKEN: "ghp_test",
+  NEXT_PUBLIC_SITE_URL: "https://demo.example",
 };
 
 test("production passes with KV, gist, demo-safe live Qwen", () => {
@@ -37,11 +38,88 @@ test("production validation passes with parsed env file content", () => {
       KV_REST_API_URL=https://kv.example
       KV_REST_API_TOKEN=token
       GITHUB_TOKEN=ghp_test
+      NEXT_PUBLIC_SITE_URL=https://demo.example
     `),
     { target: "production" },
   );
 
   assert.equal(result.ok, true);
+});
+
+test("production accepts Vercel production host as canonical URL source", () => {
+  const result = validateProdEnv(
+    {
+      KV_REST_API_URL: "https://kv.example",
+      KV_REST_API_TOKEN: "token",
+      GITHUB_TOKEN: "ghp_test",
+      VERCEL_PROJECT_PRODUCTION_URL: "qwen-ui-lab.vercel.app",
+    },
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.publicSiteUrl, "https://qwen-ui-lab.vercel.app");
+});
+
+test("production fails without a public canonical URL", () => {
+  const result = validateProdEnv(
+    {
+      KV_REST_API_URL: "https://kv.example",
+      KV_REST_API_TOKEN: "token",
+      GITHUB_TOKEN: "ghp_test",
+    },
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, false);
+  assert.match(result.failures.join(" "), /NEXT_PUBLIC_SITE_URL/);
+});
+
+test("production rejects localhost canonical URL", () => {
+  const result = validateProdEnv(
+    {
+      ...baseProd,
+      NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
+    },
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, false);
+  assert.match(result.failures.join(" "), /localhost/);
+});
+
+test("production requires HTTPS canonical URL", () => {
+  const result = validateProdEnv(
+    {
+      ...baseProd,
+      NEXT_PUBLIC_SITE_URL: "http://demo.example",
+    },
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, false);
+  assert.match(result.failures.join(" "), /HTTPS/);
+});
+
+test("production rejects canonical URL with path", () => {
+  const result = validateProdEnv(
+    {
+      ...baseProd,
+      NEXT_PUBLIC_SITE_URL: "https://demo.example/app",
+    },
+    { target: "production" },
+  );
+
+  assert.equal(result.ok, false);
+  assert.match(result.failures.join(" "), /without a path/);
+});
+
+test("preview warns but does not fail without public canonical URL", () => {
+  const result = validateProdEnv({}, { target: "preview" });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.publicSiteUrlConfigured, false);
+  assert.match(result.warnings.join(" "), /public site URL unset/i);
 });
 
 test("production fails without KV", () => {

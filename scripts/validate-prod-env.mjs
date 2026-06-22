@@ -15,6 +15,7 @@ import { canUseGithubGist } from "../src/features/export/lib/github-gist.mjs";
 import { isRateLimitKvConfigured } from "../src/features/analysis/lib/analyze-ui-rate-limit-store.mjs";
 import { resolveErrorReportingTargets } from "../src/lib/error-reporting.mjs";
 import { createObservabilityConfig } from "../src/lib/observability.mjs";
+import { resolvePublicSiteUrl } from "../src/lib/public-site-url.mjs";
 import {
   canUseLiveQwen,
   getQwenConfig,
@@ -107,8 +108,25 @@ export function validateProdEnv(env = process.env, options = {}) {
   const reporting = resolveErrorReportingTargets(env);
   const liveRequested = isLiveQwenAnalysisEnabled(env);
   const qwenConfig = getQwenConfig(env);
+  const publicSite = resolvePublicSiteUrl(env);
 
   if (target === "production") {
+    if (!publicSite.configured) {
+      failures.push(
+        "Production requires NEXT_PUBLIC_SITE_URL or VERCEL_PROJECT_PRODUCTION_URL for canonical URLs, sitemap, robots, and share links.",
+      );
+    } else if (!publicSite.valid) {
+      failures.push(`${publicSite.source} must be a valid public URL or host.`);
+    } else if (publicSite.local) {
+      failures.push(`${publicSite.source} must not point to localhost in production.`);
+    } else if (!publicSite.https) {
+      failures.push(`${publicSite.source} must use HTTPS in production.`);
+    } else if (!publicSite.originOnly) {
+      failures.push(`${publicSite.source} must be a public origin without a path, query, or hash.`);
+    } else {
+      notes.push(`Canonical site URL: ${publicSite.normalized}.`);
+    }
+
     if (!kvOk) {
       failures.push(
         "Production requires KV_REST_API_URL and KV_REST_API_TOKEN (Vercel KV / share links + cluster rate limits).",
@@ -130,9 +148,25 @@ export function validateProdEnv(env = process.env, options = {}) {
       );
     }
   } else {
+    if (!publicSite.configured) {
+      warnings.push(
+        "Preview: public site URL unset - sitemap, robots, social metadata, and short share URLs use localhost fallbacks.",
+      );
+    } else if (!publicSite.valid) {
+      failures.push(`${publicSite.source} must be a valid public URL or host.`);
+    } else if (publicSite.local) {
+      warnings.push(
+        `${publicSite.source} points to localhost - fine for local preview, but not for a shared staging URL.`,
+      );
+    } else if (!publicSite.originOnly) {
+      failures.push(`${publicSite.source} must be a public origin without a path, query, or hash.`);
+    } else {
+      notes.push(`Canonical site URL: ${publicSite.normalized}.`);
+    }
+
     if (!kvOk) {
       warnings.push(
-        "Preview: KV_REST_API_* unset — share links and rate limits use in-memory per instance.",
+        "Preview: KV_REST_API_* unset - share links and rate limits use in-memory per instance.",
       );
     }
     if (!gistOk) {
@@ -202,6 +236,8 @@ export function validateProdEnv(env = process.env, options = {}) {
       liveAnalysisRequested: liveRequested,
       liveCallsExecutable: canUseLiveQwen(env),
       qwenApiKeyConfigured: qwenConfig.ok,
+      publicSiteUrlConfigured: publicSite.configured,
+      publicSiteUrl: publicSite.valid ? publicSite.normalized : "",
     },
   };
 }
@@ -238,6 +274,7 @@ function main() {
   console.log(`- GITHUB_TOKEN: ${result.summary.githubGist ? "yes" : "no"}`);
   console.log(`- Sentry DSN set: ${result.summary.sentryDsn ? "yes" : "no"}`);
   console.log(`- Error monitoring enabled: ${result.summary.errorMonitoringOn ? "yes" : "no"}`);
+  console.log(`- Public site URL: ${result.summary.publicSiteUrlConfigured ? "yes" : "no"}`);
   console.log(`- Live analysis requested: ${result.summary.liveAnalysisRequested ? "yes" : "no"}`);
   console.log(
     `- Live calls executable: ${result.summary.liveCallsExecutable ? "yes" : "no"}`,

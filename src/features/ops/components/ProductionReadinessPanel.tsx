@@ -88,6 +88,11 @@ export function ProductionReadinessPanel({
   const checks = payload?.checks ?? [];
   const readyCount = payload?.summary?.ready ?? 0;
   const fallbackCount = payload?.summary?.fallback ?? 0;
+  const missingCount = payload?.summary?.missing ?? 0;
+  const statusSummary =
+    missingCount > 0
+      ? `${readyCount} ready, ${fallbackCount} fallback, ${missingCount} missing`
+      : `${readyCount} ready, ${fallbackCount} in fallback`;
 
   const card = (
     <Card
@@ -102,7 +107,7 @@ export function ProductionReadinessPanel({
           </div>
           <p className="text-xs text-muted-foreground">
             {payload
-              ? `${readyCount} ready, ${fallbackCount} in fallback. Provider: ${payload.provider}. Share store: ${payload.shareStorage}.`
+              ? `${statusSummary}. Provider: ${payload.provider}. Share store: ${payload.shareStorage}.`
               : loading
                 ? "Checking runtime feature status."
                 : "Could not load runtime feature status."}
