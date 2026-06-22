@@ -51,6 +51,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { downloadTextFile } from "@/lib/clipboard.client";
@@ -1594,14 +1601,17 @@ export function UploadFlow({
     [selectedSample.id, t],
   );
 
-  const activeStepIndex = useMemo(() => {
-    if (stage === "empty") return -1;
-    if (stage === "uploaded") return 0;
+  const currentFlowStepIndex = useMemo(() => {
+    if (providerState === "loading") return 1;
+    if (stage === "empty" || stage === "uploaded") return 0;
     if (stage === "analyzed") return 2;
     return 5;
-  }, [stage]);
+  }, [providerState, stage]);
 
   const showSplitView = stage === "analyzed" || stage === "generated";
+  const showWorkflowOutput = Boolean(
+    file || artifact || providerState === "loading",
+  );
 
   const analyzeProgress = useMemo(
     () => getAnalyzeProgressPercent(analyzeStep),
@@ -2337,7 +2347,14 @@ export function UploadFlow({
         </Card>
       ) : null}
 
-      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <div
+        className={cn(
+          "grid min-w-0 gap-6",
+          showWorkflowOutput
+            ? "lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+            : "mx-auto w-full max-w-3xl",
+        )}
+      >
         <Card className="min-w-0 border-border/80 shadow-sm">
           <CardContent className="p-6">
             {!showSplitView ? (
@@ -2423,25 +2440,52 @@ export function UploadFlow({
                     {t.tryBundledReference}
                   </p>
                   <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
-                    <label className="min-w-0 flex-1">
-                      <span className="sr-only">{t.tryBundledReference}</span>
-                      <select
-                        value={selectedSample.id}
-                        onChange={(event) => setSelectedSampleId(event.target.value)}
-                        className="min-h-11 w-full rounded-lg border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm outline-none transition-colors hover:bg-muted/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                    <Select
+                      value={selectedSample.id}
+                      onValueChange={(value) => {
+                        if (typeof value === "string") {
+                          setSelectedSampleId(value);
+                        }
+                      }}
+                      disabled={isBusy}
+                    >
+                      <SelectTrigger
+                        aria-label={t.tryBundledReference}
+                        className="min-h-11 w-full sm:min-w-64"
                         data-testid="sample-select"
-                        disabled={isBusy}
                       >
+                        <SelectValue>
+                          {(value) =>
+                            sampleCopy(
+                              typeof value === "string" ? value : selectedSample.id,
+                              t,
+                            ).label
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent data-testid="sample-select-content">
                         {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
                           const localized = sampleCopy(sample.id, t);
                           return (
-                            <option key={sample.id} value={sample.id}>
-                              {localized.label}
-                            </option>
+                            <SelectItem
+                              key={sample.id}
+                              value={sample.id}
+                              label={localized.label}
+                              data-testid={`sample-select-option-${sample.id}`}
+                            >
+                              <span className="grid min-w-0 gap-0.5">
+                                <span className="truncate font-medium">
+                                  {localized.label}
+                                </span>
+                                <span className="truncate text-xs text-muted-foreground">
+                                  {localized.hint}
+                                </span>
+                              </span>
+                            </SelectItem>
                           );
                         })}
-                      </select>
-                    </label>
+                      </SelectContent>
+                    </Select>
                     <Button
                       type="button"
                       variant="outline"
@@ -2556,187 +2600,221 @@ export function UploadFlow({
           </CardContent>
         </Card>
 
-        <Card className="min-w-0 border-border/80 shadow-sm">
-          <CardContent className="p-6">
-            <div className="mb-5 flex items-center gap-2 overflow-x-auto pb-2">
-            {(artifact?.steps ?? flowSteps).map(
-              (step, index) => (
-              <div key={step.id} className="flex shrink-0 items-center gap-2">
-                  <Badge
-                    variant={index <= activeStepIndex ? "default" : "outline"}
-                    className={cn(
-                      "rounded-full px-3 py-1 text-xs",
-                      index <= activeStepIndex &&
-                        "border-primary bg-primary text-primary-foreground",
-                    )}
-                  >
-                    {step.label}
-                  </Badge>
-                  {index < 5 ? (
-                    <ChevronRight className="size-3 text-muted-foreground" aria-hidden />
-                  ) : null}
-                </div>
-              ),
-            )}
-            </div>
-
-          {artifact ? (
-            <div className="grid gap-5">
-              {showSplitView && stage !== "generated" ? (
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t.analysisOutputLabel}
-                </p>
-              ) : null}
-
-              {artifact.summary ? (
-                <Card className="bg-background">
-                  <CardContent className="space-y-3 p-4">
-                    <p className="text-sm text-muted-foreground">{artifact.summary}</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => void copyShareLink()}
-                      disabled={copyingShareLink}
-                      data-testid="copy-share-link"
-                    >
-                      <Share2 className="size-3.5" aria-hidden />
-                      {copyingShareLink ? t.creatingShareLink : t.copyShortShareLink}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : null}
-              <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-                {artifact.plan.map((section) => (
-                  <Card key={section.title} className="min-w-0 bg-background">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">{section.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="break-words text-sm leading-6 text-muted-foreground">
-                        {section.body}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
+        {showWorkflowOutput ? (
+          <Card
+            className="min-w-0 border-border/80 shadow-sm"
+            data-testid="workflow-output-panel"
+          >
+            <CardContent className="p-6">
+              <div
+                data-testid="upload-flow-stepper"
+                className="mb-5 flex items-center gap-2 overflow-x-auto pb-2"
+                aria-label={t.progressStepsAria}
+              >
+                {(artifact?.steps ?? flowSteps).map((step, index) => {
+                  const stepState =
+                    index === currentFlowStepIndex
+                      ? "current"
+                      : index < currentFlowStepIndex
+                        ? "complete"
+                        : "locked";
+                  const isCurrent = stepState === "current";
+                  const isComplete = stepState === "complete";
+                  const isLocked = stepState === "locked";
+                  return (
+                    <div key={step.id} className="flex shrink-0 items-center gap-2">
+                      <Badge
+                        variant={isCurrent ? "default" : "outline"}
+                        data-testid="upload-flow-step"
+                        data-step-id={step.id}
+                        data-step-state={stepState}
+                        aria-current={isCurrent ? "step" : undefined}
+                        aria-disabled={isLocked ? true : undefined}
+                        className={cn(
+                          "h-7 rounded-full px-3 py-1 text-xs transition-colors",
+                          isCurrent &&
+                            "border-primary bg-primary text-primary-foreground shadow-sm",
+                          isComplete &&
+                            "border-border/70 bg-muted/50 text-muted-foreground",
+                          isLocked &&
+                            "border-border/40 bg-background/20 text-muted-foreground/45 opacity-70",
+                        )}
+                      >
+                        {isComplete ? (
+                          <Check className="size-3" aria-hidden="true" />
+                        ) : null}
+                        {step.label}
+                      </Badge>
+                      {index < 5 ? (
+                        <ChevronRight
+                          className={cn(
+                            "size-3",
+                            index < currentFlowStepIndex
+                              ? "text-muted-foreground/70"
+                              : "text-muted-foreground/35",
+                          )}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
 
-              <UiLawsCompliance
-                artifact={artifact}
-                stage={stage === "generated" ? "generated" : "analyzed"}
-              />
+              {artifact ? (
+                <div className="grid gap-5">
+                  {showSplitView && stage !== "generated" ? (
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t.analysisOutputLabel}
+                    </p>
+                  ) : null}
 
-              {artifact.generatedCode &&
-              (stage === "analyzed" || stage === "generated") ? (
-                <Card className="bg-background" data-testid="scaffold-export-panel">
-                  <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
-                    <div>
-                      <CardTitle className="text-sm">{t.exportScaffold}</CardTitle>
-                      <CardDescription className="text-xs">
-                        {t.exportScaffoldDesc}
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <ExportButton
-                        text={artifact.generatedCode}
-                        variant="copy"
-                        label={t.exportCopyAll}
-                        analyticsSource="upload_flow"
-                        analyticsFeature="generated_scaffold"
-                        onCopied={() => toast(t.toastScaffoldCopied, "success")}
-                      />
-                      <ExportButton
-                        text={artifact.generatedCode}
-                        variant="export"
-                        label={t.exportDownload}
-                        filename={exportFilename}
-                        analyticsSource="upload_flow"
-                        analyticsFeature="generated_scaffold"
-                        onCopied={() => toast(t.toastScaffoldExported, "success")}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={exportDesignMarkdown}
-                        data-testid="export-design-md"
-                      >
-                        <FileText className="size-3.5" aria-hidden />
-                        {t.exportDesignDoc}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={exportHandoffBundle}
-                        data-testid="export-handoff-bundle"
-                      >
-                        <PackageOpen className="size-3.5" aria-hidden />
-                        {t.exportHandoffBundle}
-                      </Button>
-                      <GistExportButton
-                        text={artifact.generatedCode}
-                        filename={exportFilename}
-                        description="qwen-ui-lab generated scaffold"
-                        analyticsSource="upload_flow"
-                        analyticsFeature="generated_scaffold"
-                      />
-                      <RepoExportButton
-                        text={artifact.generatedCode}
-                        filename={exportFilename}
-                        description="qwen-ui-lab generated scaffold"
-                        analyticsSource="upload_flow"
-                        analyticsFeature="generated_scaffold"
-                      />
-                    </div>
-                  </CardHeader>
-                  {stage === "generated" ? null : (
-                    <CardContent className="pt-0">
-                      <p className="text-xs text-muted-foreground">
-                        {t.exportGenerateHint}
-                      </p>
-                    </CardContent>
-                  )}
-                </Card>
-              ) : null}
+                  {artifact.summary ? (
+                    <Card className="bg-background">
+                      <CardContent className="space-y-3 p-4">
+                        <p className="text-sm text-muted-foreground">{artifact.summary}</p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                          onClick={() => void copyShareLink()}
+                          disabled={copyingShareLink}
+                          data-testid="copy-share-link"
+                        >
+                          <Share2 className="size-3.5" aria-hidden />
+                          {copyingShareLink ? t.creatingShareLink : t.copyShortShareLink}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : null}
+                  <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+                    {artifact.plan.map((section) => (
+                      <Card key={section.title} className="min-w-0 bg-background">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm">{section.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="break-words text-sm leading-6 text-muted-foreground">
+                            {section.body}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
 
-              {stage === "generated" ? (
-                <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-                  <Card className="relative min-w-0 overflow-hidden">
-                    <div className="p-4 pt-2">
-                      <SnippetPreview
-                        code={artifact.generatedCode}
-                        title={t.generatedScaffold}
-                        showCopy={false}
-                      />
-                    </div>
-                  </Card>
-
-                  <DetectionComparisonPreview
-                    previewUrl={previewUrl}
+                  <UiLawsCompliance
                     artifact={artifact}
-                    copy={t}
-                    alt={
-                      file
-                        ? interpolate(t.uploadedReferenceAltNamed, {
-                            fileName: file.name,
-                          })
-                        : t.uploadedReferenceAlt
-                    }
+                    stage={stage === "generated" ? "generated" : "analyzed"}
                   />
+
+                  {artifact.generatedCode &&
+                  (stage === "analyzed" || stage === "generated") ? (
+                    <Card className="bg-background" data-testid="scaffold-export-panel">
+                      <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
+                        <div>
+                          <CardTitle className="text-sm">{t.exportScaffold}</CardTitle>
+                          <CardDescription className="text-xs">
+                            {t.exportScaffoldDesc}
+                          </CardDescription>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <ExportButton
+                            text={artifact.generatedCode}
+                            variant="copy"
+                            label={t.exportCopyAll}
+                            analyticsSource="upload_flow"
+                            analyticsFeature="generated_scaffold"
+                            onCopied={() => toast(t.toastScaffoldCopied, "success")}
+                          />
+                          <ExportButton
+                            text={artifact.generatedCode}
+                            variant="export"
+                            label={t.exportDownload}
+                            filename={exportFilename}
+                            analyticsSource="upload_flow"
+                            analyticsFeature="generated_scaffold"
+                            onCopied={() => toast(t.toastScaffoldExported, "success")}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={exportDesignMarkdown}
+                            data-testid="export-design-md"
+                          >
+                            <FileText className="size-3.5" aria-hidden />
+                            {t.exportDesignDoc}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={exportHandoffBundle}
+                            data-testid="export-handoff-bundle"
+                          >
+                            <PackageOpen className="size-3.5" aria-hidden />
+                            {t.exportHandoffBundle}
+                          </Button>
+                          <GistExportButton
+                            text={artifact.generatedCode}
+                            filename={exportFilename}
+                            description="qwen-ui-lab generated scaffold"
+                            analyticsSource="upload_flow"
+                            analyticsFeature="generated_scaffold"
+                          />
+                          <RepoExportButton
+                            text={artifact.generatedCode}
+                            filename={exportFilename}
+                            description="qwen-ui-lab generated scaffold"
+                            analyticsSource="upload_flow"
+                            analyticsFeature="generated_scaffold"
+                          />
+                        </div>
+                      </CardHeader>
+                      {stage === "generated" ? null : (
+                        <CardContent className="pt-0">
+                          <p className="text-xs text-muted-foreground">
+                            {t.exportGenerateHint}
+                          </p>
+                        </CardContent>
+                      )}
+                    </Card>
+                  ) : null}
+
+                  {stage === "generated" ? (
+                    <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+                      <Card className="relative min-w-0 overflow-hidden">
+                        <div className="p-4 pt-2">
+                          <SnippetPreview
+                            code={artifact.generatedCode}
+                            title={t.generatedScaffold}
+                            showCopy={false}
+                          />
+                        </div>
+                      </Card>
+
+                      <DetectionComparisonPreview
+                        previewUrl={previewUrl}
+                        artifact={artifact}
+                        copy={t}
+                        alt={
+                          file
+                            ? interpolate(t.uploadedReferenceAltNamed, {
+                                fileName: file.name,
+                              })
+                            : t.uploadedReferenceAlt
+                        }
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
-            </div>
-          ) : (
-            <div className="flex min-h-72 items-center justify-center rounded-lg border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
-              {t.emptyState}
-            </div>
-          )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </PageContainer>
   );

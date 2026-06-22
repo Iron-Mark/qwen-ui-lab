@@ -1,27 +1,37 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
-import { useToast } from "@/components/providers/Toast";
-import { Search } from "lucide-react";
 import {
-  unifiedCatalog,
+  Atom,
+  Boxes,
+  Search,
+  Tag,
+  Waypoints,
+  type LucideIcon,
+} from "lucide-react";
+import {
   filterCatalog,
   type AtomicLevel,
   type CatalogDomain,
 } from "./catalog";
-import { downloadCatalogBundle } from "../lib/export-bundle.client";
 import { LAWS_OF_UX_SITE } from "@/lib/laws-of-ux";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { UILAWS_SITE } from "../data/uilaws";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
@@ -30,28 +40,71 @@ import { useLocale } from "@/lib/i18n/use-locale.client";
 import {
   createDesignSystemSearchParams,
   DOMAIN_VALUES,
-  LEVEL_VALUES,
   nextFromList,
   parseDomain,
   parseLevel,
   parsePreviewMode,
   pickSelectedId,
 } from "../lib/design-system-state.mjs";
-import type { AtomicCatalogEntry } from "../data/catalog-types";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism"];
 
+const TIER_OPTIONS: Array<{
+  level: AtomicLevel;
+  label: string;
+  Icon: LucideIcon;
+}> = [
+  { level: "atom", label: "Atom", Icon: Atom },
+  { level: "molecule", label: "Molecule", Icon: Waypoints },
+  { level: "organism", label: "Organism", Icon: Boxes },
+];
+
+const TIER_META = TIER_OPTIONS.reduce<
+  Record<AtomicLevel, { label: string; Icon: LucideIcon }>
+>(
+  (acc, option) => {
+    acc[option.level] = { label: option.label, Icon: option.Icon };
+    return acc;
+  },
+  {
+    atom: { label: "Atom", Icon: Atom },
+    molecule: { label: "Molecule", Icon: Waypoints },
+    organism: { label: "Organism", Icon: Boxes },
+  },
+);
+
 const DOMAIN_SHORTCUTS = ["all", "product", "uilaws", "laws-of-ux"] as const;
 
-/** Desktop workspace below sticky site + page headers; list/preview scroll inside. */
+const EXTERNAL_REF_LINK_CLASS =
+  "cursor-pointer text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
+type CatalogReference = {
+  href?: string;
+  label: string;
+};
+
+function sourceLabelFromUrl(url: string) {
+  return url.replace(/^https?:\/\//, "").replace(/^www\./, "");
+}
+
+/** Desktop keeps the catalog picker fixed-height while preview content scrolls with the page. */
 const DESKTOP_CATALOG_GRID_CLASS =
-  "lg:h-[calc(100dvh-13.5rem)] lg:max-h-[calc(100dvh-13.5rem)] lg:min-h-0 lg:overflow-clip lg:[contain:layout_size_style] lg:items-stretch";
-const DESKTOP_CATALOG_COLUMN_CLASS =
-  "lg:h-full lg:max-h-full lg:min-h-0 lg:overflow-clip";
+  "lg:min-h-0 lg:items-start";
+const DESKTOP_CATALOG_LIST_CLASS =
+  "lg:sticky lg:top-[5.5rem] lg:h-[calc(100dvh-7rem)] lg:max-h-[calc(100dvh-7rem)] lg:min-h-0 lg:overflow-hidden lg:[contain:layout_paint_size_style]";
+
+function levelHasMatches(
+  query: string,
+  domain: CatalogDomain | "all",
+  level: AtomicLevel,
+) {
+  return filterCatalog(query, "all", domain).some(
+    (entry) => entry.level === level,
+  );
+}
 
 export function DesignSystemPreview() {
   const router = useRouter();
-  const { toast } = useToast();
   const searchParams = useSearchParams();
   const { locale, dict } = useLocale();
   const t = dict.designSystem;
@@ -67,12 +120,26 @@ export function DesignSystemPreview() {
     ],
     [t],
   );
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const domainLabelById = useMemo(
+    () => new Map(domains.map(({ id, label }) => [id, label])),
+    [domains],
+  );
+  const initialQuery = searchParams.get("q") ?? "";
+  const initialDomain = parseDomain(searchParams.get("domain")) as
+    | CatalogDomain
+    | "all";
+  const initialLevel = parseLevel(searchParams.get("level")) as
+    | AtomicLevel
+    | "all";
+
+  const [query, setQuery] = useState(initialQuery);
   const [levelFilter, setLevelFilter] = useState<AtomicLevel | "all">(
-    parseLevel(searchParams.get("level")) as AtomicLevel | "all",
+    initialLevel !== "all" && levelHasMatches(initialQuery, initialDomain, initialLevel)
+      ? initialLevel
+      : "all",
   );
   const [domainFilter, setDomainFilter] = useState<CatalogDomain | "all">(
-    parseDomain(searchParams.get("domain")) as CatalogDomain | "all",
+    initialDomain,
   );
   const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">(
     parsePreviewMode(searchParams.get("preview")) as "desktop" | "tablet" | "mobile",
@@ -83,6 +150,22 @@ export function DesignSystemPreview() {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const previewAnchorRef = useRef<HTMLDivElement | null>(null);
   const hasMountedSelectionRef = useRef(false);
+  const catalogReferences = useMemo<CatalogReference[]>(() => {
+    const productCatalog = { label: t.refProductCatalog };
+    const uiLaws = {
+      href: UILAWS_SITE,
+      label: sourceLabelFromUrl(UILAWS_SITE),
+    };
+    const lawsOfUx = {
+      href: LAWS_OF_UX_SITE,
+      label: sourceLabelFromUrl(LAWS_OF_UX_SITE),
+    };
+
+    if (domainFilter === "product") return [productCatalog];
+    if (domainFilter === "uilaws") return [uiLaws];
+    if (domainFilter === "laws-of-ux") return [lawsOfUx];
+    return [productCatalog, uiLaws, lawsOfUx];
+  }, [domainFilter, t.refProductCatalog]);
   const analytics = useMemo(
     () =>
       createAnalyticsClient({
@@ -98,12 +181,26 @@ export function DesignSystemPreview() {
     [query, levelFilter, domainFilter],
   );
 
-  const grouped = useMemo<Record<string, AtomicCatalogEntry[]>>(() => {
-    return LEVELS.reduce<Record<string, AtomicCatalogEntry[]>>((acc, level) => {
-      acc[level] = filtered.filter((entry) => entry.level === level);
-      return acc;
-    }, {});
-  }, [filtered]);
+  const tierAvailability = useMemo<Record<AtomicLevel, number>>(() => {
+    const domainAndQueryMatches = filterCatalog(query, "all", domainFilter);
+    return LEVELS.reduce<Record<AtomicLevel, number>>(
+      (acc, level) => {
+        acc[level] = domainAndQueryMatches.filter(
+          (entry) => entry.level === level,
+        ).length;
+        return acc;
+      },
+      { atom: 0, molecule: 0, organism: 0 },
+    );
+  }, [domainFilter, query]);
+
+  const enabledLevelValues = useMemo<Array<AtomicLevel | "all">>(
+    () => [
+      "all",
+      ...LEVELS.filter((level) => tierAvailability[level] > 0),
+    ],
+    [tierAvailability],
+  );
 
   const selectedEntry = useMemo(() => {
     if (filtered.length === 0) return null;
@@ -163,15 +260,22 @@ export function DesignSystemPreview() {
   }, [analytics, domainFilter, filtered.length, levelFilter]);
 
   const setDomain = useCallback((domain: CatalogDomain | "all") => {
+    const nextLevel =
+      levelFilter !== "all" && !levelHasMatches(query, domain, levelFilter)
+        ? "all"
+        : levelFilter;
     analytics.track(AnalyticsEvent.DesignSystemDomainChanged, {
       source: "design_system_tabs",
       domain,
-      level: levelFilter,
+      level: nextLevel,
       totalVisible: filtered.length,
       status: "changed",
     });
     setDomainFilter(domain);
-  }, [analytics, filtered.length, levelFilter]);
+    if (nextLevel !== levelFilter) {
+      setLevelFilter(nextLevel);
+    }
+  }, [analytics, filtered.length, levelFilter, query]);
 
   const moveSelection = useCallback((direction: 1 | -1) => {
     if (!filtered.length) return;
@@ -208,16 +312,10 @@ export function DesignSystemPreview() {
           setDomain(nextDomain);
           return;
         }
-        if (event.altKey && event.shiftKey && /^[0-3]$/.test(event.key)) {
-          const nextLevel =
-            event.key === "0"
-              ? "all"
-              : event.key === "1"
-                ? "atom"
-                : event.key === "2"
-                  ? "molecule"
-                  : "organism";
-          setLevelFilter(nextLevel);
+        if (event.altKey && event.shiftKey && /^[1-3]$/.test(event.key)) {
+          const nextLevel = LEVELS[Number(event.key) - 1];
+          if (!nextLevel || tierAvailability[nextLevel] === 0) return;
+          setLevelFilter(levelFilter === nextLevel ? "all" : nextLevel);
           return;
         }
         if (event.key === "j") {
@@ -248,7 +346,7 @@ export function DesignSystemPreview() {
         }
         if (event.key === "=") {
           const nextLevel = nextFromList(
-            LEVEL_VALUES,
+            enabledLevelValues,
             levelFilter,
             1,
           ) as AtomicLevel | "all";
@@ -257,7 +355,7 @@ export function DesignSystemPreview() {
         }
         if (event.key === "-") {
           const nextLevel = nextFromList(
-            LEVEL_VALUES,
+            enabledLevelValues,
             levelFilter,
             -1,
           ) as AtomicLevel | "all";
@@ -266,7 +364,14 @@ export function DesignSystemPreview() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [domainFilter, levelFilter, moveSelection, setDomain]);
+  }, [
+    domainFilter,
+    enabledLevelValues,
+    levelFilter,
+    moveSelection,
+    setDomain,
+    tierAvailability,
+  ]);
 
   return (
     <div lang={locale} className="space-y-4">
@@ -277,9 +382,12 @@ export function DesignSystemPreview() {
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div
             data-testid="catalog-search-shell"
-            className="flex items-center gap-2 border-b border-border/70 py-2"
+            className="relative flex min-h-11 min-w-0 max-w-full items-center overflow-hidden rounded-xl border border-border/70 bg-background/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
           >
-            <Search className="size-4 text-muted-foreground" />
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            />
             <Label htmlFor="catalog-search" className="sr-only">
               {t.searchLabel}
             </Label>
@@ -288,7 +396,16 @@ export function DesignSystemPreview() {
               id="catalog-search"
               type="search"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                const nextQuery = event.target.value;
+                setQuery(nextQuery);
+                if (
+                  levelFilter !== "all" &&
+                  !levelHasMatches(nextQuery, domainFilter, levelFilter)
+                ) {
+                  setLevelFilter("all");
+                }
+              }}
               onBlur={(event) => {
                 analytics.track(AnalyticsEvent.DesignSystemSearchUpdated, {
                   source: "design_system_search",
@@ -298,9 +415,9 @@ export function DesignSystemPreview() {
                 });
               }}
               placeholder={t.searchPlaceholder}
-              className="h-9 border-0 bg-transparent px-0 focus-visible:ring-0"
+              className="h-11 min-w-0 flex-1 border-0 bg-transparent pl-11 pr-12 shadow-none focus-visible:ring-0"
             />
-            <kbd className="hidden rounded border border-border/70 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline-flex">
+            <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-border/70 px-1.5 py-0.5 text-[10px] text-muted-foreground sm:inline-flex">
               /
             </kbd>
           </div>
@@ -333,28 +450,51 @@ export function DesignSystemPreview() {
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               {t.tier}
             </p>
-            <div className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5">
-              {(["all", ...LEVELS] as const).map((level) => (
-                <Button
-                  key={level}
-                  type="button"
-                  size="sm"
-                  variant={levelFilter === level ? "default" : "outline"}
-                  onClick={() => {
-                    setLevelFilter(level);
-                    analytics.track(AnalyticsEvent.DesignSystemLevelChanged, {
-                      source: "design_system_level_filter",
-                      domain: domainFilter,
-                      level,
-                      totalVisible: filtered.length,
-                      status: "changed",
-                    });
-                  }}
-                  className="min-h-10 rounded-md px-3 text-xs font-medium capitalize sm:text-sm"
-                >
-                  {level === "all" ? t.tierAll : level}
-                </Button>
-              ))}
+            <div
+              data-testid="tier-filter-controls"
+              className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5"
+            >
+              {TIER_OPTIONS.map(({ level, label, Icon }) => {
+                const isAvailable = tierAvailability[level] > 0;
+                const isActive = isAvailable && levelFilter === level;
+                const nextLevel = isActive ? "all" : level;
+                return (
+                  <Button
+                    key={level}
+                    type="button"
+                    size="sm"
+                    variant={isActive ? "default" : "outline"}
+                    disabled={!isAvailable}
+                    aria-pressed={isActive}
+                    title={
+                      !isAvailable
+                        ? `No ${label} components for this filter`
+                        : isActive
+                          ? `Clear ${label} filter`
+                          : `Show ${label} components`
+                    }
+                    onClick={() => {
+                      if (!isAvailable) return;
+                      setLevelFilter(nextLevel);
+                      analytics.track(AnalyticsEvent.DesignSystemLevelChanged, {
+                        source: "design_system_level_filter",
+                        domain: domainFilter,
+                        level: nextLevel,
+                        totalVisible: filtered.length,
+                        status: "changed",
+                      });
+                    }}
+                    className={cn(
+                      "min-h-10 gap-1.5 rounded-md px-3 text-xs font-medium sm:text-sm",
+                      !isAvailable &&
+                        "border-border/40 bg-background/20 text-muted-foreground/45 opacity-60",
+                    )}
+                  >
+                    <Icon className="size-3.5" aria-hidden="true" />
+                    <span>{label}</span>
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -364,16 +504,29 @@ export function DesignSystemPreview() {
             {t.keyboardHelp}
           </span>
           <span>{interpolate(t.visibleCount, { count: String(filtered.length) })}</span>
-          <span>
+          <span data-testid="catalog-reference-row">
             {t.refs}{" "}
-            <a
-              href={LAWS_OF_UX_SITE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cursor-pointer text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              lawsofux.com
-            </a>
+            {catalogReferences.map((reference, index) => (
+              <Fragment key={reference.label}>
+                {index > 0 ? (
+                  <span aria-hidden="true" className="mx-1 text-muted-foreground/60">
+                    ·
+                  </span>
+                ) : null}
+                {reference.href ? (
+                  <a
+                    href={reference.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={EXTERNAL_REF_LINK_CLASS}
+                  >
+                    {reference.label}
+                  </a>
+                ) : (
+                  <span className="text-foreground/70">{reference.label}</span>
+                )}
+              </Fragment>
+            ))}
           </span>
         </div>
       </header>
@@ -386,53 +539,55 @@ export function DesignSystemPreview() {
       >
         <section
           className={cn(
-            "flex min-h-0 flex-col overflow-clip rounded-2xl border border-border/70 bg-card/30 p-3",
-            "max-lg:max-h-[min(28rem,calc(100dvh-14rem))]",
-            DESKTOP_CATALOG_COLUMN_CLASS,
+            "flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/30 p-3",
+            "max-lg:h-[min(28rem,calc(100dvh-14rem))] max-lg:max-h-[min(28rem,calc(100dvh-14rem))] max-lg:[contain:layout_paint_size_style]",
+            DESKTOP_CATALOG_LIST_CLASS,
           )}
         >
-          <div className="mb-3 flex shrink-0 items-center justify-between">
+          <div className="mb-3 flex shrink-0 items-center">
             <p className="text-sm font-semibold text-foreground">{t.componentList}</p>
-            <p className="text-xs text-muted-foreground">{t.denseView}</p>
           </div>
           <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
-            {filtered.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                className={cn(
-                  "w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
-                  "hover:border-foreground/40 hover:bg-muted/50",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                  selectedEntry?.id === entry.id
-                    ? "border-foreground/50 bg-muted/60"
-                    : "border-transparent bg-background/40",
-                )}
-                onClick={() => setSelectedId(entry.id)}
-              >
-                <p className="text-sm font-medium text-foreground">{entry.name}</p>
-                <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
-                <div className="mt-1 flex items-center gap-1.5">
-                  <Badge
-                    variant="outline"
-                    className="h-5 rounded-full bg-background/40 px-2 text-[10px] font-medium capitalize text-muted-foreground"
+            {filtered.map((entry) => {
+              const tierMeta = TIER_META[entry.level];
+              const TierIcon = tierMeta.Icon;
+              const domainLabel = domainLabelById.get(entry.domain) ?? entry.domain;
+
+              return (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className={cn(
+                    "w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
+                    "hover:border-foreground/40 hover:bg-muted/50",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    selectedEntry?.id === entry.id
+                      ? "border-foreground/50 bg-muted/60"
+                      : "border-transparent bg-background/40",
+                  )}
+                  onClick={() => setSelectedId(entry.id)}
+                >
+                  <p className="text-sm font-medium text-foreground">{entry.name}</p>
+                  <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
+                  <dl
+                    data-testid="component-list-metadata"
+                    className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
+                    aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <span className="sr-only">{t.tierSrOnly}</span>
-                    {entry.level}
-                  </Badge>
-                  <span aria-hidden="true" className="text-[10px] text-muted-foreground/70">
-                    ·
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="h-5 rounded-full bg-background/40 px-2 text-[10px] font-medium text-muted-foreground"
-                  >
-                    <span className="sr-only">{t.domainSrOnly}</span>
-                    {entry.domain}
-                  </Badge>
-                </div>
-              </button>
-            ))}
+                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/60 bg-background/55 px-2 text-foreground/85">
+                      <TierIcon className="size-3.5 text-primary" aria-hidden="true" />
+                      <dt className="font-medium text-muted-foreground">{t.tierSrOnly}</dt>
+                      <dd className="font-semibold">{tierMeta.label}</dd>
+                    </div>
+                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/50 bg-background/35 px-2 text-muted-foreground">
+                      <Tag className="size-3.5" aria-hidden="true" />
+                      <dt className="font-medium">{t.domainSrOnly}</dt>
+                      <dd className="font-semibold text-foreground/75">{domainLabel}</dd>
+                    </div>
+                  </dl>
+                </button>
+              );
+            })}
             {filtered.length === 0 ? (
               <Card>
                 <CardContent className="p-6 text-center text-sm text-muted-foreground">
@@ -447,48 +602,14 @@ export function DesignSystemPreview() {
           ref={previewAnchorRef}
           id="component-preview-panel"
           className={cn(
-            "flex min-h-0 scroll-mt-[5.5rem] flex-col overflow-clip rounded-2xl border border-border/70 bg-background/30 sm:scroll-mt-24 lg:sticky lg:top-[8.75rem] lg:scroll-mt-0",
-            DESKTOP_CATALOG_COLUMN_CLASS,
+            "flex min-h-0 scroll-mt-[5.5rem] flex-col overflow-hidden rounded-2xl border border-border/70 bg-background/30 p-3 sm:scroll-mt-24 lg:scroll-mt-24",
           )}
           aria-live="polite"
         >
           <div
-            role="toolbar"
-            aria-label={t.previewToolbarAria}
-            className="flex shrink-0 flex-col gap-3 border-b border-border/70 bg-background/60 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/45 max-sm:sticky max-sm:top-16 max-sm:z-10 sm:flex-row sm:items-center sm:justify-between sm:px-4"
+            data-testid="component-preview-body"
+            className="min-h-0"
           >
-            <Link
-              href={localizedHref("/", locale)}
-              className="order-2 inline-flex min-h-10 cursor-pointer items-center text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:order-1"
-            >
-              {t.backToDashboard}
-            </Link>
-            <div className="order-1 flex flex-wrap items-center gap-2 sm:order-2 sm:justify-end">
-              <Button
-                type="button"
-                className="min-h-10"
-                onClick={() => {
-                  downloadCatalogBundle(filtered.length ? filtered : unifiedCatalog);
-                  analytics.track(AnalyticsEvent.ExportTriggered, {
-                    source: "design_system_page",
-                    feature: "catalog_bundle",
-                    trigger: "export",
-                    status: "success",
-                  });
-                  toast(t.bundleDownloaded, "success");
-                }}
-              >
-                {t.exportAll}
-              </Button>
-              <Link
-                href={localizedHref("/", locale)}
-                className={cn(buttonVariants({ variant: "outline" }), "min-h-10")}
-              >
-                {t.tryWorkflow}
-              </Link>
-            </div>
-          </div>
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-3 pt-4">
             <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
               {selectedEntry ? (
                 <ObservabilityErrorBoundary
@@ -524,20 +645,6 @@ export function DesignSystemPreview() {
               )}
             </div>
 
-            {levelFilter === "all" ? (
-              <Card className="bg-muted/20 shadow-none">
-                <CardContent className="grid gap-2 p-4 text-xs text-muted-foreground sm:grid-cols-3">
-                  {LEVELS.map((level) => (
-                    <div key={level} className="rounded-lg border border-border/60 bg-background/40 p-3">
-                      <p className="text-[11px] uppercase tracking-wide">{level}</p>
-                      <p className="mt-1 text-lg font-semibold text-foreground">
-                        {grouped[level]?.length ?? 0}
-                      </p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ) : null}
           </div>
         </section>
       </div>
