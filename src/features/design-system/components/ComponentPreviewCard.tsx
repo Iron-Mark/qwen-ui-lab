@@ -54,15 +54,17 @@ interface ComponentPreviewCardProps {
   children: ReactNode;
   className?: string;
   chromeless?: boolean;
-  previewMode?: "mobile" | "tablet" | "desktop";
-  onPreviewModeChange?: (mode: "mobile" | "tablet" | "desktop") => void;
+  previewMode?: PreviewMode;
+  onPreviewModeChange?: (mode: PreviewMode) => void;
   deferPreview?: boolean;
   showSnippet?: boolean;
   denseHeader?: boolean;
 }
 
+type PreviewMode = "mobile" | "tablet" | "desktop";
+
 const PREVIEW_MODE_OPTIONS: Array<{
-  value: "desktop" | "tablet" | "mobile";
+  value: PreviewMode;
   label: string;
   Icon: typeof Monitor;
 }> = [
@@ -70,6 +72,31 @@ const PREVIEW_MODE_OPTIONS: Array<{
   { value: "tablet", label: "Tablet preview", Icon: Tablet },
   { value: "mobile", label: "Mobile preview", Icon: Smartphone },
 ];
+
+const PREVIEW_VIEWPORTS: Record<
+  PreviewMode,
+  {
+    className: string;
+    label: string;
+    stageClassName: string;
+  }
+> = {
+  desktop: {
+    className: "max-w-none",
+    label: "Desktop canvas",
+    stageClassName: "min-h-28 p-4 sm:p-5",
+  },
+  tablet: {
+    className: "max-w-[42rem]",
+    label: "Tablet canvas",
+    stageClassName: "min-h-32 p-4 sm:p-5",
+  },
+  mobile: {
+    className: "max-w-[23rem]",
+    label: "Mobile canvas",
+    stageClassName: "min-h-40 p-4",
+  },
+};
 
 export function ComponentPreviewCard({
   id,
@@ -115,6 +142,7 @@ export function ComponentPreviewCard({
     ? sourcePath.replace(/\.tsx$/, "")
     : "path/to/component";
   const importLine = `import { Component } from "@/components/${importPath}";`;
+  const previewViewport = PREVIEW_VIEWPORTS[previewMode];
   const copyImportAndSnippet = async () => {
     try {
       await navigator.clipboard.writeText(`${importLine}\n\n${activeSnippet}`);
@@ -123,12 +151,6 @@ export function ComponentPreviewCard({
       toast("Copy failed. Try again.", "error");
     }
   };
-  const previewFrameClass =
-    previewMode === "mobile"
-      ? "mx-auto w-full max-w-[22rem]"
-      : previewMode === "tablet"
-        ? "mx-auto w-full max-w-[40rem]"
-        : "w-full";
 
   useEffect(() => {
     if (!deferPreview || canRenderPreview) return;
@@ -263,20 +285,27 @@ export function ComponentPreviewCard({
             chromeless
               ? "border-border/60 bg-background/40"
               : "border-border/70 bg-card/40",
-            previewFrameClass,
           )}
           aria-label="Component preview"
         >
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-muted/65 px-3 py-2 sm:px-4">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Preview
-            </span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Preview
+              </span>
+              <span
+                data-testid="component-preview-mode-label"
+                className="hidden min-w-0 rounded-full border border-border/70 bg-background/70 px-2 py-1 text-[0.65rem] font-medium text-muted-foreground sm:inline-flex"
+              >
+                {previewViewport.label}
+              </span>
+            </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {onPreviewModeChange ? (
                 <Tabs
                   value={previewMode}
                   onValueChange={(value) =>
-                    onPreviewModeChange(value as "desktop" | "tablet" | "mobile")
+                    onPreviewModeChange(value as PreviewMode)
                   }
                 >
                   <TabsList
@@ -314,14 +343,37 @@ export function ComponentPreviewCard({
             </div>
           </div>
           <div className="min-w-0 p-3 sm:p-4">
-            {canRenderPreview ? (
-              previewNode
-            ) : (
+            <div
+              data-testid="component-preview-canvas"
+              className="overflow-x-auto rounded-lg bg-background/45 p-2 shadow-inner"
+            >
               <div
-                className="h-40 animate-pulse rounded-lg border border-dashed border-border/70 bg-muted/40"
-                aria-hidden="true"
-              />
-            )}
+                data-testid="component-preview-viewport"
+                data-preview-mode={previewMode}
+                className={cn(
+                  "mx-auto w-full rounded-lg border border-dashed border-border/70 bg-background shadow-sm transition-[max-width] duration-200 ease-out",
+                  previewViewport.className,
+                )}
+                style={{ containerType: "inline-size" }}
+                aria-label={`${previewViewport.label} viewport`}
+              >
+                <div
+                  className={cn(
+                    "flex items-start justify-start overflow-hidden",
+                    previewViewport.stageClassName,
+                  )}
+                >
+                  {canRenderPreview ? (
+                    previewNode
+                  ) : (
+                    <div
+                      className="h-40 w-full animate-pulse rounded-lg border border-dashed border-border/70 bg-muted/40"
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

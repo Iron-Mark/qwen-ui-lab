@@ -9,7 +9,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "PNG screenshot · Admin analytics shell",
+    hint: "Tests cards, charts, activity feeds, and quick actions.",
   },
   {
     id: "auth",
@@ -20,7 +20,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "PNG screenshot · Centered auth card",
+    hint: "Tests auth cards, form fields, and recovery links.",
   },
   {
     id: "mobile",
@@ -31,7 +31,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 390,
     height: 844,
-    hint: "PNG screenshot · Phone shell + bottom nav",
+    hint: "Tests phone layouts, bottom navigation, and compact content.",
   },
   {
     id: "landing",
@@ -42,7 +42,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "PNG screenshot · Marketing hero + pricing",
+    hint: "Tests hero sections, pricing, and marketing CTAs.",
   },
   {
     id: "settings",
@@ -53,7 +53,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "PNG screenshot · Profile + toggles",
+    hint: "Tests profile forms, toggles, and preference panels.",
   },
   {
     id: "ecommerce",
@@ -64,7 +64,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "PNG screenshot · Filters + product grid",
+    hint: "Tests filters, product grids, and catalog actions.",
   },
   {
     id: "stress-dashboard",
@@ -75,7 +75,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "PNG screenshot · Dense dashboard + table",
+    hint: "Tests dense metrics, tables, and admin tools.",
   },
   {
     id: "stress-list",
@@ -86,7 +86,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "PNG screenshot · Repeated rows + actions",
+    hint: "Tests repeated rows, item actions, and list rhythm.",
   },
 ];
 

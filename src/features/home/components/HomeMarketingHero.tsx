@@ -99,16 +99,15 @@ export function HomeMarketingHero() {
           priority
           unoptimized
           sizes="100vw"
-          className="object-cover object-[66%_30%] opacity-70 saturate-[0.9] dark:opacity-45"
+          className="object-cover object-[68%_28%] opacity-100 contrast-[1.03] saturate-[0.96] dark:opacity-35"
         />
-        <div className="absolute inset-0 bg-background/70 dark:bg-background/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background from-[0%] via-background/90 via-[44%] to-background/5 dark:via-background/95 dark:to-background/65" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/85 to-transparent" />
       </div>
 
-      <PageContainer className="flex min-h-[30rem] flex-col justify-end py-6 sm:min-h-[34rem] sm:py-10 lg:min-h-[35rem]">
-        <div className="max-w-2xl space-y-5">
-          <div className="space-y-4">
+      <PageContainer className="flex min-h-[29rem] flex-col justify-center py-9 sm:min-h-[32rem] sm:py-11 lg:min-h-[34rem]">
+        <div className="max-w-[42rem] space-y-5">
+          <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="text-xs font-medium">
                 {copy.badgeDemo}
@@ -122,7 +121,7 @@ export function HomeMarketingHero() {
             </div>
             <h1
               id="home-hero-heading"
-              className="max-w-xl text-4xl font-bold leading-[1.05] text-foreground sm:text-5xl md:text-6xl"
+              className="max-w-xl text-4xl font-bold leading-[1.03] text-foreground sm:text-5xl md:text-6xl"
             >
               {copy.title}
             </h1>
@@ -131,28 +130,31 @@ export function HomeMarketingHero() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Link
-                href={localizedHref("/demo", locale)}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-11 gap-2 px-5",
-                )}
-              >
-                {copy.oneClickDemo}
-                <ArrowRight className="size-4" aria-hidden />
-              </Link>
-              <Link
                 href={uploadFlowHref}
-                className={cn(buttonVariants({ size: "lg" }), "h-11 gap-2 px-5")}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "min-h-11 gap-2 px-5 py-2.5 shadow-sm",
+                )}
                 onClick={() => trackCta("try_live_flow")}
               >
                 {copy.ctaPrimary}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link
+                href={localizedHref("/demo", locale)}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "min-h-11 gap-2 px-5 py-2.5",
+                )}
+              >
+                {copy.oneClickDemo}
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+              <Link
                 href={localizedHref("/design-system", locale)}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-11 gap-2 px-5",
+                  "min-h-11 gap-2 px-5 py-2.5",
                 )}
                 onClick={() => trackCta("explore_design_system")}
               >
@@ -176,16 +178,16 @@ export function HomeMarketingHero() {
 
         <ol
           data-testid="hero-benefit-rail"
-          className="mt-6 grid max-w-3xl grid-cols-3 overflow-hidden rounded-lg border border-border/60 bg-background/60 shadow-sm backdrop-blur-md sm:mt-7"
+          className="mt-7 grid max-w-3xl grid-cols-3 overflow-hidden rounded-xl border border-border/70 bg-card/75 shadow-sm backdrop-blur-md sm:mt-8"
           aria-label={copy.keyBenefitsAria}
         >
           {valueProps.map(({ icon: Icon, label, title, body }, index) => (
             <li
               key={title}
               aria-label={`${label}: ${title}. ${body}`}
-              className="relative flex min-h-14 items-center gap-2 border-l border-border/60 px-2 py-2 first:border-l-0 sm:min-h-16 sm:gap-3 sm:px-4 sm:py-3"
+              className="relative flex min-h-16 items-center gap-2 border-l border-border/70 px-3 py-2.5 first:border-l-0 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 sm:py-3"
             >
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary sm:size-9">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10">
                 <Icon className="size-4" aria-hidden />
               </div>
               <div className="min-w-0">
