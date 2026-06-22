@@ -13,6 +13,76 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
+test("upload dropzone renders as a recessed upload target", async ({ page }) => {
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  const dropzone = page.getByTestId("upload-dropzone-button");
+  await expect(dropzone).toBeVisible();
+  await expect(dropzone.getByText("Drop a screenshot here")).toBeVisible();
+
+  const styles = await dropzone.evaluate((node) => {
+    const computed = window.getComputedStyle(node);
+    return {
+      boxShadow: computed.boxShadow.toLowerCase(),
+      minHeight: Number.parseFloat(computed.minHeight),
+    };
+  });
+
+  expect(styles.boxShadow).toContain("inset");
+  expect(styles.minHeight).toBeGreaterThanOrEqual(288);
+});
+
+test("upload flow hides the output panel before a screenshot exists", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 840, height: 958 });
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  await expect(page.getByTestId("upload-dropzone-button")).toBeVisible();
+  await expect(page.getByTestId("workflow-output-panel")).toHaveCount(0);
+  await expect(page.getByTestId("upload-flow-stepper")).toHaveCount(0);
+  await expect(page.getByText(/run analysis to see the generated plan/i)).toHaveCount(0);
+});
+
+test("sample selector uses a shadcn-style popup", async ({ page }) => {
+  await page.setViewportSize({ width: 840, height: 958 });
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  const trigger = page.getByTestId("sample-select");
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAttribute("data-slot", "select-trigger");
+  await expect(trigger).toContainText("Dashboard");
+
+  await trigger.click();
+
+  const popup = page.getByTestId("sample-select-content");
+  await expect(popup).toBeVisible();
+  await expect(popup).toHaveAttribute("data-slot", "select-content");
+  await expect(page.getByTestId("sample-select-option-auth")).toContainText(
+    "form fields",
+  );
+
+  await page.getByTestId("sample-select-option-mobile").click();
+  await expect(trigger).toContainText("Mobile app");
+  await expect(page.getByTestId("sample-picker")).toContainText(
+    "bottom navigation",
+  );
+  await expect(page.getByTestId("sample-picker")).toHaveCount(1);
+  await expect(page.getByText(/PNG screenshot/i)).toHaveCount(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth + 1,
+      ),
+    )
+    .toBe(true);
+});
+
 test("pasting an image on the page loads and focuses the upload dropzone", async ({
   page,
 }) => {
@@ -49,6 +119,84 @@ test("pasting an image on the page loads and focuses the upload dropzone", async
       name: /analyze & generate preview|generate preview|regenerate preview/i,
     }),
   ).toBeEnabled({ timeout: 10_000 });
+});
+
+test("workflow stepper dims unavailable steps", async ({ page }) => {
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  const samplePath = path.join(
+    process.cwd(),
+    "public",
+    "references",
+    "dashboard-reference.png",
+  );
+
+  await page.locator('input[type="file"]').setInputFiles(samplePath);
+  await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
+
+  await expect(page.getByTestId("workflow-output-panel")).toBeVisible();
+  const stepper = page.getByTestId("upload-flow-stepper");
+  await expect(stepper).toBeVisible();
+  await expect(page.getByTestId("upload-flow-step")).toHaveCount(6);
+
+  const steps = await page.getByTestId("upload-flow-step").evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const style = window.getComputedStyle(node);
+      return {
+        label: node.textContent?.replace(/\s+/g, " ").trim(),
+        state: node.getAttribute("data-step-state"),
+        current: node.getAttribute("aria-current"),
+        disabled: node.getAttribute("aria-disabled"),
+        opacity: style.opacity,
+      };
+    }),
+  );
+
+  expect(steps).toEqual([
+    {
+      label: "Upload",
+      state: "current",
+      current: "step",
+      disabled: null,
+      opacity: "1",
+    },
+    {
+      label: "Analyze",
+      state: "locked",
+      current: null,
+      disabled: "true",
+      opacity: "0.7",
+    },
+    {
+      label: "Plan",
+      state: "locked",
+      current: null,
+      disabled: "true",
+      opacity: "0.7",
+    },
+    {
+      label: "Generate",
+      state: "locked",
+      current: null,
+      disabled: "true",
+      opacity: "0.7",
+    },
+    {
+      label: "Preview",
+      state: "locked",
+      current: null,
+      disabled: "true",
+      opacity: "0.7",
+    },
+    {
+      label: "Export",
+      state: "locked",
+      current: null,
+      disabled: "true",
+      opacity: "0.7",
+    },
+  ]);
 });
 
 test("upload → analyze → generate → copy/export smoke flow", async ({
