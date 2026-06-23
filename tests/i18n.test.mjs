@@ -109,7 +109,7 @@ test("localizedHref preserves share and account paths", () => {
 test("zh dictionaries cover remaining route strings", () => {
   assert.match(zhDictionarySource, /title:\s*"页面未找到"/);
   assert.match(zhDictionarySource, /title:\s*"只读分析摘要"/);
-  assert.match(zhDictionarySource, /backToDemo:\s*"返回实时演示"/);
+  assert.match(zhDictionarySource, /backToDemo:\s*"返回工作流"/);
   assert.match(enDictionarySource, /title:\s*"Page not found"/);
   assert.match(enDictionarySource, /tryLiveDemo:\s*"Try the live demo"/);
 });
