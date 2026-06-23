@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import path from "node:path";
 import {
   demoModeSnackbar,
+  expectBundledSampleOptionCount,
   expectDemoSnackbarInViewport,
   loadBundledSample,
   primaryAnalyzeButton,
@@ -26,7 +27,7 @@ test("sample picker is visible and loads bundled reference", async ({ page }) =>
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
   await expect(samplePicker.getByTestId("sample-select")).toBeVisible();
-  await expect(samplePicker.locator("option")).toHaveCount(8);
+  await expectBundledSampleOptionCount(page, 8);
   await expect(
     samplePicker.getByRole("button", { name: /load dashboard sample/i }),
   ).toBeVisible();
