@@ -23,8 +23,9 @@ export function WorkflowStepper({
   return (
     <div
       data-testid="upload-flow-stepper"
-      className="mb-5 flex items-center gap-2 overflow-x-auto pb-2"
+      className="mb-5 flex items-center gap-2 overflow-x-auto rounded-lg pb-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       aria-label={ariaLabel}
+      tabIndex={0}
     >
       {steps.map((step, index) => {
         const stepState =
