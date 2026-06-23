@@ -121,7 +121,7 @@ test("pasting an image on the page loads and focuses the upload dropzone", async
   ).toBeEnabled({ timeout: 10_000 });
 });
 
-test("workflow stepper dims unavailable steps", async ({ page }) => {
+test("workflow stepper marks unavailable steps as disabled", async ({ page }) => {
   await page.goto("/");
   await waitForUploadFlowReady(page);
 
@@ -142,13 +142,11 @@ test("workflow stepper dims unavailable steps", async ({ page }) => {
 
   const steps = await page.getByTestId("upload-flow-step").evaluateAll((nodes) =>
     nodes.map((node) => {
-      const style = window.getComputedStyle(node);
       return {
         label: node.textContent?.replace(/\s+/g, " ").trim(),
         state: node.getAttribute("data-step-state"),
         current: node.getAttribute("aria-current"),
         disabled: node.getAttribute("aria-disabled"),
-        opacity: style.opacity,
       };
     }),
   );
@@ -159,42 +157,36 @@ test("workflow stepper dims unavailable steps", async ({ page }) => {
       state: "current",
       current: "step",
       disabled: null,
-      opacity: "1",
     },
     {
       label: "Analyze",
       state: "locked",
       current: null,
       disabled: "true",
-      opacity: "0.7",
     },
     {
       label: "Plan",
       state: "locked",
       current: null,
       disabled: "true",
-      opacity: "0.7",
     },
     {
       label: "Generate",
       state: "locked",
       current: null,
       disabled: "true",
-      opacity: "0.7",
     },
     {
       label: "Preview",
       state: "locked",
       current: null,
       disabled: "true",
-      opacity: "0.7",
     },
     {
       label: "Export",
       state: "locked",
       current: null,
       disabled: "true",
-      opacity: "0.7",
     },
   ]);
 });

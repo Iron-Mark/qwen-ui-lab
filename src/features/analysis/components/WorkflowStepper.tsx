@@ -53,7 +53,7 @@ export function WorkflowStepper({
                 isComplete &&
                   "border-border/70 bg-muted/50 text-muted-foreground",
                 isLocked &&
-                  "border-border/40 bg-background/20 text-muted-foreground/45 opacity-70",
+                  "border-border/70 bg-muted/35 text-muted-foreground",
               )}
             >
               {isComplete ? <Check className="size-3" aria-hidden="true" /> : null}

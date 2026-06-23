@@ -166,11 +166,40 @@ export function demoModeSnackbar(page: Page): Locator {
 }
 
 /** Load a bundled reference from the upload-flow sample picker. */
-export async function loadBundledSample(page: Page, label: string) {
+export async function selectBundledSample(page: Page, label: string) {
   const picker = page.getByTestId("sample-picker");
   await expect(picker).toBeVisible();
-  await picker.getByTestId("sample-select").selectOption({ label });
+  const trigger = picker.getByTestId("sample-select");
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  await expect(page.getByTestId("sample-select-content")).toBeVisible();
+  await page
+    .getByRole("option", {
+      name: new RegExp(`^${escapeRegExp(label)}(?:\\s|$)`, "i"),
+    })
+    .click();
+  await expect(trigger).toContainText(label);
+}
+
+/** Count bundled references in the shadcn-style sample picker popup. */
+export async function expectBundledSampleOptionCount(page: Page, count: number) {
+  const picker = page.getByTestId("sample-picker");
+  await expect(picker).toBeVisible();
+  await picker.getByTestId("sample-select").click();
+  await expect(page.getByTestId("sample-select-content")).toBeVisible();
+  await expect(page.getByTestId(/^sample-select-option-/)).toHaveCount(count);
+  await page.keyboard.press("Escape");
+}
+
+/** Load a bundled reference from the upload-flow sample picker. */
+export async function loadBundledSample(page: Page, label: string) {
+  await selectBundledSample(page, label);
+  const picker = page.getByTestId("sample-picker");
   await picker.getByRole("button", { name: new RegExp(`load ${label} sample`, "i") }).click();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /** Combined analyze CTA (experiment may use "now" suffix). */
