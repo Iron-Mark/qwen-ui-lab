@@ -83,6 +83,7 @@ export const zh = {
     displayNamePlaceholder: "例如 Alex",
     saveDisplayName: "保存名称",
     signOut: "清除本地资料",
+    backToDemo: "返回工作流",
     magicLinkTitle: "可选邮箱标签",
     magicLinkDesc: "预览基于邮箱的本地标签；不会发送邮件，也不会创建账户。",
     emailLabel: "邮箱",
@@ -92,7 +93,6 @@ export const zh = {
     magicLinkPendingBody:
       "没有向 {email} 发送邮件。点击下方确认后，仅在本标签页使用该邮箱名称。",
     confirmMagicLink: "使用此邮箱标签",
-    backToDemo: "返回工作流",
     toastDisplayNameSaved: "显示名称已保存为 {name}",
     toastSignedOut: "本地资料已清除 — 回到访客模式",
     toastMagicLinkStub: "邮箱演示已本地记录；没有发送邮件",

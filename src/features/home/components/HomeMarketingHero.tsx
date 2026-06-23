@@ -185,9 +185,9 @@ export function HomeMarketingHero() {
             <li
               key={title}
               aria-label={`${label}: ${title}. ${body}`}
-              className="relative flex min-h-16 items-center gap-2 border-l border-border/70 px-3 py-2.5 first:border-l-0 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 sm:py-3"
+              className="relative flex min-h-16 items-center justify-center gap-2 border-l border-border/70 px-2.5 py-2.5 text-center first:border-l-0 sm:min-h-[4.75rem] sm:justify-start sm:gap-3 sm:px-4 sm:py-3 sm:text-left"
             >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10">
+              <div className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex sm:size-10">
                 <Icon className="size-4" aria-hidden />
               </div>
               <div className="min-w-0">

@@ -2336,7 +2336,7 @@ export function UploadFlow({
           "grid min-w-0 gap-6",
           showWorkflowOutput
             ? "lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
-            : "mx-auto w-full max-w-3xl",
+            : "w-full",
         )}
       >
         <Card className="min-w-0 border-border/80 shadow-sm">

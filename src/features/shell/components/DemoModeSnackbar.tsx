@@ -64,13 +64,13 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
             aria-live="polite"
             className={cn(
               "relative w-[min(92vw,460px)] overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-sm",
-              "px-3 py-2.5",
+              "px-4 py-3.5 pb-4",
             )}
           >
-            <div className="flex items-start gap-2.5">
+            <div className="flex items-start gap-3 pr-10">
               <div
                 className={cn(
-                  "mt-0.5 flex size-6 items-center justify-center rounded-full",
+                  "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full",
                   "bg-amber-500/15 text-amber-700 dark:text-amber-200",
                 )}
                 aria-hidden
@@ -80,21 +80,22 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
 
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium leading-5">{t.title}</p>
-                <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{t.body}</p>
-              </div>
-
-              <div className="flex items-start gap-1">
-                <button
-                  type="button"
-                  className={cn(buttonVariants({ variant: "ghost", size: "icon-lg" }), "h-9 w-9")}
-                  title={t.dismissTitle}
-                  aria-label={t.dismissAria}
-                  onClick={() => toast.dismiss(toastId)}
-                >
-                  <X className="size-4" aria-hidden />
-                </button>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.body}</p>
               </div>
             </div>
+
+            <button
+              type="button"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "icon-lg" }),
+                "absolute right-2 top-2 h-9 w-9",
+              )}
+              title={t.dismissTitle}
+              aria-label={t.dismissAria}
+              onClick={() => toast.dismiss(toastId)}
+            >
+              <X className="size-4" aria-hidden />
+            </button>
 
             <div
               aria-hidden

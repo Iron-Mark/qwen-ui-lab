@@ -385,12 +385,12 @@ export function DesignSystemPreview() {
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
-              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-lg bg-background/70 p-1.5 group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
+              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-xl border border-border/70 bg-muted/35 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
                 {domains.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-md px-2 text-xs font-medium sm:text-sm"
+                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-2 text-xs font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -555,7 +555,7 @@ export function DesignSystemPreview() {
           ref={previewAnchorRef}
           id="component-preview-panel"
           className={cn(
-            "flex min-h-0 scroll-mt-[5.5rem] flex-col overflow-hidden rounded-2xl border border-border/70 bg-background/30 p-3 sm:scroll-mt-24 lg:scroll-mt-24",
+            "min-h-0 min-w-0 scroll-mt-[5.5rem] sm:scroll-mt-24 lg:scroll-mt-24",
           )}
           aria-live="polite"
         >
@@ -563,41 +563,38 @@ export function DesignSystemPreview() {
             data-testid="component-preview-body"
             className="min-h-0"
           >
-            <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
-              {selectedEntry ? (
-                <ObservabilityErrorBoundary
-                  fallbackTitle={interpolate(t.renderError, { name: selectedEntry.name })}
+            {selectedEntry ? (
+              <ObservabilityErrorBoundary
+                fallbackTitle={interpolate(t.renderError, { name: selectedEntry.name })}
+              >
+                <ComponentPreviewCard
+                  id={selectedEntry.id}
+                  title={selectedEntry.name}
+                  description={selectedEntry.description}
+                  usage={selectedEntry.usage}
+                  level={selectedEntry.level}
+                  domain={selectedEntry.domain}
+                  sourcePath={selectedEntry.sourcePath}
+                  snippet={selectedEntry.code}
+                  exportFilename={selectedEntry.exportFilename}
+                  props={selectedEntry.props}
+                  variants={selectedEntry.variants}
+                  principles={selectedEntry.principles}
+                  previewMode={previewMode}
+                  onPreviewModeChange={setPreviewMode}
+                  deferPreview
+                  chromeless
+                  showSnippet={selectedEntry.id !== "snippet-preview"}
+                  className="rounded-2xl"
                 >
-                  <ComponentPreviewCard
-                    id={selectedEntry.id}
-                    title={selectedEntry.name}
-                    description={selectedEntry.description}
-                    usage={selectedEntry.usage}
-                    level={selectedEntry.level}
-                    domain={selectedEntry.domain}
-                    sourcePath={selectedEntry.sourcePath}
-                    snippet={selectedEntry.code}
-                    exportFilename={selectedEntry.exportFilename}
-                    props={selectedEntry.props}
-                    variants={selectedEntry.variants}
-                    principles={selectedEntry.principles}
-                    previewMode={previewMode}
-                    onPreviewModeChange={setPreviewMode}
-                    deferPreview
-                    chromeless
-                    showSnippet={selectedEntry.id !== "snippet-preview"}
-                    className="rounded-2xl"
-                  >
-                    {selectedEntry.preview}
-                  </ComponentPreviewCard>
-                </ObservabilityErrorBoundary>
-              ) : (
-                <div className="p-8 text-sm text-muted-foreground">
-                  {t.pickComponent}
-                </div>
-              )}
-            </div>
-
+                  {selectedEntry.preview}
+                </ComponentPreviewCard>
+              </ObservabilityErrorBoundary>
+            ) : (
+              <div className="rounded-xl border border-border/70 bg-card/30 p-8 text-sm text-muted-foreground">
+                {t.pickComponent}
+              </div>
+            )}
           </div>
         </section>
       </div>

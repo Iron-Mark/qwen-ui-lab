@@ -37,7 +37,8 @@ export function Header() {
       <PageContainer className="flex h-16 min-w-0 items-center gap-2 px-2 sm:gap-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={localizedHref("/", locale)}
-          className="flex min-w-0 cursor-pointer items-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          aria-label={t.siteTitle}
+          className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:min-w-0 md:justify-start"
         >
           <Image
             src="/icons/icon.svg"
@@ -47,7 +48,7 @@ export function Header() {
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
             fetchPriority="low"
           />
-          <div className="hidden min-w-0 sm:block">
+          <div className="hidden min-w-0 md:block">
             <p className="truncate text-lg font-bold text-card-foreground">{t.siteTitle}</p>
             <p className="truncate text-xs text-muted-foreground">{t.siteTagline}</p>
           </div>

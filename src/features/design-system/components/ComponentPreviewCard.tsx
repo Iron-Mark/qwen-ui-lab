@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { CopyPlus } from "lucide-react";
+import { Box, CopyPlus, FileCode2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
   AtomicLevel,
@@ -96,6 +96,7 @@ export function ComponentPreviewCard({
     variants?.find((variant) => variant.id === activeVariant) ?? null;
   const previewNode = selected?.preview ?? children;
   const activeSnippet = selected?.code ?? snippet;
+  const hasVariants = Boolean(variants && variants.length > 1);
   const analytics = createAnalyticsClient({
     hooks: observability,
     providerMode: mode,
@@ -106,6 +107,13 @@ export function ComponentPreviewCard({
     : "path/to/component";
   const importLine = `import { Component } from "@/components/${importPath}";`;
   const previewViewport = PREVIEW_VIEWPORTS[previewMode];
+  const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+  const domainLabel =
+    domain === "uilaws"
+      ? "UI Laws"
+      : domain === "laws-of-ux"
+        ? "Laws of UX"
+        : "Product";
   const copyImportAndSnippet = async () => {
     try {
       await navigator.clipboard.writeText(`${importLine}\n\n${activeSnippet}`);
@@ -143,54 +151,83 @@ export function ComponentPreviewCard({
       )}
     >
       <CardHeader className={cn("border-b", denseHeader ? "p-4" : undefined)}>
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <CardTitle className="text-base">{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-            {sourcePath ? (
-              <p className="mt-1 font-mono text-[0.65rem] text-muted-foreground">
-                src/{sourcePath}
-              </p>
-            ) : null}
-            {usage ? (
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                <span className="font-semibold text-card-foreground">Usage: </span>
-                {usage}
-              </p>
-            ) : null}
-            <div className="mt-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={copyImportAndSnippet}
-                aria-label="Copy import line and snippet"
-                className="min-h-10 px-3 text-[0.7rem] text-muted-foreground hover:bg-muted/80 hover:text-card-foreground"
+        <div className="grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+            <div className="flex min-w-0 gap-3">
+              <span
+                className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary"
+                aria-hidden="true"
               >
-                <CopyPlus className="mr-1 size-3.5" aria-hidden="true" />
-                Copy import + snippet
-              </Button>
+                <Box className="size-4" />
+              </span>
+              <div className="min-w-0 space-y-1">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  Component
+                </p>
+                <CardTitle className="text-lg leading-tight sm:text-xl">
+                  {title}
+                </CardTitle>
+                <CardDescription className="max-w-2xl text-sm leading-6">
+                  {description}
+                </CardDescription>
+              </div>
             </div>
-            {principleLabels.length > 0 ? (
-              <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="UI laws">
-                {principleLabels.map((label) => (
-                  <li key={label}>
-                    <Badge variant="outline" className="text-[0.65rem]">
-                      {label}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
+
+            <div className="flex flex-wrap gap-1.5 sm:max-w-44 sm:justify-end">
+              <Badge
+                variant={LEVEL_BADGE_VARIANT[level]}
+                className="min-h-7 gap-1.5 px-2.5 capitalize"
+              >
+                <Box className="size-3" aria-hidden="true" />
+                {levelLabel}
+              </Badge>
+              <Badge
+                variant="secondary"
+                className="min-h-7 gap-1.5 px-2.5 text-[0.7rem]"
+              >
+                {domainLabel}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            {sourcePath ? (
+              <p className="inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-border/70 bg-background/50 px-3 font-mono text-[0.7rem] text-muted-foreground">
+                <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+                <span className="min-w-0 truncate">src/{sourcePath}</span>
+              </p>
             ) : null}
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={copyImportAndSnippet}
+              aria-label="Copy import line and snippet"
+              className="min-h-10 justify-center px-3 text-[0.75rem]"
+            >
+              <CopyPlus className="mr-1.5 size-3.5" aria-hidden="true" />
+              Copy import + snippet
+            </Button>
           </div>
-          <div className="flex shrink-0 flex-col items-end gap-1">
-            <Badge variant={LEVEL_BADGE_VARIANT[level]} className="capitalize">
-              {level}
-            </Badge>
-            <Badge variant="secondary" className="text-[0.65rem]">
-              {domain}
-            </Badge>
-          </div>
+
+          {usage ? (
+            <p className="rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
+              <span className="font-semibold text-card-foreground">Usage </span>
+              {usage}
+            </p>
+          ) : null}
+
+          {principleLabels.length > 0 ? (
+            <ul className="flex flex-wrap gap-1.5" aria-label="UI laws">
+              {principleLabels.map((label) => (
+                <li key={label}>
+                  <Badge variant="outline" className="text-[0.65rem]">
+                    {label}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         {props && props.length > 0 ? (
@@ -208,31 +245,6 @@ export function ComponentPreviewCard({
           </dl>
         ) : null}
 
-        {variants && variants.length > 1 ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {variants.map((variant) => (
-              <Button
-                key={variant.id}
-                type="button"
-                size="sm"
-                variant={activeVariant === variant.id ? "default" : "outline"}
-                onClick={() => {
-                  setActiveVariant(variant.id);
-                  analytics.track(AnalyticsEvent.DesignSystemVariantChanged, {
-                    source: "component_preview_card",
-                    entryId: id,
-                    domain,
-                    level,
-                    status: "selected",
-                  });
-                }}
-                className="rounded-full"
-              >
-                {variant.label}
-              </Button>
-            ))}
-          </div>
-        ) : null}
       </CardHeader>
 
       <CardContent
@@ -252,7 +264,7 @@ export function ComponentPreviewCard({
           aria-label="Component preview"
         >
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 bg-muted/65 px-3 py-2 sm:px-4">
-            <div className="flex min-w-0 items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Preview
               </span>
@@ -262,6 +274,34 @@ export function ComponentPreviewCard({
               >
                 {previewViewport.label}
               </span>
+              {hasVariants ? (
+                <div
+                  className="flex min-w-0 flex-wrap items-center gap-1 rounded-full border border-border/70 bg-background/80 p-0.5"
+                  aria-label="Component variant"
+                >
+                  {variants?.map((variant) => (
+                    <Button
+                      key={variant.id}
+                      type="button"
+                      size="sm"
+                      variant={activeVariant === variant.id ? "default" : "ghost"}
+                      onClick={() => {
+                        setActiveVariant(variant.id);
+                        analytics.track(AnalyticsEvent.DesignSystemVariantChanged, {
+                          source: "component_preview_card",
+                          entryId: id,
+                          domain,
+                          level,
+                          status: "selected",
+                        });
+                      }}
+                      className="h-8 rounded-full px-3 text-[0.7rem]"
+                    >
+                      {variant.label}
+                    </Button>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {onPreviewModeChange ? (
