@@ -11,21 +11,12 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
-import {
-  Atom,
-  Boxes,
-  Search,
-  Tag,
-  Waypoints,
-  type LucideIcon,
-} from "lucide-react";
+import { Search, Tag } from "lucide-react";
 import {
   filterCatalog,
   type AtomicLevel,
   type CatalogDomain,
 } from "./catalog";
-import { LAWS_OF_UX_SITE } from "@/lib/laws-of-ux";
-import { UILAWS_SITE } from "../data/uilaws";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -46,46 +37,16 @@ import {
   parsePreviewMode,
   pickSelectedId,
 } from "../lib/design-system-state.mjs";
-
-const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism"];
-
-const TIER_OPTIONS: Array<{
-  level: AtomicLevel;
-  label: string;
-  Icon: LucideIcon;
-}> = [
-  { level: "atom", label: "Atom", Icon: Atom },
-  { level: "molecule", label: "Molecule", Icon: Waypoints },
-  { level: "organism", label: "Organism", Icon: Boxes },
-];
-
-const TIER_META = TIER_OPTIONS.reduce<
-  Record<AtomicLevel, { label: string; Icon: LucideIcon }>
->(
-  (acc, option) => {
-    acc[option.level] = { label: option.label, Icon: option.Icon };
-    return acc;
-  },
-  {
-    atom: { label: "Atom", Icon: Atom },
-    molecule: { label: "Molecule", Icon: Waypoints },
-    organism: { label: "Organism", Icon: Boxes },
-  },
-);
-
-const DOMAIN_SHORTCUTS = ["all", "product", "uilaws", "laws-of-ux"] as const;
-
-const EXTERNAL_REF_LINK_CLASS =
-  "cursor-pointer text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
-
-type CatalogReference = {
-  href?: string;
-  label: string;
-};
-
-function sourceLabelFromUrl(url: string) {
-  return url.replace(/^https?:\/\//, "").replace(/^www\./, "");
-}
+import {
+  ATOMIC_LEVELS,
+  TIER_META,
+  TIER_OPTIONS,
+  type PreviewMode,
+} from "../lib/design-system-options";
+import {
+  EXTERNAL_REF_LINK_CLASS,
+  getCatalogReferences,
+} from "../lib/design-system-references";
 
 /** Desktop keeps the catalog picker fixed-height while preview content scrolls with the page. */
 const DESKTOP_CATALOG_GRID_CLASS =
@@ -141,8 +102,8 @@ export function DesignSystemPreview() {
   const [domainFilter, setDomainFilter] = useState<CatalogDomain | "all">(
     initialDomain,
   );
-  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">(
-    parsePreviewMode(searchParams.get("preview")) as "desktop" | "tablet" | "mobile",
+  const [previewMode, setPreviewMode] = useState<PreviewMode>(
+    parsePreviewMode(searchParams.get("preview")) as PreviewMode,
   );
   const [selectedId, setSelectedId] = useState<string | null>(
     searchParams.get("selected"),
@@ -150,22 +111,10 @@ export function DesignSystemPreview() {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const previewAnchorRef = useRef<HTMLDivElement | null>(null);
   const hasMountedSelectionRef = useRef(false);
-  const catalogReferences = useMemo<CatalogReference[]>(() => {
-    const productCatalog = { label: t.refProductCatalog };
-    const uiLaws = {
-      href: UILAWS_SITE,
-      label: sourceLabelFromUrl(UILAWS_SITE),
-    };
-    const lawsOfUx = {
-      href: LAWS_OF_UX_SITE,
-      label: sourceLabelFromUrl(LAWS_OF_UX_SITE),
-    };
-
-    if (domainFilter === "product") return [productCatalog];
-    if (domainFilter === "uilaws") return [uiLaws];
-    if (domainFilter === "laws-of-ux") return [lawsOfUx];
-    return [productCatalog, uiLaws, lawsOfUx];
-  }, [domainFilter, t.refProductCatalog]);
+  const catalogReferences = useMemo(
+    () => getCatalogReferences(domainFilter, t.refProductCatalog),
+    [domainFilter, t.refProductCatalog],
+  );
   const analytics = useMemo(
     () =>
       createAnalyticsClient({
@@ -183,7 +132,7 @@ export function DesignSystemPreview() {
 
   const tierAvailability = useMemo<Record<AtomicLevel, number>>(() => {
     const domainAndQueryMatches = filterCatalog(query, "all", domainFilter);
-    return LEVELS.reduce<Record<AtomicLevel, number>>(
+    return ATOMIC_LEVELS.reduce<Record<AtomicLevel, number>>(
       (acc, level) => {
         acc[level] = domainAndQueryMatches.filter(
           (entry) => entry.level === level,
@@ -197,7 +146,7 @@ export function DesignSystemPreview() {
   const enabledLevelValues = useMemo<Array<AtomicLevel | "all">>(
     () => [
       "all",
-      ...LEVELS.filter((level) => tierAvailability[level] > 0),
+      ...ATOMIC_LEVELS.filter((level) => tierAvailability[level] > 0),
     ],
     [tierAvailability],
   );
@@ -308,12 +257,16 @@ export function DesignSystemPreview() {
         if (isInInteractive) return;
 
         if (event.altKey && !event.shiftKey && /^[1-4]$/.test(event.key)) {
-          const nextDomain = DOMAIN_SHORTCUTS[Number(event.key) - 1];
+          const nextDomain = DOMAIN_VALUES[Number(event.key) - 1] as
+            | CatalogDomain
+            | "all"
+            | undefined;
+          if (!nextDomain) return;
           setDomain(nextDomain);
           return;
         }
         if (event.altKey && event.shiftKey && /^[1-3]$/.test(event.key)) {
-          const nextLevel = LEVELS[Number(event.key) - 1];
+          const nextLevel = ATOMIC_LEVELS[Number(event.key) - 1];
           if (!nextLevel || tierAvailability[nextLevel] === 0) return;
           setLevelFilter(levelFilter === nextLevel ? "all" : nextLevel);
           return;

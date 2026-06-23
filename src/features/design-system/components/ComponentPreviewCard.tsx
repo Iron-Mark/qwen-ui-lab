@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { CopyPlus, Monitor, Smartphone, Tablet } from "lucide-react";
+import { CopyPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
   AtomicLevel,
@@ -31,12 +31,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-
-const LEVEL_VARIANT: Record<AtomicLevel, "default" | "secondary" | "outline"> = {
-  atom: "default",
-  molecule: "secondary",
-  organism: "outline",
-};
+import {
+  LEVEL_BADGE_VARIANT,
+  PREVIEW_MODE_OPTIONS,
+  PREVIEW_VIEWPORTS,
+  type PreviewMode,
+} from "../lib/design-system-options";
 
 interface ComponentPreviewCardProps {
   id: string;
@@ -60,43 +60,6 @@ interface ComponentPreviewCardProps {
   showSnippet?: boolean;
   denseHeader?: boolean;
 }
-
-type PreviewMode = "mobile" | "tablet" | "desktop";
-
-const PREVIEW_MODE_OPTIONS: Array<{
-  value: PreviewMode;
-  label: string;
-  Icon: typeof Monitor;
-}> = [
-  { value: "desktop", label: "Desktop preview", Icon: Monitor },
-  { value: "tablet", label: "Tablet preview", Icon: Tablet },
-  { value: "mobile", label: "Mobile preview", Icon: Smartphone },
-];
-
-const PREVIEW_VIEWPORTS: Record<
-  PreviewMode,
-  {
-    className: string;
-    label: string;
-    stageClassName: string;
-  }
-> = {
-  desktop: {
-    className: "max-w-none",
-    label: "Desktop canvas",
-    stageClassName: "min-h-28 p-4 sm:p-5",
-  },
-  tablet: {
-    className: "max-w-[42rem]",
-    label: "Tablet canvas",
-    stageClassName: "min-h-32 p-4 sm:p-5",
-  },
-  mobile: {
-    className: "max-w-[23rem]",
-    label: "Mobile canvas",
-    stageClassName: "min-h-40 p-4",
-  },
-};
 
 export function ComponentPreviewCard({
   id,
@@ -221,7 +184,7 @@ export function ComponentPreviewCard({
             ) : null}
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
-            <Badge variant={LEVEL_VARIANT[level]} className="capitalize">
+            <Badge variant={LEVEL_BADGE_VARIANT[level]} className="capitalize">
               {level}
             </Badge>
             <Badge variant="secondary" className="text-[0.65rem]">
