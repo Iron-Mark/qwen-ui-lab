@@ -11,7 +11,6 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bug,
-  ChevronRight,
   Check,
   Download,
   Eye,
@@ -24,14 +23,15 @@ import {
   Share2,
   Sparkles,
   Undo2,
-  UploadCloud,
   X,
 } from "lucide-react";
 import { ExportButton } from "@/features/export/components/ExportButton";
 import { GistExportButton } from "@/features/export/components/GistExportButton";
 import { RepoExportButton } from "@/features/export/components/RepoExportButton";
 import { SharedSummaryCard } from "@/features/share/components/SharedSummaryCard";
+import { SamplePicker } from "./SamplePicker";
 import { UploadDropzone } from "./UploadDropzone";
+import { WorkflowStepper } from "./WorkflowStepper";
 import { useToast } from "@/components/providers/Toast";
 import { useAccountIdentity } from "@/features/account/components/useAccountIdentity";
 import {
@@ -51,13 +51,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { downloadTextFile } from "@/lib/clipboard.client";
@@ -79,6 +72,13 @@ import {
   getReferenceSampleById,
   referenceSampleExportFilename,
 } from "../lib/reference-samples.mjs";
+import { getSampleCopy } from "../lib/sample-copy";
+import {
+  getCurrentFlowStepIndex,
+  shouldShowWorkflowOutput,
+  type UploadFlowStage,
+  type UploadProviderState,
+} from "../lib/upload-flow-progress";
 import {
   formatUploadSize,
   MAX_UPLOAD_BYTES,
@@ -170,8 +170,8 @@ type DetectionChangeOptions = {
   recordHistory?: boolean;
 };
 
-type Stage = "empty" | "uploaded" | "analyzed" | "generated";
-type ProviderState = "idle" | "loading" | "qwen" | "fallback" | "error";
+type Stage = UploadFlowStage;
+type ProviderState = UploadProviderState;
 
 const SAMPLE_USED_STORAGE_KEY = "qwen-ui-lab:upload-sample-used";
 
@@ -230,19 +230,6 @@ const DETECTION_KIND_OPTIONS = [
   "control",
   "content-block",
 ] as const;
-
-type SampleId = keyof UploadFlowDictionary["samples"];
-
-function sampleCopy(
-  sampleId: string,
-  copy: UploadFlowDictionary,
-): { label: string; hint: string } {
-  const samples = copy.samples;
-  if (sampleId in samples) {
-    return samples[sampleId as SampleId];
-  }
-  return { label: sampleId, hint: "" };
-}
 
 function isEditablePasteTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -1592,26 +1579,18 @@ export function UploadFlow({
 
   const showSampleScreenshotButton =
     !sampleUsed && !userUploadedOwn && !file;
-  const selectedSample = useMemo(
-    () => getReferenceSampleById(selectedSampleId),
-    [selectedSampleId],
-  );
-  const selectedSampleCopy = useMemo(
-    () => sampleCopy(selectedSample.id, t),
-    [selectedSample.id, t],
-  );
 
-  const currentFlowStepIndex = useMemo(() => {
-    if (providerState === "loading") return 1;
-    if (stage === "empty" || stage === "uploaded") return 0;
-    if (stage === "analyzed") return 2;
-    return 5;
-  }, [providerState, stage]);
+  const currentFlowStepIndex = useMemo(
+    () => getCurrentFlowStepIndex(stage, providerState),
+    [providerState, stage],
+  );
 
   const showSplitView = stage === "analyzed" || stage === "generated";
-  const showWorkflowOutput = Boolean(
-    file || artifact || providerState === "loading",
-  );
+  const showWorkflowOutput = shouldShowWorkflowOutput({
+    hasArtifact: Boolean(artifact),
+    hasFile: Boolean(file),
+    providerState,
+  });
 
   const analyzeProgress = useMemo(
     () => getAnalyzeProgressPercent(analyzeStep),
@@ -2198,7 +2177,12 @@ export function UploadFlow({
       acceptFile(sampleFile, "sample");
       setSampleUsed(true);
       persistSampleUsedInSession();
-      toast(interpolate(t.toastSampleLoaded, { label: sampleCopy(sample.id, t).label }), "success");
+      toast(
+        interpolate(t.toastSampleLoaded, {
+          label: getSampleCopy(sample.id, t).label,
+        }),
+        "success",
+      );
       analytics.track(AnalyticsEvent.UploadSampleLoaded, {
         source: "sample_picker",
         sampleId: sample.id,
@@ -2432,83 +2416,15 @@ export function UploadFlow({
 
             <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               {showSampleScreenshotButton ? (
-                <div
-                  className="grid min-w-0 gap-2 md:max-w-xl md:flex-1"
-                  data-testid="sample-picker"
-                >
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {t.tryBundledReference}
-                  </p>
-                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
-                    <Select
-                      value={selectedSample.id}
-                      onValueChange={(value) => {
-                        if (typeof value === "string") {
-                          setSelectedSampleId(value);
-                        }
-                      }}
-                      disabled={isBusy}
-                    >
-                      <SelectTrigger
-                        aria-label={t.tryBundledReference}
-                        className="min-h-11 w-full sm:min-w-64"
-                        data-testid="sample-select"
-                      >
-                        <SelectValue>
-                          {(value) =>
-                            sampleCopy(
-                              typeof value === "string" ? value : selectedSample.id,
-                              t,
-                            ).label
-                          }
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent data-testid="sample-select-content">
-                        {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
-                          const localized = sampleCopy(sample.id, t);
-                          return (
-                            <SelectItem
-                              key={sample.id}
-                              value={sample.id}
-                              label={localized.label}
-                              data-testid={`sample-select-option-${sample.id}`}
-                            >
-                              <span className="grid min-w-0 gap-0.5">
-                                <span className="truncate font-medium">
-                                  {localized.label}
-                                </span>
-                                <span className="truncate text-xs text-muted-foreground">
-                                  {localized.hint}
-                                </span>
-                              </span>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => void loadBundledSample(selectedSample.id)}
-                      className="min-h-11 gap-2 px-3 sm:w-auto"
-                      disabled={isBusy}
-                      aria-label={interpolate(t.loadSampleAria, {
-                        label: selectedSampleCopy.label,
-                      })}
-                    >
-                      <UploadCloud className="size-4" aria-hidden />
-                      {loadingSample ? t.loading : t.loadSampleButton}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedSampleCopy.hint}
-                  </p>
-                  {samplePathHintVariant === "show-path-hint" ? (
-                    <p className="text-xs text-muted-foreground">
-                      {t.samplePathHint}
-                    </p>
-                  ) : null}
-                </div>
+                <SamplePicker
+                  copy={t}
+                  disabled={isBusy}
+                  loading={loadingSample}
+                  onLoadSample={(sampleId) => void loadBundledSample(sampleId)}
+                  onSelectedSampleChange={setSelectedSampleId}
+                  selectedSampleId={selectedSampleId}
+                  showPathHint={samplePathHintVariant === "show-path-hint"}
+                />
               ) : null}
 
               <div
@@ -2606,60 +2522,11 @@ export function UploadFlow({
             data-testid="workflow-output-panel"
           >
             <CardContent className="p-6">
-              <div
-                data-testid="upload-flow-stepper"
-                className="mb-5 flex items-center gap-2 overflow-x-auto pb-2"
-                aria-label={t.progressStepsAria}
-              >
-                {(artifact?.steps ?? flowSteps).map((step, index) => {
-                  const stepState =
-                    index === currentFlowStepIndex
-                      ? "current"
-                      : index < currentFlowStepIndex
-                        ? "complete"
-                        : "locked";
-                  const isCurrent = stepState === "current";
-                  const isComplete = stepState === "complete";
-                  const isLocked = stepState === "locked";
-                  return (
-                    <div key={step.id} className="flex shrink-0 items-center gap-2">
-                      <Badge
-                        variant={isCurrent ? "default" : "outline"}
-                        data-testid="upload-flow-step"
-                        data-step-id={step.id}
-                        data-step-state={stepState}
-                        aria-current={isCurrent ? "step" : undefined}
-                        aria-disabled={isLocked ? true : undefined}
-                        className={cn(
-                          "h-7 rounded-full px-3 py-1 text-xs transition-colors",
-                          isCurrent &&
-                            "border-primary bg-primary text-primary-foreground shadow-sm",
-                          isComplete &&
-                            "border-border/70 bg-muted/50 text-muted-foreground",
-                          isLocked &&
-                            "border-border/40 bg-background/20 text-muted-foreground/45 opacity-70",
-                        )}
-                      >
-                        {isComplete ? (
-                          <Check className="size-3" aria-hidden="true" />
-                        ) : null}
-                        {step.label}
-                      </Badge>
-                      {index < 5 ? (
-                        <ChevronRight
-                          className={cn(
-                            "size-3",
-                            index < currentFlowStepIndex
-                              ? "text-muted-foreground/70"
-                              : "text-muted-foreground/35",
-                          )}
-                          aria-hidden
-                        />
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </div>
+              <WorkflowStepper
+                ariaLabel={t.progressStepsAria}
+                currentStepIndex={currentFlowStepIndex}
+                steps={artifact?.steps ?? flowSteps}
+              />
 
               {artifact ? (
                 <div className="grid gap-5">
