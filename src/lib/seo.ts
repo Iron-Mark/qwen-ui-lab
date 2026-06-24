@@ -16,7 +16,6 @@ export const APPLE_TOUCH_ICON = "/icons/apple-touch-icon.png";
 export const SITEMAP_STATIC_ROUTES = [
   "/",
   "/demo",
-  "/account",
   "/design-system",
   "/design-system/laws-of-ux",
   "/design-system/uilaws",

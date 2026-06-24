@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import { AccountModal } from "@/features/account/components/AccountModal";
 import { AuthProvider } from "@/features/account/components/AuthProvider";
 import { PwaInstallBanner } from "@/features/pwa/components/PwaInstallBanner";
 import { ServiceWorkerRegister } from "@/features/pwa/components/ServiceWorkerRegister";
@@ -36,6 +37,9 @@ export function ShellLayout({ children }: { children: ReactNode }) {
                     }
                   >
                     <Header />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <AccountModal />
                   </Suspense>
                   <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
                     {children}

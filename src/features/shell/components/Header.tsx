@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
 import { AppearanceMenu } from "./AppearanceMenu";
@@ -12,6 +12,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import { localizedHref } from "@/lib/i18n";
 import { useLocale } from "@/lib/i18n/use-locale.client";
+import { buildAccountModalHref } from "@/features/account/components/AccountModal";
 import { AccountNavLabel } from "@/features/account/components/AccountNavLabel";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
@@ -24,8 +25,19 @@ const DemoModeSnackbar = dynamic(
 
 export function Header() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { locale, dict } = useLocale();
   const t = dict.header;
+  const accountOpen = searchParams.get("account") === "1";
+  const accountHref = useMemo(
+    () =>
+      buildAccountModalHref(
+        pathname,
+        new URLSearchParams(searchParams.toString()),
+        true,
+      ),
+    [pathname, searchParams],
+  );
   const designSystemVariant = useMemo(() => {
     const config = createExperimentConfig(process.env);
     return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
@@ -95,17 +107,18 @@ export function Header() {
         </nav>
         <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-2">
           <Link
-            href={localizedHref("/account", locale)}
+            href={accountHref}
             aria-label={t.navAccountAria}
+            aria-haspopup="dialog"
+            aria-expanded={accountOpen}
             data-testid="header-account-link"
             className={cn(
               buttonVariants({
-                variant: pathname.startsWith("/account") ? "secondary" : "ghost",
+                variant: accountOpen ? "secondary" : "ghost",
                 size: "lg",
               }),
               "size-11 min-h-11 shrink-0 gap-0 px-0 md:w-auto md:gap-2 md:px-3",
             )}
-            aria-current={pathname.startsWith("/account") ? "page" : undefined}
           >
             <UserRound className="size-4 shrink-0" aria-hidden />
             <AccountNavLabel

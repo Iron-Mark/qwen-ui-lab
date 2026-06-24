@@ -182,6 +182,9 @@ export function DesignSystemPreview() {
       previewMode,
       lang: locale,
     });
+    if (searchParams.get("account") === "1") {
+      nextParams.set("account", "1");
+    }
     const current = searchParams.toString();
     const next = nextParams.toString();
     if (current === next) return;

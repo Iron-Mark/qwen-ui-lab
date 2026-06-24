@@ -45,11 +45,25 @@ test("uilaws redirect preserves ?lang=zh", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "原子组件实验室" })).toBeVisible();
 });
 
-test("/account renders zh copy with ?lang=zh", async ({ page }) => {
+test("/account redirects to zh account modal with ?lang=zh", async ({ page }) => {
   await page.goto("/account?lang=zh");
 
-  await expect(page.getByRole("heading", { name: "个性化此浏览器标签页" })).toBeVisible();
-  await expect(page.getByTestId("account-mode-badge")).toHaveText("访客");
+  await expect(page).toHaveURL((url) => {
+    return (
+      url.pathname === "/" &&
+      url.searchParams.get("account") === "1" &&
+      url.searchParams.get("lang") === "zh"
+    );
+  });
+  await expect(page.getByTestId("account-modal")).toBeVisible();
+
+  await expect(
+    page.getByRole("heading", {
+      name: "资料",
+      level: 2,
+    }),
+  ).toBeVisible();
+  await expect(page.getByTestId("account-mode-badge")).toHaveText("访客会话");
   await expect(page.getByTestId("header-account-link")).toContainText("访客");
 });
 
