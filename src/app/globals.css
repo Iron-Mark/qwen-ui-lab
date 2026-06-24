@@ -532,7 +532,13 @@ body {
 [data-sonner-toast][data-styled="true"] {
   background: var(--popover) !important;
   border-color: var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow:
+    0 14px 34px color-mix(in oklch, var(--foreground) 12%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--border) 80%, transparent) !important;
   color: var(--popover-foreground) !important;
+  gap: 0.625rem !important;
+  padding: 0.875rem 1rem !important;
   pointer-events: none !important;
 }
 
@@ -544,6 +550,11 @@ body {
 [data-sonner-toast][data-styled="true"] [data-description],
 [data-sonner-toaster] [data-sonner-toast] [data-description] {
   color: var(--popover-foreground) !important;
+  line-height: 1.45 !important;
+}
+
+[data-sonner-toast][data-styled="true"] [data-description] {
+  margin-top: 0.25rem !important;
 }
 
 [data-sonner-toaster][data-sonner-theme="light"] [data-sonner-toast][data-type="success"] {

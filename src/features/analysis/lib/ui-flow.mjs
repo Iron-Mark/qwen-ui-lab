@@ -244,7 +244,19 @@ function createGeneratedCodeFromDetections(fileName, detections) {
   const responsiveIntent = buildCorrectedResponsiveBlueprint(detections);
   const screenIntent = buildCorrectedScreenIntentBlueprint(detections);
 
-  return `const designTokens = ${JSON.stringify(tokens, null, 2)};
+  return `import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const designTokens = ${JSON.stringify(tokens, null, 2)};
 
 const sourceFrame = ${JSON.stringify(source, null, 2)};
 
@@ -268,12 +280,230 @@ const groupedElementIds = new Set(
     ...correctedPatterns.actionClusters,
     ...correctedPatterns.tabSets,
     ...correctedPatterns.dialogPanels,
+    ...correctedPatterns.emptyStates,
   ].flatMap((pattern) => pattern.children),
 );
 
 const correctedElementById = new Map(
   correctedElements.map((element) => [element.id, element]),
 );
+
+const shadcnPrimitiveMap = {
+  "top-navigation": "semantic nav + Button ghost controls",
+  "side-navigation": "aside navigation + Button ghost controls",
+  "bottom-navigation": "mobile nav + Button icon controls",
+  "search-field": "Input with visible label",
+  "form-field": "Input with helper text",
+  "primary-action": "Button",
+  "icon-action": "Button size icon",
+  "metric-card": "Card + Badge trend",
+  "content-card": "Card",
+  "chart-panel": "Card with accessible chart summary",
+  "list-row": "Card row",
+  "data-table": "semantic table inside Card",
+  "tab-set": "Tabs",
+  "dialog-panel": "Dialog-ready Card surface",
+  "empty-state": "Card with centered recovery action",
+};
+
+const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
+
+export default function GeneratedScreenScaffold() {
+  return (
+    <main
+      aria-label="Generated production scaffold from ${safeName}"
+      className="min-h-dvh bg-background text-foreground"
+    >
+      <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
+        <header className="grid gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline">Screenshot scaffold</Badge>
+            <Badge variant="secondary">{screenIntent.label}</Badge>
+          </div>
+          <div className="grid gap-2">
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Generated interface shell
+            </h1>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+              Built from {correctedElements.length} reviewed detections with shadcn-style primitives,
+              responsive sections, and semantic landmarks ready for real data wiring.
+            </p>
+          </div>
+        </header>
+
+        {generatedSections.length ? (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {generatedSections.map((section) => (
+              <ScaffoldSection key={section.id} section={section} />
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Review needed</CardTitle>
+              <CardDescription>
+                No strong grouped pattern survived editing. Start from the active primitive list below.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-2">
+              {correctedElements.map((element) => (
+                <PrimitivePreview key={element.id} element={element} />
+              ))}
+            </CardContent>
+          </Card>
+        )}
+      </section>
+    </main>
+  );
+}
+
+function ScaffoldSection({ section }) {
+  if (section.kind === "tab-set") {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{section.title}</CardTitle>
+          <CardDescription>{section.description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="tab-1">
+            <TabsList aria-label={section.title}>
+              {section.items.slice(0, 4).map((item, index) => (
+                <TabsTrigger key={item.id} value={"tab-" + (index + 1)}>
+                  {item.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {section.items.slice(0, 4).map((item, index) => (
+              <TabsContent key={item.id} value={"tab-" + (index + 1)}>
+                <PrimitivePreview element={item} />
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (section.kind === "form-group") {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{section.title}</CardTitle>
+          <CardDescription>{section.description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="grid gap-4">
+            {section.items.map((item, index) =>
+              /action|button/.test(item.componentRole ?? "") ? (
+                <Button key={item.id} type="button" className="w-fit">
+                  {item.label}
+                </Button>
+              ) : (
+                <label key={item.id} className="grid gap-2 text-sm font-medium">
+                  Field {index + 1}
+                  <Input placeholder={item.label} />
+                </label>
+              ),
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle>{section.title}</CardTitle>
+            <CardDescription>{section.description}</CardDescription>
+          </div>
+          <Badge variant="outline">{section.primitive}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className={section.layoutClass}>
+        {section.items.map((item) => (
+          <PrimitivePreview key={item.id} element={item} />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PrimitivePreview({ element }) {
+  const role = element.componentRole || element.primitive || element.kind;
+  const label = element.label || primitiveLabel(role);
+  const confidence = Math.round((element.confidence ?? 0.5) * 100);
+
+  if (/primary-action|icon-action/.test(role)) {
+    return (
+      <Button type="button" variant={role === "icon-action" ? "outline" : "default"}>
+        {label}
+      </Button>
+    );
+  }
+
+  if (/search-field|form-field/.test(role)) {
+    return (
+      <label className="grid gap-2 text-sm font-medium">
+        {label}
+        <Input placeholder="Connect real value" />
+      </label>
+    );
+  }
+
+  return (
+    <article className="rounded-lg border bg-card p-3 text-card-foreground">
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-medium">{label}</p>
+        <Badge variant="secondary">{confidence}%</Badge>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-muted-foreground">
+        Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+      </p>
+    </article>
+  );
+}
+
+function buildGeneratedSections(patterns, elements) {
+  const byId = new Map(elements.map((element) => [element.id, enrichElement(element)]));
+  const groups = [
+    ...patterns.appShells.map((pattern) => sectionFromPattern(pattern, byId, "app-shell", "Application shell", "Navigation and page regions grouped as landmarks.", "grid gap-3")),
+    ...patterns.dialogPanels.map((pattern) => sectionFromPattern(pattern, byId, "dialog-panel", "Dialog surface", "Modal-ready content with close and action affordances.", "grid gap-3")),
+    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse fallback content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
+    ...patterns.repeatedLists.map((pattern) => sectionFromPattern(pattern, byId, "repeated-list", "Repeated list", "Rows share rhythm, spacing, and action placement.", "grid gap-2")),
+    ...patterns.repeatedGrids.map((pattern) => sectionFromPattern(pattern, byId, "repeated-grid", "Card grid", "Repeated cards snapped into a responsive grid.", "grid gap-3 sm:grid-cols-2")),
+    ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
+    ...patterns.formGroups.map((pattern) => sectionFromPattern(pattern, byId, "form-group", "Form group", "Inputs and actions arranged as a usable form.", "grid gap-3")),
+    ...patterns.dataTables.map((pattern) => sectionFromPattern(pattern, byId, "data-table", "Data table", "Table-like regions preserved for row and column wiring.", "grid gap-2")),
+    ...patterns.charts.map((pattern) => sectionFromPattern(pattern, byId, "chart-panel", "Chart panel", "Chart region exported with accessible summary text.", "grid gap-3")),
+    ...patterns.actionClusters.map((pattern) => sectionFromPattern(pattern, byId, "action-cluster", "Action cluster", "Controls grouped as a toolbar or segmented control.", "flex flex-wrap gap-2")),
+    ...patterns.tabSets.map((pattern) => sectionFromPattern(pattern, byId, "tab-set", "Tabs", "Detected tabs become a real Tabs primitive.", "grid gap-3")),
+  ];
+  return groups.filter((section) => section.items.length);
+}
+
+function sectionFromPattern(pattern, byId, primitive, title, description, layoutClass) {
+  return {
+    id: pattern.id,
+    kind: primitive,
+    primitive,
+    title,
+    description,
+    layoutClass,
+    items: (pattern.children ?? []).map((id) => byId.get(id)).filter(Boolean),
+  };
+}
+
+function enrichElement(element) {
+  const role = element.componentRole || element.primitive || element.kind;
+  return {
+    ...element,
+    label: primitiveLabel(role),
+  };
+}
 
 export function CorrectedScreenshotScaffold() {
   return (
@@ -288,7 +518,7 @@ export function CorrectedScreenshotScaffold() {
         <p className="text-sm opacity-75">
           {correctedElements.length} reviewed deterministic elements drive this scaffold.
           {" "}
-          {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
+          {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.emptyStates.length} empty states, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} with {responsiveIntent.breakpoints.join(" / ")} breakpoints.
@@ -381,6 +611,44 @@ export function CorrectedScreenshotScaffold() {
                     </div>
                   ) : null;
                 })}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.emptyStates.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.emptyStates.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected empty state"
+              className="grid min-h-48 place-items-center border p-4 text-center"
+              role="status"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <div className="grid max-w-sm gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase">Empty state</p>
+                  <p className="text-sm font-medium">Fallback content with recovery action</p>
+                </div>
+                <div className="grid gap-2 rounded border p-3" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
+                  {pattern.children.map((childId) => {
+                    const child = correctedElementById.get(childId);
+                    return child ? (
+                      <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
+                        {renderCorrectedPrimitive(child, designTokens)}
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+                <button
+                  type="button"
+                  className="mx-auto w-fit rounded px-3 py-2 text-xs font-medium"
+                  style={{ backgroundColor: designTokens.accent, color: designTokens.accentForeground }}
+                >
+                  Recovery action
+                </button>
               </div>
             </section>
           ))}
@@ -857,6 +1125,7 @@ function buildCorrectedPatternBlueprint(detections, elements) {
   const actionClusters = detections.layoutTree?.patterns?.actionClusters ?? [];
   const tabSets = detections.layoutTree?.patterns?.tabSets ?? [];
   const dialogPanels = detections.layoutTree?.patterns?.dialogPanels ?? [];
+  const emptyStates = detections.layoutTree?.patterns?.emptyStates ?? [];
 
   return {
     textLines:
@@ -997,6 +1266,22 @@ function buildCorrectedPatternBlueprint(detections, elements) {
           modalType: pattern.modalType ?? "centered-dialog",
           confidence: pattern.confidence ?? 0.5,
           childCount: pattern.childCount ?? Math.max(0, children.length - 1),
+          centeredness: pattern.centeredness ?? null,
+        };
+      })
+      .filter(Boolean),
+    emptyStates: emptyStates
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 1) return null;
+        return {
+          id: pattern.id ?? `empty-state-${index + 1}`,
+          children,
+          axis: pattern.axis ?? "centered",
+          confidence: pattern.confidence ?? 0.5,
+          textCount: pattern.textCount ?? 0,
+          actionCount: pattern.actionCount ?? 0,
+          supportCount: pattern.supportCount ?? 0,
           centeredness: pattern.centeredness ?? null,
         };
       })

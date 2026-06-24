@@ -12,11 +12,14 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Bug,
   Check,
+  CircleAlert,
   Download,
   Eye,
   EyeOff,
   FileText,
   Grid2X2,
+  Info,
+  Loader2,
   PackageOpen,
   Redo2,
   RotateCcw,
@@ -2234,8 +2237,9 @@ export function UploadFlow({
       {providerState === "fallback" ? (
         <Alert
           role="status"
-          className="mb-4 border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-100"
+          className="mb-4 border-amber-500/40 bg-amber-500/10 text-amber-900 shadow-sm dark:text-amber-100"
         >
+          <Info className="size-4" aria-hidden />
           <AlertTitle>{t.alertOfflineTitle}</AlertTitle>
           <AlertDescription>
             {providerMessage} {t.alertOfflineBody}
@@ -2410,7 +2414,12 @@ export function UploadFlow({
             ) : null}
 
             {error ? (
-              <Alert variant="destructive" className="mt-4">
+              <Alert
+                variant="destructive"
+                className="mt-4 border-destructive/35 bg-destructive/10 shadow-sm"
+              >
+                <CircleAlert className="size-4" aria-hidden />
+                <AlertTitle>{t.failureTitle}</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
@@ -2447,8 +2456,25 @@ export function UploadFlow({
             </div>
 
             {providerState === "loading" ? (
-              <Card className="mt-4 bg-background" role="status">
-                <CardContent className="space-y-3 p-4">
+              <Card
+                className="mt-4 border-primary/20 bg-primary/5 shadow-sm"
+                role="status"
+                aria-live="polite"
+              >
+                <CardContent className="space-y-4 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-primary shadow-sm ring-1 ring-primary/20">
+                      <Loader2 className="size-4 animate-spin" aria-hidden />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-card-foreground">
+                        {t.loadingTitle}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        {t.loadingBody}
+                      </p>
+                    </div>
+                  </div>
                   <Progress value={analyzeProgress}>
                     <ProgressLabel>
                       {interpolate(t.progressLabel, {
@@ -2489,8 +2515,10 @@ export function UploadFlow({
             {stage === "analyzed" ? (
               <Alert
                 role="status"
-                className="mt-4 border-success/30 bg-success/10 text-success"
+                className="mt-4 border-success/30 bg-success/10 text-success shadow-sm"
               >
+                <Check className="size-4" aria-hidden />
+                <AlertTitle>{t.progressComplete}</AlertTitle>
                 <AlertDescription className="font-medium text-success">
                   {providerState === "qwen"
                     ? t.statusQwenComplete
@@ -2501,8 +2529,10 @@ export function UploadFlow({
             {stage === "generated" ? (
               <Alert
                 role="status"
-                className="mt-4 border-success/30 bg-success/10 text-success"
+                className="mt-4 border-success/30 bg-success/10 text-success shadow-sm"
               >
+                <Check className="size-4" aria-hidden />
+                <AlertTitle>{t.progressComplete}</AlertTitle>
                 <AlertDescription className="font-medium text-success">
                   {t.statusPreviewReady}
                 </AlertDescription>
@@ -2510,7 +2540,9 @@ export function UploadFlow({
             ) : null}
 
             {providerMessage && providerState === "qwen" ? (
-              <Alert className="mt-4 border-success/30 bg-success/10 text-success">
+              <Alert className="mt-4 border-success/30 bg-success/10 text-success shadow-sm">
+                <Check className="size-4" aria-hidden />
+                <AlertTitle>{t.progressComplete}</AlertTitle>
                 <AlertDescription className="text-success">{providerMessage}</AlertDescription>
               </Alert>
             ) : null}

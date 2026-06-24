@@ -468,6 +468,76 @@ function createSyntheticDialogScreenshot(width, height) {
   return { data, width, height, sourceWidth: width, sourceHeight: height };
 }
 
+function createSyntheticEmptyStateScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const centerX = Math.floor(width * 0.5);
+  const iconRadius = Math.max(10, Math.floor(Math.min(width, height) * 0.045));
+  const iconY = Math.floor(height * 0.34);
+  const titleWidth = Math.floor(width * 0.42);
+  const titleHeight = Math.max(10, Math.floor(height * 0.045));
+  const titleLeft = centerX - Math.floor(titleWidth / 2);
+  const titleTop = Math.floor(height * 0.43);
+  const bodyWidth = Math.floor(width * 0.58);
+  const bodyHeight = Math.max(8, Math.floor(height * 0.028));
+  const bodyLeft = centerX - Math.floor(bodyWidth / 2);
+  const bodyTop = Math.floor(height * 0.52);
+  const buttonWidth = Math.floor(width * 0.28);
+  const buttonHeight = Math.max(16, Math.floor(height * 0.07));
+  const buttonLeft = centerX - Math.floor(buttonWidth / 2);
+  const buttonTop = Math.floor(height * 0.64);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 250, 252];
+      const iconDistance = Math.hypot(x - centerX, y - iconY);
+
+      if (iconDistance <= iconRadius) {
+        color = [37, 99, 235];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + titleWidth &&
+        y >= titleTop &&
+        y <= titleTop + titleHeight
+      ) {
+        color = [15, 23, 42];
+      }
+      if (
+        x >= bodyLeft &&
+        x <= bodyLeft + bodyWidth &&
+        y >= bodyTop &&
+        y <= bodyTop + bodyHeight
+      ) {
+        color = [100, 116, 139];
+      }
+      if (
+        x >= bodyLeft + Math.floor(bodyWidth * 0.16) &&
+        x <= bodyLeft + Math.floor(bodyWidth * 0.82) &&
+        y >= bodyTop + Math.floor(height * 0.045) &&
+        y <= bodyTop + Math.floor(height * 0.045) + bodyHeight
+      ) {
+        color = [148, 163, 184];
+      }
+      if (
+        x >= buttonLeft &&
+        x <= buttonLeft + buttonWidth &&
+        y >= buttonTop &&
+        y <= buttonTop + buttonHeight
+      ) {
+        color = [37, 99, 235];
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: width, sourceHeight: height };
+}
+
 const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
   <title>Sign in</title>
   <desc>Email and password authentication form</desc>
@@ -737,6 +807,11 @@ test("inspectImageDataPixels detects grouped form flows offline", () => {
   assert.equal(inspection.quality.patterns.formGroups >= 1, true);
   assert.equal(inspection.layoutTree.responsive.mode, "form-flow");
   assert.equal(inspection.layoutTree.screenIntent.id, "auth");
+  assert.ok(
+    inspection.elements
+      .filter((element) => formGroup.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "form-group")),
+  );
 });
 
 test("inspectImageDataPixels detects aligned data tables offline", () => {
@@ -754,6 +829,11 @@ test("inspectImageDataPixels detects aligned data tables offline", () => {
   assert.equal(inspection.quality.patterns.dataTables >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "data-table");
   assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+  assert.ok(
+    inspection.elements
+      .filter((element) => table.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "data-table")),
+  );
 });
 
 test("inspectImageDataPixels detects bar chart series offline", () => {
@@ -771,6 +851,11 @@ test("inspectImageDataPixels detects bar chart series offline", () => {
   assert.equal(inspection.quality.patterns.charts >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "analytics-chart");
   assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+  assert.ok(
+    inspection.elements
+      .filter((element) => chart.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "chart-series")),
+  );
 });
 
 test("inspectImageDataPixels detects horizontal action clusters offline", () => {
@@ -805,6 +890,11 @@ test("inspectImageDataPixels detects tab sets offline", () => {
   assert.equal(inspection.layoutTree.patterns.actionClusters.length, 0);
   assert.equal(inspection.quality.patterns.tabSets >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "tabbed-content");
+  assert.ok(
+    inspection.elements
+      .filter((element) => tabSet.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "tab-set")),
+  );
 });
 
 test("inspectImageDataPixels detects centered dialog panels offline", () => {
@@ -823,6 +913,35 @@ test("inspectImageDataPixels detects centered dialog panels offline", () => {
   assert.equal(inspection.quality.patterns.dialogPanels >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "modal-dialog");
   assert.equal(inspection.layoutTree.screenIntent.id, "modal");
+  assert.ok(
+    inspection.elements
+      .filter((element) => dialog.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "dialog-panel")),
+  );
+});
+
+test("inspectImageDataPixels detects centered empty states offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticEmptyStateScreenshot(360, 260));
+
+  assert.ok(inspection.elements.length >= 1);
+  assert.ok(inspection.layoutTree.patterns.emptyStates.length >= 1);
+  const emptyState = inspection.layoutTree.patterns.emptyStates[0];
+  assert.equal(emptyState.kind, "empty-state");
+  assert.equal(emptyState.axis, "centered");
+  assert.ok(emptyState.children.length >= 1);
+  assert.ok(emptyState.textCount >= 1);
+  assert.ok(emptyState.actionCount >= 1);
+  assert.ok(emptyState.centeredness >= 0.55);
+  assert.ok(emptyState.confidence >= 0.64);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "empty-state"), true);
+  assert.equal(inspection.quality.patterns.emptyStates >= 1, true);
+  assert.equal(inspection.layoutTree.responsive.mode, "empty-state");
+  assert.equal(inspection.layoutTree.screenIntent.id, "empty");
+  assert.ok(
+    inspection.elements
+      .filter((element) => emptyState.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "empty-state")),
+  );
 });
 
 test("inspectSvgMarkup extracts labels, counts, viewBox, and archetype hints", () => {
@@ -1005,6 +1124,12 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const designTokens/);
   assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
+  assert.match(advanced.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
+  assert.match(advanced.generatedCode, /export default function GeneratedScreenScaffold/);
+  assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
+  assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(advanced.generatedCode, /CardTitle/);
+  assert.match(advanced.generatedCode, /Input placeholder="Connect real value"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
   assert.match(advanced.generatedCode, /Responsive intent/);
@@ -1235,6 +1360,29 @@ test("buildAdvancedOfflineOverrides renders dialog-panel patterns as scaffold re
   assert.match(advanced.generatedCode, /dialog panels/);
 });
 
+test("buildAdvancedOfflineOverrides renders empty-state patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticEmptyStateScreenshot(360, 260),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "no-results-empty.png",
+      type: "image/png",
+      size: 512000,
+      width: 360,
+      height: 260,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "360x260px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Empty state/i);
+  assert.match(advanced.generatedCode, /empty-state/);
+  assert.match(advanced.generatedCode, /No results yet/);
+  assert.match(advanced.generatedCode, /role="status"/);
+  assert.match(advanced.generatedCode, /empty states/);
+});
+
 test("buildUiFlowArtifact uses known sample registry for dashboard-reference.svg", () => {
   const file = getSampleReferenceFile();
   const artifact = buildUiFlowArtifact(file);
@@ -1340,7 +1488,7 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
 });
 
 const REGENERATED_PATTERN_SUMMARY_RE =
-  /app shell patterns, .* dialog panels, .* repeated list patterns, .* repeated grid patterns, .* stat rows, .* form groups, .* data tables, .* chart series, .* action clusters, and .* tab sets remain grouped/;
+  /app shell patterns, .* dialog panels, .* empty states, .* repeated list patterns, .* repeated grid patterns, .* stat rows, .* form groups, .* data tables, .* chart series, .* action clusters, and .* tab sets remain grouped/;
 
 test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
@@ -1355,6 +1503,12 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
 
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
+  assert.match(regenerated.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
+  assert.match(regenerated.generatedCode, /export default function GeneratedScreenScaffold/);
+  assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
+  assert.match(regenerated.generatedCode, /CardTitle/);
+  assert.match(regenerated.generatedCode, /TabsList/);
+  assert.match(regenerated.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(regenerated.generatedCode, /appShells/);
   assert.match(regenerated.generatedCode, /Detected app shell/);
   assert.match(regenerated.generatedCode, /App shell/);
@@ -1552,6 +1706,27 @@ test("regenerateArtifactFromDetections preserves dialog-panel scaffold groups", 
   assert.match(regenerated.generatedCode, /Dialog panel/);
   assert.match(regenerated.generatedCode, /role="dialog"/);
   assert.match(regenerated.generatedCode, /aria-modal="true"/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves empty-state scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticEmptyStateScreenshot(360, 260),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "no-results-empty.png",
+    type: "image/png",
+    size: 8192,
+    width: 360,
+    height: 260,
+    offlineInspection,
+  });
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /emptyStates/);
+  assert.match(regenerated.generatedCode, /Detected empty state/);
+  assert.match(regenerated.generatedCode, /Empty state/);
+  assert.match(regenerated.generatedCode, /role="status"/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/card";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -47,6 +48,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type {
   ActivityData,
@@ -145,14 +151,14 @@ export function DashboardSampleDialog({
   return (
     <Dialog>
       <section
-        className="mb-5 rounded-xl border border-border/70 bg-card/85 p-3 shadow-sm md:mb-8 md:p-4"
+        className="mb-5 rounded-2xl border border-border/70 bg-background/80 p-3 shadow-sm md:mb-8"
         data-testid="example-output-section"
         aria-labelledby="dashboard-sample-heading"
       >
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex min-w-0 gap-3 sm:gap-4">
             <DashboardSampleThumbnail />
-            <div className="min-w-0 py-1">
+            <div className="min-w-0 py-1 sm:py-2">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                 <Sparkles className="size-3.5" aria-hidden />
                 Sample output
@@ -170,33 +176,55 @@ export function DashboardSampleDialog({
           </div>
 
           <div className="flex flex-col gap-2 min-[420px]:flex-row md:shrink-0">
-            <Link
-              href="/demo#upload-flow"
-              className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-            >
-              Load sample
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
-            <DialogTrigger
-              type="button"
-              aria-haspopup="dialog"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "gap-2",
-              )}
-            >
-              <Eye className="size-4" aria-hidden />
-              Preview
-            </DialogTrigger>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Link
+                    href="/demo#upload-flow"
+                    className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+                  />
+                }
+              >
+                Load sample
+                <ArrowRight className="size-4" aria-hidden />
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                Load the dashboard reference into the analyzer.
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <DialogTrigger
+                    type="button"
+                    aria-haspopup="dialog"
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "gap-2",
+                    )}
+                  />
+                }
+              >
+                <Eye className="size-4" aria-hidden />
+                Preview
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                Open the full generated sample without leaving this page.
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </section>
 
       <DialogContent
-        className="flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:h-[min(88dvh,52rem)] sm:max-w-6xl"
+        className="flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col gap-0 overflow-hidden p-0 sm:h-[min(88dvh,52rem)] sm:max-w-6xl sm:rounded-2xl"
         data-testid="dashboard-sample-dialog"
       >
-        <DialogHeader className="shrink-0 border-b border-border px-4 py-4 pr-12 sm:px-5">
+        <DialogHeader className="shrink-0 border-b border-border bg-muted/20 px-4 py-4 pr-12 sm:px-5">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <PanelsTopLeft className="size-3.5 text-primary" aria-hidden />
+            Sample preview
+          </div>
           <DialogTitle className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             Dashboard sample
           </DialogTitle>
@@ -366,10 +394,18 @@ export function DashboardSampleDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mx-0 mb-0 shrink-0 rounded-none border-t border-border bg-background/95 px-4 py-3 sm:px-5">
+        <DialogFooter className="mx-0 mb-0 shrink-0 rounded-none border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-5">
+          <DialogClose
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "min-h-11",
+            )}
+          >
+            Close
+          </DialogClose>
           <Link
             href="/demo#upload-flow"
-            className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+            className={cn(buttonVariants({ size: "lg" }), "min-h-11 gap-2")}
           >
             <UploadCloud className="size-4" aria-hidden />
             Load into workflow
@@ -383,7 +419,7 @@ export function DashboardSampleDialog({
 function DashboardSampleThumbnail() {
   return (
     <div
-      className="hidden h-20 w-32 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-background shadow-inner sm:block"
+      className="hidden h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-border/70 bg-muted/30 shadow-inner sm:block"
       aria-hidden="true"
     >
       <div className="grid h-full grid-cols-[0.8fr_1fr] gap-1 p-2">

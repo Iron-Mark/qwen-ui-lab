@@ -189,6 +189,10 @@ export const en = {
     errorNoImage: "Choose an image before running analysis.",
     errorSampleLoad:
       "Could not load the sample screenshot. Upload your own image instead.",
+    failureTitle: "Could not continue",
+    loadingTitle: "Building preview",
+    loadingBody:
+      "Reading the screenshot, mapping layout, and preparing the generated component.",
     tryBundledReference: "Try a bundled reference",
     loadSampleAria: "Load {label} sample",
     loadSampleButton: "Load reference",
