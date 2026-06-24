@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Box, CopyPlus, FileCode2 } from "lucide-react";
+import { Box, FileCode2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
   AtomicLevel,
@@ -13,7 +13,6 @@ import type {
 import { lawNames, type UiLawId } from "../data/uilaws";
 import { ExportButton } from "@/features/export/components/ExportButton";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { useToast } from "@/components/providers/Toast";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { SnippetPreview } from "@/features/analysis/components/SnippetPreview";
@@ -86,7 +85,6 @@ export function ComponentPreviewCard({
 }: ComponentPreviewCardProps) {
   const pathname = usePathname();
   const observability = useObservability();
-  const { toast } = useToast();
   const { mode } = useProviderMode();
   const principleLabels = principles ? lawNames(principles) : [];
   const filename = exportFilename ?? `${id}.tsx`;
@@ -103,10 +101,6 @@ export function ComponentPreviewCard({
     providerMode: mode,
     route: pathname ?? "/",
   });
-  const importPath = sourcePath
-    ? sourcePath.replace(/\.tsx$/, "")
-    : "path/to/component";
-  const importLine = `import { Component } from "@/components/${importPath}";`;
   const previewViewport = PREVIEW_VIEWPORTS[previewMode];
   const tierMeta = TIER_META[level];
   const TierIcon = tierMeta.Icon;
@@ -117,15 +111,6 @@ export function ComponentPreviewCard({
       : domain === "laws-of-ux"
         ? "Laws of UX"
         : "Product";
-  const copyImportAndSnippet = async () => {
-    try {
-      await navigator.clipboard.writeText(`${importLine}\n\n${activeSnippet}`);
-      toast("Import and snippet copied", "success");
-    } catch {
-      toast("Copy failed. Try again.", "error");
-    }
-  };
-
   useEffect(() => {
     if (!deferPreview || canRenderPreview) return;
     const host = previewHostRef.current;
@@ -349,17 +334,6 @@ export function ComponentPreviewCard({
           showCopy={false}
           headerActions={
             <div className="flex flex-wrap items-center gap-1.5">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={copyImportAndSnippet}
-                aria-label="Copy import line and snippet"
-                className="min-h-9 justify-center px-3 text-[0.75rem]"
-              >
-                <CopyPlus className="mr-1.5 size-3.5" aria-hidden="true" />
-                Copy import
-              </Button>
               <ExportButton
                 text={activeSnippet}
                 variant="copy"

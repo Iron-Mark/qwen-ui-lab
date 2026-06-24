@@ -241,6 +241,8 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
         description,
         files: fileMap,
         componentName: blueprint.componentName,
+        blueprint,
+        dependencies,
       }),
     },
     { name: componentPath, content },
@@ -255,27 +257,47 @@ function buildProductionScaffoldReadme({
   description = "qwen-ui-lab scaffold export",
   files,
   componentName,
+  blueprint,
+  dependencies = [],
 }) {
+  const screenIntent = blueprint?.screenIntent?.label ?? "Generated UI";
+  const regionCount = blueprint?.layoutRegions?.length ?? 0;
+  const elementCount = blueprint?.detectedElements?.length ?? 0;
+  const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
+  const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive scaffold";
+
   return `# qwen-ui-lab production scaffold
 
 ${description}
 
-This bundle was generated from offline screenshot detection. It is structured for review, edits, and source control instead of a one-off paste.
+This bundle was generated from offline screenshot detection. It is meant to be reviewed, imported, and iterated in source control rather than pasted as a one-off snippet.
+
+## What changed from the screenshot
+
+- Screen intent: ${screenIntent}
+- ${regionCount} layout region${regionCount === 1 ? "" : "s"} and ${elementCount} detected element${elementCount === 1 ? "" : "s"} were converted into React sections.
+- ${primitiveCount} shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"} were included for review.
+- Responsive mode: ${responsiveMode}
 
 ## Files
 
-- \`${files.component}\` - React + Tailwind scaffold component (\`${componentName}\`)
-- \`${files.recipe}\` - deterministic detection recipe and primitive map
-- \`${files.manifest}\` - export manifest for source-control review and automation
+- \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
+- \`${files.recipe}\` - deterministic detection recipe, primitive map, and regeneration context
+- \`${files.manifest}\` - bundle identity, dependency hints, and quality gates for review
 - \`${files.tokens}\` - CSS variables derived from the screenshot palette
-- \`${files.detectionSummary}\` - human-readable detection notes and integration checklist
+- \`${files.detectionSummary}\` - human-readable detection notes, confidence summary, and integration checklist
 
-## Use it
+## Expected dependencies
+
+${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
+
+## Import checklist
 
 1. Copy \`src/components/generated/\` into your app.
 2. Add the exported component to the route or page where it belongs.
 3. Replace placeholder content with real product data.
-4. Keep the recipe JSON during review so edits can be compared against the detection source.
+4. Keep the recipe JSON during review so edits can be compared against the screenshot-derived source.
+5. Run lint/build and verify mobile, tablet, and desktop widths before merging.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
@@ -315,6 +337,8 @@ function buildDetectionSummaryMarkdown(blueprint) {
 
   return `# Detection summary
 
+This file explains how the uploaded screenshot was translated into the generated scaffold. Use it to review confidence, decide which sections need product data, and keep future regeneration deterministic.
+
 ## Screen intent
 
 ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
@@ -322,6 +346,13 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
       ? ` (${Math.round(blueprint.screenIntent.confidence * 100)}% confidence)`
       : ""
   }
+
+## What changed from the screenshot
+
+- Visible regions were grouped into ${regions.length} layout region${regions.length === 1 ? "" : "s"}.
+- ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
+- Primitive mappings were exported so the scaffold can move toward shadcn-style UI without guessing later.
+- The recipe and manifest keep the generated output reviewable in source control.
 
 ## Responsive intent
 

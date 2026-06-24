@@ -257,7 +257,44 @@ export const en = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "Export scaffold",
     exportScaffoldDesc:
-      "Copy, download, export to a GitHub Gist, or export to a repo (zip with README, or a compare link when GITHUB_TOKEN is set).",
+      "Review the generated files, then copy code, download TSX, or export the full production bundle.",
+    exportReviewPackage: "Review package",
+    exportPackageReady: "Production bundle",
+    exportPackageReadyDesc:
+      "Preview the files, screenshot changes, and handoff copy before downloading.",
+    exportPackageTitle: "Review export package",
+    exportPackageDesc:
+      "This is the production-ready bundle created from the offline detection result. It keeps the component, recipe, manifest, tokens, and detection notes together.",
+    exportPackageFilesLabel: "files",
+    exportPackageFilesTab: "Files",
+    exportPackageChangesTab: "Changes",
+    exportPackageCopyTab: "Bundle copy",
+    exportPackageFilesIntro:
+      "Repo export downloads these files as a reviewable zip. The direct TSX download still exports only the component file.",
+    exportPackageChangesIntro: "What changed from the uploaded screenshot:",
+    exportPackageCopyIntro:
+      "This is the plain-language bundle copy a teammate sees before importing the scaffold.",
+    exportMetricFiles: "Files",
+    exportMetricRegions: "Regions",
+    exportMetricPrimitives: "Primitives",
+    exportMetricTokens: "Tokens",
+    exportChangeRegions:
+      "{count} screenshot regions were converted into a {intent} component structure.",
+    exportChangePrimitives:
+      "{elements} detected elements were mapped into {count} shadcn-style primitives.",
+    exportChangeResponsive:
+      "Responsive intent was added: {mode} across {breakpoints}.",
+    exportChangePatterns:
+      "{count} repeated or structured UI pattern groups were preserved for review.",
+    exportChangeCorrections:
+      "{edited} manual edits and {excluded} excluded boxes are captured in the recipe.",
+    exportChangePackage:
+      "The export now includes {count} files: component, recipe, manifest, tokens, and detection notes.",
+    exportReadmeIntent: "Screen intent",
+    exportReadmeComponent: "Entry component",
+    exportReadmeResponsive: "Responsive mode",
+    exportReadmeContains: "What this bundle contains",
+    exportReadmeNext: "Next steps",
     exportCopyAll: "Copy all",
     exportDownload: "Download .tsx",
     exportDesignDoc: "Design.md",

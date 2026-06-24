@@ -235,24 +235,36 @@ export function DashboardSampleDialog({
         </DialogHeader>
 
         <Tabs defaultValue="preview" className="min-h-0 flex-1 gap-0">
-          <div className="shrink-0 border-b border-border bg-muted/25 px-3 py-2 sm:px-5">
+          <div className="shrink-0 px-4 py-3 sm:px-5">
             <TabsList
               aria-label="Dashboard sample sections"
-              className="grid h-auto w-full grid-cols-2 gap-1 rounded-xl border border-border/70 bg-background/80 p-1 shadow-inner sm:inline-grid sm:w-auto sm:grid-cols-4"
+              className="grid h-auto w-full grid-cols-2 gap-1.5 overflow-visible rounded-2xl border border-border/70 bg-muted/35 p-1.5 shadow-inner group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto sm:grid-cols-4"
             >
-              <TabsTrigger value="preview" className="min-h-9 px-3">
+              <TabsTrigger
+                value="preview"
+                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+              >
                 <Eye className="size-4" aria-hidden />
                 Preview
               </TabsTrigger>
-              <TabsTrigger value="plan" className="min-h-9 px-3">
+              <TabsTrigger
+                value="plan"
+                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+              >
                 <ListChecks className="size-4" aria-hidden />
                 Plan
               </TabsTrigger>
-              <TabsTrigger value="detected" className="min-h-9 px-3">
+              <TabsTrigger
+                value="detected"
+                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+              >
                 <ScanSearch className="size-4" aria-hidden />
                 Detected UI
               </TabsTrigger>
-              <TabsTrigger value="export" className="min-h-9 px-3">
+              <TabsTrigger
+                value="export"
+                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+              >
                 <Download className="size-4" aria-hidden />
                 Export
               </TabsTrigger>

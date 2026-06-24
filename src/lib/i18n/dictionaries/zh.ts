@@ -247,7 +247,44 @@ export const zh = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "导出脚手架",
     exportScaffoldDesc:
-      "复制、下载、导出到 GitHub Gist，或导出到仓库（无 token 时下载含 README 的 zip；配置 GITHUB_TOKEN 时打开 compare 链接）。",
+      "先检视生成文件，然后复制代码、下载 TSX，或导出完整生产包。",
+    exportReviewPackage: "检视包",
+    exportPackageReady: "生产包",
+    exportPackageReadyDesc:
+      "下载前预览文件、截图变更和交接文案。",
+    exportPackageTitle: "检视导出包",
+    exportPackageDesc:
+      "这是从离线检测结果生成的生产包，会将组件、配方、manifest、tokens 和检测记录放在一起。",
+    exportPackageFilesLabel: "个文件",
+    exportPackageFilesTab: "文件",
+    exportPackageChangesTab: "变更",
+    exportPackageCopyTab: "包文案",
+    exportPackageFilesIntro:
+      "仓库导出会下载这些文件组成的 zip。直接 TSX 下载仅导出组件文件。",
+    exportPackageChangesIntro: "相比上传截图，已完成：",
+    exportPackageCopyIntro:
+      "这是团队成员在导入脚手架前看到的明确说明。",
+    exportMetricFiles: "文件",
+    exportMetricRegions: "区域",
+    exportMetricPrimitives: "原语",
+    exportMetricTokens: "Tokens",
+    exportChangeRegions:
+      "{count} 个截图区域已转换为 {intent} 组件结构。",
+    exportChangePrimitives:
+      "{elements} 个检测元素已映射为 {count} 个 shadcn 风格原语。",
+    exportChangeResponsive:
+      "已添加响应式意图：{mode}，覆盖 {breakpoints}。",
+    exportChangePatterns:
+      "{count} 组重复或结构化 UI 模式已保留供复核。",
+    exportChangeCorrections:
+      "{edited} 个手动修改和 {excluded} 个排除框已记入配方。",
+    exportChangePackage:
+      "导出现在包含 {count} 个文件：组件、配方、manifest、tokens 和检测记录。",
+    exportReadmeIntent: "界面意图",
+    exportReadmeComponent: "入口组件",
+    exportReadmeResponsive: "响应式模式",
+    exportReadmeContains: "包含内容",
+    exportReadmeNext: "下一步",
     exportCopyAll: "复制全部",
     exportDownload: "下载 .tsx",
     exportDesignDoc: "Design.md",

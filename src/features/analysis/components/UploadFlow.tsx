@@ -10,17 +10,21 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Archive,
   Bug,
   Check,
   CircleAlert,
   Download,
   Eye,
   EyeOff,
+  FileCode2,
   FileText,
   Grid2X2,
   Info,
+  ListChecks,
   Loader2,
   PackageOpen,
+  PackageCheck,
   Redo2,
   RotateCcw,
   Share2,
@@ -53,8 +57,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { downloadTextFile } from "@/lib/clipboard.client";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
@@ -167,6 +182,22 @@ type DetectionQuality = {
   ambiguity?: string;
   elementCount?: number;
   strategy?: string;
+};
+
+type ExportPackageFile = {
+  path: string;
+  label: string;
+  description: string;
+};
+
+type ExportPackagePreview = {
+  componentName: string;
+  fileCount: number;
+  files: ExportPackageFile[];
+  metrics: Array<{ label: string; value: string }>;
+  changes: string[];
+  readmePreview: string;
+  codePreview: string;
 };
 
 type DetectionChangeOptions = {
@@ -1233,6 +1264,492 @@ function detectionPreviewTokens(tokens?: DetectionDesignTokens | null) {
   };
 }
 
+function buildExportPackagePreview(
+  artifact: UiFlowArtifact,
+  exportFilename: string,
+  copy: UploadFlowDictionary,
+): ExportPackagePreview {
+  const generatedCode = artifact.generatedCode ?? "";
+  const componentName = inferGeneratedComponentName(generatedCode);
+  const stem = toExportStem(exportFilename);
+  const detectedElements =
+    asArray(readGeneratedJsonConst(generatedCode, "detectedElements")) ??
+    artifact.detections?.elements ??
+    [];
+  const layoutRegions =
+    asArray(readGeneratedJsonConst(generatedCode, "layoutRegions")) ?? [];
+  const detectedPatterns = asRecord(readGeneratedJsonConst(generatedCode, "detectedPatterns"));
+  const responsiveIntent = asRecord(readGeneratedJsonConst(generatedCode, "responsiveIntent"));
+  const screenIntent = asRecord(readGeneratedJsonConst(generatedCode, "screenIntent"));
+  const primitiveMap = asRecord(readGeneratedJsonConst(generatedCode, "shadcnPrimitiveMap"));
+  const designTokens = asRecord(readGeneratedJsonConst(generatedCode, "designTokens"));
+  const activeDetections =
+    artifact.detections?.elements.filter((element) => element.included !== false) ?? [];
+  const editedCount =
+    artifact.detections?.elements.filter((element) => element.userEdited).length ?? 0;
+  const excludedCount = Math.max(
+    0,
+    (artifact.detections?.elements.length ?? 0) - activeDetections.length,
+  );
+  const elementCount = detectedElements.length || activeDetections.length;
+  const regionCount = layoutRegions.length || artifact.plan.length;
+  const primitiveCount =
+    Object.keys(primitiveMap).length ||
+    new Set(activeDetections.map((element) => element.primitive ?? primitiveForKind(element.kind)))
+      .size;
+  const patternCount = countDetectedPatternGroups(detectedPatterns);
+  const breakpoints = asStringArray(responsiveIntent.breakpoints);
+  const responsiveMode = stringValue(responsiveIntent.mode, "responsive scaffold");
+  const intentLabel = stringValue(screenIntent.label, artifact.modeLabel ?? "Generated screen");
+  const tokenCount = Object.keys(designTokens).length;
+  const files: ExportPackageFile[] = [
+    {
+      path: "README.md",
+      label: "Start here",
+      description: "Plain-language install notes and review checklist.",
+    },
+    {
+      path: `src/components/generated/${stem}.tsx`,
+      label: "Component",
+      description: `${componentName} with React, Tailwind, and shadcn-style primitives.`,
+    },
+    {
+      path: `src/components/generated/${stem}.recipe.json`,
+      label: "Recipe",
+      description: "Detection recipe, primitive map, and deterministic regeneration hints.",
+    },
+    {
+      path: `src/components/generated/${stem}.manifest.json`,
+      label: "Manifest",
+      description: "Bundle identity, dependencies, quality gates, and safety metadata.",
+    },
+    {
+      path: `src/components/generated/${stem}.tokens.css`,
+      label: "Tokens",
+      description: "CSS variables derived from the screenshot palette.",
+    },
+    {
+      path: `docs/${stem}.detection.md`,
+      label: "Detection notes",
+      description: "Human-readable summary of regions, confidence, and integration work.",
+    },
+  ];
+
+  const changes = [
+    interpolate(copy.exportChangeRegions, {
+      count: String(regionCount),
+      intent: intentLabel,
+    }),
+    interpolate(copy.exportChangePrimitives, {
+      count: String(primitiveCount),
+      elements: String(elementCount),
+    }),
+    interpolate(copy.exportChangeResponsive, {
+      mode: responsiveMode,
+      breakpoints: breakpoints.join(", ") || "base",
+    }),
+    interpolate(copy.exportChangePackage, {
+      count: String(files.length),
+    }),
+  ];
+
+  if (editedCount || excludedCount) {
+    changes.splice(
+      2,
+      0,
+      interpolate(copy.exportChangeCorrections, {
+        edited: String(editedCount),
+        excluded: String(excludedCount),
+      }),
+    );
+  }
+  if (patternCount) {
+    changes.splice(
+      2,
+      0,
+      interpolate(copy.exportChangePatterns, {
+        count: String(patternCount),
+      }),
+    );
+  }
+
+  const metrics = [
+    { label: copy.exportMetricFiles, value: String(files.length) },
+    { label: copy.exportMetricRegions, value: String(regionCount) },
+    { label: copy.exportMetricPrimitives, value: String(primitiveCount) },
+    { label: copy.exportMetricTokens, value: String(tokenCount || 0) },
+  ];
+
+  return {
+    componentName,
+    fileCount: files.length,
+    files,
+    metrics,
+    changes,
+    readmePreview: buildExportReadmePreview({
+      copy,
+      componentName,
+      files,
+      intentLabel,
+      responsiveMode,
+    }),
+    codePreview: generatedCode,
+  };
+}
+
+function buildExportReadmePreview({
+  copy,
+  componentName,
+  files,
+  intentLabel,
+  responsiveMode,
+}: {
+  copy: UploadFlowDictionary;
+  componentName: string;
+  files: ExportPackageFile[];
+  intentLabel: string;
+  responsiveMode: string;
+}) {
+  return [
+    "# qwen-ui-lab production scaffold",
+    "",
+    `${copy.exportReadmeIntent}: ${intentLabel}`,
+    `${copy.exportReadmeComponent}: ${componentName}`,
+    `${copy.exportReadmeResponsive}: ${responsiveMode}`,
+    "",
+    `## ${copy.exportReadmeContains}`,
+    "",
+    ...files.map((file) => `- ${file.path} - ${file.description}`),
+    "",
+    `## ${copy.exportReadmeNext}`,
+    "",
+    "1. Review detection notes before deleting or merging regions.",
+    "2. Replace placeholder content with product data.",
+    "3. Run lint/build after importing the generated component.",
+  ].join("\n");
+}
+
+function inferGeneratedComponentName(code: string) {
+  return (
+    /export\s+default\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
+    /export\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
+    "GeneratedScaffold"
+  );
+}
+
+function toExportStem(filename: string) {
+  return (
+    filename
+      .replace(/\.[^.]+$/, "")
+      .replace(/[^\w.-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "generated-scaffold"
+  );
+}
+
+function readGeneratedJsonConst(source: string, name: string) {
+  const declaration = new RegExp(`const\\s+${name}(?:\\s*:\\s*[^=]+)?\\s*=\\s*`).exec(
+    source,
+  );
+  if (!declaration) return null;
+
+  const start = declaration.index + declaration[0].length;
+  const literal = readBalancedJsonLiteral(source, start);
+  if (!literal) return null;
+
+  try {
+    return JSON.parse(literal);
+  } catch {
+    try {
+      return JSON.parse(literal.replace(/,\s*([}\]])/g, "$1"));
+    } catch {
+      return null;
+    }
+  }
+}
+
+function readBalancedJsonLiteral(source: string, start: number) {
+  const opening = source[start];
+  const closing = opening === "{" ? "}" : opening === "[" ? "]" : null;
+  if (!closing) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+    if (char === opening) depth += 1;
+    if (char === closing) {
+      depth -= 1;
+      if (depth === 0) return source.slice(start, index + 1);
+    }
+  }
+  return null;
+}
+
+function asArray(value: unknown): unknown[] | null {
+  return Array.isArray(value) ? value : null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function countDetectedPatternGroups(patterns: Record<string, unknown>) {
+  return Object.values(patterns).reduce<number>((count, value) => {
+    if (Array.isArray(value)) return count + value.length;
+    return count;
+  }, 0);
+}
+
+function asStringArray(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function stringValue(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function ExportPackageSummary({
+  preview,
+  copy,
+}: {
+  preview: ExportPackagePreview;
+  copy: UploadFlowDictionary;
+}) {
+  return (
+    <div className="grid gap-3 rounded-xl border border-border/70 bg-muted/30 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary" className="gap-1.5">
+            <PackageCheck className="size-3.5" aria-hidden />
+            {copy.exportPackageReady}
+          </Badge>
+          <span className="text-xs text-muted-foreground">
+            {preview.componentName}
+          </span>
+        </div>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          {copy.exportPackageReadyDesc}
+        </p>
+      </div>
+      <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {preview.metrics.map((metric) => (
+          <div
+            key={metric.label}
+            className="min-w-20 rounded-lg border border-border/70 bg-background px-3 py-2"
+          >
+            <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              {metric.label}
+            </dt>
+            <dd className="text-base font-semibold text-foreground">
+              {metric.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function ExportPackageReviewDialog({
+  preview,
+  copy,
+  artifact,
+  exportFilename,
+  onExportDesignMarkdown,
+  onExportHandoffBundle,
+  onExported,
+}: {
+  preview: ExportPackagePreview;
+  copy: UploadFlowDictionary;
+  artifact: UiFlowArtifact;
+  exportFilename: string;
+  onExportDesignMarkdown: () => void;
+  onExportHandoffBundle: () => void;
+  onExported: (message: string) => void;
+}) {
+  return (
+    <Dialog>
+      <DialogTrigger
+        type="button"
+        aria-haspopup="dialog"
+        data-testid="export-package-review"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border/80 bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+      >
+        <Archive className="size-4" aria-hidden />
+        {copy.exportReviewPackage}
+      </DialogTrigger>
+      <DialogContent className="flex max-h-[min(90dvh,46rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
+        <DialogHeader className="border-b border-border px-5 py-4">
+          <div className="flex flex-col gap-3 pr-8 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <DialogTitle className="text-xl">{copy.exportPackageTitle}</DialogTitle>
+              <DialogDescription className="mt-2 max-w-2xl">
+                {copy.exportPackageDesc}
+              </DialogDescription>
+            </div>
+            <Badge variant="outline" className="w-fit gap-1.5">
+              <PackageOpen className="size-3.5" aria-hidden />
+              {preview.fileCount} {copy.exportPackageFilesLabel}
+            </Badge>
+          </div>
+        </DialogHeader>
+
+        <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0">
+          <div className="px-5 pb-2 pt-4">
+            <TabsList className="h-auto w-full flex-wrap overflow-visible rounded-xl border-border/70 bg-muted/45 p-1 shadow-inner sm:w-fit">
+              <TabsTrigger value="files" className="min-h-9 gap-2 px-3">
+                <FileCode2 className="size-4" aria-hidden />
+                {copy.exportPackageFilesTab}
+              </TabsTrigger>
+              <TabsTrigger value="changes" className="min-h-9 gap-2 px-3">
+                <ListChecks className="size-4" aria-hidden />
+                {copy.exportPackageChangesTab}
+              </TabsTrigger>
+              <TabsTrigger value="copy" className="min-h-9 gap-2 px-3">
+                <FileText className="size-4" aria-hidden />
+                {copy.exportPackageCopyTab}
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="files" className="min-h-0 flex-1">
+            <ScrollArea className="h-[min(56dvh,28rem)]">
+              <div className="grid gap-3 p-5">
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {copy.exportPackageFilesIntro}
+                </p>
+                <div className="grid gap-2">
+                  {preview.files.map((file) => (
+                    <div
+                      key={file.path}
+                      className="grid gap-2 rounded-xl border border-border/70 bg-muted/25 p-3 sm:grid-cols-[10rem_minmax(0,1fr)]"
+                    >
+                      <div>
+                        <p className="font-medium text-foreground">{file.label}</p>
+                        <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
+                          {file.path}
+                        </p>
+                      </div>
+                      <p className="text-sm leading-6 text-muted-foreground">
+                        {file.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="changes" className="min-h-0 flex-1">
+            <ScrollArea className="h-[min(56dvh,28rem)]">
+              <div className="grid gap-4 p-5">
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {copy.exportPackageChangesIntro}
+                </p>
+                <ol className="grid gap-3">
+                  {preview.changes.map((change, index) => (
+                    <li
+                      key={change}
+                      className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-border/70 bg-background p-3"
+                    >
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">
+                        {index + 1}
+                      </span>
+                      <p className="pt-1 text-sm leading-6 text-muted-foreground">
+                        {change}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="copy" className="min-h-0 flex-1">
+            <ScrollArea className="h-[min(56dvh,28rem)]">
+              <div className="grid gap-4 p-5">
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {copy.exportPackageCopyIntro}
+                </p>
+                <SnippetPreview
+                  code={preview.readmePreview}
+                  title="README.md"
+                  language="markdown"
+                  showCopy={false}
+                />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
+
+        <DialogFooter className="mx-0 mb-0 items-stretch gap-2.5 px-5 pb-5 pt-4 sm:flex-wrap sm:items-center sm:gap-3 sm:px-5 sm:py-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 gap-2"
+            onClick={onExportDesignMarkdown}
+          >
+            <FileText className="size-4" aria-hidden />
+            {copy.exportDesignDoc}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 gap-2"
+            onClick={onExportHandoffBundle}
+          >
+            <PackageOpen className="size-4" aria-hidden />
+            {copy.exportHandoffBundle}
+          </Button>
+          <ExportButton
+            text={preview.codePreview}
+            variant="copy"
+            label={copy.exportCopyAll}
+            analyticsSource="upload_flow"
+            analyticsFeature="generated_scaffold"
+            onCopied={() => onExported(copy.toastScaffoldCopied)}
+          />
+          <ExportButton
+            text={preview.codePreview}
+            variant="export"
+            label={copy.exportDownload}
+            filename={exportFilename}
+            analyticsSource="upload_flow"
+            analyticsFeature="generated_scaffold"
+            onCopied={() => onExported(copy.toastScaffoldExported)}
+          />
+          <RepoExportButton
+            text={artifact.generatedCode}
+            filename={exportFilename}
+            description="qwen-ui-lab production scaffold bundle"
+            analyticsSource="upload_flow"
+            analyticsFeature="generated_scaffold"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function DetectionComparisonPreview({
   previewUrl,
   artifact,
@@ -1643,6 +2160,14 @@ export function UploadFlow({
     }
     return "generated-scaffold.tsx";
   }, [demoArchetype, file]);
+
+  const exportPackagePreview = useMemo(
+    () =>
+      artifact?.generatedCode
+        ? buildExportPackagePreview(artifact, exportFilename, t)
+        : null,
+    [artifact, exportFilename, t],
+  );
 
   const resetDetectionHistory = useCallback(
     (detections: UiFlowArtifact["detections"] | null) => {
@@ -2611,13 +3136,29 @@ export function UploadFlow({
                   {artifact.generatedCode &&
                   (stage === "analyzed" || stage === "generated") ? (
                     <Card className="bg-background" data-testid="scaffold-export-panel">
-                      <CardHeader className="flex-row flex-wrap items-center justify-between gap-2 space-y-0 pb-3">
+                      <CardHeader className="flex-row flex-wrap items-start justify-between gap-3 space-y-0 pb-3">
                         <div>
                           <CardTitle className="text-sm">{t.exportScaffold}</CardTitle>
                           <CardDescription className="text-xs">
                             {t.exportScaffoldDesc}
                           </CardDescription>
                         </div>
+                        {exportPackagePreview ? (
+                          <ExportPackageReviewDialog
+                            preview={exportPackagePreview}
+                            copy={t}
+                            artifact={artifact}
+                            exportFilename={exportFilename}
+                            onExportDesignMarkdown={exportDesignMarkdown}
+                            onExportHandoffBundle={exportHandoffBundle}
+                            onExported={(message) => toast(message, "success")}
+                          />
+                        ) : null}
+                      </CardHeader>
+                      <CardContent className="grid gap-4 pt-0">
+                        {exportPackagePreview ? (
+                          <ExportPackageSummary preview={exportPackagePreview} copy={t} />
+                        ) : null}
                         <div className="flex flex-wrap gap-2">
                           <ExportButton
                             text={artifact.generatedCode}
@@ -2673,14 +3214,12 @@ export function UploadFlow({
                             analyticsFeature="generated_scaffold"
                           />
                         </div>
-                      </CardHeader>
-                      {stage === "generated" ? null : (
-                        <CardContent className="pt-0">
+                        {stage === "generated" ? null : (
                           <p className="text-xs text-muted-foreground">
                             {t.exportGenerateHint}
                           </p>
-                        </CardContent>
-                      )}
+                        )}
+                      </CardContent>
                     </Card>
                   ) : null}
 
