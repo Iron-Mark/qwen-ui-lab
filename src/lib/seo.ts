@@ -12,6 +12,7 @@ export const APP_ICON_SVG = "/icons/icon.svg";
 export const APP_ICON_MASKABLE_SVG = "/icons/icon-maskable.svg";
 export const APP_ICON_192 = "/icons/icon-192.png";
 export const APP_ICON_512 = "/icons/icon-512.png";
+export const APP_ICON_MASKABLE_512 = "/icons/icon-maskable-512.png";
 export const APPLE_TOUCH_ICON = "/icons/apple-touch-icon.png";
 export const SITEMAP_STATIC_ROUTES = [
   "/",
@@ -230,6 +231,12 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         purpose: "any",
       },
       {
+        src: APP_ICON_MASKABLE_512,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
         src: APPLE_TOUCH_ICON,
         sizes: "180x180",
         type: "image/png",
@@ -261,6 +268,13 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         short_name: "Patterns",
         description: "Browse component snippets and UX-law patterns.",
         url: "/design-system",
+        icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
+      },
+      {
+        name: "One-click demo",
+        short_name: "Demo",
+        description: "Open the bundled offline-safe demo flow.",
+        url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
     ],

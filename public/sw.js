@@ -1,5 +1,5 @@
 /** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
-const CACHE_NAME = "qwen-ui-lab-v9";
+const CACHE_NAME = "qwen-ui-lab-v10";
 
 const HEALTH_API_PATH = "/api/health";
 
@@ -14,6 +14,7 @@ const PRECACHE = [
   "/twitter-image",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
+  "/icons/icon-maskable-512.png",
   "/icons/apple-touch-icon.png",
   "/icons/icon.svg",
   "/icons/icon-maskable.svg",

@@ -51,8 +51,18 @@ describe("PWA manifest", () => {
         (icon) => icon.purpose === "maskable" && icon.src === "/icons/icon-maskable.svg",
       ),
     );
+    assert.ok(
+      (manifest.icons ?? []).some(
+        (icon) =>
+          icon.purpose === "maskable" &&
+          icon.type === "image/png" &&
+          icon.sizes === "512x512" &&
+          icon.src === "/icons/icon-maskable-512.png",
+      ),
+    );
     assert.ok(manifest.shortcuts.some((shortcut) => shortcut.url === "/#upload-flow"));
     assert.ok(manifest.shortcuts.some((shortcut) => shortcut.url === "/design-system"));
+    assert.ok(manifest.shortcuts.some((shortcut) => shortcut.url === "/demo"));
     assert.ok(manifest.screenshots.some((screenshot) => screenshot.form_factor === "wide"));
     assert.ok(manifest.screenshots.some((screenshot) => screenshot.form_factor === "narrow"));
   });
@@ -63,6 +73,10 @@ describe("PWA manifest", () => {
       height: 192,
     });
     assert.deepEqual(readPngSize(join(PUBLIC, "icons", "icon-512.png")), {
+      width: 512,
+      height: 512,
+    });
+    assert.deepEqual(readPngSize(join(PUBLIC, "icons", "icon-maskable-512.png")), {
       width: 512,
       height: 512,
     });
@@ -98,6 +112,7 @@ describe("service worker shell", () => {
     assert.match(sw, /\/manifest\.webmanifest/);
     assert.match(sw, /\/opengraph-image/);
     assert.match(sw, /\/twitter-image/);
+    assert.match(sw, /\/icons\/icon-maskable-512\.png/);
     assert.match(sw, /navigationPreload/);
     assert.match(sw, /skipWaiting/);
     assert.match(sw, /SKIP_WAITING/);
@@ -114,7 +129,9 @@ describe("service worker shell", () => {
   it("offline page exists", () => {
     const offline = readFileSync(join(PUBLIC, "offline.html"), "utf8");
     assert.match(offline, /Offline - qwen-ui-lab/);
+    assert.match(offline, /Cached app shell/);
     assert.match(offline, /Open dashboard/);
+    assert.match(offline, /Open demo/);
     assert.doesNotMatch(offline, /\u00e2/);
   });
 });

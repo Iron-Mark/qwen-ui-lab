@@ -29,8 +29,8 @@ export function ComponentLevelPill({
         <span className="flex size-4 shrink-0 items-center justify-center rounded bg-primary text-primary-foreground">
           {LevelIcon ? <LevelIcon className="size-3" aria-hidden="true" /> : null}
         </span>
-        <dt className="font-medium text-primary/80">Level</dt>
-        <dd className="font-bold text-foreground">{label}</dd>
+        <span className="font-medium text-primary/80">Level</span>
+        <span className="font-bold text-foreground">{label}</span>
       </div>
     );
   }
@@ -69,8 +69,8 @@ export function CollectionPill({
         )}
       >
         <Tag className="size-3.5 shrink-0 text-amber-600 dark:text-amber-300" aria-hidden="true" />
-        <dt className="font-medium text-amber-700/90 dark:text-amber-200/90">Collection</dt>
-        <dd className="font-semibold text-foreground/80">{label}</dd>
+        <span className="font-medium text-amber-700/90 dark:text-amber-200/90">Collection</span>
+        <span className="font-semibold text-foreground/80">{label}</span>
       </div>
     );
   }

@@ -57,7 +57,7 @@ export default async function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <a href="#main" className="skip-link">
-          Skip to content
+          Skip to main content
         </a>
         <StructuredDataScript data={createSiteStructuredData(ogImagePath)} />
         <ShellLayout>{children}</ShellLayout>

@@ -526,14 +526,14 @@ export function DesignSystemPreview() {
                 >
                   <p className="text-sm font-medium text-foreground">{entry.name}</p>
                   <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
-                  <dl
+                  <div
                     data-testid="component-list-metadata"
                     className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
                     <ComponentLevelPill label={tierMeta.label} Icon={TierIcon} compact />
                     <CollectionPill label={domainLabel} compact />
-                  </dl>
+                  </div>
                 </button>
               );
             })}
