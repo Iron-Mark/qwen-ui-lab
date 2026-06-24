@@ -14,6 +14,7 @@ interface SnippetPreviewProps {
   hideHeader?: boolean;
   /** Replace the default title + copy row (ignored when `hideHeader` is true). */
   headerActions?: ReactNode;
+  footer?: ReactNode;
   language?: string;
 }
 
@@ -24,6 +25,7 @@ export function SnippetPreview({
   showCopy = true,
   hideHeader = false,
   headerActions,
+  footer,
   language = "tsx",
 }: SnippetPreviewProps) {
   if (hideHeader) {
@@ -54,6 +56,11 @@ export function SnippetPreview({
           ) : null)}
       </div>
       <CodeHighlight code={code} language={language} />
+      {footer ? (
+        <div className="border-t border-border/80 bg-muted/45 px-4 py-2.5">
+          {footer}
+        </div>
+      ) : null}
     </section>
   );
 }

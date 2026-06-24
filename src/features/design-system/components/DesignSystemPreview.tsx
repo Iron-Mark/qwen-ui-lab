@@ -10,8 +10,9 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
+import { CollectionPill, ComponentLevelPill } from "./DesignSystemMetaPills";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
-import { Search, Tag } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   filterCatalog,
   type AtomicLevel,
@@ -182,6 +183,9 @@ export function DesignSystemPreview() {
       previewMode,
       lang: locale,
     });
+    if (searchParams.get("account") === "1") {
+      nextParams.set("account", "1");
+    }
     const current = searchParams.toString();
     const next = nextParams.toString();
     if (current === next) return;
@@ -385,12 +389,12 @@ export function DesignSystemPreview() {
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
-              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-lg bg-background/70 p-1.5 group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
+              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-xl border border-border/70 bg-muted/35 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
                 {domains.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-md px-2 text-xs font-medium sm:text-sm"
+                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-2 text-xs font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -500,7 +504,7 @@ export function DesignSystemPreview() {
           <div className="mb-3 flex shrink-0 items-center">
             <p className="text-sm font-semibold text-foreground">{t.componentList}</p>
           </div>
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
+          <div className="themed-scrollbar min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
             {filtered.map((entry) => {
               const tierMeta = TIER_META[entry.level];
               const TierIcon = tierMeta.Icon;
@@ -522,22 +526,14 @@ export function DesignSystemPreview() {
                 >
                   <p className="text-sm font-medium text-foreground">{entry.name}</p>
                   <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
-                  <dl
+                  <div
                     data-testid="component-list-metadata"
                     className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/60 bg-background/55 px-2 text-foreground/85">
-                      <TierIcon className="size-3.5 text-primary" aria-hidden="true" />
-                      <dt className="font-medium text-muted-foreground">{t.tierSrOnly}</dt>
-                      <dd className="font-semibold">{tierMeta.label}</dd>
-                    </div>
-                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/50 bg-background/35 px-2 text-muted-foreground">
-                      <Tag className="size-3.5" aria-hidden="true" />
-                      <dt className="font-medium">{t.domainSrOnly}</dt>
-                      <dd className="font-semibold text-foreground/75">{domainLabel}</dd>
-                    </div>
-                  </dl>
+                    <ComponentLevelPill label={tierMeta.label} Icon={TierIcon} compact />
+                    <CollectionPill label={domainLabel} compact />
+                  </div>
                 </button>
               );
             })}
@@ -555,7 +551,7 @@ export function DesignSystemPreview() {
           ref={previewAnchorRef}
           id="component-preview-panel"
           className={cn(
-            "flex min-h-0 scroll-mt-[5.5rem] flex-col overflow-hidden rounded-2xl border border-border/70 bg-background/30 p-3 sm:scroll-mt-24 lg:scroll-mt-24",
+            "min-h-0 min-w-0 scroll-mt-[5.5rem] sm:scroll-mt-24 lg:scroll-mt-24",
           )}
           aria-live="polite"
         >
@@ -563,41 +559,38 @@ export function DesignSystemPreview() {
             data-testid="component-preview-body"
             className="min-h-0"
           >
-            <div className="rounded-2xl border border-border/70 bg-muted/15 shadow-inner">
-              {selectedEntry ? (
-                <ObservabilityErrorBoundary
-                  fallbackTitle={interpolate(t.renderError, { name: selectedEntry.name })}
+            {selectedEntry ? (
+              <ObservabilityErrorBoundary
+                fallbackTitle={interpolate(t.renderError, { name: selectedEntry.name })}
+              >
+                <ComponentPreviewCard
+                  id={selectedEntry.id}
+                  title={selectedEntry.name}
+                  description={selectedEntry.description}
+                  usage={selectedEntry.usage}
+                  level={selectedEntry.level}
+                  domain={selectedEntry.domain}
+                  sourcePath={selectedEntry.sourcePath}
+                  snippet={selectedEntry.code}
+                  exportFilename={selectedEntry.exportFilename}
+                  props={selectedEntry.props}
+                  variants={selectedEntry.variants}
+                  principles={selectedEntry.principles}
+                  previewMode={previewMode}
+                  onPreviewModeChange={setPreviewMode}
+                  deferPreview
+                  chromeless
+                  showSnippet={selectedEntry.id !== "snippet-preview"}
+                  className="rounded-2xl"
                 >
-                  <ComponentPreviewCard
-                    id={selectedEntry.id}
-                    title={selectedEntry.name}
-                    description={selectedEntry.description}
-                    usage={selectedEntry.usage}
-                    level={selectedEntry.level}
-                    domain={selectedEntry.domain}
-                    sourcePath={selectedEntry.sourcePath}
-                    snippet={selectedEntry.code}
-                    exportFilename={selectedEntry.exportFilename}
-                    props={selectedEntry.props}
-                    variants={selectedEntry.variants}
-                    principles={selectedEntry.principles}
-                    previewMode={previewMode}
-                    onPreviewModeChange={setPreviewMode}
-                    deferPreview
-                    chromeless
-                    showSnippet={selectedEntry.id !== "snippet-preview"}
-                    className="rounded-2xl"
-                  >
-                    {selectedEntry.preview}
-                  </ComponentPreviewCard>
-                </ObservabilityErrorBoundary>
-              ) : (
-                <div className="p-8 text-sm text-muted-foreground">
-                  {t.pickComponent}
-                </div>
-              )}
-            </div>
-
+                  {selectedEntry.preview}
+                </ComponentPreviewCard>
+              </ObservabilityErrorBoundary>
+            ) : (
+              <div className="rounded-xl border border-border/70 bg-card/30 p-8 text-sm text-muted-foreground">
+                {t.pickComponent}
+              </div>
+            )}
           </div>
         </section>
       </div>

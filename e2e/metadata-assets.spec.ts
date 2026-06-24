@@ -65,7 +65,7 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
     const json = (await manifest.json()) as {
       display?: string;
       display_override?: string[];
-      icons?: Array<{ src?: string; sizes?: string; purpose?: string }>;
+      icons?: Array<{ src?: string; sizes?: string; purpose?: string; type?: string }>;
       screenshots?: Array<{ src?: string; sizes?: string; form_factor?: string }>;
       shortcuts?: Array<{ url?: string }>;
       start_url?: string;
@@ -75,8 +75,17 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
     expect(json.display_override).toContain("standalone");
     expect(json.icons?.some((icon) => icon.sizes === "192x192")).toBeTruthy();
     expect(json.icons?.some((icon) => icon.purpose === "maskable")).toBeTruthy();
+    expect(
+      json.icons?.some(
+        (icon) =>
+          icon.src === "/icons/icon-maskable-512.png" &&
+          icon.type === "image/png" &&
+          icon.purpose === "maskable",
+      ),
+    ).toBeTruthy();
     expect(json.screenshots?.some((shot) => shot.form_factor === "wide")).toBeTruthy();
     expect(json.shortcuts?.some((shortcut) => shortcut.url === "/#upload-flow")).toBeTruthy();
+    expect(json.shortcuts?.some((shortcut) => shortcut.url === "/demo")).toBeTruthy();
   }
 
   const favicon = await request.get("/favicon.ico");
@@ -87,6 +96,7 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
     "/icons/icon.svg",
     "/icons/icon-192.png",
     "/icons/icon-512.png",
+    "/icons/icon-maskable-512.png",
     "/icons/apple-touch-icon.png",
     "/icons/icon-maskable.svg",
   ]) {

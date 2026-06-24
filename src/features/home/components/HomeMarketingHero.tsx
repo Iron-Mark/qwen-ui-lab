@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { localizedHref } from "@/lib/i18n";
@@ -108,16 +107,18 @@ export function HomeMarketingHero() {
       <PageContainer className="flex min-h-[29rem] flex-col justify-center py-9 sm:min-h-[32rem] sm:py-11 lg:min-h-[34rem]">
         <div className="max-w-[42rem] space-y-5">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="text-xs font-medium">
+            <div
+              className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-2xl border border-border/70 bg-background/80 p-1 text-xs shadow-sm backdrop-blur-md"
+              aria-label="Demo status"
+            >
+              <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-1 font-semibold text-primary-foreground shadow-sm">
+                <Sparkles className="size-3.5" aria-hidden />
                 {copy.badgeDemo}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="border-amber-500/40 bg-amber-500/10 text-xs text-amber-900 dark:text-amber-100"
-              >
+              </span>
+              <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl px-2.5 py-1 font-medium text-muted-foreground">
+                <ShieldCheck className="size-3.5 text-primary" aria-hidden />
                 {copy.badgeOffline}
-              </Badge>
+              </span>
             </div>
             <h1
               id="home-hero-heading"
@@ -185,9 +186,9 @@ export function HomeMarketingHero() {
             <li
               key={title}
               aria-label={`${label}: ${title}. ${body}`}
-              className="relative flex min-h-16 items-center gap-2 border-l border-border/70 px-3 py-2.5 first:border-l-0 sm:min-h-[4.75rem] sm:gap-3 sm:px-4 sm:py-3"
+              className="relative flex min-h-16 items-center justify-center gap-2 border-l border-border/70 px-2.5 py-2.5 text-center first:border-l-0 sm:min-h-[4.75rem] sm:justify-start sm:gap-3 sm:px-4 sm:py-3 sm:text-left"
             >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10">
+              <div className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex sm:size-10">
                 <Icon className="size-4" aria-hidden />
               </div>
               <div className="min-w-0">

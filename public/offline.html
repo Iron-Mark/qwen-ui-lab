@@ -3,7 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Offline fallback for qwen-ui-lab. Reopen the cached screenshot-to-scaffold demo shell or retry when the network returns."
+    />
     <meta name="theme-color" content="#18181b" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>Offline - qwen-ui-lab</title>
     <style>
       :root {
@@ -12,6 +18,10 @@
         --fg: #18181b;
         --muted: #71717a;
         --accent: #4f46e5;
+        --accent-strong: #3730a3;
+        --surface: #ffffff;
+        --border: rgba(24, 24, 27, 0.12);
+        --shadow: 0 24px 80px rgba(24, 24, 27, 0.14);
       }
       @media (prefers-color-scheme: dark) {
         :root {
@@ -19,6 +29,10 @@
           --fg: #fafafa;
           --muted: #a1a1aa;
           --accent: #818cf8;
+          --accent-strong: #a5b4fc;
+          --surface: #18181b;
+          --border: rgba(250, 250, 250, 0.14);
+          --shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
         }
       }
       * {
@@ -31,48 +45,92 @@
         display: grid;
         place-items: center;
         padding: 1.5rem;
+        padding-top: max(1.5rem, env(safe-area-inset-top));
         padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
         font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-        background: var(--bg);
+        background:
+          radial-gradient(circle at top, color-mix(in srgb, var(--accent) 16%, transparent), transparent 32rem),
+          var(--bg);
         color: var(--fg);
         line-height: 1.5;
       }
       main {
-        max-width: 28rem;
-        text-align: center;
+        width: min(100%, 34rem);
+        border: 1px solid var(--border);
+        border-radius: 1.25rem;
+        padding: clamp(1.25rem, 5vw, 2rem);
+        background: color-mix(in srgb, var(--surface) 94%, transparent);
+        box-shadow: var(--shadow);
       }
       img {
-        width: 4rem;
-        height: 4rem;
+        width: 3.5rem;
+        height: 3.5rem;
         border-radius: 0.75rem;
+        box-shadow: 0 10px 30px color-mix(in srgb, var(--fg) 14%, transparent);
       }
       h1 {
-        margin: 1rem 0 0.5rem;
-        font-size: 1.5rem;
+        margin: 1.25rem 0 0.5rem;
+        font-size: clamp(1.75rem, 6vw, 2.25rem);
         font-weight: 700;
         letter-spacing: 0;
+        line-height: 1.1;
       }
       p {
         margin: 0;
         color: var(--muted);
+      }
+      .eyebrow {
+        margin-top: 1rem;
+        color: var(--accent-strong);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .status {
+        margin: 1.25rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .status li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+      .status span {
+        display: inline-grid;
+        width: 1.5rem;
+        height: 1.25rem;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--accent) 16%, transparent);
+        color: var(--accent-strong);
+        font-size: 0.75rem;
+        font-weight: 700;
       }
       .actions {
         margin-top: 1.5rem;
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
-        justify-content: center;
       }
       a,
       button {
         appearance: none;
-        border: 0;
+        min-height: 2.75rem;
+        border: 1px solid transparent;
         border-radius: 0.5rem;
         padding: 0.625rem 1rem;
         font: inherit;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
+        touch-action: manipulation;
       }
       a {
         background: var(--accent);
@@ -81,20 +139,42 @@
       button {
         background: transparent;
         color: var(--fg);
-        border: 1px solid color-mix(in srgb, var(--muted) 35%, transparent);
+        border-color: var(--border);
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        outline-offset: 3px;
+      }
+      @media (max-width: 28rem) {
+        .actions {
+          flex-direction: column;
+        }
+        a,
+        button {
+          width: 100%;
+          text-align: center;
+        }
       }
     </style>
   </head>
   <body>
-    <main>
+    <main aria-labelledby="offline-title">
       <img src="/icons/icon-192.png" width="64" height="64" alt="" />
-      <h1>You're offline</h1>
+      <p class="eyebrow">Cached app shell</p>
+      <h1 id="offline-title">You're offline</h1>
       <p>
-        qwen-ui-lab can still open its cached demo shell. Reconnect to fetch
-        fresh pages, or return to the dashboard.
+        qwen-ui-lab can still open its cached screenshot-to-scaffold workflow.
+        Reconnect for fresh pages, uploads, and shared links.
       </p>
+      <ul class="status" aria-label="Offline capabilities">
+        <li><span aria-hidden="true">OK</span>Cached dashboard and design system shell</li>
+        <li><span aria-hidden="true">OK</span>No API key required for the local demo path</li>
+        <li><span aria-hidden="true">!</span>Network is needed for fresh uploads and live links</li>
+      </ul>
       <div class="actions">
         <a href="/">Open dashboard</a>
+        <a href="/demo">Open demo</a>
         <button type="button" onclick="location.reload()">Try again</button>
       </div>
     </main>

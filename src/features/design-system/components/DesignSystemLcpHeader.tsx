@@ -9,6 +9,9 @@ export function DesignSystemLcpHeader() {
   return (
     <header
       data-testid="design-system-title-block"
+      data-shell-title-context
+      data-shell-title={t.eyebrow}
+      data-shell-subtitle={t.title}
       lang={locale}
       className="scroll-mt-20 px-1 py-2 sm:px-2 sm:py-3"
     >

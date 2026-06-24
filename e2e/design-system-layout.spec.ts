@@ -234,9 +234,9 @@ test("design system component list metadata has clear visual hierarchy", async (
   await expect(page.getByText("Dense view")).toHaveCount(0);
   const metadata = page.getByTestId("component-list-metadata").first();
   await expect(metadata).toBeVisible();
-  await expect(metadata.getByText("Tier", { exact: true })).toBeVisible();
+  await expect(metadata.getByText("Level", { exact: true })).toBeVisible();
   await expect(metadata.getByText("Atom", { exact: true })).toBeVisible();
-  await expect(metadata.getByText("Domain", { exact: true })).toBeVisible();
+  await expect(metadata.getByText("Collection", { exact: true })).toBeVisible();
   await expect(metadata.getByText("Product", { exact: true })).toBeVisible();
   await expect(metadata.getByText("product", { exact: true })).toHaveCount(0);
   await expect(metadata.locator("svg")).toHaveCount(2);

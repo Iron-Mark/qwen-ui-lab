@@ -55,6 +55,419 @@ function createSyntheticScreenshot(width, height) {
   return { data, width, height, sourceWidth: 1440, sourceHeight: 900 };
 }
 
+function createSyntheticRepeatedListScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const rowTop = Math.floor(height * 0.18);
+  const rowHeight = Math.max(12, Math.floor(height * 0.085));
+  const rowGap = Math.max(8, Math.floor(height * 0.055));
+  const rowLeft = Math.floor(width * 0.12);
+  const rowWidth = Math.floor(width * 0.74);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [246, 247, 249];
+
+      if (y < Math.ceil(height * 0.1)) {
+        color = [24, 30, 42];
+      }
+
+      for (let row = 0; row < 5; row += 1) {
+        const yStart = rowTop + row * (rowHeight + rowGap);
+        const yEnd = yStart + rowHeight;
+        if (x >= rowLeft && x <= rowLeft + rowWidth && y >= yStart && y <= yEnd) {
+          color = [216, 221, 230];
+        }
+        if (
+          x >= rowLeft + 12 &&
+          x <= rowLeft + Math.floor(rowWidth * 0.66) &&
+          y >= yStart + Math.floor(rowHeight * 0.38) &&
+          y <= yStart + Math.floor(rowHeight * 0.58)
+        ) {
+          color = [70, 76, 88];
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 390, sourceHeight: 844 };
+}
+
+function createSyntheticCardGridScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const cardWidth = Math.floor(width * 0.22);
+  const cardHeight = Math.floor(height * 0.22);
+  const left = Math.floor(width * 0.08);
+  const top = Math.floor(height * 0.26);
+  const columnGap = Math.floor(width * 0.09);
+  const rowGap = Math.floor(height * 0.1);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [247, 248, 250];
+
+      if (y < Math.ceil(height * 0.12)) {
+        color = [25, 31, 43];
+      }
+
+      for (let row = 0; row < 2; row += 1) {
+        for (let column = 0; column < 3; column += 1) {
+          const xStart = left + column * (cardWidth + columnGap);
+          const yStart = top + row * (cardHeight + rowGap);
+          const xEnd = xStart + cardWidth;
+          const yEnd = yStart + cardHeight;
+
+          if (x >= xStart && x <= xEnd && y >= yStart && y <= yEnd) {
+            color = [221, 226, 235];
+          }
+          if (
+            x >= xStart + Math.floor(cardWidth * 0.12) &&
+            x <= xStart + Math.floor(cardWidth * 0.72) &&
+            y >= yStart + Math.floor(cardHeight * 0.34) &&
+            y <= yStart + Math.floor(cardHeight * 0.46)
+          ) {
+            color = [74, 83, 98];
+          }
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 1024, sourceHeight: 768 };
+}
+
+function createSyntheticStatRowScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const cardWidth = Math.floor(width * 0.2);
+  const cardHeight = Math.floor(height * 0.16);
+  const left = Math.floor(width * 0.08);
+  const top = Math.floor(height * 0.32);
+  const gap = Math.floor(width * 0.055);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [247, 248, 250];
+
+      if (y < Math.ceil(height * 0.14)) {
+        color = [25, 31, 43];
+      }
+
+      for (let card = 0; card < 4; card += 1) {
+        const xStart = left + card * (cardWidth + gap);
+        const yStart = top;
+        const xEnd = xStart + cardWidth;
+        const yEnd = yStart + cardHeight;
+
+        if (x >= xStart && x <= xEnd && y >= yStart && y <= yEnd) {
+          color = [221, 226, 235];
+        }
+        if (
+          x >= xStart + Math.floor(cardWidth * 0.12) &&
+          x <= xStart + Math.floor(cardWidth * 0.72) &&
+          y >= yStart + Math.floor(cardHeight * 0.24) &&
+          y <= yStart + Math.floor(cardHeight * 0.34)
+        ) {
+          color = [74, 83, 98];
+        }
+        if (
+          x >= xStart + Math.floor(cardWidth * 0.12) &&
+          x <= xStart + Math.floor(cardWidth * 0.58) &&
+          y >= yStart + Math.floor(cardHeight * 0.58) &&
+          y <= yStart + Math.floor(cardHeight * 0.76)
+        ) {
+          color = [37, 99, 235];
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 1024, sourceHeight: 768 };
+}
+
+function createSyntheticFormScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const fieldLeft = Math.floor(width * 0.16);
+  const fieldWidth = Math.floor(width * 0.68);
+  const fieldHeight = Math.max(14, Math.floor(height * 0.07));
+  const firstTop = Math.floor(height * 0.26);
+  const gap = Math.floor(height * 0.1);
+  const buttonWidth = Math.floor(width * 0.28);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 249, 251];
+
+      for (let field = 0; field < 2; field += 1) {
+        const yStart = firstTop + field * (fieldHeight + gap);
+        const yEnd = yStart + fieldHeight;
+        if (x >= fieldLeft && x <= fieldLeft + fieldWidth && y >= yStart && y <= yEnd) {
+          color = [218, 224, 234];
+        }
+        if (
+          x >= fieldLeft + 10 &&
+          x <= fieldLeft + Math.floor(fieldWidth * 0.58) &&
+          y >= yStart + Math.floor(fieldHeight * 0.42) &&
+          y <= yStart + Math.floor(fieldHeight * 0.56)
+        ) {
+          color = [74, 82, 96];
+        }
+      }
+
+      const buttonTop = firstTop + 2 * (fieldHeight + gap);
+      if (
+        x >= fieldLeft &&
+        x <= fieldLeft + buttonWidth &&
+        y >= buttonTop &&
+        y <= buttonTop + fieldHeight
+      ) {
+        color = [37, 99, 235];
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 390, sourceHeight: 844 };
+}
+
+function createSyntheticTableScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const tableLeft = Math.floor(width * 0.1);
+  const tableTop = Math.floor(height * 0.2);
+  const columnWidth = Math.floor(width * 0.15);
+  const columnGap = Math.floor(width * 0.075);
+  const rowGap = Math.floor(height * 0.12);
+  const cellHeight = Math.max(5, Math.floor(height * 0.035));
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 249, 251];
+
+      if (y < Math.ceil(height * 0.12)) {
+        color = [24, 30, 42];
+      }
+
+      for (let row = 0; row < 4; row += 1) {
+        for (let column = 0; column < 4; column += 1) {
+          const xStart = tableLeft + column * (columnWidth + columnGap);
+          const yStart = tableTop + row * rowGap;
+          const xEnd = xStart + columnWidth;
+          const yEnd = yStart + cellHeight;
+
+          if (x >= xStart && x <= xEnd && y >= yStart && y <= yEnd) {
+            color = row === 0 ? [66, 75, 90] : [84, 94, 112];
+          }
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 1024, sourceHeight: 768 };
+}
+
+function createSyntheticBarChartScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const chartLeft = Math.floor(width * 0.2);
+  const baseline = Math.floor(height * 0.74);
+  const barWidth = Math.max(6, Math.floor(width * 0.045));
+  const barGap = Math.floor(width * 0.055);
+  const barHeights = [
+    Math.floor(height * 0.16),
+    Math.floor(height * 0.32),
+    Math.floor(height * 0.22),
+    Math.floor(height * 0.38),
+    Math.floor(height * 0.27),
+  ];
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [247, 248, 250];
+
+      for (let bar = 0; bar < barHeights.length; bar += 1) {
+        const xStart = chartLeft + bar * (barWidth + barGap);
+        const yStart = baseline - barHeights[bar];
+        if (x >= xStart && x <= xStart + barWidth && y >= yStart && y <= baseline) {
+          color = [37, 99, 235];
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: 1024, sourceHeight: 768 };
+}
+
+function createSyntheticActionClusterScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const buttonTop = Math.floor(height * 0.4);
+  const buttonHeight = Math.max(18, Math.floor(height * 0.12));
+  const buttonWidth = Math.floor(width * 0.12);
+  const gap = Math.floor(width * 0.095);
+  const left = Math.floor(width * 0.11);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 249, 251];
+
+      for (let item = 0; item < 4; item += 1) {
+        const xStart = left + item * (buttonWidth + gap);
+        const xEnd = xStart + buttonWidth;
+        const yEnd = buttonTop + buttonHeight;
+        if (x >= xStart && x <= xEnd && y >= buttonTop && y <= yEnd) {
+          color = item === 0 ? [37, 99, 235] : [218, 224, 234];
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: width, sourceHeight: height };
+}
+
+function createSyntheticTabSetScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const tabTop = Math.floor(height * 0.36);
+  const tabHeight = Math.max(18, Math.floor(height * 0.11));
+  const tabWidth = Math.floor(width * 0.155);
+  const gap = Math.max(22, Math.floor(width * 0.067));
+  const left = Math.floor(width * 0.11);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 249, 251];
+
+      for (let item = 0; item < 4; item += 1) {
+        const xStart = left + item * (tabWidth + gap);
+        const xEnd = xStart + tabWidth;
+        const yEnd = tabTop + tabHeight;
+        if (x >= xStart && x <= xEnd && y >= tabTop && y <= yEnd) {
+          color = item === 1 ? [37, 99, 235] : [218, 224, 234];
+        }
+        if (
+          x >= xStart + Math.floor(tabWidth * 0.18) &&
+          x <= xStart + Math.floor(tabWidth * 0.72) &&
+          y >= tabTop + Math.floor(tabHeight * 0.42) &&
+          y <= tabTop + Math.floor(tabHeight * 0.56)
+        ) {
+          color = item === 1 ? [239, 246, 255] : [78, 87, 102];
+        }
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: width, sourceHeight: height };
+}
+
+function createSyntheticDialogScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const panelLeft = Math.floor(width * 0.18);
+  const panelTop = Math.floor(height * 0.2);
+  const panelWidth = Math.floor(width * 0.64);
+  const panelHeight = Math.floor(height * 0.54);
+  const titleLeft = panelLeft + Math.floor(panelWidth * 0.12);
+  const titleTop = panelTop + Math.floor(panelHeight * 0.18);
+  const bodyTop = panelTop + Math.floor(panelHeight * 0.36);
+  const buttonTop = panelTop + Math.floor(panelHeight * 0.72);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [32, 36, 44];
+
+      if (
+        x >= panelLeft &&
+        x <= panelLeft + panelWidth &&
+        y >= panelTop &&
+        y <= panelTop + panelHeight
+      ) {
+        color = [246, 248, 252];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + Math.floor(panelWidth * 0.52) &&
+        y >= titleTop &&
+        y <= titleTop + Math.floor(panelHeight * 0.08)
+      ) {
+        color = [44, 52, 68];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + Math.floor(panelWidth * 0.68) &&
+        y >= bodyTop &&
+        y <= bodyTop + Math.floor(panelHeight * 0.05)
+      ) {
+        color = [106, 116, 132];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + Math.floor(panelWidth * 0.45) &&
+        y >= bodyTop + Math.floor(panelHeight * 0.12) &&
+        y <= bodyTop + Math.floor(panelHeight * 0.17)
+      ) {
+        color = [138, 148, 164];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + Math.floor(panelWidth * 0.34) &&
+        y >= buttonTop &&
+        y <= buttonTop + Math.floor(panelHeight * 0.12)
+      ) {
+        color = [37, 99, 235];
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: width, sourceHeight: height };
+}
+
 const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
   <title>Sign in</title>
   <desc>Email and password authentication form</desc>
@@ -208,18 +621,208 @@ test("inspectImageDataPixels extracts palette, contrast, and layout bands", () =
   assert.ok(inspection.elements.some((element) => element.kind === "header"));
   assert.ok(inspection.elements.some((element) => element.kind === "side-nav"));
   assert.ok(inspection.elements.every((element) => element.primitive));
+  assert.ok(inspection.elements.every((element) => element.componentRole));
   assert.ok(inspection.elements.every((element) => element.reasons.length > 0));
   assert.ok(
     inspection.elements.some((element) =>
       element.reasons.some((reason) => reason.code === "primitive-snap"),
     ),
   );
+  assert.ok(
+    inspection.elements.every((element) =>
+      element.reasons.some((reason) => reason.code === "component-snap"),
+    ),
+  );
+  assert.ok(inspection.elements.some((element) => element.componentRole === "top-navigation"));
+  assert.ok(inspection.elements.some((element) => element.componentRole === "side-navigation"));
+  assert.ok(Object.keys(inspection.quality.roles).length >= 3);
+  assert.equal(inspection.layoutTree.responsive.mode, "sidebar-grid");
+  assert.equal(inspection.quality.responsive.mode, "sidebar-grid");
+  assert.ok(inspection.layoutTree.responsive.regions.collapsibleSidebar);
+  assert.ok(inspection.layoutTree.responsive.regions.appShellCount >= 1);
+  assert.equal(inspection.layoutTree.responsive.regions.appShellType, "desktop-sidebar-shell");
+  assert.ok(inspection.layoutTree.responsive.breakpoints.includes("lg"));
+  assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+  assert.equal(inspection.quality.screenIntent.id, "dashboard");
+  assert.ok(inspection.layoutTree.screenIntent.evidence.length >= 1);
   assert.equal(inspection.layoutTree.strategy, "projection-groups");
+  assert.ok(inspection.layoutTree.patterns.appShells.length >= 1);
+  assert.equal(inspection.layoutTree.patterns.appShells[0].kind, "app-shell");
+  assert.equal(inspection.layoutTree.patterns.appShells[0].shellType, "desktop-sidebar-shell");
+  assert.ok(inspection.layoutTree.patterns.appShells[0].children.length >= 2);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "app-shell"), true);
   assert.ok(inspection.layoutTree.readingOrder.length >= 3);
   assert.equal(inspection.quality.strategy, "fine-grid-connected-components");
+  assert.ok(inspection.quality.patterns.appShells >= 1);
   assert.ok(inspection.quality.confidence > 0);
   assert.ok(inspection.contrast.preferredTextContrast >= 4.5);
   assert.match(inspection.recommendations.join(" "), /semantic landmarks|contrast/i);
+});
+
+test("inspectImageDataPixels detects repeated lists and text-line patterns offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticRepeatedListScreenshot(180, 260));
+
+  assert.ok(inspection);
+  const listItems = inspection.elements.filter(
+    (element) => element.primitive === "list-item",
+  );
+  assert.ok(listItems.length >= 3);
+  assert.ok(
+    listItems.every((element) =>
+      element.reasons.some((reason) => reason.code === "repeated-list"),
+    ),
+  );
+  assert.ok(listItems.every((element) => element.componentRole === "list-row"));
+  assert.ok(inspection.quality.roles["list-row"] >= 3);
+  assert.equal(inspection.layoutTree.responsive.mode, "stacked-list");
+  assert.equal(inspection.quality.responsive.primaryFlow, "keep list rows full-width with stable vertical rhythm");
+  assert.equal(inspection.layoutTree.screenIntent.id, "mobile");
+  assert.equal(inspection.quality.screenIntent.id, "mobile");
+  assert.ok(
+    inspection.elements.some(
+      (element) => (element.signals?.textLineScore ?? 0) >= 0.62,
+    ),
+  );
+  assert.ok(inspection.layoutTree.patterns.repeatedLists.length >= 1);
+  assert.ok(inspection.layoutTree.patterns.repeatedLists[0].children.length >= 3);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "repeated-list"), true);
+  assert.ok(inspection.quality.patterns.repeatedLists >= 1);
+  assert.ok(inspection.quality.patterns.textLines >= 1);
+});
+
+test("inspectImageDataPixels detects repeated card grids offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticCardGridScreenshot(240, 180));
+
+  assert.ok(inspection);
+  assert.ok(inspection.layoutTree.patterns.repeatedGrids.length >= 1);
+  const grid = inspection.layoutTree.patterns.repeatedGrids[0];
+  assert.equal(grid.kind, "repeated-grid");
+  assert.equal(grid.rows, 2);
+  assert.equal(grid.columns, 3);
+  assert.ok(grid.children.length >= 4);
+  assert.ok(grid.confidence >= 0.62);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "repeated-grid"), true);
+  assert.equal(inspection.quality.patterns.repeatedGrids >= 1, true);
+  assert.equal(inspection.layoutTree.responsive.mode, "responsive-card-grid");
+  assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+});
+
+test("inspectImageDataPixels detects dashboard stat rows offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticStatRowScreenshot(240, 180));
+
+  assert.ok(inspection.layoutTree.patterns.statRows.length >= 1);
+  const statRow = inspection.layoutTree.patterns.statRows[0];
+  assert.equal(statRow.kind, "stat-row");
+  assert.equal(statRow.axis, "horizontal");
+  assert.ok(statRow.cardCount >= 2);
+  assert.ok(statRow.children.length >= 2);
+  assert.ok(statRow.confidence >= 0.64);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "stat-row"), true);
+  assert.equal(inspection.quality.patterns.statRows >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "stat-strip");
+  assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+});
+
+test("inspectImageDataPixels detects grouped form flows offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticFormScreenshot(180, 260));
+
+  assert.ok(inspection);
+  assert.ok(inspection.layoutTree.patterns.formGroups.length >= 1);
+  const formGroup = inspection.layoutTree.patterns.formGroups[0];
+  assert.equal(formGroup.kind, "form-group");
+  assert.ok(formGroup.fieldCount >= 2);
+  assert.ok(formGroup.actionCount >= 1);
+  assert.ok(formGroup.confidence >= 0.6);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "form-group"), true);
+  assert.equal(inspection.quality.patterns.formGroups >= 1, true);
+  assert.equal(inspection.layoutTree.responsive.mode, "form-flow");
+  assert.equal(inspection.layoutTree.screenIntent.id, "auth");
+});
+
+test("inspectImageDataPixels detects aligned data tables offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticTableScreenshot(240, 180));
+
+  assert.ok(inspection.elements.length >= 9);
+  assert.ok(inspection.layoutTree.patterns.dataTables.length >= 1);
+  const table = inspection.layoutTree.patterns.dataTables[0];
+  assert.equal(table.kind, "data-table");
+  assert.ok(table.rows >= 3);
+  assert.ok(table.columns >= 3);
+  assert.ok(table.children.length >= 9);
+  assert.ok(table.confidence >= 0.66);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "data-table"), true);
+  assert.equal(inspection.quality.patterns.dataTables >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "data-table");
+  assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+});
+
+test("inspectImageDataPixels detects bar chart series offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticBarChartScreenshot(240, 180));
+
+  assert.ok(inspection.elements.length >= 3);
+  assert.ok(inspection.layoutTree.patterns.charts.length >= 1);
+  const chart = inspection.layoutTree.patterns.charts[0];
+  assert.equal(chart.kind, "chart-series");
+  assert.equal(chart.chartKind, "bar");
+  assert.ok(chart.seriesCount >= 3);
+  assert.ok(chart.children.length >= 3);
+  assert.ok(chart.confidence >= 0.64);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "chart-series"), true);
+  assert.equal(inspection.quality.patterns.charts >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "analytics-chart");
+  assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+});
+
+test("inspectImageDataPixels detects horizontal action clusters offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticActionClusterScreenshot(360, 180));
+
+  assert.ok(inspection.elements.length >= 4);
+  assert.ok(inspection.layoutTree.patterns.actionClusters.length >= 1);
+  const cluster = inspection.layoutTree.patterns.actionClusters[0];
+  assert.equal(cluster.kind, "action-cluster");
+  assert.equal(cluster.axis, "horizontal");
+  assert.ok(cluster.controlCount >= 4);
+  assert.ok(cluster.children.length >= 4);
+  assert.ok(cluster.confidence >= 0.62);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "action-cluster"), true);
+  assert.equal(inspection.quality.patterns.actionClusters >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "action-toolbar");
+});
+
+test("inspectImageDataPixels detects tab sets offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticTabSetScreenshot(480, 240));
+
+  assert.ok(inspection.elements.length >= 3);
+  assert.ok(inspection.layoutTree.patterns.tabSets.length >= 1);
+  const tabSet = inspection.layoutTree.patterns.tabSets[0];
+  assert.equal(tabSet.kind, "tab-set");
+  assert.equal(tabSet.axis, "horizontal");
+  assert.match(tabSet.tabKind, /tabs|segmented-control/);
+  assert.ok(tabSet.tabCount >= 3);
+  assert.ok(tabSet.selectedIndex >= 0);
+  assert.ok(tabSet.confidence >= 0.64);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "tab-set"), true);
+  assert.equal(inspection.layoutTree.patterns.actionClusters.length, 0);
+  assert.equal(inspection.quality.patterns.tabSets >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "tabbed-content");
+});
+
+test("inspectImageDataPixels detects centered dialog panels offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticDialogScreenshot(500, 360));
+
+  assert.ok(inspection.elements.length >= 1);
+  assert.ok(inspection.layoutTree.patterns.dialogPanels.length >= 1);
+  const dialog = inspection.layoutTree.patterns.dialogPanels[0];
+  assert.equal(dialog.kind, "dialog-panel");
+  assert.equal(dialog.axis, "overlay");
+  assert.equal(dialog.modalType, "centered-dialog");
+  assert.ok(dialog.children.length >= 1);
+  assert.ok(dialog.centeredness >= 0.7);
+  assert.ok(dialog.confidence >= 0.65);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "dialog-panel"), true);
+  assert.equal(inspection.quality.patterns.dialogPanels >= 1, true);
+  assert.equal(inspection.quality.responsive.mode, "modal-dialog");
+  assert.equal(inspection.layoutTree.screenIntent.id, "modal");
 });
 
 test("inspectSvgMarkup extracts labels, counts, viewBox, and archetype hints", () => {
@@ -359,6 +962,21 @@ test("classifyLayoutArchetype prefers dashboard for wide desktop frames", () => 
   assert.equal(result.archetypeId, "dashboard");
 });
 
+test("classifyLayoutArchetype uses local screen intent for generic uploads", () => {
+  const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+  const result = classifyLayoutArchetype({
+    name: "screen-capture.png",
+    type: "image/png",
+    size: 2048,
+    width: 1440,
+    height: 900,
+    offlineInspection,
+  });
+
+  assert.equal(result.archetypeId, "dashboard");
+  assert.ok(result.scores.dashboard > result.scores.landing);
+});
+
 test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   const advanced = buildAdvancedOfflineOverrides(
     { name: "checkout-cart.png", type: "image/png", size: 512000, width: 1280, height: 800 },
@@ -387,10 +1005,234 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const designTokens/);
   assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
+  assert.match(advanced.generatedCode, /const responsiveIntent/);
+  assert.match(advanced.generatedCode, /const screenIntent/);
+  assert.match(advanced.generatedCode, /Responsive intent/);
+  assert.match(advanced.generatedCode, /Screen intent/);
+  assert.match(advanced.generatedCode, /sidebar-grid/);
+  assert.match(advanced.generatedCode, /app-shell/);
+  assert.match(advanced.generatedCode, /Detected app shell/);
+  assert.match(advanced.generatedCode, /desktop-sidebar-shell/);
+  assert.match(advanced.generatedCode, /renderPrimitiveBody/);
+  assert.match(advanced.generatedCode, /componentRole/);
+  assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
+  assert.match(advanced.generatedCode, /Component primitive/);
   assert.match(advanced.generatedCode, /Local screenshot scaffold/);
   assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
+});
+
+test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticRepeatedListScreenshot(180, 260),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "list-feed.png",
+      type: "image/png",
+      size: 512000,
+      width: 390,
+      height: 844,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "390x844px portrait frame." },
+  );
+
+  assert.match(advanced.generatedCode, /const detectedPatterns/);
+  assert.match(advanced.generatedCode, /const screenIntent/);
+  assert.match(advanced.generatedCode, /repeated-list/);
+  assert.match(advanced.generatedCode, /"primitive": "list-item"/);
+  assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
+  assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
+  assert.match(advanced.generatedCode, /repeated item scaffold/);
+  assert.match(advanced.generatedCode, /text-line signals shape the scaffold/);
+});
+
+test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticCardGridScreenshot(240, 180),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "card-layout.png",
+      type: "image/png",
+      size: 512000,
+      width: 1024,
+      height: 768,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "1024x768px desktop frame." },
+  );
+
+  assert.match(advanced.generatedCode, /const detectedPatterns/);
+  assert.match(advanced.generatedCode, /repeated-grid/);
+  assert.match(advanced.generatedCode, /"primitive": "card-grid"/);
+  assert.match(advanced.generatedCode, /gridTemplateColumns/);
+  assert.match(advanced.generatedCode, /repeated grid patterns/);
+});
+
+test("buildAdvancedOfflineOverrides renders stat-row patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticStatRowScreenshot(240, 180),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "metric-strip.png",
+      type: "image/png",
+      size: 512000,
+      width: 1024,
+      height: 768,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "1024x768px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Dashboard/i);
+  assert.match(advanced.generatedCode, /stat-row/);
+  assert.match(advanced.generatedCode, /KPI cards/);
+  assert.match(advanced.generatedCode, /cardCount/);
+  assert.match(advanced.generatedCode, /stat rows/);
+});
+
+test("buildAdvancedOfflineOverrides renders form-group patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticFormScreenshot(180, 260),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "plain-upload.png",
+      type: "image/png",
+      size: 512000,
+      width: 390,
+      height: 844,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "390x844px portrait frame." },
+  );
+
+  assert.match(advanced.summary, /Authentication/i);
+  assert.match(advanced.generatedCode, /form-group/);
+  assert.match(advanced.generatedCode, /Submit action/);
+  assert.match(advanced.generatedCode, /form groups/);
+});
+
+test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticTableScreenshot(240, 180),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "admin-table.png",
+      type: "image/png",
+      size: 512000,
+      width: 1024,
+      height: 768,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "1024x768px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Dashboard/i);
+  assert.match(advanced.generatedCode, /data-table/);
+  assert.match(advanced.generatedCode, /<table/);
+  assert.match(advanced.generatedCode, /<thead>/);
+  assert.match(advanced.generatedCode, /columnIndex \+ 1/);
+  assert.match(advanced.generatedCode, /data tables/);
+});
+
+test("buildAdvancedOfflineOverrides renders chart-series patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticBarChartScreenshot(240, 180),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "analytics-chart.png",
+      type: "image/png",
+      size: 512000,
+      width: 1024,
+      height: 768,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "1024x768px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Dashboard/i);
+  assert.match(advanced.generatedCode, /chart-series/);
+  assert.match(advanced.generatedCode, /bar chart preview/);
+  assert.match(advanced.generatedCode, /seriesCount/);
+  assert.match(advanced.generatedCode, /chart series/);
+});
+
+test("buildAdvancedOfflineOverrides renders action-cluster patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticActionClusterScreenshot(360, 180),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "toolbar-row.png",
+      type: "image/png",
+      size: 512000,
+      width: 360,
+      height: 180,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "360x180px landscape frame." },
+  );
+
+  assert.match(advanced.generatedCode, /action-cluster/);
+  assert.match(advanced.generatedCode, /region\.kind === "action-cluster"/);
+  assert.match(advanced.generatedCode, /Action \{index \+ 1\}/);
+  assert.match(advanced.generatedCode, /controlCount/);
+  assert.match(advanced.generatedCode, /action clusters/);
+});
+
+test("buildAdvancedOfflineOverrides renders tab-set patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticTabSetScreenshot(480, 240),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "tabbed-settings.png",
+      type: "image/png",
+      size: 512000,
+      width: 480,
+      height: 240,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "480x240px landscape frame." },
+  );
+
+  assert.match(advanced.generatedCode, /tab-set/);
+  assert.match(advanced.generatedCode, /role="tablist"/);
+  assert.match(advanced.generatedCode, /aria-selected/);
+  assert.match(advanced.generatedCode, /tabbed-content/);
+  assert.match(advanced.generatedCode, /tab sets/);
+});
+
+test("buildAdvancedOfflineOverrides renders dialog-panel patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticDialogScreenshot(500, 360),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "profile-modal.png",
+      type: "image/png",
+      size: 512000,
+      width: 500,
+      height: 360,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "500x360px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Modal dialog/i);
+  assert.match(advanced.generatedCode, /dialog-panel/);
+  assert.match(advanced.generatedCode, /role="dialog"/);
+  assert.match(advanced.generatedCode, /aria-modal="true"/);
+  assert.match(advanced.generatedCode, /Close dialog/);
+  assert.match(advanced.generatedCode, /modal-dialog/);
+  assert.match(advanced.generatedCode, /dialog panels/);
 });
 
 test("buildUiFlowArtifact uses known sample registry for dashboard-reference.svg", () => {
@@ -478,21 +1320,239 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
   assert.match(artifact.summary, /local pixel signals/i);
   assert.ok(artifact.plan.some((section) => section.title === "Local Vision Signals"));
   assert.ok(artifact.plan.some((section) => section.title === "Detected Structure"));
+  assert.ok(artifact.plan.some((section) => section.title === "Screen Intent"));
   assert.ok(artifact.plan.some((section) => section.title === "Design Tokens"));
   assert.ok(artifact.plan.some((section) => section.title === "Local Quality Checks"));
   assert.deepEqual(
     artifact.previewStats.map((stat) => stat.label),
-    ["Regions", "Elements", "Density", "Contrast"],
+    ["Regions", "Elements", "Responsive", "Contrast"],
   );
   assert.ok(artifact.detections.elements.length >= 3);
   assert.ok(artifact.detections.source.width > 0);
   assert.ok(artifact.detections.designTokens.surface);
   assert.ok(artifact.detections.elements.every((element) => element.reasons.length > 0));
   assert.equal(artifact.detections.layoutTree.strategy, "projection-groups");
+  assert.equal(artifact.detections.layoutTree.screenIntent.id, "dashboard");
   assert.ok(artifact.detections.quality.confidence > 0);
   assert.match(artifact.generatedCode, /const designTokens/);
   assert.match(artifact.generatedCode, /const detectedElements/);
   assert.match(artifact.generatedCode, /const layoutRegions/);
+});
+
+const REGENERATED_PATTERN_SUMMARY_RE =
+  /app shell patterns, .* dialog panels, .* repeated list patterns, .* repeated grid patterns, .* stat rows, .* form groups, .* data tables, .* chart series, .* action clusters, and .* tab sets remain grouped/;
+
+test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
+  const artifact = buildUiFlowArtifact({
+    name: "operator-console.png",
+    type: "image/png",
+    size: 8192,
+    width: 1440,
+    height: 900,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /appShells/);
+  assert.match(regenerated.generatedCode, /Detected app shell/);
+  assert.match(regenerated.generatedCode, /App shell/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves repeated-list scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticRepeatedListScreenshot(180, 260),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "list-feed.png",
+    type: "image/png",
+    size: 8192,
+    width: 390,
+    height: 844,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /const correctedPatterns/);
+  assert.match(regenerated.generatedCode, /const responsiveIntent/);
+  assert.match(regenerated.generatedCode, /const correctedElementById/);
+  assert.match(regenerated.generatedCode, /renderCorrectedPrimitive/);
+  assert.match(regenerated.generatedCode, /Repeated list/);
+  assert.match(regenerated.generatedCode, /groupedElementIds/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves repeated-grid scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticCardGridScreenshot(240, 180),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "card-layout.png",
+    type: "image/png",
+    size: 8192,
+    width: 1024,
+    height: 768,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /const correctedPatterns/);
+  assert.match(regenerated.generatedCode, /repeatedGrids/);
+  assert.match(regenerated.generatedCode, /Detected repeated grid/);
+  assert.match(regenerated.generatedCode, /gridTemplateColumns/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves stat-row scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticStatRowScreenshot(240, 180),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "metric-strip.png",
+    type: "image/png",
+    size: 8192,
+    width: 1024,
+    height: 768,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /statRows/);
+  assert.match(regenerated.generatedCode, /Detected stat row/);
+  assert.match(regenerated.generatedCode, /Stat row/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves form-group scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticFormScreenshot(180, 260),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "plain-upload.png",
+    type: "image/png",
+    size: 8192,
+    width: 390,
+    height: 844,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /formGroups/);
+  assert.match(regenerated.generatedCode, /Detected form group/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves data-table scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticTableScreenshot(240, 180),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "admin-table.png",
+    type: "image/png",
+    size: 8192,
+    width: 1024,
+    height: 768,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /dataTables/);
+  assert.match(regenerated.generatedCode, /Detected data table/);
+  assert.match(regenerated.generatedCode, /<table/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves chart-series scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticBarChartScreenshot(240, 180),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "analytics-chart.png",
+    type: "image/png",
+    size: 8192,
+    width: 1024,
+    height: 768,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /charts/);
+  assert.match(regenerated.generatedCode, /Detected chart series/);
+  assert.match(regenerated.generatedCode, /Chart series/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves action-cluster scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticActionClusterScreenshot(360, 180),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "toolbar-row.png",
+    type: "image/png",
+    size: 8192,
+    width: 360,
+    height: 180,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /actionClusters/);
+  assert.match(regenerated.generatedCode, /Detected action cluster/);
+  assert.match(regenerated.generatedCode, /Action cluster/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves tab-set scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticTabSetScreenshot(480, 240),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "tabbed-settings.png",
+    type: "image/png",
+    size: 8192,
+    width: 480,
+    height: 240,
+    offlineInspection,
+  });
+
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /tabSets/);
+  assert.match(regenerated.generatedCode, /Detected tab set/);
+  assert.match(regenerated.generatedCode, /Tab set/);
+  assert.match(regenerated.generatedCode, /role="tablist"/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
+test("regenerateArtifactFromDetections preserves dialog-panel scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticDialogScreenshot(500, 360),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "profile-modal.png",
+    type: "image/png",
+    size: 8192,
+    width: 500,
+    height: 360,
+    offlineInspection,
+  });
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /dialogPanels/);
+  assert.match(regenerated.generatedCode, /Detected dialog panel/);
+  assert.match(regenerated.generatedCode, /Dialog panel/);
+  assert.match(regenerated.generatedCode, /role="dialog"/);
+  assert.match(regenerated.generatedCode, /aria-modal="true"/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
 test("regenerateArtifactFromDetections uses corrected active elements", () => {
@@ -524,7 +1584,12 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
   assert.match(regenerated.generatedCode, /Corrected screenshot scaffold/);
+  assert.match(regenerated.generatedCode, /const screenIntent/);
+  assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
+  assert.match(regenerated.generatedCode, /componentRole/);
+  assert.match(regenerated.generatedCode, /primitive preview/);
+  assert.match(regenerated.generatedCode, /button type="button"/);
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
     String(detections.elements.length - 1),

@@ -1,6 +1,16 @@
 "use client";
 
-import { UploadCloud } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListChecks,
+  LogIn,
+  PanelsTopLeft,
+  Settings2,
+  ShoppingBag,
+  Smartphone,
+  Table2,
+  UploadCloud,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,6 +34,54 @@ interface SamplePickerProps {
   onSelectedSampleChange: (sampleId: string) => void;
   selectedSampleId: string;
   showPathHint?: boolean;
+}
+
+function SampleIconBadge({
+  className = "size-8 rounded-md",
+  iconClassName = "size-4",
+  sampleId,
+}: {
+  className?: string;
+  iconClassName?: string;
+  sampleId: string;
+}) {
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center border border-primary/15 bg-primary/10 text-primary ${className}`}
+      aria-hidden
+    >
+      <SampleIcon className={iconClassName} sampleId={sampleId} />
+    </span>
+  );
+}
+
+function SampleIcon({
+  className,
+  sampleId,
+}: {
+  className?: string;
+  sampleId: string;
+}) {
+  switch (sampleId) {
+    case "auth":
+      return <LogIn className={className} />;
+    case "dashboard":
+      return <LayoutDashboard className={className} />;
+    case "ecommerce":
+      return <ShoppingBag className={className} />;
+    case "landing":
+      return <PanelsTopLeft className={className} />;
+    case "mobile":
+      return <Smartphone className={className} />;
+    case "settings":
+      return <Settings2 className={className} />;
+    case "stress-dashboard":
+      return <Table2 className={className} />;
+    case "stress-list":
+      return <ListChecks className={className} />;
+    default:
+      return <UploadCloud className={className} />;
+  }
 }
 
 export function SamplePicker({
@@ -59,12 +117,21 @@ export function SamplePicker({
             data-testid="sample-select"
           >
             <SelectValue>
-              {(value) =>
-                getSampleCopy(
-                  typeof value === "string" ? value : selectedSample.id,
-                  copy,
-                ).label
-              }
+              {(value) => {
+                const sampleId = typeof value === "string" ? value : selectedSample.id;
+                const localized = getSampleCopy(sampleId, copy);
+
+                return (
+                  <span className="flex min-w-0 items-center gap-2">
+                    <SampleIconBadge
+                      sampleId={sampleId}
+                      className="size-6 rounded-md"
+                      iconClassName="size-3.5"
+                    />
+                    <span className="min-w-0 truncate">{localized.label}</span>
+                  </span>
+                );
+              }}
             </SelectValue>
           </SelectTrigger>
           <SelectContent data-testid="sample-select-content">
@@ -77,10 +144,13 @@ export function SamplePicker({
                   label={localized.label}
                   data-testid={`sample-select-option-${sample.id}`}
                 >
-                  <span className="grid min-w-0 gap-0.5">
-                    <span className="truncate font-medium">{localized.label}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {localized.hint}
+                  <span className="flex min-w-0 items-start gap-3">
+                    <SampleIconBadge sampleId={sample.id} />
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="truncate font-medium">{localized.label}</span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {localized.hint}
+                      </span>
                     </span>
                   </span>
                 </SelectItem>

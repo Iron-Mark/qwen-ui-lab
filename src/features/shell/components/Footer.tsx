@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/tooltip";
 import { SITE_NAME } from "@/lib/seo";
 
+interface FooterLinkConfig {
+  href: string;
+  label: string;
+  tooltip: string;
+}
+
 const PRODUCT_LINKS = [
   {
     href: "/",
@@ -26,7 +32,7 @@ const PRODUCT_LINKS = [
     label: "One-click demo",
     tooltip: "Load the bundled sample without uploading a file.",
   },
-] as const;
+] satisfies readonly FooterLinkConfig[];
 
 const RESOURCE_LINKS = [
   {
@@ -44,7 +50,7 @@ const RESOURCE_LINKS = [
     label: "Source repo",
     tooltip: "View this app's source code on GitHub.",
   },
-] as const;
+] satisfies readonly FooterLinkConfig[];
 
 const SOCIAL_LINKS = [
   {
@@ -105,18 +111,18 @@ function FooterTooltip({
 }
 
 function FooterLink({
+  external = false,
   href,
   label,
   tooltip,
-  external = false,
 }: {
+  external?: boolean;
   href: string;
   label: string;
   tooltip: string;
-  external?: boolean;
 }) {
   const className =
-    "text-sm text-muted-foreground transition-colors hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "inline-flex min-h-9 w-fit min-w-0 items-center rounded-md text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-card-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   if (external) {
     return (
@@ -139,6 +145,31 @@ function FooterLink({
         {label}
       </Link>
     </FooterTooltip>
+  );
+}
+
+function FooterNavSection({
+  external = false,
+  label,
+  links,
+}: {
+  external?: boolean;
+  label: string;
+  links: readonly FooterLinkConfig[];
+}) {
+  return (
+    <nav aria-label={label} className="min-w-0">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-card-foreground/80">
+        {label}
+      </p>
+      <ul className="mt-3 space-y-1.5">
+        {links.map((link) => (
+          <li key={link.href}>
+            <FooterLink {...link} external={external} />
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 
@@ -192,32 +223,13 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid gap-5 min-[420px]:grid-cols-2 lg:min-w-[24rem]">
-            <nav aria-label="Product">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-card-foreground/70">
-                Product
-              </p>
-              <ul className="mt-3 space-y-2">
-                {PRODUCT_LINKS.map((link) => (
-                  <li key={link.href}>
-                    <FooterLink {...link} />
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            <nav aria-label="Resources">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-card-foreground/70">
-                Resources
-              </p>
-              <ul className="mt-3 space-y-2">
-                {RESOURCE_LINKS.map((link) => (
-                  <li key={link.href}>
-                    <FooterLink {...link} external />
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          <div className="grid gap-8 min-[420px]:grid-cols-2 lg:min-w-[24rem]">
+            <FooterNavSection label="Product" links={PRODUCT_LINKS} />
+            <FooterNavSection
+              external
+              label="Resources"
+              links={RESOURCE_LINKS}
+            />
           </div>
         </div>
 
