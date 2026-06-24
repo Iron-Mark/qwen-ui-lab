@@ -1,7 +1,7 @@
 const DEFAULT_GRID_COLUMNS = 12;
 const DEFAULT_GRID_ROWS = 8;
 const SMART_GRID_COLUMNS = 24;
-const SMART_GRID_ROWS = 16;
+const SMART_GRID_ROWS = 32;
 const EDGE_THRESHOLD = 0.18;
 const BACKGROUND_DISTANCE_THRESHOLD = 42;
 const PALETTE_BUCKET_SIZE = 32;
@@ -200,8 +200,16 @@ export function buildImageInspectionPlanSections(inspection) {
       body: summarizeDetectedStructure(inspection),
     },
     {
+      title: "Screen Intent",
+      body: summarizeScreenIntent(inspection),
+    },
+    {
       title: "Element Detection",
       body: summarizeDetectedElements(inspection),
+    },
+    {
+      title: "Responsive Intent",
+      body: summarizeResponsiveIntent(inspection),
     },
     {
       title: "Design Tokens",
@@ -230,7 +238,10 @@ export function buildImageInspectionPreviewStats(inspection) {
       label: "Elements",
       value: String(inspection.elements?.length ?? inspection.layout.componentSummary.controls),
     },
-    { label: "Density", value: inspection.visualDensity },
+    {
+      label: "Responsive",
+      value: inspection.layoutTree?.responsive?.mode ?? inspection.visualDensity,
+    },
     { label: "Contrast", value: `${inspection.contrast.preferredTextContrast}:1` },
   ];
 }
@@ -530,20 +541,96 @@ function summarizeDetectedElements(inspection) {
   }
 
   const counts = countBy(elements, "kind");
+  const roleCounts = countBy(elements, "componentRole");
   const countText = Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
     .map(([kind, count]) => `${count} ${kind}`)
+    .join(", ");
+  const roleText = Object.entries(roleCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([role, count]) => `${count} ${role}`)
     .join(", ");
   const topElements = elements
     .slice(0, 6)
     .map((element) => `${element.kind} ${element.box.x},${element.box.y} ${element.box.width}×${element.box.height}`)
     .join("; ");
 
+  const repeatedListCount = tree?.patterns?.repeatedLists?.length ?? 0;
+  const repeatedGridCount = tree?.patterns?.repeatedGrids?.length ?? 0;
+  const statRowCount = tree?.patterns?.statRows?.length ?? 0;
+  const formGroupCount = tree?.patterns?.formGroups?.length ?? 0;
+  const dataTableCount = tree?.patterns?.dataTables?.length ?? 0;
+  const chartCount = tree?.patterns?.charts?.length ?? 0;
+  const actionClusterCount = tree?.patterns?.actionClusters?.length ?? 0;
+  const tabSetCount = tree?.patterns?.tabSets?.length ?? 0;
+  const dialogPanelCount = tree?.patterns?.dialogPanels?.length ?? 0;
+  const appShellCount = tree?.patterns?.appShells?.length ?? 0;
+  const patternText = tree?.patterns
+    ? `${tree.patterns.textLines ?? 0} OCR-free text-line signals, ${repeatedListCount} repeated-list pattern${
+        repeatedListCount === 1 ? "" : "s"
+      }, ${repeatedGridCount} repeated-grid pattern${repeatedGridCount === 1 ? "" : "s"}, ${statRowCount} stat row${
+        statRowCount === 1 ? "" : "s"
+      }, ${formGroupCount} form group${
+        formGroupCount === 1 ? "" : "s"
+      }, ${dataTableCount} data table${dataTableCount === 1 ? "" : "s"}, ${chartCount} chart series, ${actionClusterCount} action cluster${
+        actionClusterCount === 1 ? "" : "s"
+      }, ${tabSetCount} tab set${tabSetCount === 1 ? "" : "s"}, ${dialogPanelCount} dialog panel${
+        dialogPanelCount === 1 ? "" : "s"
+      }, and ${appShellCount} app shell${appShellCount === 1 ? "" : "s"} were grouped.`
+    : null;
+
   return [
     `Fine-grid detection found ${elements.length} candidate UI elements (${countText}).`,
+    roleText ? `Component snapping inferred ${roleText}.` : null,
     `Hierarchy has ${tree?.groups?.length ?? 0} top-level groups using ${tree?.strategy ?? "projection"} ordering.`,
+    patternText,
     `Top candidates: ${topElements}.`,
-  ].join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function summarizeResponsiveIntent(inspection) {
+  const responsive = inspection.layoutTree?.responsive;
+  if (!responsive) {
+    return "No responsive intent was inferred; validate breakpoints manually.";
+  }
+
+  return [
+    `Responsive mode: ${responsive.mode} from a ${responsive.source} source.`,
+    `Breakpoints: ${responsive.breakpoints.join(", ")}.`,
+    `Primary flow: ${responsive.primaryFlow}.`,
+    responsive.regions?.collapsibleSidebar
+      ? "Collapse the side navigation into a drawer or top filter on smaller screens."
+      : null,
+    responsive.regions?.fixedBottomNav
+      ? "Preserve bottom navigation as a mobile landmark."
+      : null,
+    responsive.tailwindHint ? `Tailwind scaffold hint: ${responsive.tailwindHint}.` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function summarizeScreenIntent(inspection) {
+  const intent = inspection.layoutTree?.screenIntent ?? inspection.quality?.screenIntent;
+  if (!intent) {
+    return "No screen-level intent was inferred; classify the page type manually before scaffold generation.";
+  }
+
+  const confidence =
+    typeof intent.confidence === "number"
+      ? `${Math.round(intent.confidence * 100)}% confidence`
+      : "local confidence";
+  const evidence = (intent.evidence ?? []).slice(0, 3).join(" ");
+
+  return [
+    `Likely screen: ${intent.label ?? intent.id} (${confidence}).`,
+    evidence ? `Evidence: ${evidence}` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 function countBy(items, key) {
@@ -627,15 +714,37 @@ function summarizeSmartDetection({
       }),
     )
     .filter((element) => element.confidence >= 0.42);
-  const elements = enhanceDetectedPatterns(detectedElements, {
-    sourceWidth,
-    sourceHeight,
-  })
+  const elements = snapComponentRoles(
+    enhanceDetectedPatterns(detectedElements, {
+      sourceWidth,
+      sourceHeight,
+    }),
+    { sourceWidth, sourceHeight },
+  )
     .sort(readingOrderSort)
     .slice(0, 24)
     .map((element, index) => ({ ...element, id: `element-${index + 1}` }));
 
-  const layoutTree = buildLayoutTree(elements, { sourceWidth, sourceHeight });
+  const patterns = summarizeDetectedPatterns(elements, { sourceWidth, sourceHeight });
+  const responsiveIntent = inferResponsiveIntent(elements, {
+    sourceWidth,
+    sourceHeight,
+    patterns,
+  });
+  const screenIntent = inferScreenIntent(elements, {
+    sourceWidth,
+    sourceHeight,
+    patterns,
+    responsiveIntent,
+  });
+  const layoutTree = buildLayoutTree(elements, {
+    sourceWidth,
+    sourceHeight,
+    patterns,
+    responsiveIntent,
+    screenIntent,
+  });
+  const roles = countBy(elements, "componentRole");
   const confidence = elements.length
     ? round(elements.reduce((sum, element) => sum + element.confidence, 0) / elements.length, 2)
     : 0;
@@ -648,6 +757,30 @@ function summarizeSmartDetection({
       confidence,
       elementCount: elements.length,
       grid: `${gridColumns}x${gridRows}`,
+      patterns: {
+        textLines: patterns.textLines,
+        repeatedLists: patterns.repeatedLists.length,
+        repeatedGrids: patterns.repeatedGrids.length,
+        statRows: patterns.statRows.length,
+        formGroups: patterns.formGroups.length,
+        dataTables: patterns.dataTables.length,
+        charts: patterns.charts.length,
+        actionClusters: patterns.actionClusters.length,
+        tabSets: patterns.tabSets.length,
+        dialogPanels: patterns.dialogPanels.length,
+        appShells: patterns.appShells.length,
+      },
+      roles,
+      responsive: {
+        mode: responsiveIntent.mode,
+        source: responsiveIntent.source,
+        breakpoints: responsiveIntent.breakpoints,
+        primaryFlow: responsiveIntent.primaryFlow,
+        columns: responsiveIntent.columns,
+        tailwindHint: responsiveIntent.tailwindHint,
+        regions: responsiveIntent.regions,
+      },
+      screenIntent,
       ambiguity:
         confidence >= 0.68
           ? "low"
@@ -655,6 +788,313 @@ function summarizeSmartDetection({
             ? "medium"
             : "high",
     },
+  };
+}
+
+function inferScreenIntent(elements, { sourceWidth, sourceHeight, patterns, responsiveIntent }) {
+  const roles = countBy(elements, "componentRole");
+  const scores = {
+    dashboard: 0,
+    auth: 0,
+    mobile: 0,
+    settings: 0,
+    landing: 0,
+    ecommerce: 0,
+    modal: 0,
+  };
+  const evidenceByIntent = Object.fromEntries(
+    Object.keys(scores).map((key) => [key, []]),
+  );
+  const add = (id, score, evidence) => {
+    scores[id] = (scores[id] ?? 0) + score;
+    if (evidence) evidenceByIntent[id].push(evidence);
+  };
+
+  const hasTopNavigation = (roles["top-navigation"] ?? 0) > 0;
+  const hasSideNavigation = (roles["side-navigation"] ?? 0) > 0;
+  const hasBottomNavigation = (roles["bottom-navigation"] ?? 0) > 0;
+  const listRows = roles["list-row"] ?? 0;
+  const metricCards = roles["metric-card"] ?? 0;
+  const chartPanels = roles["chart-panel"] ?? 0;
+  const contentCards = roles["content-card"] ?? 0;
+  const mediaPanels = roles["media-panel"] ?? 0;
+  const formFields = roles["form-field"] ?? 0;
+  const searchFields = roles["search-field"] ?? 0;
+  const primaryActions = roles["primary-action"] ?? 0;
+  const iconActions = roles["icon-action"] ?? 0;
+  const textLines = roles["text-line"] ?? 0;
+  const repeatedLists = patterns?.repeatedLists?.length ?? 0;
+  const repeatedGrids = patterns?.repeatedGrids?.length ?? 0;
+  const statRows = patterns?.statRows?.length ?? 0;
+  const formGroups = patterns?.formGroups?.length ?? 0;
+  const dataTables = patterns?.dataTables?.length ?? 0;
+  const charts = patterns?.charts?.length ?? 0;
+  const actionClusters = patterns?.actionClusters?.length ?? 0;
+  const tabSets = patterns?.tabSets?.length ?? 0;
+  const dialogPanels = patterns?.dialogPanels?.length ?? 0;
+  const appShells = patterns?.appShells?.length ?? 0;
+  const primaryShell = patterns?.appShells?.[0] ?? null;
+  const sourceRatio = sourceWidth / Math.max(1, sourceHeight);
+
+  if (responsiveIntent?.source === "mobile") {
+    add("mobile", 1.5, "Source frame is mobile-sized.");
+  }
+  if (hasBottomNavigation) {
+    add("mobile", 2.5, "Bottom navigation was detected.");
+  }
+  if (hasTopNavigation && hasSideNavigation) {
+    add("dashboard", 2.5, "Top navigation and side navigation form an application shell.");
+    add("settings", 1.2, "Side navigation can also indicate a settings workspace.");
+    add("ecommerce", 1, "Side navigation can represent catalog filters.");
+  }
+  if (appShells >= 1) {
+    add("dashboard", 1.8, `A ${primaryShell?.shellType ?? "navigation"} app shell was grouped from structural landmarks.`);
+    if (primaryShell?.shellType === "mobile-tab-shell") {
+      add("mobile", 1.8, "Bottom navigation and top landmarks were grouped as a mobile shell.");
+    }
+    if (primaryShell?.shellType === "desktop-sidebar-shell") {
+      add("settings", 0.8, "A persistent sidebar shell can support workspace settings.");
+    }
+  }
+  if (metricCards >= 2) {
+    add("dashboard", 2.2, `${metricCards} metric-card regions were detected.`);
+  }
+  if (statRows >= 1) {
+    add("dashboard", 2.4, "A KPI stat row was grouped from aligned metric cards.");
+  }
+  if (repeatedGrids >= 1) {
+    add("dashboard", 2, "A repeated card grid was grouped from aligned rows and columns.");
+    add("ecommerce", 1.6, "Repeated grid cards can also represent a product catalog.");
+  }
+  if (chartPanels >= 1) {
+    add("dashboard", 2, "A chart or analytics panel was detected.");
+  }
+  if (charts >= 1) {
+    add("dashboard", 2.3, "A chart series was grouped from aligned visual marks.");
+    add("landing", 0.4, "Charts can also support a product or marketing proof point.");
+  }
+  if (dataTables >= 1) {
+    add("dashboard", 2.4, "A tabular data pattern was grouped from aligned rows and columns.");
+    add("settings", 0.8, "Tables can also represent admin settings or records.");
+  }
+  if (listRows >= 3 || repeatedLists >= 1) {
+    add("mobile", responsiveIntent?.source === "mobile" ? 1.8 : 0.8, "Repeated full-width rows suggest a feed or list flow.");
+    add("dashboard", responsiveIntent?.source === "mobile" ? 0.2 : 1, "Repeated rows can also be an activity table.");
+  }
+  if (formFields >= 2 && primaryActions >= 1 && !hasSideNavigation && !hasTopNavigation) {
+    add("auth", 3, "Stacked form fields with a primary action suggest an auth form.");
+  }
+  if (formGroups >= 1 && !hasSideNavigation && !hasTopNavigation) {
+    add("auth", 2.8, "A grouped form flow was detected without surrounding app navigation.");
+  }
+  if (formGroups >= 1 && hasSideNavigation) {
+    add("settings", 2, "A grouped form flow with navigation suggests settings or profile editing.");
+  }
+  if ((formFields >= 2 || searchFields >= 1) && hasSideNavigation) {
+    add("settings", 2.2, "Navigation plus form controls suggests settings or profile editing.");
+  }
+  if (searchFields >= 1 && (contentCards + mediaPanels) >= 3) {
+    add("ecommerce", 2.5, "Search/filter controls with repeated cards suggest a catalog.");
+  }
+  if (hasTopNavigation && !hasSideNavigation && primaryActions >= 1 && (contentCards + textLines) >= 2) {
+    add("landing", 2, "Top navigation, content blocks, and CTA-like actions suggest a landing page.");
+  }
+  if (sourceRatio >= 1.45 && (contentCards + mediaPanels) >= 3 && !hasSideNavigation) {
+    add("landing", 1, "Wide content-heavy frame can map to a marketing layout.");
+  }
+  if (iconActions >= 3 && hasTopNavigation) {
+    add("dashboard", 0.8, "Header action clusters often appear in dashboards.");
+  }
+  if (actionClusters >= 1) {
+    add("dashboard", 1.1, "A toolbar or action row was grouped from same-row controls.");
+    add("landing", 0.9, "Grouped CTAs can indicate a marketing or onboarding flow.");
+    add("settings", 0.7, "Grouped controls can also represent settings actions.");
+  }
+  if (tabSets >= 1) {
+    add("dashboard", 1.2, "A tab set was grouped from adjacent segmented controls.");
+    add("settings", 1, "Tabbed controls often switch settings or detail panels.");
+    add("mobile", responsiveIntent?.source === "mobile" ? 0.8 : 0.3, "Tabs can support compact mobile section switching.");
+  }
+  if (dialogPanels >= 1) {
+    add("modal", 3, "A centered dialog panel was grouped from a floating surface with page margins.");
+    add("auth", formGroups >= 1 ? 1.4 : 0.6, "Dialog panels often contain sign-in or confirmation flows.");
+    add("settings", 1, "Dialog panels can also represent local profile or preference editing.");
+  }
+
+  const ranked = Object.entries(scores).sort((first, second) => second[1] - first[1]);
+  const [topId, topScore] = ranked[0] ?? ["dashboard", 0];
+  const [, secondScore] = ranked[1] ?? ["", 0];
+  const fallbackId = responsiveIntent?.source === "mobile" ? "mobile" : "dashboard";
+  const id = topScore > 0 ? topId : fallbackId;
+  const margin = Math.max(0, topScore - secondScore);
+  const confidence = clamp(0.52 + topScore * 0.075 + margin * 0.035, 0.52, 0.96);
+
+  return {
+    id,
+    label: SCREEN_INTENT_LABELS[id] ?? titleCase(id),
+    confidence: round(confidence, 2),
+    evidence: (evidenceByIntent[id] ?? []).slice(0, 4),
+    scores: Object.fromEntries(
+      Object.entries(scores).map(([key, value]) => [key, round(value, 2)]),
+    ),
+  };
+}
+
+const SCREEN_INTENT_LABELS = {
+  dashboard: "Dashboard or analytics workspace",
+  auth: "Authentication form",
+  mobile: "Mobile app or feed shell",
+  settings: "Settings or profile workspace",
+  landing: "Marketing or landing page",
+  ecommerce: "Product catalog or commerce flow",
+  modal: "Modal dialog or focused overlay",
+};
+
+function titleCase(value) {
+  return String(value || "")
+    .replace(/[-_]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }) {
+  const roleCounts = countBy(elements, "componentRole");
+  const ratio = sourceWidth / Math.max(1, sourceHeight);
+  const source =
+    sourceWidth <= 480
+      ? "mobile"
+      : sourceWidth <= 900 || ratio < 0.85
+        ? "tablet"
+        : ratio >= 1.55
+          ? "wide-desktop"
+          : "desktop";
+  const hasTopNavigation = (roleCounts["top-navigation"] ?? 0) > 0;
+  const hasSideNavigation = (roleCounts["side-navigation"] ?? 0) > 0;
+  const hasBottomNavigation = (roleCounts["bottom-navigation"] ?? 0) > 0;
+  const listRows = roleCounts["list-row"] ?? 0;
+  const cardLike =
+    (roleCounts["metric-card"] ?? 0) +
+    (roleCounts["content-card"] ?? 0) +
+    (roleCounts["chart-panel"] ?? 0) +
+    (roleCounts["media-panel"] ?? 0);
+  const actionLike =
+    (roleCounts["primary-action"] ?? 0) +
+    (roleCounts["form-field"] ?? 0) +
+    (roleCounts["search-field"] ?? 0);
+  const dataTables = patterns?.dataTables?.length ?? 0;
+  const chartSeries = patterns?.charts?.length ?? 0;
+  const actionClusters = patterns?.actionClusters?.length ?? 0;
+  const tabSets = patterns?.tabSets?.length ?? 0;
+  const dialogPanels = patterns?.dialogPanels?.length ?? 0;
+  const statRows = patterns?.statRows?.length ?? 0;
+  const appShells = patterns?.appShells?.length ?? 0;
+  const primaryShell = patterns?.appShells?.[0] ?? null;
+
+  const mode =
+    dialogPanels >= 1
+      ? "modal-dialog"
+      : hasSideNavigation && source !== "mobile"
+      ? "sidebar-grid"
+      : primaryShell?.shellType === "mobile-tab-shell"
+        ? "mobile-shell"
+        : dataTables >= 1
+          ? "data-table"
+          : chartSeries >= 1
+            ? "analytics-chart"
+            : statRows >= 1
+              ? "stat-strip"
+              : tabSets >= 1
+                ? "tabbed-content"
+              : actionClusters >= 1
+                ? "action-toolbar"
+                : listRows >= 3
+                  ? "stacked-list"
+                  : cardLike >= 2
+                    ? "responsive-card-grid"
+                    : actionLike >= 2
+                      ? "form-flow"
+                      : "single-column";
+  const breakpoints =
+    source === "mobile"
+      ? ["base", "sm"]
+      : source === "tablet"
+        ? ["base", "md"]
+        : ["base", "md", "lg"];
+  const primaryFlow =
+    mode === "sidebar-grid"
+      ? "collapse sidebar into top filter drawer below lg"
+      : mode === "modal-dialog"
+        ? "center dialog on desktop and use a near-fullscreen sheet on mobile"
+      : mode === "mobile-shell"
+        ? "keep top landmarks and bottom navigation fixed while content scrolls"
+      : mode === "responsive-card-grid"
+        ? "stack cards on mobile, two columns on tablet, preserve grid on desktop"
+        : mode === "stacked-list"
+          ? "keep list rows full-width with stable vertical rhythm"
+          : mode === "data-table"
+            ? "wrap tables in horizontal scroll on mobile, keep columns aligned on desktop"
+            : mode === "analytics-chart"
+              ? "keep chart marks grouped with a readable legend and stable axis spacing"
+              : mode === "stat-strip"
+                ? "stack KPI cards on mobile and keep a compact metric row on wider screens"
+                : mode === "tabbed-content"
+                  ? "keep tab triggers as one segmented control and stack tab panels below"
+                : mode === "action-toolbar"
+                  ? "wrap related actions as a toolbar on mobile while preserving row order"
+                  : mode === "form-flow"
+                    ? "stack labels and controls on mobile, inline related actions on larger screens"
+                    : "single readable column with constrained line length";
+
+  return {
+    mode,
+    source,
+    breakpoints,
+    primaryFlow,
+    regions: {
+      stickyHeader: hasTopNavigation,
+      collapsibleSidebar: hasSideNavigation,
+      fixedBottomNav: hasBottomNavigation,
+      appShellCount: appShells,
+      appShellType: primaryShell?.shellType ?? null,
+      repeatedListCount: patterns?.repeatedLists?.length ?? 0,
+      repeatedGridCount: patterns?.repeatedGrids?.length ?? 0,
+      statRowCount: statRows,
+      formGroupCount: patterns?.formGroups?.length ?? 0,
+      dataTableCount: dataTables,
+      chartSeriesCount: chartSeries,
+      actionClusterCount: actionClusters,
+      tabSetCount: tabSets,
+      dialogPanelCount: dialogPanels,
+    },
+    columns: {
+      base: 1,
+      md: mode === "responsive-card-grid" ? 2 : 1,
+      lg: mode === "sidebar-grid" ? "sidebar + content" : cardLike >= 3 ? 3 : 2,
+    },
+    tailwindHint:
+      mode === "sidebar-grid"
+        ? "grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]"
+        : mode === "modal-dialog"
+          ? "fixed inset-0 grid place-items-center p-4 sm:p-6"
+        : mode === "mobile-shell"
+          ? "grid min-h-dvh grid-rows-[auto_1fr_auto]"
+        : mode === "responsive-card-grid"
+          ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          : mode === "data-table"
+            ? "overflow-x-auto"
+            : mode === "analytics-chart"
+              ? "grid gap-3"
+              : mode === "stat-strip"
+                ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                : mode === "tabbed-content"
+                  ? "grid gap-3 [&_[role=tablist]]:flex"
+                : mode === "action-toolbar"
+                  ? "flex flex-wrap items-center gap-2"
+                  : mode === "form-flow"
+                    ? "grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]"
+                    : "grid gap-4",
   };
 }
 
@@ -862,7 +1302,7 @@ function scoreDetectedElement(region, kind, { inkRatio, edgeRatio, reasons }) {
   );
 }
 
-function enhanceDetectedPatterns(elements, { sourceHeight }) {
+function enhanceDetectedPatterns(elements, { sourceWidth, sourceHeight }) {
   const byRow = new Map();
   const rowBucketHeight = Math.max(48, Math.round(sourceHeight / 14));
 
@@ -884,10 +1324,14 @@ function enhanceDetectedPatterns(elements, { sourceHeight }) {
       repeatedIds.add(element.id);
     }
   }
+  const repeatedListRuns = detectRepeatedListRuns(elements, { sourceWidth, sourceHeight });
+  for (const run of repeatedListRuns) {
+    for (const id of run.children) repeatedIds.add(id);
+  }
 
   return elements.map((element) => {
-    const aspect = element.box.width / Math.max(1, element.box.height);
-    const textLike = aspect >= 2.2 && element.signals.inkRatio >= 0.08;
+    const textLineScore = scoreTextLineSignal(element, { sourceHeight });
+    const textLike = textLineScore >= 0.62;
     const reasons = [...(element.reasons ?? [])];
     let kind = element.kind;
     let primitive = element.primitive;
@@ -896,22 +1340,22 @@ function enhanceDetectedPatterns(elements, { sourceHeight }) {
     if (textLike && !/header|nav|button|input/i.test(kind)) {
       kind = "text-row";
       primitive = "text";
-      confidence = Math.min(0.97, confidence + 0.04);
+      confidence = Math.min(0.97, confidence + 0.03 + textLineScore * 0.03);
       reasons.push({
         code: "text-line-grouping",
         label: "Aligned text signal",
-        evidence: "OCR-free grouping found a shallow, wide component with foreground strokes.",
+        evidence: "OCR-free grouping found a shallow aligned component with foreground strokes.",
         weight: 0.14,
       });
     }
 
     if (repeatedIds.has(element.id)) {
       primitive = "list-item";
-      confidence = Math.min(0.97, confidence + 0.05);
+      confidence = Math.min(0.97, confidence + 0.06);
       reasons.push({
         code: "repeated-list",
         label: "Repeated list pattern",
-        evidence: "Similar shallow components repeat along the same visual row.",
+        evidence: "Similar components repeat with aligned x-position, width, and vertical rhythm.",
         weight: 0.18,
       });
     }
@@ -921,9 +1365,1223 @@ function enhanceDetectedPatterns(elements, { sourceHeight }) {
       kind,
       primitive,
       confidence: round(confidence, 2),
+      signals: {
+        ...element.signals,
+        textLineScore: round(textLineScore, 2),
+        repeatedPattern: repeatedIds.has(element.id),
+      },
       reasons: reasons.sort((first, second) => second.weight - first.weight).slice(0, 5),
     };
   });
+}
+
+function snapComponentRoles(elements, { sourceWidth, sourceHeight }) {
+  return elements.map((element) => {
+    const componentRole = inferComponentRole(element, { sourceWidth, sourceHeight });
+    const roleReason = buildComponentRoleReason(componentRole, element, {
+      sourceWidth,
+      sourceHeight,
+    });
+    const confidenceBoost = componentRoleConfidenceBoost(componentRole);
+
+    return {
+      ...element,
+      componentRole,
+      confidence: round(Math.min(0.98, element.confidence + confidenceBoost), 2),
+      signals: {
+        ...element.signals,
+        componentRole,
+      },
+      reasons: [...(element.reasons ?? []), roleReason]
+        .sort((first, second) => second.weight - first.weight)
+        .slice(0, 5),
+    };
+  });
+}
+
+function inferComponentRole(element, { sourceWidth, sourceHeight }) {
+  const primitive = element.primitive ?? element.kind;
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const areaRatio = (element.box.width * element.box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const yRatio = element.box.y / Math.max(1, sourceHeight);
+  const xRatio = element.box.x / Math.max(1, sourceWidth);
+
+  if (primitive === "list-item") return "list-row";
+  if (element.kind === "header" || element.kind === "header/nav") {
+    return yRatio <= 0.1 ? "top-navigation" : "section-header";
+  }
+  if (element.kind === "side-nav" || element.kind === "side rail") return "side-navigation";
+  if (element.kind === "bottom-nav" || element.kind === "bottom nav") return "bottom-navigation";
+  if (primitive === "media" || /chart|media/.test(element.kind)) {
+    return aspect >= 1.15 ? "chart-panel" : "media-panel";
+  }
+  if (primitive === "field-or-action") {
+    if (widthRatio >= 0.42 && aspect >= 4) return "search-field";
+    if (aspect >= 2.3 && widthRatio >= 0.18) return "form-field";
+    return "primary-action";
+  }
+  if (primitive === "card") {
+    if (heightRatio <= 0.18 && areaRatio <= 0.12) return "metric-card";
+    return "content-card";
+  }
+  if (primitive === "text") return "text-line";
+  if (element.kind === "control") {
+    if (xRatio >= 0.78 || yRatio <= 0.16) return "icon-action";
+    return "control";
+  }
+
+  return "content-section";
+}
+
+function buildComponentRoleReason(componentRole, element, { sourceWidth, sourceHeight }) {
+  const aspect = round(element.box.width / Math.max(1, element.box.height), 2);
+  const widthPercent = Math.round((element.box.width / Math.max(1, sourceWidth)) * 100);
+  const heightPercent = Math.round((element.box.height / Math.max(1, sourceHeight)) * 100);
+  return {
+    code: "component-snap",
+    label: `Snapped to ${componentRole}`,
+    evidence: `Geometry matched ${componentRole}: ${widthPercent}% width, ${heightPercent}% height, ${aspect}:1 aspect.`,
+    weight: componentRoleConfidenceBoost(componentRole) + 0.2,
+  };
+}
+
+function componentRoleConfidenceBoost(componentRole) {
+  if (/navigation|chart-panel|list-row/.test(componentRole)) return 0.04;
+  if (/search-field|form-field|metric-card|content-card/.test(componentRole)) return 0.03;
+  if (/primary-action|icon-action|text-line/.test(componentRole)) return 0.02;
+  return 0.01;
+}
+
+function scoreTextLineSignal(element, { sourceHeight }) {
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const inkRatio = element.signals?.inkRatio ?? 0;
+  const edgeRatio = element.signals?.edgeRatio ?? 0;
+  const aspectScore = clamp((aspect - 1.2) / 3.8, 0, 1);
+  const heightScore = clamp((0.16 - heightRatio) / 0.14, 0, 1);
+  const signalScore = clamp(inkRatio * 3.2 + edgeRatio * 8, 0, 1);
+
+  return round(aspectScore * 0.38 + heightScore * 0.28 + signalScore * 0.34, 3);
+}
+
+function detectRepeatedListRuns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isRepeatedListCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  const clusters = [];
+
+  for (const candidate of candidates) {
+    const cluster = clusters.find((current) =>
+      current.some((element) =>
+        areAlignedListItems(candidate, element, { sourceWidth }),
+      ),
+    );
+    if (cluster) {
+      cluster.push(candidate);
+    } else {
+      clusters.push([candidate]);
+    }
+  }
+
+  return clusters
+    .map((cluster, index) => buildRepeatedListRun(cluster, index))
+    .filter(Boolean);
+}
+
+function detectRepeatedGridPatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isRepeatedGridCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  const clusters = [];
+
+  for (const candidate of candidates) {
+    const cluster = clusters.find((current) =>
+      current.some((element) => areSimilarGridItems(candidate, element)),
+    );
+    if (cluster) {
+      cluster.push(candidate);
+    } else {
+      clusters.push([candidate]);
+    }
+  }
+
+  return clusters
+    .map((cluster, index) =>
+      buildRepeatedGridPattern(cluster, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean);
+}
+
+function isRepeatedGridCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  if (element.primitive === "list-item") return false;
+  const role = element.componentRole ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+
+  return (
+    /card|panel/.test(element.primitive ?? "") ||
+    /metric-card|content-card|media-panel|chart-panel/.test(role) ||
+    (widthRatio >= 0.12 &&
+      widthRatio <= 0.48 &&
+      heightRatio >= 0.06 &&
+      heightRatio <= 0.34 &&
+      signal >= 0.045)
+  );
+}
+
+function areSimilarGridItems(first, second) {
+  const widthDelta =
+    Math.abs(first.box.width - second.box.width) /
+    Math.max(1, Math.max(first.box.width, second.box.width));
+  const heightDelta =
+    Math.abs(first.box.height - second.box.height) /
+    Math.max(1, Math.max(first.box.height, second.box.height));
+  const aspectDelta =
+    Math.abs(
+      first.box.width / Math.max(1, first.box.height) -
+        second.box.width / Math.max(1, second.box.height),
+    ) / Math.max(1, first.box.width / Math.max(1, first.box.height));
+
+  return widthDelta <= 0.32 && heightDelta <= 0.42 && aspectDelta <= 0.36;
+}
+
+function buildRepeatedGridPattern(cluster, index, { sourceWidth, sourceHeight }) {
+  const sorted = cluster.slice().sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (sorted.length < 4) return null;
+
+  const rowBuckets = groupByAxisCenter(sorted, "y", Math.max(18, sourceHeight * 0.055));
+  const columnBuckets = groupByAxisCenter(sorted, "x", Math.max(18, sourceWidth * 0.055));
+  const rows = rowBuckets.filter((bucket) => bucket.items.length >= 2);
+  const columns = columnBuckets.filter((bucket) => bucket.items.length >= 2);
+  if (rows.length < 2 || columns.length < 2) return null;
+
+  const coveredIds = new Set([...rows.flatMap((bucket) => bucket.items.map((item) => item.id))]);
+  const children = sorted.filter((element) => coveredIds.has(element.id));
+  if (children.length < 4) return null;
+
+  const rowRhythm = axisRhythm(rows.map((bucket) => bucket.center));
+  const columnRhythm = axisRhythm(columns.map((bucket) => bucket.center));
+  const sizeConsistency = gridItemSizeConsistency(children);
+  const confidence = round(
+    0.56 +
+      sizeConsistency * 0.18 +
+      ((rowRhythm + columnRhythm) / 2) * 0.18 +
+      Math.min(0.08, children.length * 0.012),
+    2,
+  );
+  if (confidence < 0.62) return null;
+
+  return {
+    id: `repeated-grid-${index + 1}`,
+    kind: "repeated-grid",
+    axis: "grid",
+    rows: rows.length,
+    columns: columns.length,
+    rhythm: round((rowRhythm + columnRhythm) / 2, 2),
+    confidence,
+    box: mergeBoxes(children.map((element) => element.box)),
+    children: children.map((element) => element.id),
+  };
+}
+
+function detectStatRowPatterns(elements, { sourceWidth, sourceHeight }, repeatedGrids = []) {
+  const gridIds = new Set(repeatedGrids.flatMap((pattern) => pattern.children ?? []));
+  const candidates = elements
+    .filter(
+      (element) =>
+        !gridIds.has(element.id) &&
+        isStatRowCandidate(element, { sourceWidth, sourceHeight }),
+    )
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (candidates.length < 2) return [];
+
+  const rowBuckets = groupByAxisCenter(candidates, "y", Math.max(16, sourceHeight * 0.05))
+    .map((bucket) => ({
+      ...bucket,
+      items: bucket.items.slice().sort((first, second) => first.box.x - second.box.x),
+    }))
+    .filter((bucket) => bucket.items.length >= 2);
+
+  return rowBuckets
+    .map((bucket, index) =>
+      buildStatRowPattern(bucket.items, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean);
+}
+
+function isStatRowCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  if (element.primitive === "list-item") return false;
+  const role = element.componentRole ?? "";
+  const primitive = element.primitive ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const areaRatio = (element.box.width * element.box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+  const cardLike =
+    role === "metric-card" ||
+    (primitive === "card" && /metric-card|content-card/.test(role)) ||
+    (element.kind === "card-or-panel" && primitive === "card");
+
+  return (
+    cardLike &&
+    widthRatio >= 0.1 &&
+    widthRatio <= 0.42 &&
+    heightRatio >= 0.05 &&
+    heightRatio <= 0.22 &&
+    areaRatio <= 0.14 &&
+    aspect >= 1.1 &&
+    signal >= 0.035
+  );
+}
+
+function buildStatRowPattern(elements, index, { sourceWidth, sourceHeight }) {
+  const sorted = elements.slice().sort((first, second) => first.box.x - second.box.x);
+  if (sorted.length < 2) return null;
+
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const boxHeightRatio = box.height / Math.max(1, sourceHeight);
+  const boxWidthRatio = box.width / Math.max(1, sourceWidth);
+  if (boxHeightRatio > 0.26 || boxWidthRatio > 0.98) return null;
+
+  const yCenters = sorted.map((element) => element.box.y + element.box.height / 2);
+  const averageCenter = yCenters.reduce((sum, value) => sum + value, 0) / Math.max(1, yCenters.length);
+  const rowVariance =
+    yCenters.reduce((sum, value) => sum + Math.abs(value - averageCenter), 0) /
+    Math.max(1, yCenters.length);
+  const rowAlignment = clamp(1 - rowVariance / Math.max(1, sourceHeight * 0.045), 0, 1);
+  const sizeConsistency = gridItemSizeConsistency(sorted);
+  const xRhythm = axisRhythm(sorted.map((element) => element.box.x + element.box.width / 2));
+  const metricRatio =
+    sorted.filter((element) => element.componentRole === "metric-card").length /
+    Math.max(1, sorted.length);
+  const confidence = round(
+    clamp(
+      0.56 +
+        rowAlignment * 0.16 +
+        sizeConsistency * 0.14 +
+        xRhythm * 0.1 +
+        metricRatio * 0.08 +
+        Math.min(0.06, sorted.length * 0.014),
+      0.56,
+      0.95,
+    ),
+    2,
+  );
+  if (confidence < 0.64) return null;
+
+  return {
+    id: `stat-row-${index + 1}`,
+    kind: "stat-row",
+    axis: "horizontal",
+    cardCount: sorted.length,
+    rhythm: round(xRhythm, 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function groupByAxisCenter(elements, axis, tolerance) {
+  const centerKey = axis === "x" ? "width" : "height";
+  const sorted = elements
+    .map((element) => ({
+      element,
+      center: element.box[axis] + element.box[centerKey] / 2,
+    }))
+    .sort((first, second) => first.center - second.center);
+  const buckets = [];
+
+  for (const item of sorted) {
+    const bucket = buckets.find((current) => Math.abs(current.center - item.center) <= tolerance);
+    if (bucket) {
+      bucket.items.push(item.element);
+      bucket.center =
+        bucket.items.reduce(
+          (sum, element) => sum + element.box[axis] + element.box[centerKey] / 2,
+          0,
+        ) / bucket.items.length;
+    } else {
+      buckets.push({ center: item.center, items: [item.element] });
+    }
+  }
+
+  return buckets.sort((first, second) => first.center - second.center);
+}
+
+function axisRhythm(centers) {
+  const sorted = centers.slice().sort((first, second) => first - second);
+  if (sorted.length <= 2) return 1;
+  const gaps = [];
+  for (let index = 1; index < sorted.length; index += 1) {
+    gaps.push(sorted[index] - sorted[index - 1]);
+  }
+  const averageGap = gaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, gaps.length);
+  const variance =
+    gaps.reduce((sum, gap) => sum + Math.abs(gap - averageGap), 0) / Math.max(1, gaps.length);
+  return averageGap ? clamp(1 - variance / averageGap, 0, 1) : 0;
+}
+
+function gridItemSizeConsistency(elements) {
+  const averageWidth =
+    elements.reduce((sum, element) => sum + element.box.width, 0) / Math.max(1, elements.length);
+  const averageHeight =
+    elements.reduce((sum, element) => sum + element.box.height, 0) / Math.max(1, elements.length);
+  const widthVariance =
+    elements.reduce((sum, element) => sum + Math.abs(element.box.width - averageWidth), 0) /
+    Math.max(1, elements.length);
+  const heightVariance =
+    elements.reduce((sum, element) => sum + Math.abs(element.box.height - averageHeight), 0) /
+    Math.max(1, elements.length);
+  const widthScore = averageWidth ? clamp(1 - widthVariance / averageWidth, 0, 1) : 0;
+  const heightScore = averageHeight ? clamp(1 - heightVariance / averageHeight, 0, 1) : 0;
+  return (widthScore + heightScore) / 2;
+}
+
+function detectFormGroups(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isFormGroupCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  const clusters = [];
+
+  for (const candidate of candidates) {
+    const cluster = clusters.find((current) =>
+      current.some((element) => areRelatedFormControls(candidate, element, { sourceWidth })),
+    );
+    if (cluster) {
+      cluster.push(candidate);
+    } else {
+      clusters.push([candidate]);
+    }
+  }
+
+  return clusters
+    .map((cluster, index) =>
+      buildFormGroupPattern(cluster, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean);
+}
+
+function isFormGroupCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  if (element.primitive === "list-item") return false;
+  const role = element.componentRole ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+
+  return (
+    /form-field|search-field|primary-action/.test(role) ||
+    (element.primitive === "field-or-action" &&
+      widthRatio >= 0.14 &&
+      heightRatio <= 0.16 &&
+      aspect >= 1.2)
+  );
+}
+
+function areRelatedFormControls(first, second, { sourceWidth }) {
+  const xTolerance = Math.max(26, sourceWidth * 0.08);
+  const centerDelta = Math.abs(
+    first.box.x + first.box.width / 2 - (second.box.x + second.box.width / 2),
+  );
+  const overlap = horizontalOverlapRatio(first.box, second.box);
+  const nestedLeftAlignment = Math.abs(first.box.x - second.box.x) <= xTolerance;
+
+  return overlap >= 0.42 || centerDelta <= sourceWidth * 0.12 || nestedLeftAlignment;
+}
+
+function buildFormGroupPattern(cluster, index, { sourceWidth, sourceHeight }) {
+  const sorted = cluster.slice().sort((first, second) => first.box.y - second.box.y);
+  const fields = sorted.filter((element) =>
+    /form-field|search-field/.test(element.componentRole ?? ""),
+  );
+  const actions = sorted.filter((element) =>
+    /primary-action|icon-action/.test(element.componentRole ?? ""),
+  );
+  if (sorted.length < 3 && !(fields.length >= 2 && actions.length >= 1)) return null;
+  if (fields.length < 2) return null;
+
+  const gaps = [];
+  for (let item = 1; item < sorted.length; item += 1) {
+    gaps.push(sorted[item].box.y - sorted[item - 1].box.y);
+  }
+  const positiveGaps = gaps.filter((gap) => gap > 0);
+  const averageGap =
+    positiveGaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, positiveGaps.length);
+  const variance =
+    positiveGaps.reduce((sum, gap) => sum + Math.abs(gap - averageGap), 0) /
+    Math.max(1, positiveGaps.length);
+  const rhythm = averageGap ? clamp(1 - variance / Math.max(averageGap, 1), 0, 1) : 0.65;
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const density = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const confidence = round(
+    clamp(0.6 + fields.length * 0.06 + actions.length * 0.08 + rhythm * 0.12 - density * 0.08, 0.6, 0.94),
+    2,
+  );
+
+  return {
+    id: `form-group-${index + 1}`,
+    kind: "form-group",
+    axis: "vertical",
+    fieldCount: fields.length,
+    actionCount: actions.length,
+    rhythm: round(rhythm, 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function detectDataTablePatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isDataTableCellCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (candidates.length < 9) return [];
+
+  const rowBuckets = groupByAxisCenter(candidates, "y", Math.max(8, sourceHeight * 0.025))
+    .filter((bucket) => bucket.items.length >= 3);
+  if (rowBuckets.length < 3) return [];
+
+  const rowChildren = rowBuckets.flatMap((bucket) => bucket.items);
+  const columnBuckets = groupByAxisCenter(rowChildren, "x", Math.max(10, sourceWidth * 0.035))
+    .filter((bucket) => bucket.items.length >= Math.max(2, Math.floor(rowBuckets.length * 0.45)));
+  if (columnBuckets.length < 3) return [];
+
+  const columnTolerance = Math.max(12, sourceWidth * 0.045);
+  const rowColumnCounts = rowBuckets.map((row) => {
+    const matchedColumns = new Set();
+    for (const item of row.items) {
+      const center = item.box.x + item.box.width / 2;
+      const columnIndex = columnBuckets.findIndex(
+        (column) => Math.abs(column.center - center) <= columnTolerance,
+      );
+      if (columnIndex >= 0) matchedColumns.add(columnIndex);
+    }
+    return matchedColumns.size;
+  });
+  const completeRows = rowColumnCounts.filter((count) => count >= Math.min(3, columnBuckets.length)).length;
+  if (completeRows < 3) return [];
+
+  const children = rowChildren.filter((element) => {
+    const center = element.box.x + element.box.width / 2;
+    return columnBuckets.some((column) => Math.abs(column.center - center) <= columnTolerance);
+  });
+  const rowRhythm = axisRhythm(rowBuckets.map((bucket) => bucket.center));
+  const columnRhythm = axisRhythm(columnBuckets.map((bucket) => bucket.center));
+  const columnCompleteness =
+    rowColumnCounts.reduce((sum, count) => sum + count / Math.max(1, columnBuckets.length), 0) /
+    Math.max(1, rowColumnCounts.length);
+  const confidence = round(
+    clamp(
+      0.58 +
+        Math.min(0.12, rowBuckets.length * 0.018) +
+        Math.min(0.1, columnBuckets.length * 0.018) +
+        columnCompleteness * 0.14 +
+        ((rowRhythm + columnRhythm) / 2) * 0.12,
+      0.58,
+      0.95,
+    ),
+    2,
+  );
+  if (confidence < 0.66) return [];
+
+  return [
+    {
+      id: "data-table-1",
+      kind: "data-table",
+      axis: "rows-columns",
+      rows: rowBuckets.length,
+      columns: columnBuckets.length,
+      rhythm: round((rowRhythm + columnRhythm) / 2, 2),
+      confidence,
+      box: mergeBoxes(children.map((element) => element.box)),
+      children: children.map((element) => element.id),
+    },
+  ];
+}
+
+function isDataTableCellCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  if (/card|media|chart|form/.test(element.primitive ?? "")) return false;
+  const role = element.componentRole ?? "";
+  if (/navigation|chart-panel|media-panel|metric-card|content-card|form-field|search-field|primary-action/.test(role)) {
+    return false;
+  }
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+
+  return (
+    widthRatio >= 0.035 &&
+    widthRatio <= 0.5 &&
+    heightRatio <= 0.09 &&
+    aspect >= 1.05 &&
+    signal >= 0.035
+  );
+}
+
+function detectChartSeriesPatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isChartBarCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.x - second.box.x || first.box.y - second.box.y);
+  if (candidates.length < 3) return [];
+
+  const clusters = [];
+  for (const candidate of candidates) {
+    const cluster = clusters.find((current) =>
+      current.some((element) =>
+        areRelatedChartBars(candidate, element, { sourceWidth, sourceHeight }),
+      ),
+    );
+    if (cluster) {
+      cluster.push(candidate);
+    } else {
+      clusters.push([candidate]);
+    }
+  }
+
+  return clusters
+    .map((cluster, index) =>
+      buildChartSeriesPattern(cluster, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean);
+}
+
+function isChartBarCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  if (element.primitive === "list-item") return false;
+  if (/media|chart|form|table/.test(element.primitive ?? "")) return false;
+  const role = element.componentRole ?? "";
+  if (
+    /navigation|chart-panel|media-panel|metric-card|form-field|search-field|primary-action|list-row/.test(
+      role,
+    )
+  ) {
+    return false;
+  }
+
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+  const maxWidthRatio = element.primitive === "card" ? 0.3 : 0.16;
+
+  return (
+    widthRatio >= 0.018 &&
+    widthRatio <= maxWidthRatio &&
+    heightRatio >= 0.055 &&
+    heightRatio <= 0.48 &&
+    aspect <= 1.18 &&
+    signal >= 0.03
+  );
+}
+
+function areRelatedChartBars(first, second, { sourceWidth, sourceHeight }) {
+  const firstBottom = first.box.y + first.box.height;
+  const secondBottom = second.box.y + second.box.height;
+  const baselineTolerance = Math.max(12, sourceHeight * 0.04);
+  const centerDelta = Math.abs(
+    first.box.x + first.box.width / 2 - (second.box.x + second.box.width / 2),
+  );
+  const widthDelta =
+    Math.abs(first.box.width - second.box.width) /
+    Math.max(1, Math.max(first.box.width, second.box.width));
+
+  return (
+    Math.abs(firstBottom - secondBottom) <= baselineTolerance &&
+    centerDelta <= sourceWidth * 0.42 &&
+    widthDelta <= 0.7
+  );
+}
+
+function buildChartSeriesPattern(cluster, index, { sourceWidth, sourceHeight }) {
+  const sorted = cluster.slice().sort((first, second) => first.box.x - second.box.x);
+  if (sorted.length < 3) return null;
+
+  const bottoms = sorted.map((element) => element.box.y + element.box.height);
+  const averageBottom = bottoms.reduce((sum, value) => sum + value, 0) / Math.max(1, bottoms.length);
+  const baselineVariance =
+    bottoms.reduce((sum, value) => sum + Math.abs(value - averageBottom), 0) /
+    Math.max(1, bottoms.length);
+  const baselineScore = clamp(1 - baselineVariance / Math.max(1, sourceHeight * 0.045), 0, 1);
+  const xRhythm = axisRhythm(sorted.map((element) => element.box.x + element.box.width / 2));
+  const widthConsistency = chartBarWidthConsistency(sorted);
+  const heightRange =
+    (Math.max(...sorted.map((element) => element.box.height)) -
+      Math.min(...sorted.map((element) => element.box.height))) /
+    Math.max(1, Math.max(...sorted.map((element) => element.box.height)));
+  if (heightRange < 0.12) return null;
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const boxRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const confidence = round(
+    clamp(
+      0.54 +
+        baselineScore * 0.18 +
+        xRhythm * 0.14 +
+        widthConsistency * 0.1 +
+        Math.min(0.08, sorted.length * 0.014) +
+        Math.min(0.06, heightRange * 0.08) -
+        Math.max(0, boxRatio - 0.18) * 0.08,
+      0.54,
+      0.95,
+    ),
+    2,
+  );
+  if (confidence < 0.64) return null;
+
+  return {
+    id: `chart-series-${index + 1}`,
+    kind: "chart-series",
+    chartKind: "bar",
+    axis: "x-series",
+    seriesCount: sorted.length,
+    rhythm: round(xRhythm, 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function chartBarWidthConsistency(elements) {
+  const averageWidth =
+    elements.reduce((sum, element) => sum + element.box.width, 0) / Math.max(1, elements.length);
+  const widthVariance =
+    elements.reduce((sum, element) => sum + Math.abs(element.box.width - averageWidth), 0) /
+    Math.max(1, elements.length);
+  return averageWidth ? clamp(1 - widthVariance / averageWidth, 0, 1) : 0;
+}
+
+function detectActionClusterPatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isActionClusterCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (candidates.length < 2) return [];
+
+  const rowBuckets = groupByAxisCenter(candidates, "y", Math.max(10, sourceHeight * 0.035))
+    .map((bucket) => ({
+      ...bucket,
+      items: bucket.items.slice().sort((first, second) => first.box.x - second.box.x),
+    }))
+    .filter((bucket) => bucket.items.length >= 2);
+
+  return rowBuckets
+    .map((bucket, index) =>
+      buildActionClusterPattern(bucket.items, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean);
+}
+
+function isActionClusterCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|side-nav|bottom-nav/i.test(element.kind)) return false;
+  const role = element.componentRole ?? "";
+  const primitive = element.primitive ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+  const buttonLike =
+    /button|input|control/.test(element.kind) ||
+    /field-or-action|control/.test(primitive) ||
+    /primary-action|icon-action|form-field|search-field|control/.test(role);
+
+  return (
+    buttonLike &&
+    widthRatio >= 0.035 &&
+    widthRatio <= 0.42 &&
+    heightRatio <= 0.16 &&
+    aspect >= 0.75 &&
+    signal >= 0.025
+  );
+}
+
+function buildActionClusterPattern(elements, index, { sourceWidth, sourceHeight }) {
+  const sorted = elements.slice().sort((first, second) => first.box.x - second.box.x);
+  if (sorted.length < 2) return null;
+
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const boxHeightRatio = box.height / Math.max(1, sourceHeight);
+  const boxWidthRatio = box.width / Math.max(1, sourceWidth);
+  if (boxHeightRatio > 0.2 || boxWidthRatio > 0.92) return null;
+
+  const yCenters = sorted.map((element) => element.box.y + element.box.height / 2);
+  const averageCenter = yCenters.reduce((sum, value) => sum + value, 0) / Math.max(1, yCenters.length);
+  const rowVariance =
+    yCenters.reduce((sum, value) => sum + Math.abs(value - averageCenter), 0) /
+    Math.max(1, yCenters.length);
+  const rowAlignment = clamp(1 - rowVariance / Math.max(1, sourceHeight * 0.035), 0, 1);
+  const widthConsistency = gridItemSizeConsistency(sorted);
+  const xRhythm = axisRhythm(sorted.map((element) => element.box.x + element.box.width / 2));
+  const roleScore = sorted.some((element) => /primary-action|icon-action|control/.test(element.componentRole ?? ""))
+    ? 1
+    : 0.55;
+  const clusterType = inferActionClusterType(sorted);
+  const confidence = round(
+    clamp(
+      0.56 +
+        rowAlignment * 0.16 +
+        widthConsistency * 0.12 +
+        xRhythm * 0.1 +
+        roleScore * 0.08 +
+        Math.min(0.06, sorted.length * 0.015),
+      0.56,
+      0.95,
+    ),
+    2,
+  );
+  if (confidence < 0.62) return null;
+
+  return {
+    id: `action-cluster-${index + 1}`,
+    kind: "action-cluster",
+    clusterType,
+    axis: "horizontal",
+    controlCount: sorted.length,
+    rhythm: round(xRhythm, 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function inferActionClusterType(elements) {
+  const hasIconActions = elements.some((element) => element.componentRole === "icon-action");
+  const widthConsistency = gridItemSizeConsistency(elements);
+  const narrow = elements.every((element) => element.box.width / Math.max(1, element.box.height) <= 2.4);
+  if (hasIconActions || narrow) return "toolbar";
+  if (widthConsistency >= 0.72 && elements.length >= 3) return "segmented-control";
+  return "cta-row";
+}
+
+function detectTabSetPatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isTabSetCandidate(element, { sourceWidth, sourceHeight }))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (candidates.length < 2) return [];
+
+  const rowBuckets = groupByAxisCenter(candidates, "y", Math.max(8, sourceHeight * 0.028))
+    .map((bucket) => ({
+      ...bucket,
+      items: bucket.items.slice().sort((first, second) => first.box.x - second.box.x),
+    }))
+    .filter((bucket) => bucket.items.length >= 2);
+
+  return rowBuckets
+    .map((bucket, index) => buildTabSetPattern(bucket.items, index, { sourceWidth, sourceHeight }))
+    .filter(Boolean);
+}
+
+function isTabSetCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|side-nav|bottom-nav/i.test(element.kind)) return false;
+  const role = element.componentRole ?? "";
+  const primitive = element.primitive ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+  const tabLike =
+    /button|input|control/.test(element.kind) ||
+    /field-or-action|control/.test(primitive) ||
+    /primary-action|icon-action|control|list-row|text-line/.test(role);
+
+  return (
+    tabLike &&
+    widthRatio >= 0.035 &&
+    widthRatio <= 0.48 &&
+    heightRatio <= 0.18 &&
+    aspect >= 0.8 &&
+    aspect <= 5.6 &&
+    signal >= 0.022
+  );
+}
+
+function buildTabSetPattern(elements, index, { sourceWidth, sourceHeight }) {
+  const sorted = elements.slice().sort((first, second) => first.box.x - second.box.x);
+  if (sorted.length < 2) return null;
+
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const boxHeightRatio = box.height / Math.max(1, sourceHeight);
+  const boxWidthRatio = box.width / Math.max(1, sourceWidth);
+  if (boxHeightRatio > 0.16 || boxWidthRatio > 0.92) return null;
+
+  const gaps = [];
+  for (let item = 1; item < sorted.length; item += 1) {
+    gaps.push(sorted[item].box.x - (sorted[item - 1].box.x + sorted[item - 1].box.width));
+  }
+  const positiveGaps = gaps.filter((gap) => gap >= 0);
+  if (positiveGaps.length < sorted.length - 1) return null;
+  const averageWidth =
+    sorted.reduce((sum, element) => sum + element.box.width, 0) / Math.max(1, sorted.length);
+  const averageHeight =
+    sorted.reduce((sum, element) => sum + element.box.height, 0) / Math.max(1, sorted.length);
+  const averageGap =
+    positiveGaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, positiveGaps.length);
+  const maxGap = Math.max(...positiveGaps, 0);
+  const gapTightness = clamp(
+    1 - maxGap / Math.max(1, Math.min(sourceWidth * 0.12, averageWidth * 0.8, averageHeight * 2.5)),
+    0,
+    1,
+  );
+  if (gapTightness < 0.34) return null;
+
+  const yCenters = sorted.map((element) => element.box.y + element.box.height / 2);
+  const averageCenter = yCenters.reduce((sum, value) => sum + value, 0) / Math.max(1, yCenters.length);
+  const rowVariance =
+    yCenters.reduce((sum, value) => sum + Math.abs(value - averageCenter), 0) /
+    Math.max(1, yCenters.length);
+  const rowAlignment = clamp(1 - rowVariance / Math.max(1, sourceHeight * 0.025), 0, 1);
+  const sizeConsistency = gridItemSizeConsistency(sorted);
+  const selectedIndex = inferSelectedTabIndex(sorted);
+  const tabKind = inferTabSetKind(sorted, averageGap, averageHeight);
+  const confidence = round(
+    clamp(
+      0.58 +
+        rowAlignment * 0.14 +
+        sizeConsistency * 0.12 +
+        gapTightness * 0.16 +
+        Math.min(0.06, sorted.length * 0.015),
+      0.58,
+      0.95,
+    ),
+    2,
+  );
+  if (confidence < 0.64) return null;
+
+  return {
+    id: `tab-set-${index + 1}`,
+    kind: "tab-set",
+    tabKind,
+    axis: "horizontal",
+    tabCount: sorted.length,
+    selectedIndex,
+    rhythm: round(axisRhythm(sorted.map((element) => element.box.x + element.box.width / 2)), 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function inferTabSetKind(elements, averageGap, averageHeight) {
+  const uniform = gridItemSizeConsistency(elements) >= 0.78;
+  const tight = averageGap <= averageHeight * 0.35;
+  if (uniform && tight) return "segmented-control";
+  return "tabs";
+}
+
+function inferSelectedTabIndex(elements) {
+  const scores = elements.map(
+    (element) =>
+      (element.confidence ?? 0) +
+      (element.signals?.inkRatio ?? 0) * 0.4 +
+      (element.signals?.edgeRatio ?? 0) * 2,
+  );
+  const bestScore = Math.max(...scores);
+  const bestIndex = scores.findIndex((score) => score === bestScore);
+  return bestIndex >= 0 ? bestIndex : 0;
+}
+
+function detectDialogPanelPatterns(elements, { sourceWidth, sourceHeight }) {
+  const hasNavigationContext = elements.some((element) =>
+    /^(top|side|bottom)-navigation$/.test(element.componentRole ?? ""),
+  );
+  const candidates = elements
+    .filter((element) =>
+      isDialogPanelCandidate(element, { sourceWidth, sourceHeight, hasNavigationContext }),
+    )
+    .sort((first, second) => {
+      const firstArea = first.box.width * first.box.height;
+      const secondArea = second.box.width * second.box.height;
+      if (second.confidence !== first.confidence) return second.confidence - first.confidence;
+      return secondArea - firstArea;
+    });
+
+  return candidates
+    .map((candidate, index) =>
+      buildDialogPanelPattern(candidate, elements, index, { sourceWidth, sourceHeight }),
+    )
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
+function isDialogPanelCandidate(element, { sourceWidth, sourceHeight, hasNavigationContext }) {
+  if (/header|side-nav|bottom-nav/i.test(element.kind)) return false;
+  const primitive = element.primitive ?? "";
+  const role = element.componentRole ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const areaRatio = (element.box.width * element.box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const inkRatio = element.signals?.inkRatio ?? 0;
+  const signal = inkRatio + (element.signals?.edgeRatio ?? 0) * 2;
+  const surfaceLike =
+    /card|panel|section|media/.test(primitive) ||
+    /content-card|content-section|chart-panel|media-panel/.test(role);
+
+  if (/chart-panel|media-panel/.test(role) && (hasNavigationContext || inkRatio < 0.35)) {
+    return false;
+  }
+
+  return (
+    surfaceLike &&
+    widthRatio >= 0.34 &&
+    widthRatio <= 0.9 &&
+    heightRatio >= 0.22 &&
+    heightRatio <= 0.86 &&
+    areaRatio >= 0.12 &&
+    areaRatio <= 0.74 &&
+    signal >= 0.025
+  );
+}
+
+function buildDialogPanelPattern(panel, elements, index, { sourceWidth, sourceHeight }) {
+  const box = panel.box;
+  const rightMargin = sourceWidth - (box.x + box.width);
+  const bottomMargin = sourceHeight - (box.y + box.height);
+  const minMargin = Math.min(box.x, box.y, rightMargin, bottomMargin);
+  const xCenter = box.x + box.width / 2;
+  const yCenter = box.y + box.height / 2;
+  const centerOffset =
+    Math.abs(xCenter - sourceWidth / 2) / Math.max(1, sourceWidth) +
+    Math.abs(yCenter - sourceHeight / 2) / Math.max(1, sourceHeight);
+  const areaRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const marginScore = clamp(minMargin / Math.max(1, Math.min(sourceWidth, sourceHeight) * 0.08), 0, 1);
+  const centerScore = clamp(1 - centerOffset / 0.28, 0, 1);
+  const scaleScore = clamp((areaRatio - 0.1) / 0.22, 0, 1) * clamp((0.78 - areaRatio) / 0.32, 0, 1);
+  const innerChildren = elements
+    .filter((element) => element.id !== panel.id && boxContains(panel.box, element.box, 0.035, { sourceWidth, sourceHeight }))
+    .sort(readingOrderSort);
+  const childScore = Math.min(0.08, innerChildren.length * 0.018);
+  const confidence = round(
+    clamp(
+      0.58 +
+        centerScore * 0.16 +
+        marginScore * 0.12 +
+        scaleScore * 0.12 +
+        childScore +
+        Math.min(0.05, (panel.confidence ?? 0.5) * 0.05),
+      0.58,
+      0.96,
+    ),
+    2,
+  );
+
+  if (confidence < 0.65 || minMargin < Math.min(sourceWidth, sourceHeight) * 0.025) {
+    return null;
+  }
+
+  return {
+    id: `dialog-panel-${index + 1}`,
+    kind: "dialog-panel",
+    modalType: centerOffset <= 0.18 ? "centered-dialog" : "floating-panel",
+    axis: "overlay",
+    childCount: innerChildren.length,
+    centeredness: round(centerScore, 2),
+    confidence,
+    box,
+    children: [panel.id, ...innerChildren.map((element) => element.id)],
+  };
+}
+
+function boxContains(outer, inner, toleranceRatio, { sourceWidth, sourceHeight }) {
+  const tolerance = Math.max(2, Math.min(sourceWidth, sourceHeight) * toleranceRatio);
+  return (
+    inner.x >= outer.x - tolerance &&
+    inner.y >= outer.y - tolerance &&
+    inner.x + inner.width <= outer.x + outer.width + tolerance &&
+    inner.y + inner.height <= outer.y + outer.height + tolerance
+  );
+}
+
+function isRepeatedListCandidate(element, { sourceWidth, sourceHeight }) {
+  if (/header|nav/i.test(element.kind)) return false;
+  const aspect = element.box.width / Math.max(1, element.box.height);
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const signal = (element.signals?.inkRatio ?? 0) + (element.signals?.edgeRatio ?? 0) * 2;
+
+  return (
+    widthRatio >= 0.16 &&
+    heightRatio <= 0.22 &&
+    aspect >= 1.15 &&
+    signal >= 0.06
+  );
+}
+
+function areAlignedListItems(first, second, { sourceWidth }) {
+  const xTolerance = Math.max(18, sourceWidth * 0.07);
+  const widthDelta =
+    Math.abs(first.box.width - second.box.width) /
+    Math.max(1, Math.max(first.box.width, second.box.width));
+  const heightDelta =
+    Math.abs(first.box.height - second.box.height) /
+    Math.max(1, Math.max(first.box.height, second.box.height));
+  const overlap = horizontalOverlapRatio(first.box, second.box);
+
+  return (
+    Math.abs(first.box.x - second.box.x) <= xTolerance &&
+    widthDelta <= 0.28 &&
+    heightDelta <= 0.5 &&
+    overlap >= 0.58
+  );
+}
+
+function buildRepeatedListRun(cluster, index) {
+  const sorted = cluster.slice().sort((first, second) => first.box.y - second.box.y);
+  if (sorted.length < 3) return null;
+  const gaps = [];
+  for (let item = 1; item < sorted.length; item += 1) {
+    gaps.push(sorted[item].box.y - sorted[item - 1].box.y);
+  }
+  const positiveGaps = gaps.filter((gap) => gap > 0);
+  if (positiveGaps.length < 2) return null;
+  const averageGap =
+    positiveGaps.reduce((sum, gap) => sum + gap, 0) / Math.max(1, positiveGaps.length);
+  const variance =
+    positiveGaps.reduce((sum, gap) => sum + Math.abs(gap - averageGap), 0) /
+    Math.max(1, positiveGaps.length);
+  const rhythm = averageGap ? clamp(1 - variance / averageGap, 0, 1) : 0;
+  if (rhythm < 0.36) return null;
+
+  return {
+    id: `repeated-list-${index + 1}`,
+    kind: "repeated-list",
+    axis: "vertical",
+    rhythm: round(rhythm, 2),
+    confidence: round(0.62 + rhythm * 0.25 + Math.min(0.1, sorted.length * 0.015), 2),
+    box: mergeBoxes(sorted.map((element) => element.box)),
+    children: sorted.map((element) => element.id),
+  };
+}
+
+function horizontalOverlapRatio(first, second) {
+  const overlap =
+    Math.min(first.x + first.width, second.x + second.width) - Math.max(first.x, second.x);
+  return Math.max(0, overlap) / Math.max(1, Math.min(first.width, second.width));
+}
+
+function detectAppShellPatterns(elements, { sourceWidth, sourceHeight }) {
+  const candidates = elements
+    .filter((element) => isAppShellNavCandidate(element))
+    .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
+  if (candidates.length < 2) return [];
+
+  const topNavigation = pickStrongestNavigationLandmark(candidates, "top-navigation");
+  const sideNavigation = pickStrongestNavigationLandmark(candidates, "side-navigation");
+  const bottomNavigation = pickStrongestNavigationLandmark(candidates, "bottom-navigation");
+  const landmarks = [topNavigation, sideNavigation, bottomNavigation].filter(Boolean);
+  const hasDesktopShell = Boolean(topNavigation && sideNavigation);
+  const hasMobileShell = Boolean(topNavigation && bottomNavigation);
+  const hasRailShell = Boolean(sideNavigation && (topNavigation || bottomNavigation));
+
+  if (!hasDesktopShell && !hasMobileShell && !hasRailShell) return [];
+
+  const shellType =
+    hasDesktopShell && sourceWidth >= sourceHeight
+      ? "desktop-sidebar-shell"
+      : hasMobileShell
+        ? "mobile-tab-shell"
+        : hasDesktopShell
+          ? "tablet-sidebar-shell"
+          : "navigation-shell";
+  const navCoverage =
+    landmarks.reduce((sum, element) => sum + element.box.width * element.box.height, 0) /
+    Math.max(1, sourceWidth * sourceHeight);
+  const confidence = round(
+    clamp(
+      0.6 +
+        landmarks.length * 0.07 +
+        (hasDesktopShell ? 0.1 : 0) +
+        (hasMobileShell ? 0.08 : 0) +
+        Math.min(0.06, navCoverage * 0.4),
+      0.6,
+      0.95,
+    ),
+    2,
+  );
+
+  return [
+    {
+      id: "app-shell-1",
+      kind: "app-shell",
+      axis: "landmarks",
+      shellType,
+      navCount: landmarks.length,
+      confidence,
+      box: mergeBoxes(landmarks.map((element) => element.box)),
+      regions: {
+        topNavigation: topNavigation?.id ?? null,
+        sideNavigation: sideNavigation?.id ?? null,
+        bottomNavigation: bottomNavigation?.id ?? null,
+      },
+      children: landmarks.map((element) => element.id),
+    },
+  ];
+}
+
+function isAppShellNavCandidate(element) {
+  const role = element.componentRole ?? "";
+  return (
+    /^(top|side|bottom)-navigation$/.test(role) ||
+    element.kind === "header" ||
+    element.kind === "side-nav" ||
+    element.kind === "bottom-nav"
+  );
+}
+
+function pickStrongestNavigationLandmark(elements, role) {
+  const kindByRole = {
+    "top-navigation": "header",
+    "side-navigation": "side-nav",
+    "bottom-navigation": "bottom-nav",
+  };
+  return (
+    elements
+      .filter(
+        (element) =>
+          element.componentRole === role || element.kind === kindByRole[role],
+      )
+      .sort((first, second) => second.confidence - first.confidence)[0] ?? null
+  );
+}
+
+function summarizeDetectedPatterns(elements, context) {
+  const appShells = detectAppShellPatterns(elements, context);
+  const repeatedLists = detectRepeatedListRuns(elements, context);
+  const repeatedGrids = detectRepeatedGridPatterns(elements, context);
+  const statRows = detectStatRowPatterns(elements, context, repeatedGrids);
+  const formGroups = detectFormGroups(elements, context);
+  const dataTables = detectDataTablePatterns(elements, context);
+  const charts = detectChartSeriesPatterns(elements, context);
+  const tabSets = detectTabSetPatterns(elements, context);
+  const dialogPanels = detectDialogPanelPatterns(elements, context);
+  const tabSetElementIds = new Set(tabSets.flatMap((pattern) => pattern.children ?? []));
+  const actionClusters = detectActionClusterPatterns(
+    elements.filter((element) => !tabSetElementIds.has(element.id)),
+    context,
+  );
+  const textLines = elements.filter(
+    (element) =>
+      element.primitive === "text" ||
+      (element.signals?.textLineScore ?? 0) >= 0.62,
+  ).length;
+
+  return {
+    textLines,
+    appShells,
+    repeatedLists,
+    repeatedGrids,
+    statRows,
+    formGroups,
+    dataTables,
+    charts,
+    actionClusters,
+    tabSets,
+    dialogPanels,
+  };
 }
 
 function readingOrderSort(first, second) {
@@ -931,11 +2589,45 @@ function readingOrderSort(first, second) {
   return first.box.x - second.box.x;
 }
 
-function buildLayoutTree(elements, { sourceWidth, sourceHeight }) {
+function buildLayoutTree(elements, { sourceWidth, sourceHeight, patterns, responsiveIntent, screenIntent }) {
   const groups = [];
   const structuralKinds = new Set(["header", "bottom-nav", "side-nav"]);
-  const structural = elements.filter((element) => structuralKinds.has(element.kind));
-  const content = elements.filter((element) => !structuralKinds.has(element.kind));
+  const appShellIds = new Set(
+    (patterns?.appShells ?? []).flatMap((pattern) => pattern.children ?? []),
+  );
+  const structural = elements.filter(
+    (element) => structuralKinds.has(element.kind) && !appShellIds.has(element.id),
+  );
+  const repeatedIds = new Set(
+    [
+      ...(patterns?.repeatedLists ?? []),
+      ...(patterns?.repeatedGrids ?? []),
+      ...(patterns?.statRows ?? []),
+      ...(patterns?.formGroups ?? []),
+      ...(patterns?.dataTables ?? []),
+      ...(patterns?.charts ?? []),
+      ...(patterns?.actionClusters ?? []),
+      ...(patterns?.tabSets ?? []),
+      ...(patterns?.dialogPanels ?? []),
+    ].flatMap((pattern) => pattern.children ?? []),
+  );
+  const content = elements.filter(
+    (element) => !structuralKinds.has(element.kind) && !repeatedIds.has(element.id),
+  );
+
+  for (const pattern of patterns?.appShells ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      shellType: pattern.shellType,
+      navCount: pattern.navCount,
+      confidence: pattern.confidence,
+      regions: pattern.regions,
+      children: pattern.children,
+    });
+  }
 
   for (const element of structural) {
     groups.push({
@@ -946,12 +2638,151 @@ function buildLayoutTree(elements, { sourceWidth, sourceHeight }) {
     });
   }
 
+  for (const pattern of patterns?.repeatedLists ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.repeatedGrids ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      rows: pattern.rows,
+      columns: pattern.columns,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.statRows ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      cardCount: pattern.cardCount,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.formGroups ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      fieldCount: pattern.fieldCount,
+      actionCount: pattern.actionCount,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.dataTables ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      rows: pattern.rows,
+      columns: pattern.columns,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.charts ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      chartKind: pattern.chartKind,
+      seriesCount: pattern.seriesCount,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.actionClusters ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      clusterType: pattern.clusterType,
+      controlCount: pattern.controlCount,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.tabSets ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      tabKind: pattern.tabKind,
+      tabCount: pattern.tabCount,
+      selectedIndex: pattern.selectedIndex,
+      rhythm: pattern.rhythm,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
+  for (const pattern of patterns?.dialogPanels ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      modalType: pattern.modalType,
+      childCount: pattern.childCount,
+      centeredness: pattern.centeredness,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
   const contentGroups = groupElementsByRows(content, { sourceHeight });
   groups.push(...contentGroups);
 
   return {
     strategy: "projection-groups",
     source: { width: sourceWidth, height: sourceHeight },
+    patterns: {
+      textLines: patterns?.textLines ?? 0,
+      appShells: patterns?.appShells ?? [],
+      repeatedLists: patterns?.repeatedLists ?? [],
+      repeatedGrids: patterns?.repeatedGrids ?? [],
+      statRows: patterns?.statRows ?? [],
+      formGroups: patterns?.formGroups ?? [],
+      dataTables: patterns?.dataTables ?? [],
+      charts: patterns?.charts ?? [],
+      actionClusters: patterns?.actionClusters ?? [],
+      tabSets: patterns?.tabSets ?? [],
+      dialogPanels: patterns?.dialogPanels ?? [],
+    },
+    responsive: responsiveIntent ?? null,
+    screenIntent: screenIntent ?? null,
     groups,
     readingOrder: elements.map((element) => element.id),
   };
@@ -1066,12 +2897,14 @@ function collectEdgeRows(activeCells, gridColumns, gridRows, edge) {
   const rows = [];
   const edgeThreshold = Math.max(2, Math.ceil(gridColumns * 0.25));
   const continuationThreshold = Math.max(edgeThreshold, Math.ceil(gridColumns * 0.45));
+  const maxBandRows = Math.max(1, Math.ceil(gridRows * 0.22));
   const rowOrder =
     edge === "top"
       ? Array.from({ length: gridRows }, (_, row) => row)
       : Array.from({ length: gridRows }, (_, row) => gridRows - 1 - row);
 
   for (const row of rowOrder) {
+    if (rows.length >= maxBandRows) break;
     const count = longestActiveRunInRow(activeCells, row, gridColumns);
     const threshold = rows.length ? continuationThreshold : edgeThreshold;
     if (count < threshold) break;
@@ -1084,12 +2917,14 @@ function collectEdgeRows(activeCells, gridColumns, gridRows, edge) {
 function collectEdgeColumns(activeCells, gridColumns, gridRows, edge) {
   const columns = [];
   const threshold = Math.max(2, Math.ceil(gridRows * 0.35));
+  const maxRailColumns = Math.max(1, Math.ceil(gridColumns * 0.22));
   const columnOrder =
     edge === "left"
       ? Array.from({ length: gridColumns }, (_, column) => column)
       : Array.from({ length: gridColumns }, (_, column) => gridColumns - 1 - column);
 
   for (const column of columnOrder) {
+    if (columns.length >= maxRailColumns) break;
     const count = countActiveInColumn(activeCells, column, gridColumns, gridRows);
     if (count < threshold) break;
     columns.push(column);

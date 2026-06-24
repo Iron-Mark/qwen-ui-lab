@@ -236,15 +236,44 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     id: element.id ?? `element-${index + 1}`,
     kind: element.kind ?? "section",
     primitive: element.primitive ?? element.kind ?? "section",
+    componentRole: element.componentRole ?? element.primitive ?? element.kind ?? "section",
     confidence: element.confidence ?? 0.5,
     box: element.box,
   }));
+  const patterns = buildCorrectedPatternBlueprint(detections, elements);
+  const responsiveIntent = buildCorrectedResponsiveBlueprint(detections);
+  const screenIntent = buildCorrectedScreenIntentBlueprint(detections);
 
   return `const designTokens = ${JSON.stringify(tokens, null, 2)};
 
 const sourceFrame = ${JSON.stringify(source, null, 2)};
 
 const correctedElements = ${JSON.stringify(elements, null, 2)};
+
+const correctedPatterns = ${JSON.stringify(patterns, null, 2)};
+
+const responsiveIntent = ${JSON.stringify(responsiveIntent, null, 2)};
+
+const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
+
+const groupedElementIds = new Set(
+  [
+    ...correctedPatterns.appShells,
+    ...correctedPatterns.repeatedLists,
+    ...correctedPatterns.repeatedGrids,
+    ...correctedPatterns.statRows,
+    ...correctedPatterns.formGroups,
+    ...correctedPatterns.dataTables,
+    ...correctedPatterns.charts,
+    ...correctedPatterns.actionClusters,
+    ...correctedPatterns.tabSets,
+    ...correctedPatterns.dialogPanels,
+  ].flatMap((pattern) => pattern.children),
+);
+
+const correctedElementById = new Map(
+  correctedElements.map((element) => [element.id, element]),
+);
 
 export function CorrectedScreenshotScaffold() {
   return (
@@ -258,14 +287,394 @@ export function CorrectedScreenshotScaffold() {
         <h1 className="text-xl font-semibold">${safeName}</h1>
         <p className="text-sm opacity-75">
           {correctedElements.length} reviewed deterministic elements drive this scaffold.
+          {" "}
+          {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
+        </p>
+        <p className="text-xs opacity-70">
+          Responsive intent: {responsiveIntent.mode} with {responsiveIntent.breakpoints.join(" / ")} breakpoints.
+        </p>
+        <p className="text-xs opacity-70">
+          Screen intent: {screenIntent.label} at {Math.round(screenIntent.confidence * 100)}% confidence.
         </p>
       </header>
+
+      {correctedPatterns.appShells.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.appShells.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected app shell"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">App shell</p>
+              <div
+                className="grid gap-2 rounded border p-2 text-sm md:grid-cols-[10rem_minmax(0,1fr)]"
+                style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+              >
+                <aside
+                  className="rounded border p-2"
+                  style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                >
+                  <p className="font-medium">{primitiveLabel(pattern.shellType)}</p>
+                  <p className="text-[11px] opacity-70">{pattern.navCount} navigation landmarks</p>
+                </aside>
+                <div className="grid gap-2">
+                  {pattern.regions.topNavigation ? (
+                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                      Top navigation
+                    </nav>
+                  ) : null}
+                  <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
+                    {pattern.regions.sideNavigation ? (
+                      <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                        Side navigation
+                      </nav>
+                    ) : null}
+                    <section className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                      Page content region
+                    </section>
+                  </main>
+                  {pattern.regions.bottomNavigation ? (
+                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                      Bottom navigation
+                    </nav>
+                  ) : null}
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.dialogPanels.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.dialogPanels.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected dialog panel"
+              className="space-y-3 border p-3"
+              role="dialog"
+              aria-modal="true"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase">Dialog panel</p>
+                  <p className="text-sm font-medium">{primitiveLabel(pattern.modalType || "centered-dialog")}</p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close dialog"
+                  className="rounded border px-2 py-1 text-[10px]"
+                  style={{ borderColor: designTokens.border }}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="grid gap-2 rounded border p-2" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
+                {pattern.children.map((childId) => {
+                  const child = correctedElementById.get(childId);
+                  return child ? (
+                    <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
+                      {renderCorrectedPrimitive(child, designTokens)}
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.repeatedLists.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.repeatedLists.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected repeated list"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Repeated list</p>
+              <ul className="space-y-2">
+                {pattern.children.map((childId, index) => {
+                  const child = correctedElementById.get(childId);
+                  return (
+                    <li
+                      key={childId}
+                      className="rounded border px-3 py-2 text-sm"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+                    >
+                      <p className="mb-2 text-[11px] font-semibold uppercase opacity-70">
+                        Row {index + 1} from {childId}
+                      </p>
+                      {child ? renderCorrectedPrimitive(child, designTokens) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.repeatedGrids.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.repeatedGrids.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected repeated grid"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Repeated grid</p>
+              <div
+                className="grid gap-2"
+                style={{
+                  gridTemplateColumns: "repeat(" + Math.max(1, pattern.columns ?? 2) + ", minmax(0, 1fr))",
+                }}
+              >
+                {pattern.children.map((childId) => {
+                  const child = correctedElementById.get(childId);
+                  return (
+                    <article
+                      key={childId}
+                      className="rounded border px-3 py-2 text-sm"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+                    >
+                      {child ? renderCorrectedPrimitive(child, designTokens) : null}
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.statRows.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.statRows.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected stat row"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Stat row</p>
+              <div
+                className="grid gap-2"
+                style={{
+                  gridTemplateColumns: "repeat(" + Math.max(2, pattern.cardCount ?? pattern.children.length) + ", minmax(0, 1fr))",
+                }}
+              >
+                {pattern.children.map((childId, index) => {
+                  const child = correctedElementById.get(childId);
+                  return (
+                    <article
+                      key={childId}
+                      className="rounded border px-3 py-2 text-sm"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+                    >
+                      <p className="text-[11px] uppercase opacity-70">Metric {index + 1}</p>
+                      <p className="font-semibold">{child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Metric card"}</p>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.formGroups.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.formGroups.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected form group"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Form group</p>
+              <form className="grid gap-2">
+                {pattern.children.map((childId) => {
+                  const child = correctedElementById.get(childId);
+                  return child ? (
+                    <div
+                      key={childId}
+                      className="rounded border px-3 py-2 text-sm"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+                    >
+                      {renderCorrectedPrimitive(child, designTokens)}
+                    </div>
+                  ) : null;
+                })}
+              </form>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.dataTables.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.dataTables.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected data table"
+              className="space-y-2 overflow-x-auto border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Data table</p>
+              <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
+                <tbody>
+                  {Array.from({ length: Math.max(1, pattern.rows ?? 3) }).map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array.from({ length: Math.max(1, pattern.columns ?? 3) }).map((_, columnIndex) => {
+                        const childId = pattern.children[rowIndex * Math.max(1, pattern.columns ?? 3) + columnIndex];
+                        const child = childId ? correctedElementById.get(childId) : null;
+                        return (
+                          <td
+                            key={columnIndex}
+                            className="border-b px-3 py-2 align-top"
+                            style={{ borderColor: designTokens.border }}
+                          >
+                            {child ? renderCorrectedPrimitive(child, designTokens) : "Cell"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.charts.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.charts.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected chart series"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Chart series</p>
+              <div className="grid h-28 items-end gap-2 rounded border p-3" style={{
+                borderColor: designTokens.border,
+                gridTemplateColumns: "repeat(" + Math.max(3, pattern.seriesCount ?? pattern.children.length) + ", minmax(0, 1fr))",
+              }}>
+                {Array.from({ length: Math.max(3, pattern.seriesCount ?? pattern.children.length) }).map((_, index) => (
+                  <span
+                    key={index}
+                    className="rounded-t"
+                    style={{
+                      height: [42, 74, 55, 88, 63, 78][index % 6] + "%",
+                      backgroundColor: designTokens.accent,
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.actionClusters.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.actionClusters.map((pattern) => (
+            <section
+              key={pattern.id}
+              aria-label="Detected action cluster"
+              className="space-y-2 border p-3"
+              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+            >
+              <p className="text-xs font-semibold uppercase">Action cluster</p>
+              <div className="flex flex-wrap gap-2">
+                {pattern.children.map((childId, index) => {
+                  const child = correctedElementById.get(childId);
+                  return (
+                    <button
+                      key={childId}
+                      type="button"
+                      className="rounded border px-3 py-2 text-xs font-medium"
+                      style={{
+                        borderColor: designTokens.border,
+                        backgroundColor: index === 0 ? designTokens.accent : designTokens.surface,
+                        color: index === 0 ? designTokens.accentForeground : designTokens.foreground,
+                      }}
+                    >
+                      {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Action"}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : null}
+
+      {correctedPatterns.tabSets.length ? (
+        <div className="grid gap-3">
+          {correctedPatterns.tabSets.map((pattern) => {
+            const tabCount = Math.max(2, pattern.tabCount ?? pattern.children.length);
+            const selectedIndex = Math.min(tabCount - 1, Math.max(0, pattern.selectedIndex ?? 0));
+            return (
+              <section
+                key={pattern.id}
+                aria-label="Detected tab set"
+                className="space-y-2 border p-3"
+                style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+              >
+                <p className="text-xs font-semibold uppercase">Tab set</p>
+                <div className="grid gap-2">
+                  <div
+                    role="tablist"
+                    className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
+                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+                  >
+                    {Array.from({ length: tabCount }).map((_, index) => {
+                      const child = correctedElementById.get(pattern.children[index]);
+                      const selected = index === selectedIndex;
+                      return (
+                        <button
+                          key={pattern.children[index] ?? index}
+                          type="button"
+                          role="tab"
+                          aria-selected={selected}
+                          className="rounded-full px-3 py-1.5 text-xs font-medium"
+                          style={{
+                            backgroundColor: selected ? designTokens.accent : designTokens.surface,
+                            color: selected ? designTokens.accentForeground : designTokens.foreground,
+                          }}
+                        >
+                          {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Tab " + (index + 1)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <section
+                    role="tabpanel"
+                    className="rounded border p-3 text-xs"
+                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                  >
+                    {primitiveLabel(pattern.tabKind || "tabs")} panel {selectedIndex + 1}
+                  </section>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      ) : null}
 
       <div
         className="relative min-h-[34rem] overflow-hidden border"
         style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
       >
-        {correctedElements.map((element) => (
+        {correctedElements.filter((element) => !groupedElementIds.has(element.id)).map((element) => (
           <article
             key={element.id}
             aria-label={element.kind}
@@ -282,13 +691,138 @@ export function CorrectedScreenshotScaffold() {
               padding: designTokens.space,
             }}
           >
-            <p className="font-semibold">{element.primitive}</p>
-            <p className="opacity-75">{element.kind} - {Math.round(element.confidence * 100)}%</p>
+            {renderCorrectedPrimitive(element, designTokens)}
           </article>
         ))}
       </div>
     </section>
   );
+}
+
+function renderCorrectedPrimitive(element, tokens) {
+  const primitive = element.primitive || element.kind || "section";
+  const componentRole = element.componentRole || primitive;
+  const label = primitiveLabel(primitive);
+  const roleLabel = primitiveLabel(componentRole);
+  const confidence = Math.round((element.confidence ?? 0.5) * 100);
+
+  if (/header|nav/.test(primitive)) {
+    return (
+      <div className="grid gap-2" aria-label={label + " primitive preview"}>
+        <p className="font-semibold">{label}</p>
+        <div className="flex flex-wrap gap-1">
+          {["Main", "Reports", "Settings"].map((item) => (
+            <span key={item} className="rounded-full border px-2 py-0.5 text-[10px]" style={{ borderColor: tokens.border }}>
+              {item}
+            </span>
+          ))}
+        </div>
+        <p className="opacity-70">{element.kind} - {confidence}%</p>
+      </div>
+    );
+  }
+
+  if (/field|action|button|input|control/.test(primitive)) {
+    if (componentRole === "search-field") {
+      return (
+        <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
+          <p className="font-semibold">{roleLabel}</p>
+          <div className="flex min-h-8 items-center gap-2 rounded-full border px-2" style={{ borderColor: tokens.border }}>
+            <span aria-hidden="true">/</span>
+            <span className="opacity-65">Search or filter</span>
+          </div>
+          <p className="opacity-70">{element.kind} - {confidence}%</p>
+        </div>
+      );
+    }
+
+    if (componentRole === "primary-action" || componentRole === "icon-action") {
+      return (
+        <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
+          <p className="font-semibold">{roleLabel}</p>
+          <button type="button" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+            Action
+          </button>
+          <p className="opacity-70">{element.kind} - {confidence}%</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
+        <p className="font-semibold">{roleLabel}</p>
+        <div className="flex min-h-8 items-center justify-between rounded border px-2" style={{ borderColor: tokens.border }}>
+          <span className="opacity-65">Label or value</span>
+          <button type="button" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+            Action
+          </button>
+        </div>
+        <p className="opacity-70">{element.kind} - {confidence}%</p>
+      </div>
+    );
+  }
+
+  if (/card|panel/.test(primitive)) {
+    if (componentRole === "metric-card") {
+      return (
+        <div className="grid gap-1" aria-label={roleLabel + " primitive preview"}>
+          <p className="text-[10px] uppercase opacity-70">Metric</p>
+          <p className="text-lg font-semibold">12,340</p>
+          <p className="opacity-70">{element.kind} - {confidence}%</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
+        <p className="font-semibold">{roleLabel}</p>
+        <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+        <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+        <p className="opacity-70">{element.kind} - {confidence}%</p>
+      </div>
+    );
+  }
+
+  if (/media|chart/.test(primitive)) {
+    return (
+      <div className="grid gap-2" aria-label={label + " primitive preview"}>
+        <p className="font-semibold">{label}</p>
+        <div className="grid h-16 grid-cols-4 items-end gap-1 rounded border p-2" style={{ borderColor: tokens.border }}>
+          {[45, 75, 55, 90].map((height, index) => (
+            <span key={index} className="rounded-t" style={{ height: height + "%", backgroundColor: tokens.accent }} />
+          ))}
+        </div>
+        <p className="opacity-70">{element.kind} - {confidence}%</p>
+      </div>
+    );
+  }
+
+  if (/text|list/.test(primitive)) {
+    return (
+      <div className="grid gap-1.5" aria-label={label + " primitive preview"}>
+        <p className="font-semibold">{label}</p>
+        <span className="h-2 w-11/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+        <span className="h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+        <p className="opacity-70">{element.kind} - {confidence}%</p>
+      </div>
+    );
+  }
+
+  return (
+    <div aria-label={label + " primitive preview"}>
+      <p className="font-semibold">{label}</p>
+      <p className="opacity-75">{element.kind} - {confidence}%</p>
+    </div>
+  );
+}
+
+function primitiveLabel(value) {
+  return String(value || "section")
+    .replace(/[-_]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function elementTone(primitive, tokens) {
@@ -308,5 +842,188 @@ function normalizeDetectionTokens(tokens) {
     border: tokens?.border ?? "#d1d5db",
     space: TOKEN_SPACING_VALUES[tokens?.spacing] ?? TOKEN_SPACING_VALUES.cozy,
     radius: TOKEN_RADIUS_VALUES[tokens?.radius] ?? TOKEN_RADIUS_VALUES.md,
+  };
+}
+
+function buildCorrectedPatternBlueprint(detections, elements) {
+  const activeIds = new Set(elements.map((element) => element.id));
+  const appShells = detections.layoutTree?.patterns?.appShells ?? [];
+  const repeatedLists = detections.layoutTree?.patterns?.repeatedLists ?? [];
+  const repeatedGrids = detections.layoutTree?.patterns?.repeatedGrids ?? [];
+  const statRows = detections.layoutTree?.patterns?.statRows ?? [];
+  const formGroups = detections.layoutTree?.patterns?.formGroups ?? [];
+  const dataTables = detections.layoutTree?.patterns?.dataTables ?? [];
+  const charts = detections.layoutTree?.patterns?.charts ?? [];
+  const actionClusters = detections.layoutTree?.patterns?.actionClusters ?? [];
+  const tabSets = detections.layoutTree?.patterns?.tabSets ?? [];
+  const dialogPanels = detections.layoutTree?.patterns?.dialogPanels ?? [];
+
+  return {
+    textLines:
+      detections.layoutTree?.patterns?.textLines ??
+      detections.quality?.patterns?.textLines ??
+      0,
+    appShells: appShells
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `app-shell-${index + 1}`,
+          children,
+          shellType: pattern.shellType ?? "navigation-shell",
+          confidence: pattern.confidence ?? 0.5,
+          navCount: pattern.navCount ?? children.length,
+          regions: pattern.regions ?? {},
+        };
+      })
+      .filter(Boolean),
+    repeatedLists: repeatedLists
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `repeated-list-${index + 1}`,
+          children,
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+        };
+      })
+      .filter(Boolean),
+    repeatedGrids: repeatedGrids
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 3) return null;
+        return {
+          id: pattern.id ?? `repeated-grid-${index + 1}`,
+          children,
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          rows: pattern.rows ?? 1,
+          columns: pattern.columns ?? 1,
+        };
+      })
+      .filter(Boolean),
+    statRows: statRows
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `stat-row-${index + 1}`,
+          children,
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          cardCount: pattern.cardCount ?? children.length,
+        };
+      })
+      .filter(Boolean),
+    formGroups: formGroups
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `form-group-${index + 1}`,
+          children,
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          fieldCount: pattern.fieldCount ?? 0,
+          actionCount: pattern.actionCount ?? 0,
+        };
+      })
+      .filter(Boolean),
+    dataTables: dataTables
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 4) return null;
+        return {
+          id: pattern.id ?? `data-table-${index + 1}`,
+          children,
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          rows: pattern.rows ?? 1,
+          columns: pattern.columns ?? 1,
+        };
+      })
+      .filter(Boolean),
+    charts: charts
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 3) return null;
+        return {
+          id: pattern.id ?? `chart-series-${index + 1}`,
+          children,
+          chartKind: pattern.chartKind ?? "bar",
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          seriesCount: pattern.seriesCount ?? children.length,
+        };
+      })
+      .filter(Boolean),
+    actionClusters: actionClusters
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `action-cluster-${index + 1}`,
+          children,
+          clusterType: pattern.clusterType ?? "toolbar",
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          controlCount: pattern.controlCount ?? children.length,
+        };
+      })
+      .filter(Boolean),
+    tabSets: tabSets
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 2) return null;
+        return {
+          id: pattern.id ?? `tab-set-${index + 1}`,
+          children,
+          tabKind: pattern.tabKind ?? "tabs",
+          confidence: pattern.confidence ?? 0.5,
+          rhythm: pattern.rhythm ?? null,
+          tabCount: pattern.tabCount ?? children.length,
+          selectedIndex: Math.min(children.length - 1, Math.max(0, pattern.selectedIndex ?? 0)),
+        };
+      })
+      .filter(Boolean),
+    dialogPanels: dialogPanels
+      .map((pattern, index) => {
+        const children = (pattern.children ?? []).filter((id) => activeIds.has(id));
+        if (children.length < 1) return null;
+        return {
+          id: pattern.id ?? `dialog-panel-${index + 1}`,
+          children,
+          modalType: pattern.modalType ?? "centered-dialog",
+          confidence: pattern.confidence ?? 0.5,
+          childCount: pattern.childCount ?? Math.max(0, children.length - 1),
+          centeredness: pattern.centeredness ?? null,
+        };
+      })
+      .filter(Boolean),
+  };
+}
+
+function buildCorrectedResponsiveBlueprint(detections) {
+  const responsive = detections.layoutTree?.responsive ?? detections.quality?.responsive;
+  return {
+    mode: responsive?.mode ?? "single-column",
+    source: responsive?.source ?? "unknown",
+    breakpoints: responsive?.breakpoints ?? ["base", "md", "lg"],
+    primaryFlow: responsive?.primaryFlow ?? "single readable column with constrained line length",
+    columns: responsive?.columns ?? { base: 1, md: 1, lg: 2 },
+    tailwindHint: responsive?.tailwindHint ?? "grid gap-4",
+    regions: responsive?.regions ?? {},
+  };
+}
+
+function buildCorrectedScreenIntentBlueprint(detections) {
+  const intent = detections.layoutTree?.screenIntent ?? detections.quality?.screenIntent;
+  return {
+    id: intent?.id ?? "dashboard",
+    label: intent?.label ?? "Dashboard or analytics workspace",
+    confidence: intent?.confidence ?? 0.55,
+    evidence: intent?.evidence ?? [],
+    scores: intent?.scores ?? {},
   };
 }

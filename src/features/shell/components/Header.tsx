@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
 import { AppearanceMenu } from "./AppearanceMenu";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,12 @@ const DemoModeSnackbar = dynamic(
 type ShellTitleContext = {
   title: string;
   subtitle?: string;
+};
+
+type HeaderBrandCopyState = {
+  key: number;
+  title: string;
+  subtitle: string;
 };
 
 export function Header() {
@@ -139,20 +145,7 @@ export function Header() {
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
             fetchPriority="low"
           />
-          <div className="hidden min-w-0 md:block">
-            <p
-              data-testid="header-brand-title"
-              className="truncate text-lg font-bold text-card-foreground transition-colors"
-            >
-              {brandTitle}
-            </p>
-            <p
-              data-testid="header-brand-subtitle"
-              className="truncate text-xs text-muted-foreground transition-colors"
-            >
-              {brandSubtitle}
-            </p>
-          </div>
+          <HeaderBrandCopy title={brandTitle} subtitle={brandSubtitle} />
         </Link>
         <nav
           className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden md:gap-2"
@@ -219,5 +212,105 @@ export function Header() {
         </div>
       </PageContainer>
     </header>
+  );
+}
+
+function HeaderBrandCopy({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle: string;
+}) {
+  const keyRef = useRef(0);
+  const [current, setCurrent] = useState<HeaderBrandCopyState>(() => ({
+    key: 0,
+    title,
+    subtitle,
+  }));
+  const currentRef = useRef(current);
+  const [previous, setPrevious] = useState<HeaderBrandCopyState | null>(null);
+
+  useEffect(() => {
+    currentRef.current = current;
+  }, [current]);
+
+  useEffect(() => {
+    const currentValue = currentRef.current;
+    if (currentValue.title === title && currentValue.subtitle === subtitle) {
+      return;
+    }
+
+    keyRef.current += 1;
+    const next = {
+      key: keyRef.current,
+      title,
+      subtitle,
+    };
+
+    setPrevious(currentValue);
+    currentRef.current = next;
+    setCurrent(next);
+  }, [title, subtitle]);
+
+  useEffect(() => {
+    if (!previous) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setPrevious(null);
+    }, 320);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [previous]);
+
+  return (
+    <div className="relative hidden h-10 w-44 min-w-0 overflow-hidden md:block lg:w-56">
+      {previous ? (
+        <HeaderBrandCopyLayer
+          key={`previous-${previous.key}`}
+          copy={previous}
+          className="header-brand-copy-exit"
+        />
+      ) : null}
+      <HeaderBrandCopyLayer
+        key={`current-${current.key}`}
+        copy={current}
+        current
+        className={previous ? "header-brand-copy-enter" : undefined}
+      />
+    </div>
+  );
+}
+
+function HeaderBrandCopyLayer({
+  copy,
+  current = false,
+  className,
+}: {
+  copy: HeaderBrandCopyState;
+  current?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 flex min-w-0 flex-col justify-center will-change-transform",
+        className,
+      )}
+      aria-hidden={!current}
+    >
+      <p
+        data-testid={current ? "header-brand-title" : undefined}
+        className="truncate text-lg font-bold leading-5 text-card-foreground transition-colors"
+      >
+        {copy.title}
+      </p>
+      <p
+        data-testid={current ? "header-brand-subtitle" : undefined}
+        className="truncate text-xs leading-4 text-muted-foreground transition-colors"
+      >
+        {copy.subtitle}
+      </p>
+    </div>
   );
 }

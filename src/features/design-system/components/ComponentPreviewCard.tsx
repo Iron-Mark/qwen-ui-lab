@@ -32,11 +32,12 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import {
-  LEVEL_BADGE_VARIANT,
   PREVIEW_MODE_OPTIONS,
   PREVIEW_VIEWPORTS,
+  TIER_META,
   type PreviewMode,
 } from "../lib/design-system-options";
+import { CollectionPill, ComponentLevelPill } from "./DesignSystemMetaPills";
 
 interface ComponentPreviewCardProps {
   id: string;
@@ -107,7 +108,9 @@ export function ComponentPreviewCard({
     : "path/to/component";
   const importLine = `import { Component } from "@/components/${importPath}";`;
   const previewViewport = PREVIEW_VIEWPORTS[previewMode];
-  const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+  const tierMeta = TIER_META[level];
+  const TierIcon = tierMeta.Icon;
+  const levelLabel = tierMeta.label;
   const domainLabel =
     domain === "uilaws"
       ? "UI Laws"
@@ -173,41 +176,13 @@ export function ComponentPreviewCard({
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-1.5 sm:max-w-44 sm:justify-end">
-              <Badge
-                variant={LEVEL_BADGE_VARIANT[level]}
-                className="min-h-7 gap-1.5 px-2.5 capitalize"
-              >
-                <Box className="size-3" aria-hidden="true" />
-                {levelLabel}
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="min-h-7 gap-1.5 px-2.5 text-[0.7rem]"
-              >
-                {domainLabel}
-              </Badge>
-            </div>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-            {sourcePath ? (
-              <p className="inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-border/70 bg-background/50 px-3 font-mono text-[0.7rem] text-muted-foreground">
-                <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                <span className="min-w-0 truncate">src/{sourcePath}</span>
-              </p>
-            ) : null}
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={copyImportAndSnippet}
-              aria-label="Copy import line and snippet"
-              className="min-h-10 justify-center px-3 text-[0.75rem]"
+            <div
+              className="flex flex-wrap items-center gap-2 sm:max-w-80 sm:justify-end"
+              aria-label={`Component level ${levelLabel}. Collection ${domainLabel}.`}
             >
-              <CopyPlus className="mr-1.5 size-3.5" aria-hidden="true" />
-              Copy import + snippet
-            </Button>
+              <ComponentLevelPill label={levelLabel} Icon={TierIcon} />
+              <CollectionPill label={domainLabel} />
+            </div>
           </div>
 
           {usage ? (
@@ -334,7 +309,7 @@ export function ComponentPreviewCard({
           <div className="min-w-0 p-3 sm:p-4">
             <div
               data-testid="component-preview-canvas"
-              className="overflow-x-auto rounded-lg bg-background/45 p-2 shadow-inner"
+              className="themed-scrollbar overflow-x-auto rounded-lg bg-background/45 p-2 shadow-inner"
             >
               <div
                 data-testid="component-preview-viewport"
@@ -374,6 +349,17 @@ export function ComponentPreviewCard({
           showCopy={false}
           headerActions={
             <div className="flex flex-wrap items-center gap-1.5">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={copyImportAndSnippet}
+                aria-label="Copy import line and snippet"
+                className="min-h-9 justify-center px-3 text-[0.75rem]"
+              >
+                <CopyPlus className="mr-1.5 size-3.5" aria-hidden="true" />
+                Copy import
+              </Button>
               <ExportButton
                 text={activeSnippet}
                 variant="copy"
@@ -389,6 +375,20 @@ export function ComponentPreviewCard({
                 analyticsFeature="design_system_snippet"
               />
             </div>
+          }
+          footer={
+            sourcePath ? (
+              <p className="inline-flex min-w-0 items-center gap-2 font-mono text-[0.7rem] text-muted-foreground">
+                <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+                <span className="shrink-0 font-sans text-[0.65rem] font-semibold uppercase tracking-wider">
+                  Source
+                </span>
+                <span className="text-muted-foreground/50" aria-hidden="true">
+                  /
+                </span>
+                <span className="min-w-0 truncate">src/{sourcePath}</span>
+              </p>
+            ) : null
           }
         />
       ) : null}

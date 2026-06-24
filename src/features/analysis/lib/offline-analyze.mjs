@@ -454,6 +454,30 @@ const LAYOUT_ARCHETYPES = {
     stats: { sections: 4, components: 6, breakpoints: 2, reviewItems: 4 },
     codeVariant: "settings",
   },
+  modal: {
+    label: "Modal dialog",
+    keywords: [
+      { term: "modal", weight: 4 },
+      { term: "dialog", weight: 4 },
+      { term: "overlay", weight: 3 },
+      { term: "popup", weight: 2 },
+      { term: "sheet", weight: 1 },
+      { term: "confirm", weight: 1 },
+    ],
+    layout:
+      "focused overlay with a centered dialog panel, title, compact body copy, close affordance, and primary actions.",
+    components: [
+      "Dialog",
+      "DialogOverlay",
+      "DialogContent",
+      "DialogHeader",
+      "DialogTitle",
+      "DialogFooter",
+      "Button",
+    ],
+    stats: { sections: 3, components: 6, breakpoints: 2, reviewItems: 5 },
+    codeVariant: "modal",
+  },
   landing: {
     label: "Marketing landing",
     keywords: [
@@ -548,6 +572,7 @@ const GENERATED_COMPONENT_NAMES = {
   dashboard: "GeneratedDashboard",
   ecommerce: "GeneratedCatalog",
   landing: "GeneratedLanding",
+  modal: "GeneratedDialogOverlay",
   mobile: "GeneratedMobileShell",
   settings: "GeneratedSettings",
 };
@@ -555,17 +580,27 @@ const GENERATED_COMPONENT_NAMES = {
 const GENERATED_REGION_TONES = {
   "bottom-nav": "accent",
   "bottom nav": "accent",
+  "action-cluster": "surface",
+  "app-shell": "surface",
   "button-or-input": "surface",
   "card-or-panel": "muted",
   "chart-or-media": "muted",
+  "chart-series": "muted",
   "content panel": "muted",
   "content-block": "surface",
+  "data-table": "surface",
+  "dialog-panel": "surface",
+  "form-group": "surface",
   "control cluster": "surface",
   control: "surface",
   header: "accent",
   "header/nav": "accent",
   "input-or-button-row": "surface",
   "media/chart": "muted",
+  "repeated-grid": "surface",
+  "repeated-list": "surface",
+  "stat-row": "surface",
+  "tab-set": "surface",
   "side-nav": "accent",
   "side rail": "accent",
   "text-row": "surface",
@@ -575,17 +610,27 @@ const GENERATED_REGION_TONES = {
 const GENERATED_REGION_GUIDANCE = {
   "bottom-nav": "Persistent mobile navigation or action shortcuts.",
   "bottom nav": "Persistent mobile navigation or action shortcuts.",
+  "action-cluster": "Grouped toolbar, segmented control, or CTA row inferred from aligned controls.",
+  "app-shell": "Grouped top, side, or bottom navigation landmarks; preserve the shell before rendering page content.",
   "button-or-input": "Likely form control or primary action; preserve label, focus state, and target size.",
   "card-or-panel": "Grouped content card or panel with heading and body structure.",
   "chart-or-media": "Visual content area, metric chart, or media preview.",
+  "chart-series": "Grouped chart marks; preserve baseline rhythm, axis spacing, and readable summary labels.",
   "content panel": "Primary content container with clear heading hierarchy.",
   "content-block": "General content block inferred from local connected components.",
+  "data-table": "Structured rows and columns; preserve headers, alignment, and horizontal scroll on small screens.",
+  "dialog-panel": "Centered modal surface detected from a floating panel; preserve scrim, focus trap, title, and close affordance.",
+  "form-group": "Grouped form flow with fields and submit/action controls.",
   "control cluster": "Grouped actions with explicit labels and large targets.",
   control: "Small control, icon button, checkbox, or compact action.",
   header: "Top-level navigation, page title, or primary toolbar.",
   "header/nav": "Top-level navigation, page title, or primary toolbar.",
   "input-or-button-row": "Wide form row, search field, or CTA strip inferred by aspect ratio.",
   "media/chart": "Visual content area, metric chart, or media preview.",
+  "repeated-grid": "Repeated card grid detected from aligned rows, columns, and matching item sizes.",
+  "repeated-list": "Repeated list or feed detected from aligned rows and vertical rhythm.",
+  "stat-row": "KPI row detected from aligned metric cards; preserve labels, values, and trend context.",
+  "tab-set": "Adjacent tab or segmented-control triggers; preserve selected state and panel switching affordance.",
   "side-nav": "Secondary navigation, filters, or section index.",
   "side rail": "Secondary navigation, filters, or section index.",
   "text-row": "Text-like row or list item; preserve reading order.",
@@ -595,12 +640,22 @@ const GENERATED_REGION_GUIDANCE = {
 const GENERATED_REGION_ROLES = {
   "bottom-nav": "navigation",
   "bottom nav": "navigation",
+  "action-cluster": "toolbar",
+  "app-shell": "group",
   "button-or-input": "group",
+  "data-table": "table",
+  "dialog-panel": "group",
+  "chart-series": "group",
+  "form-group": "form",
   "control cluster": "group",
   control: "group",
   header: "banner",
   "header/nav": "banner",
   "input-or-button-row": "group",
+  "repeated-grid": "list",
+  "repeated-list": "list",
+  "stat-row": "list",
+  "tab-set": "tablist",
   "side-nav": "navigation",
   "side rail": "navigation",
 };
@@ -768,6 +823,11 @@ export function classifyLayoutArchetype(file) {
       scores.ecommerce = (scores.ecommerce ?? 0) + 1;
     }
   }
+  const screenIntent = inspection?.layoutTree?.screenIntent ?? inspection?.quality?.screenIntent;
+  if (screenIntent?.id && Object.hasOwn(LAYOUT_ARCHETYPES, screenIntent.id)) {
+    const intentBoost = Math.min(4.5, 1.5 + (screenIntent.confidence ?? 0.55) * 3);
+    scores[screenIntent.id] = (scores[screenIntent.id] ?? 0) + intentBoost;
+  }
 
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const [topId, topScore] = ranked[0] ?? ["dashboard", 0];
@@ -836,6 +896,19 @@ export function GeneratedAuthScreen() {
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
+  );
+}`;
+    case "modal":
+      return `export function GeneratedDialogOverlay() {
+  return (
+    <div aria-label="Generated modal dialog from ${safeName}" className="fixed inset-0 grid place-items-center p-4">
+      <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border p-6 shadow-xl">
+        <button type="button" aria-label="Close dialog">Close</button>
+        <h1 className="mt-3 text-xl font-semibold">Dialog title</h1>
+        <p className="mt-2 text-sm opacity-75">Detected modal body content.</p>
+        <div className="mt-5 flex justify-end gap-2">{/* dialog actions */}</div>
+      </section>
+    </div>
   );
 }`;
     case "landing":
@@ -979,12 +1052,21 @@ function buildSignalAwareGeneratedCode(safeName, archetype, inspection) {
   const tokens = buildGeneratedTokenBlueprint(inspection.designTokens);
   const regions = buildGeneratedRegionBlueprint(inspection, archetype);
   const detectedElements = buildGeneratedElementBlueprint(inspection);
+  const detectedPatterns = buildGeneratedPatternBlueprint(inspection);
+  const responsiveIntent = buildGeneratedResponsiveBlueprint(inspection);
+  const screenIntent = buildGeneratedScreenIntentBlueprint(inspection);
   const gridRows = Math.max(1, inspection.layout.gridRows);
   const gridColumns = Math.max(1, inspection.layout.gridColumns);
 
   return `const designTokens = ${JSON.stringify(tokens, null, 2)};
 
 const detectedElements = ${JSON.stringify(detectedElements, null, 2)};
+
+const detectedPatterns = ${JSON.stringify(detectedPatterns, null, 2)};
+
+const responsiveIntent = ${JSON.stringify(responsiveIntent, null, 2)};
+
+const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
@@ -1000,8 +1082,63 @@ export function ${componentName}() {
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
           {detectedElements.length} deterministic UI elements were detected before scaffold generation.
+          {" "}
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the scaffold.
+        </p>
+        <p className="text-xs opacity-70">
+          Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
+        </p>
+        <p className="text-xs opacity-70">
+          Screen intent: {screenIntent.label} at {Math.round(screenIntent.confidence * 100)}% confidence.
         </p>
       </header>
+
+      {detectedPatterns.appShells.length ? (
+        <section
+          aria-label="Detected app shell"
+          className="grid gap-3 border p-3"
+          style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
+        >
+          <p className="text-xs font-semibold uppercase">App shell</p>
+          {detectedPatterns.appShells.map((shell) => (
+            <div
+              key={shell.id}
+              className="grid gap-2 rounded border p-2 text-xs md:grid-cols-[10rem_minmax(0,1fr)]"
+              style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
+            >
+              <aside
+                className="rounded border p-2"
+                style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+              >
+                <p className="font-medium">{formatPrimitiveLabel(shell.shellType)}</p>
+                <p className="mt-1 opacity-70">{shell.navCount} navigation landmarks</p>
+              </aside>
+              <div className="grid gap-2">
+                {shell.regions.topNavigation ? (
+                  <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                    Top navigation
+                  </nav>
+                ) : null}
+                <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
+                  {shell.regions.sideNavigation ? (
+                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                      Side navigation
+                    </nav>
+                  ) : null}
+                  <section className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                    Page content region
+                  </section>
+                </main>
+                {shell.regions.bottomNavigation ? (
+                  <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
+                    Bottom navigation
+                  </nav>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </section>
+      ) : null}
 
       <div
         className="grid min-h-[34rem] overflow-hidden border"
@@ -1038,11 +1175,379 @@ export function ${componentName}() {
             <h2 className="mt-2 font-semibold">{region.label}</h2>
             <p className="mt-1 text-xs opacity-80">{region.guidance}</p>
             <p className="mt-3 text-[11px] opacity-70">{region.meta}</p>
+            {renderPrimitiveBody(region, designTokens)}
           </article>
         ))}
       </div>
     </section>
   );
+}
+
+function renderPrimitiveBody(region, tokens) {
+  const primitive = region.primitive || region.kind || "section";
+  const componentRole = region.componentRole || primitive;
+  const label = formatPrimitiveLabel(primitive);
+  const roleLabel = formatPrimitiveLabel(componentRole);
+
+  if (region.kind === "dialog-panel" || primitive === "dialog-panel") {
+    return (
+      <div
+        className="mt-3 rounded border p-3 shadow-lg"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={region.id + "-title"}
+        style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p id={region.id + "-title"} className="text-sm font-semibold">
+              {formatPrimitiveLabel(region.modalType || "dialog")}
+            </p>
+            <p className="mt-1 text-[11px] opacity-70">
+              Floating modal surface with grouped content and focus management.
+            </p>
+          </div>
+          <button
+            type="button"
+            aria-label="Close dialog"
+            className="rounded border px-2 py-1 text-[11px]"
+            style={{ borderColor: tokens.border }}
+          >
+            Close
+          </button>
+        </div>
+        <div className="mt-3 grid gap-2">
+          <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+          <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+          <button
+            type="button"
+            className="mt-2 w-fit rounded px-3 py-2 text-xs font-medium"
+            style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
+          >
+            Primary action
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (region.kind === "repeated-list" || primitive === "list-item") {
+    return (
+      <ul className="mt-3 space-y-2" aria-label={region.label}>
+        {Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map((_, itemIndex) => (
+          <li
+            key={itemIndex}
+            className="rounded border px-2 py-1 text-xs"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+          >
+            Row {itemIndex + 1} - repeated item scaffold
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (region.kind === "repeated-grid" || primitive === "card-grid") {
+    return (
+      <div
+        className="mt-3 grid gap-2"
+        style={{
+          gridTemplateColumns: "repeat(" + Math.max(1, region.columns ?? 2) + ", minmax(0, 1fr))",
+        }}
+        aria-label={region.label}
+      >
+        {Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map((_, itemIndex) => (
+          <article
+            key={itemIndex}
+            className="rounded border p-2 text-xs"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+          >
+            <p className="font-medium">Card {itemIndex + 1}</p>
+            <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  if (region.kind === "stat-row" || primitive === "stat-row") {
+    const cards = Math.max(2, region.cardCount ?? region.itemCount ?? 3);
+    return (
+      <div
+        className="mt-3 grid gap-2"
+        style={{
+          gridTemplateColumns: "repeat(" + cards + ", minmax(0, 1fr))",
+        }}
+        aria-label={region.label + " KPI cards"}
+      >
+        {Array.from({ length: cards }).map((_, itemIndex) => (
+          <article
+            key={itemIndex}
+            className="rounded border p-3 text-xs"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+          >
+            <p className="text-[11px] uppercase opacity-70">Metric {itemIndex + 1}</p>
+            <p className="mt-1 text-xl font-semibold">{["12,340", "$45.2K", "+18%", "573"][itemIndex % 4]}</p>
+            <p className="mt-1 text-[11px] opacity-70">Trend context</p>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  if (region.kind === "form-group" || primitive === "form-group") {
+    return (
+      <form className="mt-3 grid gap-2" aria-label={region.label}>
+        {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => (
+          <label key={itemIndex} className="grid gap-1 text-[11px] font-medium">
+            Field {itemIndex + 1}
+            <span
+              className="flex min-h-9 items-center rounded border px-3 font-normal opacity-75"
+              style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+            >
+              Value or input
+            </span>
+          </label>
+        ))}
+        <button
+          type="button"
+          className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
+          style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
+        >
+          Submit action
+        </button>
+      </form>
+    );
+  }
+
+  if (region.kind === "data-table" || primitive === "data-table") {
+    const rows = Math.max(2, region.rows ?? 3);
+    const columns = Math.max(2, region.columns ?? 3);
+    return (
+      <div className="mt-3 overflow-x-auto" aria-label={region.label}>
+        <table className="w-full min-w-[28rem] border-collapse text-left text-xs">
+          <thead>
+            <tr>
+              {Array.from({ length: columns }).map((_, columnIndex) => (
+                <th
+                  key={columnIndex}
+                  className="border-b px-2 py-1.5 font-semibold"
+                  style={{ borderColor: tokens.border }}
+                >
+                  Column {columnIndex + 1}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: rows }).map((_, rowIndex) => (
+              <tr key={rowIndex}>
+                {Array.from({ length: columns }).map((_, columnIndex) => (
+                  <td
+                    key={columnIndex}
+                    className="border-b px-2 py-1.5"
+                    style={{ borderColor: tokens.border }}
+                  >
+                    Cell {rowIndex + 1}.{columnIndex + 1}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  if (region.kind === "chart-series" || primitive === "chart-series") {
+    const bars = Math.max(3, region.seriesCount ?? region.itemCount ?? 5);
+    const heights = [42, 74, 55, 88, 63, 78, 48, 92];
+    return (
+      <div
+        className="mt-3 grid min-h-32 items-end gap-2 rounded border p-3"
+        style={{
+          borderColor: tokens.border,
+          gridTemplateColumns: "repeat(" + bars + ", minmax(0, 1fr))",
+        }}
+        aria-label={region.label + " bar chart preview"}
+      >
+        {Array.from({ length: bars }).map((_, index) => (
+          <span
+            key={index}
+            className="rounded-t"
+            style={{
+              height: heights[index % heights.length] + "%",
+              backgroundColor: tokens.accent,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (region.kind === "tab-set" || primitive === "tab-set") {
+    const tabs = Math.max(2, region.tabCount ?? region.itemCount ?? 3);
+    const selectedIndex = Math.min(tabs - 1, Math.max(0, region.selectedIndex ?? 0));
+    return (
+      <div className="mt-3 grid gap-2" aria-label={region.label + " tabs"}>
+        <div
+          role="tablist"
+          aria-label={region.label}
+          className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
+          style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+        >
+          {Array.from({ length: tabs }).map((_, index) => {
+            const selected = index === selectedIndex;
+            return (
+              <button
+                key={index}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                className="rounded-full px-3 py-1.5 text-xs font-medium"
+                style={{
+                  backgroundColor: selected ? tokens.accent : tokens.surface,
+                  color: selected ? tokens.accentForeground : tokens.foreground,
+                }}
+              >
+                Tab {index + 1}
+              </button>
+            );
+          })}
+        </div>
+        <section
+          role="tabpanel"
+          className="rounded border p-3 text-xs"
+          style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+        >
+          {formatPrimitiveLabel(region.tabKind || "tabs")} panel {selectedIndex + 1}
+        </section>
+      </div>
+    );
+  }
+
+  if (region.kind === "action-cluster" || primitive === "action-cluster") {
+    const controls = Math.max(2, region.controlCount ?? region.itemCount ?? 3);
+    const clusterType = region.clusterType || "toolbar";
+    return (
+      <div className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " controls"}>
+        {Array.from({ length: controls }).map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            className={clusterType === "segmented-control" ? "rounded-full border px-3 py-1.5 text-xs" : "rounded px-3 py-2 text-xs font-medium"}
+            style={{
+              borderColor: tokens.border,
+              backgroundColor: index === 0 ? tokens.accent : tokens.surface,
+              color: index === 0 ? tokens.accentForeground : tokens.foreground,
+            }}
+          >
+            Action {index + 1}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  if (/header|nav/.test(primitive)) {
+    return (
+      <nav className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label}>
+        {["Overview", "Workflows", "Settings"].map((item) => (
+          <span
+            key={item}
+            className="rounded-full border px-2 py-1 text-[11px]"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+          >
+            {item}
+          </span>
+        ))}
+      </nav>
+    );
+  }
+
+  if (/field|action|button|input|control/.test(primitive)) {
+    if (componentRole === "search-field") {
+      return (
+        <div className="mt-3 flex min-h-10 items-center gap-2 rounded-full border px-3 text-xs" style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}>
+          <span aria-hidden="true">/</span>
+          <span className="opacity-70">Search or filter...</span>
+        </div>
+      );
+    }
+
+    if (componentRole === "primary-action" || componentRole === "icon-action") {
+      return (
+        <button type="button" className="mt-3 rounded px-3 py-2 text-xs font-medium" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+          {roleLabel}
+        </button>
+      );
+    }
+
+    return (
+      <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
+        <label className="text-[11px] font-medium opacity-75">{roleLabel}</label>
+        <div className="flex min-h-9 items-center justify-between rounded border px-3 text-xs" style={{ borderColor: tokens.border }}>
+          <span className="opacity-70">User input or action</span>
+          <button type="button" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+            Apply
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (/card|panel/.test(primitive)) {
+    if (componentRole === "metric-card") {
+      return (
+        <div className="mt-3 rounded border p-3" style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}>
+          <p className="text-[11px] uppercase opacity-70">Metric</p>
+          <p className="mt-1 text-2xl font-semibold">12,340</p>
+          <p className="mt-1 text-[11px] opacity-70">Trend and supporting context</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mt-3 rounded border p-3" style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}>
+        <p className="text-xs font-semibold">{roleLabel}</p>
+        <p className="mt-1 text-[11px] opacity-70">Card scaffold with grouped title, content, and supporting metadata.</p>
+      </div>
+    );
+  }
+
+  if (/media|chart/.test(primitive) || componentRole === "chart-panel") {
+    return (
+      <div className="mt-3 grid min-h-24 grid-cols-5 items-end gap-1 rounded border p-3" style={{ borderColor: tokens.border }}>
+        {[35, 70, 50, 88, 60].map((height, index) => (
+          <span key={index} className="rounded-t" style={{ height: height + "%", backgroundColor: tokens.accent }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (/text|list/.test(primitive)) {
+    return (
+      <div className="mt-3 space-y-1.5" aria-label={label + " text scaffold"}>
+        <span className="block h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+        <span className="block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 rounded border p-2 text-[11px] opacity-80" style={{ borderColor: tokens.border }}>
+      Component primitive: {label}
+    </div>
+  );
+}
+
+function formatPrimitiveLabel(value) {
+  return String(value || "section")
+    .replace(/[-_]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }`;
 }
 
@@ -1060,10 +1565,14 @@ function buildGeneratedTokenBlueprint(designTokens) {
 }
 
 function buildGeneratedRegionBlueprint(inspection, archetype) {
-  const detectedRegions = buildRegionsFromDetectedElements(inspection);
-  const regions = detectedRegions.length
-    ? detectedRegions
-    : inspection.layout.regions.slice(0, 8);
+  const patternRegions = buildRegionsFromLayoutPatterns(inspection);
+  const detectedRegions = buildRegionsFromDetectedElements(inspection).filter(
+    (region) => !isRegionCoveredByPattern(region, patternRegions),
+  );
+  const regions =
+    patternRegions.length || detectedRegions.length
+      ? [...patternRegions, ...detectedRegions].slice(0, 8)
+      : inspection.layout.regions.slice(0, 8);
   const sourceRegions = regions.length
     ? regions
     : [
@@ -1092,22 +1601,328 @@ function buildGeneratedRegionBlueprint(inspection, archetype) {
       role: GENERATED_REGION_ROLES[kind] ?? "region",
       tone: GENERATED_REGION_TONES[kind] ?? "muted",
       guidance: GENERATED_REGION_GUIDANCE[kind] ?? archetype.layout,
+      primitive: region.primitive ?? kind,
+      componentRole: region.componentRole ?? region.primitive ?? kind,
+      confidence: region.confidence ?? region.patternConfidence ?? null,
       meta: `Rows ${region.minRow + 1}-${region.maxRow + 1}, columns ${
         region.minColumn + 1
-      }-${region.maxColumn + 1}`,
+      }-${region.maxColumn + 1}${
+        typeof (region.confidence ?? region.patternConfidence) === "number"
+          ? `, confidence ${Math.round((region.confidence ?? region.patternConfidence) * 100)}%`
+          : ""
+      }`,
       gridColumn: `${columnStart} / span ${columnSpan}`,
       gridRow: `${rowStart} / span ${rowSpan}`,
+      ...(region.itemCount ? { itemCount: region.itemCount } : {}),
+      ...(region.cardCount ? { cardCount: region.cardCount } : {}),
+      ...(region.rows ? { rows: region.rows } : {}),
+      ...(region.columns ? { columns: region.columns } : {}),
+      ...(region.fieldCount ? { fieldCount: region.fieldCount } : {}),
+      ...(region.actionCount ? { actionCount: region.actionCount } : {}),
+      ...(region.chartKind ? { chartKind: region.chartKind } : {}),
+      ...(region.seriesCount ? { seriesCount: region.seriesCount } : {}),
+      ...(region.clusterType ? { clusterType: region.clusterType } : {}),
+      ...(region.controlCount ? { controlCount: region.controlCount } : {}),
+      ...(region.tabKind ? { tabKind: region.tabKind } : {}),
+      ...(region.tabCount ? { tabCount: region.tabCount } : {}),
+      ...(Number.isInteger(region.selectedIndex) ? { selectedIndex: region.selectedIndex } : {}),
+      ...(region.modalType ? { modalType: region.modalType } : {}),
+      ...(region.childCount ? { childCount: region.childCount } : {}),
+      ...(typeof region.centeredness === "number" ? { centeredness: region.centeredness } : {}),
+      ...(region.patternConfidence ? { patternConfidence: region.patternConfidence } : {}),
     };
   });
+}
+
+function buildGeneratedPatternBlueprint(inspection) {
+  const patterns = inspection.layoutTree?.patterns ?? {};
+  return {
+    textLines: patterns.textLines ?? inspection.quality?.patterns?.textLines ?? 0,
+    appShells: (patterns.appShells ?? []).slice(0, 2).map((pattern, index) => ({
+      id: pattern.id ?? `app-shell-${index + 1}`,
+      axis: pattern.axis ?? "landmarks",
+      shellType: pattern.shellType ?? "navigation-shell",
+      confidence: pattern.confidence ?? 0.5,
+      navCount: pattern.navCount ?? pattern.children?.length ?? 0,
+      regions: pattern.regions ?? {},
+      children: pattern.children ?? [],
+    })),
+    repeatedLists: (patterns.repeatedLists ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `repeated-list-${index + 1}`,
+      axis: pattern.axis ?? "vertical",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      itemCount: pattern.children?.length ?? 0,
+      children: pattern.children ?? [],
+    })),
+    repeatedGrids: (patterns.repeatedGrids ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `repeated-grid-${index + 1}`,
+      axis: pattern.axis ?? "grid",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      rows: pattern.rows ?? 1,
+      columns: pattern.columns ?? 1,
+      itemCount: pattern.children?.length ?? 0,
+      children: pattern.children ?? [],
+    })),
+    statRows: (patterns.statRows ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `stat-row-${index + 1}`,
+      axis: pattern.axis ?? "horizontal",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      cardCount: pattern.cardCount ?? pattern.children?.length ?? 0,
+      children: pattern.children ?? [],
+    })),
+    formGroups: (patterns.formGroups ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `form-group-${index + 1}`,
+      axis: pattern.axis ?? "vertical",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      fieldCount: pattern.fieldCount ?? 0,
+      actionCount: pattern.actionCount ?? 0,
+      children: pattern.children ?? [],
+    })),
+    dataTables: (patterns.dataTables ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `data-table-${index + 1}`,
+      axis: pattern.axis ?? "rows-columns",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      rows: pattern.rows ?? 0,
+      columns: pattern.columns ?? 0,
+      children: pattern.children ?? [],
+    })),
+    charts: (patterns.charts ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `chart-series-${index + 1}`,
+      axis: pattern.axis ?? "x-series",
+      chartKind: pattern.chartKind ?? "bar",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      seriesCount: pattern.seriesCount ?? pattern.children?.length ?? 0,
+      children: pattern.children ?? [],
+    })),
+    actionClusters: (patterns.actionClusters ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `action-cluster-${index + 1}`,
+      axis: pattern.axis ?? "horizontal",
+      clusterType: pattern.clusterType ?? "toolbar",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      controlCount: pattern.controlCount ?? pattern.children?.length ?? 0,
+      children: pattern.children ?? [],
+    })),
+    tabSets: (patterns.tabSets ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `tab-set-${index + 1}`,
+      axis: pattern.axis ?? "horizontal",
+      tabKind: pattern.tabKind ?? "tabs",
+      confidence: pattern.confidence ?? 0.5,
+      rhythm: pattern.rhythm ?? null,
+      tabCount: pattern.tabCount ?? pattern.children?.length ?? 0,
+      selectedIndex: pattern.selectedIndex ?? 0,
+      children: pattern.children ?? [],
+    })),
+    dialogPanels: (patterns.dialogPanels ?? []).slice(0, 4).map((pattern, index) => ({
+      id: pattern.id ?? `dialog-panel-${index + 1}`,
+      axis: pattern.axis ?? "overlay",
+      modalType: pattern.modalType ?? "centered-dialog",
+      confidence: pattern.confidence ?? 0.5,
+      childCount: pattern.childCount ?? Math.max(0, (pattern.children?.length ?? 1) - 1),
+      centeredness: pattern.centeredness ?? null,
+      children: pattern.children ?? [],
+    })),
+  };
+}
+
+function buildGeneratedResponsiveBlueprint(inspection) {
+  const responsive = inspection.layoutTree?.responsive ?? inspection.quality?.responsive;
+  return {
+    mode: responsive?.mode ?? "single-column",
+    source: responsive?.source ?? "unknown",
+    breakpoints: responsive?.breakpoints ?? ["base", "md", "lg"],
+    primaryFlow: responsive?.primaryFlow ?? "single readable column with constrained line length",
+    columns: responsive?.columns ?? { base: 1, md: 1, lg: 2 },
+    tailwindHint: responsive?.tailwindHint ?? "grid gap-4",
+    regions: responsive?.regions ?? {},
+  };
+}
+
+function buildGeneratedScreenIntentBlueprint(inspection) {
+  const intent = inspection.layoutTree?.screenIntent ?? inspection.quality?.screenIntent;
+  return {
+    id: intent?.id ?? "dashboard",
+    label: intent?.label ?? "Dashboard or analytics workspace",
+    confidence: intent?.confidence ?? 0.55,
+    evidence: intent?.evidence ?? [],
+    scores: intent?.scores ?? {},
+  };
 }
 
 function buildGeneratedElementBlueprint(inspection) {
   return (inspection.elements ?? []).slice(0, 12).map((element) => ({
     id: element.id,
     kind: element.kind,
+    primitive: element.primitive,
+    componentRole: element.componentRole,
     confidence: element.confidence,
     box: element.box,
+    signals: {
+      textLineScore: element.signals?.textLineScore,
+      repeatedPattern: element.signals?.repeatedPattern,
+      componentRole: element.signals?.componentRole,
+    },
   }));
+}
+
+function buildRegionsFromLayoutPatterns(inspection) {
+  const repeatedLists = inspection.layoutTree?.patterns?.repeatedLists ?? [];
+  const repeatedGrids = inspection.layoutTree?.patterns?.repeatedGrids ?? [];
+  const statRows = inspection.layoutTree?.patterns?.statRows ?? [];
+  const formGroups = inspection.layoutTree?.patterns?.formGroups ?? [];
+  const dataTables = inspection.layoutTree?.patterns?.dataTables ?? [];
+  const charts = inspection.layoutTree?.patterns?.charts ?? [];
+  const actionClusters = inspection.layoutTree?.patterns?.actionClusters ?? [];
+  const tabSets = inspection.layoutTree?.patterns?.tabSets ?? [];
+  const dialogPanels = inspection.layoutTree?.patterns?.dialogPanels ?? [];
+  if (
+    !repeatedLists.length &&
+    !repeatedGrids.length &&
+    !statRows.length &&
+    !formGroups.length &&
+    !dataTables.length &&
+    !charts.length &&
+    !actionClusters.length &&
+    !tabSets.length &&
+    !dialogPanels.length
+  ) {
+    return [];
+  }
+
+  const dialogRegions = dialogPanels.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "dialog-panel",
+      primitive: "dialog-panel",
+      componentRole: "dialog-panel",
+      modalType: pattern.modalType ?? "centered-dialog",
+      childCount: pattern.childCount ?? Math.max(0, (pattern.children?.length ?? 1) - 1),
+      centeredness: pattern.centeredness ?? null,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+
+  const listRegions = repeatedLists.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "repeated-list",
+      primitive: "list-item",
+      componentRole: "list-row",
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const gridRegions = repeatedGrids.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "repeated-grid",
+      primitive: "card-grid",
+      componentRole: "card-grid",
+      itemCount: pattern.children?.length ?? 0,
+      rows: pattern.rows ?? 1,
+      columns: pattern.columns ?? 1,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const statRegions = statRows.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "stat-row",
+      primitive: "stat-row",
+      componentRole: "stat-row",
+      cardCount: pattern.cardCount ?? pattern.children?.length ?? 0,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const formRegions = formGroups.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "form-group",
+      primitive: "form-group",
+      componentRole: "form-group",
+      fieldCount: pattern.fieldCount ?? 0,
+      actionCount: pattern.actionCount ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const tableRegions = dataTables.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "data-table",
+      primitive: "data-table",
+      componentRole: "data-table",
+      rows: pattern.rows ?? 0,
+      columns: pattern.columns ?? 0,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const chartRegions = charts.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "chart-series",
+      primitive: "chart-series",
+      componentRole: "chart-series",
+      chartKind: pattern.chartKind ?? "bar",
+      seriesCount: pattern.seriesCount ?? pattern.children?.length ?? 0,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const actionRegions = actionClusters.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "action-cluster",
+      primitive: "action-cluster",
+      componentRole: "action-cluster",
+      clusterType: pattern.clusterType ?? "toolbar",
+      controlCount: pattern.controlCount ?? pattern.children?.length ?? 0,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+  const tabRegions = tabSets.slice(0, 4).map((pattern) => {
+    const region = sourceBoxToGridRegion(pattern.box, inspection);
+    return {
+      ...region,
+      kind: "tab-set",
+      primitive: "tab-set",
+      componentRole: "tab-set",
+      tabKind: pattern.tabKind ?? "tabs",
+      tabCount: pattern.tabCount ?? pattern.children?.length ?? 0,
+      selectedIndex: pattern.selectedIndex ?? 0,
+      itemCount: pattern.children?.length ?? 0,
+      patternConfidence: pattern.confidence,
+    };
+  });
+
+  return [
+    ...dialogRegions,
+    ...tableRegions,
+    ...chartRegions,
+    ...tabRegions,
+    ...actionRegions,
+    ...listRegions,
+    ...statRegions,
+    ...gridRegions,
+    ...formRegions,
+  ];
 }
 
 function buildRegionsFromDetectedElements(inspection) {
@@ -1115,38 +1930,58 @@ function buildRegionsFromDetectedElements(inspection) {
   if (!elements.length) return [];
 
   return elements.slice(0, 8).map((element) => {
-    const box = element.box;
-    const sample = inspection.sample;
-    const gridColumns = inspection.layout.gridColumns;
-    const gridRows = inspection.layout.gridRows;
-    const minColumn = clampGridIndex(
-      Math.floor((box.x / Math.max(1, sample.sourceWidth)) * gridColumns),
-      gridColumns,
-    );
-    const maxColumn = clampGridIndex(
-      Math.ceil(((box.x + box.width) / Math.max(1, sample.sourceWidth)) * gridColumns) - 1,
-      gridColumns,
-    );
-    const minRow = clampGridIndex(
-      Math.floor((box.y / Math.max(1, sample.sourceHeight)) * gridRows),
-      gridRows,
-    );
-    const maxRow = clampGridIndex(
-      Math.ceil(((box.y + box.height) / Math.max(1, sample.sourceHeight)) * gridRows) - 1,
-      gridRows,
-    );
+    const region = sourceBoxToGridRegion(element.box, inspection);
 
     return {
       kind: element.kind,
-      minColumn,
-      maxColumn: Math.max(minColumn, maxColumn),
-      minRow,
-      maxRow: Math.max(minRow, maxRow),
-      widthCells: Math.max(1, maxColumn - minColumn + 1),
-      heightCells: Math.max(1, maxRow - minRow + 1),
+      primitive: element.primitive ?? element.kind,
+      componentRole: element.componentRole ?? element.primitive ?? element.kind,
+      ...region,
       confidence: element.confidence,
     };
   });
+}
+
+function sourceBoxToGridRegion(box, inspection) {
+  const safeBox = box ?? { x: 0, y: 0, width: 1, height: 1 };
+  const sample = inspection.sample;
+  const gridColumns = inspection.layout.gridColumns;
+  const gridRows = inspection.layout.gridRows;
+  const minColumn = clampGridIndex(
+    Math.floor((safeBox.x / Math.max(1, sample.sourceWidth)) * gridColumns),
+    gridColumns,
+  );
+  const maxColumn = clampGridIndex(
+    Math.ceil(((safeBox.x + safeBox.width) / Math.max(1, sample.sourceWidth)) * gridColumns) - 1,
+    gridColumns,
+  );
+  const minRow = clampGridIndex(
+    Math.floor((safeBox.y / Math.max(1, sample.sourceHeight)) * gridRows),
+    gridRows,
+  );
+  const maxRow = clampGridIndex(
+    Math.ceil(((safeBox.y + safeBox.height) / Math.max(1, sample.sourceHeight)) * gridRows) - 1,
+    gridRows,
+  );
+
+  return {
+    minColumn,
+    maxColumn: Math.max(minColumn, maxColumn),
+    minRow,
+    maxRow: Math.max(minRow, maxRow),
+    widthCells: Math.max(1, maxColumn - minColumn + 1),
+    heightCells: Math.max(1, maxRow - minRow + 1),
+  };
+}
+
+function isRegionCoveredByPattern(region, patternRegions) {
+  return patternRegions.some(
+    (pattern) =>
+      region.minRow >= pattern.minRow &&
+      region.maxRow <= pattern.maxRow &&
+      region.minColumn >= pattern.minColumn &&
+      region.maxColumn <= pattern.maxColumn,
+  );
 }
 
 function clampGridIndex(value, length) {

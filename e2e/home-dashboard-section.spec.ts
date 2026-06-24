@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { resetE2ESessionStorage } from "./helpers/e2e-ui";
 
-test("dashboard example is framed as loadable example output", async ({ page }) => {
+test("dashboard example is framed as a compact launcher with dialog preview", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
 
@@ -20,23 +20,37 @@ test("dashboard example is framed as loadable example output", async ({ page }) 
   const section = page.getByTestId("example-output-section");
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByRole("heading", { name: "Dashboard sample" })).toBeVisible();
-  await expect(section.getByText("Example output")).toBeVisible();
-  await expect(section.getByRole("link", { name: /load this sample/i })).toHaveAttribute(
+  await expect(section.getByText("Sample output")).toBeVisible();
+  await expect(section.getByText("See what a generated result looks like.")).toBeVisible();
+  await expect(section.getByRole("link", { name: /load sample/i })).toHaveAttribute(
     "href",
     "/demo#upload-flow",
   );
-  await expect(
-    section.getByRole("link", { name: /pick a different sample/i }),
-  ).toHaveAttribute("href", "#upload-flow");
+  await expect(section.getByRole("button", { name: /preview/i })).toBeVisible();
+  await expect(section.getByRole("link", { name: /pick a different sample/i })).toHaveCount(0);
   await expect(section.getByRole("link", { name: /choose another/i })).toHaveCount(0);
-  await expect(page.getByTestId("desktop-example-output-preview")).toBeVisible();
+  await expect(page.getByTestId("desktop-example-output-preview")).toHaveCount(0);
+  await expect(page.getByTestId("mobile-example-output-preview")).toHaveCount(0);
   await expect(page.getByText("Dashboard UI support")).toHaveCount(0);
   await expect(
     page.getByText(/Generated results appear in the upload flow/i),
   ).toHaveCount(0);
+
+  await section.getByRole("button", { name: /preview/i }).click();
+  const dialog = page.getByTestId("dashboard-sample-dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
+  await expect(dialog.getByTestId("dashboard-sample-dialog-preview")).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /load into workflow/i })).toHaveAttribute(
+    "href",
+    "/demo#upload-flow",
+  );
 });
 
-test("dashboard example keeps the heavy preview collapsed on mobile", async ({
+test("dashboard example keeps the heavy preview behind a mobile dialog", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -48,20 +62,19 @@ test("dashboard example keeps the heavy preview collapsed on mobile", async ({
       async () => {
         await page.mouse.wheel(0, 700);
         await page.waitForTimeout(100);
-        return page.getByTestId("mobile-example-output-preview").count();
+        return page.getByTestId("example-output-section").count();
       },
       { timeout: 15_000 },
     )
     .toBeGreaterThan(0);
 
-  const mobilePreview = page.getByTestId("mobile-example-output-preview");
-  await mobilePreview.scrollIntoViewIfNeeded();
-  await expect(mobilePreview).toBeVisible();
-  await expect(mobilePreview.locator("summary")).toContainText(
-    "Preview static dashboard",
-  );
-  await expect(page.getByTestId("desktop-example-output-preview")).toBeHidden();
-  await expect
-    .poll(() => mobilePreview.evaluate((node) => node.hasAttribute("open")))
-    .toBe(false);
+  const launcher = page.getByTestId("example-output-section");
+  await launcher.scrollIntoViewIfNeeded();
+  await expect(launcher).toBeVisible();
+  await expect(page.getByTestId("desktop-example-output-preview")).toHaveCount(0);
+  await expect(page.getByTestId("mobile-example-output-preview")).toHaveCount(0);
+  await expect(page.getByTestId("dashboard-sample-dialog")).toHaveCount(0);
+
+  await launcher.getByRole("button", { name: /preview/i }).click();
+  await expect(page.getByTestId("dashboard-sample-dialog")).toBeVisible();
 });

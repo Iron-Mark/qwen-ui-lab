@@ -10,8 +10,9 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
+import { CollectionPill, ComponentLevelPill } from "./DesignSystemMetaPills";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
-import { Search, Tag } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   filterCatalog,
   type AtomicLevel,
@@ -503,7 +504,7 @@ export function DesignSystemPreview() {
           <div className="mb-3 flex shrink-0 items-center">
             <p className="text-sm font-semibold text-foreground">{t.componentList}</p>
           </div>
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
+          <div className="themed-scrollbar min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 lg:pb-1">
             {filtered.map((entry) => {
               const tierMeta = TIER_META[entry.level];
               const TierIcon = tierMeta.Icon;
@@ -530,16 +531,8 @@ export function DesignSystemPreview() {
                     className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/60 bg-background/55 px-2 text-foreground/85">
-                      <TierIcon className="size-3.5 text-primary" aria-hidden="true" />
-                      <dt className="font-medium text-muted-foreground">{t.tierSrOnly}</dt>
-                      <dd className="font-semibold">{tierMeta.label}</dd>
-                    </div>
-                    <div className="inline-flex min-h-6 items-center gap-1.5 rounded-md border border-border/50 bg-background/35 px-2 text-muted-foreground">
-                      <Tag className="size-3.5" aria-hidden="true" />
-                      <dt className="font-medium">{t.domainSrOnly}</dt>
-                      <dd className="font-semibold text-foreground/75">{domainLabel}</dd>
-                    </div>
+                    <ComponentLevelPill label={tierMeta.label} Icon={TierIcon} compact />
+                    <CollectionPill label={domainLabel} compact />
                   </dl>
                 </button>
               );
