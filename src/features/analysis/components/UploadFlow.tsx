@@ -623,7 +623,8 @@ function DetectedReferencePreview({
                   "pointer-events-auto absolute cursor-move rounded-[3px] border bg-background/15 text-left shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)] transition",
                   detectionClassName(element.kind),
                   element.included === false && "border-dashed opacity-35",
-                  selectedElement?.id === element.id && "ring-2 ring-foreground",
+                  selectedElement?.id === element.id &&
+                    "z-20 ring-2 ring-foreground",
                 )}
                 style={boxToOverlayStyle(element, {
                   sourceWidth: imageWidth ?? 1,
@@ -642,12 +643,12 @@ function DetectedReferencePreview({
                 onKeyDown={(event) => handleDetectionBoxKeyDown(event, element)}
                 onPointerDown={(event) => startBoxInteraction(event, element, "move")}
               >
-                <span className="absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
+                <span className="pointer-events-none absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
                   {element.kind} - {Math.round(element.confidence * 100)}%
                 </span>
                 {debugEnabled ? (
                   <span
-                    className="absolute bottom-0 left-0 max-w-[calc(100%-1rem)] truncate rounded-tr-[3px] bg-background/90 px-1 py-0.5 text-[9px] font-mono leading-none text-muted-foreground shadow-sm"
+                    className="pointer-events-none absolute bottom-0 left-0 max-w-[calc(100%-1rem)] truncate rounded-tr-[3px] bg-background/90 px-1 py-0.5 text-[9px] font-mono leading-none text-muted-foreground shadow-sm"
                     data-testid="detection-debug-label"
                   >
                     {element.primitive ?? primitiveForKind(element.kind)}{" "}
@@ -656,7 +657,7 @@ function DetectedReferencePreview({
                   </span>
                 ) : null}
                 <span
-                  className="absolute bottom-0 right-0 size-4 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80"
+                  className="absolute bottom-0 right-0 z-30 size-4 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80"
                   data-testid="detection-resize-handle-se"
                   aria-hidden
                   onPointerDown={(event) => startBoxInteraction(event, element, "resize")}

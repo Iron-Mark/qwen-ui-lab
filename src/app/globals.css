@@ -533,6 +533,11 @@ body {
   background: var(--popover) !important;
   border-color: var(--border) !important;
   color: var(--popover-foreground) !important;
+  pointer-events: none !important;
+}
+
+[data-sonner-toast][data-styled="true"] [data-close-button] {
+  pointer-events: auto !important;
 }
 
 [data-sonner-toast][data-styled="true"] [data-title],
