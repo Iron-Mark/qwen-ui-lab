@@ -712,9 +712,9 @@ export function normalizeSampleKey(fileName) {
  */
 export function lookupKnownSample(fileName) {
   const key = normalizeSampleKey(fileName);
-  if (KNOWN_SAMPLES[key]) return KNOWN_SAMPLES[key];
+  if (KNOWN_SAMPLES[key]) return buildProductionKnownSample(key);
   const stemKey = key.replace(/\.(png|jpe?g|webp)$/i, ".svg");
-  return KNOWN_SAMPLES[stemKey] ?? null;
+  return KNOWN_SAMPLES[stemKey] ? buildProductionKnownSample(stemKey) : null;
 }
 
 /**
@@ -744,7 +744,423 @@ export function lookupKnownSampleByInspection(inspection) {
     return null;
   }
 
-  return KNOWN_SAMPLES[bestMatch.sampleKey] ?? null;
+  return KNOWN_SAMPLES[bestMatch.sampleKey]
+    ? buildProductionKnownSample(bestMatch.sampleKey)
+    : null;
+}
+
+function buildProductionKnownSample(sampleKey) {
+  const sample = KNOWN_SAMPLES[sampleKey];
+  if (!sample) return null;
+
+  return {
+    ...sample,
+    generatedCode: buildKnownSampleGeneratedCode(sampleKey, sample),
+  };
+}
+
+function buildKnownSampleGeneratedCode(sampleKey, sample) {
+  const profile = buildKnownSampleProfile(sampleKey, sample);
+
+  return `import type { AriaRole } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+type DetectionElement = {
+  id: string;
+  kind: string;
+  primitive: string;
+  componentRole: string;
+  label: string;
+  confidence: number;
+  reasons: string[];
+};
+
+type LayoutRegion = DetectionElement & {
+  role: AriaRole;
+  children: string[];
+};
+
+const designTokens = ${JSON.stringify(profile.designTokens, null, 2)};
+
+const screenIntent = ${JSON.stringify(profile.screenIntent, null, 2)};
+
+const responsiveIntent = ${JSON.stringify(profile.responsiveIntent, null, 2)};
+
+const detectedElements: DetectionElement[] = ${JSON.stringify(profile.elements, null, 2)};
+
+const layoutRegions: LayoutRegion[] = ${JSON.stringify(profile.layoutRegions, null, 2)};
+
+const detectedPatterns = ${JSON.stringify(profile.detectedPatterns, null, 2)};
+
+const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(
+    profile.primitiveMap,
+    null,
+    2,
+  )};
+
+const componentTargets = ${JSON.stringify(profile.componentTargets, null, 2)};
+
+const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
+
+export default function ${profile.componentName}() {
+  return (
+    <main
+      aria-label="Generated ${profile.label.toLowerCase()} scaffold from ${sampleKey}"
+      className="qwen-generated-shell min-h-dvh bg-background text-foreground"
+    >
+      <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
+        <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">Offline sample</Badge>
+            <Badge variant="outline">{screenIntent.label}</Badge>
+          </div>
+          <div className="grid gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+              Production-ready starter generated from a bundled reference. Replace sample copy,
+              connect data, then keep the recipe JSON beside this component during review.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {componentTargets.map((target) => (
+              <Badge key={target} variant="outline">{target}</Badge>
+            ))}
+          </div>
+        </header>
+
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {layoutRegions.map((region) => (
+              <RegionCard key={region.id} region={region} />
+            ))}
+          </div>
+          <aside className="grid content-start gap-3 rounded-xl border bg-card p-4 shadow-sm">
+            <p className="text-sm font-medium">Export review</p>
+            <dl className="grid gap-3 text-sm">
+              <div>
+                <dt className="text-muted-foreground">Responsive mode</dt>
+                <dd className="font-medium">{responsiveIntent.mode}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Breakpoints</dt>
+                <dd className="font-medium">{responsiveIntent.breakpoints.join(" / ")}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Detected regions</dt>
+                <dd className="font-medium">{layoutRegions.length}</dd>
+              </div>
+            </dl>
+            <div className="grid gap-2 pt-2">
+              {reviewActions.map((action) => (
+                <Button key={action} type="button" variant="outline" className="justify-start">
+                  {action}
+                </Button>
+              ))}
+            </div>
+          </aside>
+        </section>
+      </section>
+    </main>
+  );
+}
+
+function RegionCard({ region }: { region: LayoutRegion }) {
+  const children = detectedElements.filter((element) => region.children.includes(element.id));
+  const primitive = shadcnPrimitiveMap[region.componentRole] ?? "Card section";
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle>{region.label}</CardTitle>
+            <CardDescription>{primitive}</CardDescription>
+          </div>
+          <Badge variant="secondary">{Math.round(region.confidence * 100)}%</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        <div className="grid gap-2 rounded-lg border border-dashed p-3">
+          {(children.length ? children : [region]).map((element) => (
+            <ElementPreview key={element.id} element={element} />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ElementPreview({ element }: { element: DetectionElement }) {
+  return (
+    <article className="rounded-md bg-muted/50 px-3 py-2 text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="font-medium">{element.label}</span>
+        <Badge variant="outline">{element.componentRole}</Badge>
+      </div>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+        {element.reasons.join(" ")}
+      </p>
+    </article>
+  );
+}
+`;
+}
+
+function buildKnownSampleProfile(sampleKey, sample) {
+  const archetypeId = inferKnownSampleArchetypeId(sampleKey);
+  const archetype = LAYOUT_ARCHETYPES[archetypeId] ?? LAYOUT_ARCHETYPES.dashboard;
+  const componentName =
+    GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
+  const elements = buildKnownSampleElements(archetypeId);
+  const layoutRegions = elements.map((element) => ({
+    ...element,
+    role: roleForSamplePrimitive(element.componentRole),
+    children: [element.id],
+  }));
+
+  return {
+    label: archetype.label,
+    componentName,
+    componentTargets: archetype.components,
+    designTokens: knownSampleDesignTokens(archetypeId),
+    screenIntent: {
+      id: archetypeId,
+      label: archetype.label,
+      confidence: 0.95,
+      source: "bundled-reference",
+      reference: sampleKey,
+    },
+    responsiveIntent: knownSampleResponsiveIntent(archetypeId),
+    elements,
+    layoutRegions,
+    detectedPatterns: buildKnownSamplePatterns(archetypeId, elements),
+    primitiveMap: buildKnownSamplePrimitiveMap(elements),
+    reviewActions: buildKnownSampleReviewActions(sample, archetype),
+  };
+}
+
+function inferKnownSampleArchetypeId(sampleKey) {
+  if (/auth/.test(sampleKey)) return "auth";
+  if (/mobile/.test(sampleKey)) return "mobile";
+  if (/landing/.test(sampleKey)) return "landing";
+  if (/settings/.test(sampleKey)) return "settings";
+  if (/ecommerce|shop|catalog/.test(sampleKey)) return "ecommerce";
+  return "dashboard";
+}
+
+function buildKnownSampleElements(archetypeId) {
+  const commonReason =
+    "Bundled reference metadata identifies this region; exported as an editable primitive.";
+  const templates = {
+    dashboard: [
+      ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],
+      ["sample-stat-row", "metrics", "stat-row", "Metric cards"],
+      ["sample-chart", "analytics", "chart-panel", "Revenue chart"],
+      ["sample-activity", "list", "repeated-list", "Activity feed"],
+      ["sample-actions", "actions", "action-cluster", "Quick actions"],
+    ],
+    auth: [
+      ["sample-brand", "header", "brand-header", "Brand header"],
+      ["sample-form", "form", "form-group", "Credentials form"],
+      ["sample-email", "field", "form-field", "Email field"],
+      ["sample-password", "field", "form-field", "Password field"],
+      ["sample-oauth", "actions", "action-cluster", "OAuth actions"],
+      ["sample-recovery", "links", "link-row", "Recovery links"],
+    ],
+    mobile: [
+      ["sample-mobile-header", "navigation", "top-navigation", "Mobile header"],
+      ["sample-feed", "list", "repeated-list", "Stacked feed"],
+      ["sample-fab", "actions", "primary-action", "Floating action"],
+      ["sample-bottom-nav", "navigation", "bottom-navigation", "Bottom navigation"],
+    ],
+    landing: [
+      ["sample-site-nav", "navigation", "top-navigation", "Site navigation"],
+      ["sample-hero", "hero", "hero-section", "Hero section"],
+      ["sample-features", "grid", "repeated-grid", "Feature grid"],
+      ["sample-pricing", "pricing", "pricing-table", "Pricing table"],
+      ["sample-footer", "cta", "action-cluster", "Footer CTA"],
+    ],
+    settings: [
+      ["sample-settings-nav", "navigation", "side-navigation", "Settings navigation"],
+      ["sample-profile", "form", "form-group", "Profile fields"],
+      ["sample-toggles", "controls", "control-group", "Notification toggles"],
+      ["sample-select", "field", "select-field", "Timezone select"],
+      ["sample-save", "actions", "action-cluster", "Save bar"],
+    ],
+    ecommerce: [
+      ["sample-shop-header", "navigation", "top-navigation", "Shop header"],
+      ["sample-filters", "filters", "side-navigation", "Filter sidebar"],
+      ["sample-products", "grid", "repeated-grid", "Product grid"],
+      ["sample-card", "card", "product-card", "Product card"],
+      ["sample-cart", "dialog", "dialog-panel", "Cart drawer"],
+      ["sample-checkout", "steps", "stepper", "Checkout steps"],
+    ],
+  };
+
+  return (templates[archetypeId] ?? templates.dashboard).map(
+    ([id, kind, componentRole, label], index) => ({
+      id,
+      kind,
+      primitive: componentRole,
+      componentRole,
+      label,
+      confidence: Math.max(0.78, 0.95 - index * 0.03),
+      reasons: [
+        commonReason,
+        `${titleCase(componentRole)} maps to ${samplePrimitiveName(componentRole)}.`,
+      ],
+    }),
+  );
+}
+
+function buildKnownSamplePatterns(archetypeId, elements) {
+  const byRole = (matcher) =>
+    elements.filter((element) => matcher(element.componentRole)).map((element) => element.id);
+  const appShellChildren = byRole((role) => /navigation|header|shell/.test(role));
+  const listChildren = byRole((role) => /list/.test(role));
+  const gridChildren = byRole((role) => /grid|card|pricing/.test(role));
+  const formChildren = byRole((role) => /form|field|select|control/.test(role));
+  const dialogChildren = byRole((role) => /dialog|drawer/.test(role));
+  const actionChildren = byRole((role) => /action|cta|oauth|save/.test(role));
+  const chartChildren = byRole((role) => /chart|analytics/.test(role));
+  const statChildren = byRole((role) => /stat|metric/.test(role));
+  const tableChildren = byRole((role) => /table/.test(role));
+
+  return {
+    textLines: elements.length * 2,
+    appShells: appShellChildren.length
+      ? [{ id: `${archetypeId}-sample-shell`, children: appShellChildren, confidence: 0.92 }]
+      : [],
+    repeatedLists: listChildren.length
+      ? [{ id: `${archetypeId}-sample-list`, children: listChildren, confidence: 0.9 }]
+      : [],
+    repeatedGrids: gridChildren.length
+      ? [{ id: `${archetypeId}-sample-grid`, children: gridChildren, confidence: 0.9 }]
+      : [],
+    statRows: statChildren.length
+      ? [{ id: `${archetypeId}-sample-stats`, children: statChildren, confidence: 0.88 }]
+      : [],
+    formGroups: formChildren.length
+      ? [{ id: `${archetypeId}-sample-form`, children: formChildren, confidence: 0.9 }]
+      : [],
+    dataTables: tableChildren.length
+      ? [{ id: `${archetypeId}-sample-data`, children: tableChildren, confidence: 0.75 }]
+      : [],
+    charts: chartChildren.length
+      ? [{ id: `${archetypeId}-sample-chart`, children: chartChildren, confidence: 0.9 }]
+      : [],
+    actionClusters: actionChildren.length
+      ? [{ id: `${archetypeId}-sample-actions`, children: actionChildren, confidence: 0.9 }]
+      : [],
+    tabSets: [],
+    dialogPanels: dialogChildren.length
+      ? [{ id: `${archetypeId}-sample-dialog`, children: dialogChildren, confidence: 0.86 }]
+      : [],
+    emptyStates: [],
+  };
+}
+
+function buildKnownSamplePrimitiveMap(elements) {
+  const map = {
+    "action-cluster": "Button group inside Card footer",
+    "bottom-navigation": "semantic nav with Button icon controls",
+    "brand-header": "Card header with logo and heading",
+    "chart-panel": "Card with chart placeholder and text summary",
+    "control-group": "fieldset with switch-style controls",
+    "dialog-panel": "Dialog or Sheet surface with focus management",
+    "form-field": "Input with label, helper text, and validation slot",
+    "form-group": "Card form section with grouped inputs",
+    "hero-section": "section with heading, copy, and CTA Buttons",
+    "link-row": "secondary navigation links",
+    "pricing-table": "Card grid with plan actions",
+    "primary-action": "Button with accessible label",
+    "product-card": "Card with image, title, price, and add action",
+    "repeated-grid": "responsive Card grid",
+    "repeated-list": "list region with repeated rows",
+    "select-field": "Select trigger with label and helper text",
+    "side-navigation": "aside navigation with Button ghost controls",
+    "stat-row": "metric Card grid",
+    stepper: "ordered list with current-step state",
+    "top-navigation": "semantic nav with Button links",
+  };
+
+  return Object.fromEntries(
+    elements
+      .map((element) => [element.componentRole, map[element.componentRole] ?? "Card section"])
+      .sort(([first], [second]) => first.localeCompare(second)),
+  );
+}
+
+function knownSampleDesignTokens(archetypeId) {
+  const accent = {
+    auth: "#2563eb",
+    dashboard: "#3b82f6",
+    ecommerce: "#0f766e",
+    landing: "#7c3aed",
+    mobile: "#0ea5e9",
+    settings: "#4f46e5",
+  }[archetypeId] ?? "#2563eb";
+
+  return {
+    surface: "#ffffff",
+    foreground: "#111827",
+    accent,
+    accentForeground: "#ffffff",
+    muted: "#f3f4f6",
+    border: "#d1d5db",
+    radius: "0.75rem",
+    space: "1rem",
+  };
+}
+
+function knownSampleResponsiveIntent(archetypeId) {
+  const modes = {
+    auth: "centered-form",
+    dashboard: "desktop-dashboard",
+    ecommerce: "sidebar-grid",
+    landing: "marketing-stack",
+    mobile: "mobile-shell",
+    settings: "settings-sidebar",
+  };
+
+  return {
+    mode: modes[archetypeId] ?? "responsive-page",
+    breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
+    primaryFlow: "Review exported regions, replace sample content, then connect live data.",
+  };
+}
+
+function buildKnownSampleReviewActions(sample, archetype) {
+  return [
+    "Replace sample content",
+    "Wire real data",
+    `Review ${archetype.stats.reviewItems} checklist items`,
+  ].filter(Boolean);
+}
+
+function roleForSamplePrimitive(primitive) {
+  if (/nav|header/.test(primitive)) return "navigation";
+  if (/form|field|select|control/.test(primitive)) return "form";
+  if (/dialog|drawer/.test(primitive)) return "dialog";
+  if (/chart/.test(primitive)) return "figure";
+  if (/list/.test(primitive)) return "list";
+  return "region";
+}
+
+function samplePrimitiveName(primitive) {
+  if (/button|action|cta|oauth|save/.test(primitive)) return "Button";
+  if (/form|field|select|control/.test(primitive)) return "Input or Select";
+  if (/nav/.test(primitive)) return "navigation";
+  if (/dialog|drawer/.test(primitive)) return "Dialog";
+  return "Card";
 }
 
 function hammingDistance(first, second) {
@@ -994,48 +1410,171 @@ function buildSvgAwareGeneratedCode(safeName, archetype, svgInspection) {
     GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
   const labels = buildGeneratedSvgLabelBlueprint(svgInspection, archetype);
   const stats = buildGeneratedSvgStats(svgInspection);
+  const designTokens = knownSampleDesignTokens(archetype.codeVariant);
+  const detectedElements = buildGeneratedSvgElementBlueprint(labels);
+  const layoutRegions = detectedElements.map((element) => ({
+    ...element,
+    role: roleForSamplePrimitive(element.componentRole),
+    children: [element.id],
+  }));
+  const detectedPatterns = buildGeneratedSvgPatternBlueprint(detectedElements);
+  const responsiveIntent = buildGeneratedSvgResponsiveBlueprint(svgInspection);
+  const screenIntent = {
+    id: archetype.codeVariant,
+    label: archetype.label,
+    confidence: 0.88,
+    source: "offline-svg-structure",
+    reference: safeName,
+  };
+  const primitiveMap = buildKnownSamplePrimitiveMap(detectedElements);
   const layoutClass =
     svgInspection.source.width && svgInspection.source.height && svgInspection.source.width < svgInspection.source.height
       ? "mx-auto flex min-h-dvh max-w-md flex-col gap-4 p-4"
       : "grid gap-4 p-6 lg:grid-cols-[16rem_1fr]";
 
-  return `const svgLabels = ${JSON.stringify(labels, null, 2)};
+  return `import type { AriaRole } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+
+type SvgElement = {
+  id: string;
+  kind: string;
+  primitive: string;
+  componentRole: string;
+  label: string;
+  confidence: number;
+  reasons: string[];
+  guidance: string;
+};
+
+type SvgLayoutRegion = SvgElement & {
+  role: AriaRole;
+  children: string[];
+};
+
+const svgLabels = ${JSON.stringify(labels, null, 2)};
 
 const svgStructure = ${JSON.stringify(stats, null, 2)};
 
-export function ${componentName}() {
-  return (
-    <section aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}" className="space-y-4">
-      <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Local SVG scaffold</p>
-        <h1 className="text-xl font-semibold">{svgLabels[0]?.label ?? "${archetype.label}"}</h1>
-        <p className="text-sm text-muted-foreground">
-          {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
-          {svgStructure.textCount} labels were parsed locally.
-        </p>
-      </header>
+const designTokens = ${JSON.stringify(designTokens, null, 2)};
 
-      <div className="${layoutClass}">
-        <nav aria-label="SVG labels" className="space-y-2 rounded-md border p-3">
-          {svgLabels.slice(0, 6).map((item) => (
-            <a key={item.id} className="block text-sm font-medium" href={"#" + item.id}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <main className="grid gap-3">
-          {svgLabels.map((item) => (
-            <section key={item.id} id={item.id} className="rounded-md border p-4">
-              <p className="text-xs font-medium uppercase">{item.intent}</p>
-              <h2 className="mt-2 font-semibold">{item.label}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{item.guidance}</p>
-            </section>
-          ))}
-        </main>
-      </div>
-    </section>
+const detectedElements: SvgElement[] = ${JSON.stringify(detectedElements, null, 2)};
+
+const detectedPatterns = ${JSON.stringify(detectedPatterns, null, 2)};
+
+const responsiveIntent = ${JSON.stringify(responsiveIntent, null, 2)};
+
+const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
+
+const layoutRegions: SvgLayoutRegion[] = ${JSON.stringify(layoutRegions, null, 2)};
+
+const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap, null, 2)};
+
+export default function ${componentName}() {
+  return (
+    <main
+      aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
+      className="qwen-generated-shell min-h-dvh bg-background text-foreground"
+    >
+      <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
+        <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">Local SVG scaffold</Badge>
+            <Badge variant="outline">{screenIntent.label}</Badge>
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {svgLabels[0]?.label ?? screenIntent.label}
+            </h1>
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+              {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
+              {svgStructure.textCount} labels were parsed locally into export-ready regions.
+            </p>
+          </div>
+          <dl className="grid gap-3 text-sm sm:grid-cols-3">
+            <div>
+              <dt className="text-muted-foreground">ViewBox</dt>
+              <dd className="font-medium">{svgStructure.viewBox}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Responsive mode</dt>
+              <dd className="font-medium">{responsiveIntent.mode}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Regions</dt>
+              <dd className="font-medium">{layoutRegions.length}</dd>
+            </div>
+          </dl>
+        </header>
+
+        <div className="${layoutClass}">
+          <nav aria-label="SVG labels" className="grid content-start gap-2 rounded-xl border bg-card p-3">
+            {svgLabels.slice(0, 6).map((item) => (
+              <a key={item.id} className="rounded-md px-3 py-2 text-sm font-medium hover:bg-muted" href={"#" + item.id}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <main className="grid gap-3">
+            {layoutRegions.map((region) => (
+              <SvgRegionCard key={region.id} region={region} />
+            ))}
+          </main>
+        </div>
+      </section>
+    </main>
   );
-}`;
+}
+
+function SvgRegionCard({ region }: { region: SvgLayoutRegion }) {
+  const primitive = shadcnPrimitiveMap[region.componentRole] ?? "Card section";
+
+  return (
+    <Card id={region.id}>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle>{region.label}</CardTitle>
+            <CardDescription>{primitive}</CardDescription>
+          </div>
+          <Badge variant="outline">{Math.round(region.confidence * 100)}%</Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        <p className="text-sm leading-6 text-muted-foreground">{region.guidance}</p>
+        <SvgPrimitivePreview element={region} />
+      </CardContent>
+    </Card>
+  );
+}
+
+function SvgPrimitivePreview({ element }: { element: SvgElement }) {
+  if (element.componentRole === "form-field") {
+    return <Input aria-label={element.label} placeholder={element.label} />;
+  }
+
+  if (element.componentRole === "primary-action") {
+    return <Button type="button">{element.label}</Button>;
+  }
+
+  return (
+    <div className="rounded-lg border border-dashed p-3 text-sm">
+      <p className="font-medium">{element.label}</p>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+        {element.reasons.join(" ")}
+      </p>
+    </div>
+  );
+}
+`;
 }
 
 function buildGeneratedSvgLabelBlueprint(svgInspection, archetype) {
@@ -1087,6 +1626,73 @@ function svgGuidanceForLabel(label, archetype) {
   return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} scaffold.`;
 }
 
+function buildGeneratedSvgElementBlueprint(labels) {
+  const roleMap = {
+    action: "primary-action",
+    content: "text-block",
+    field: "form-field",
+    section: "content-section",
+  };
+
+  return labels.map((item, index) => {
+    const componentRole = roleMap[item.intent] ?? "content-section";
+    return {
+      id: item.id,
+      kind: item.intent,
+      primitive: componentRole,
+      componentRole,
+      label: item.label,
+      confidence: Math.max(0.72, 0.9 - index * 0.02),
+      reasons: [
+        "SVG text and group labels were parsed locally without OCR or network calls.",
+        `${titleCase(item.intent)} label maps to ${samplePrimitiveName(componentRole)}.`,
+      ],
+      guidance: item.guidance,
+    };
+  });
+}
+
+function buildGeneratedSvgPatternBlueprint(elements) {
+  const byRole = (matcher) =>
+    elements.filter((element) => matcher(element.componentRole)).map((element) => element.id);
+  const formChildren = byRole((role) => /form-field/.test(role));
+  const actionChildren = byRole((role) => /primary-action/.test(role));
+  const sectionChildren = byRole((role) => /content-section|text-block/.test(role));
+
+  return {
+    textLines: elements.length,
+    appShells: sectionChildren.length
+      ? [{ id: "svg-content-regions", children: sectionChildren, confidence: 0.78 }]
+      : [],
+    repeatedLists: [],
+    repeatedGrids: [],
+    statRows: [],
+    formGroups: formChildren.length
+      ? [{ id: "svg-form-fields", children: formChildren, confidence: 0.82 }]
+      : [],
+    dataTables: [],
+    charts: [],
+    actionClusters: actionChildren.length
+      ? [{ id: "svg-actions", children: actionChildren, confidence: 0.82 }]
+      : [],
+    tabSets: [],
+    dialogPanels: [],
+    emptyStates: [],
+  };
+}
+
+function buildGeneratedSvgResponsiveBlueprint(svgInspection) {
+  const width = svgInspection.source.width ?? 0;
+  const height = svgInspection.source.height ?? 0;
+  const portrait = width > 0 && height > 0 && width < height;
+
+  return {
+    mode: portrait ? "svg-mobile-stack" : "svg-responsive-grid",
+    breakpoints: portrait ? ["base", "sm"] : ["base", "md", "lg"],
+    primaryFlow: "Review SVG labels as semantic regions, then replace placeholder controls with product data.",
+  };
+}
+
 function buildSignalAwareGeneratedCode(safeName, archetype, inspection) {
   const componentName =
     GENERATED_COMPONENT_NAMES[archetype.codeVariant] ?? GENERATED_COMPONENT_NAMES.dashboard;
@@ -1099,7 +1705,8 @@ function buildSignalAwareGeneratedCode(safeName, archetype, inspection) {
   const gridRows = Math.max(1, inspection.layout.gridRows);
   const gridColumns = Math.max(1, inspection.layout.gridColumns);
 
-  return `import { Badge } from "@/components/ui/badge";
+  return `import type { AriaRole } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -1123,7 +1730,7 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
-const shadcnPrimitiveMap = {
+const shadcnPrimitiveMap: Record<string, string> = {
   "top-navigation": "semantic nav + Button ghost controls",
   "side-navigation": "aside navigation + Button ghost controls",
   "bottom-navigation": "mobile nav + Button icon controls",
@@ -1141,7 +1748,52 @@ const shadcnPrimitiveMap = {
   "empty-state": "Card with centered recovery action",
 };
 
-export default function GeneratedScreenScaffold() {
+const generatedLayoutGrid = {
+  rows: ${gridRows},
+  columns: ${gridColumns},
+};
+
+type DetectionElement = {
+  id: string;
+  kind?: string;
+  primitive?: string;
+  componentRole?: string;
+  label?: string;
+  confidence?: number;
+  patternConfidence?: number;
+  reasons?: string[];
+  itemCount?: number;
+  rows?: number;
+  columns?: number;
+  fieldCount?: number;
+  cardCount?: number;
+  seriesCount?: number;
+  tabCount?: number;
+  selectedIndex?: number;
+  clusterType?: string;
+  modalType?: string;
+  tabKind?: string;
+};
+
+type LayoutRegion = DetectionElement & {
+  title?: string;
+  guidance?: string;
+  meta?: string;
+  role?: AriaRole;
+  tone?: keyof typeof designTokens;
+  gridColumn?: string;
+  gridRow?: string;
+};
+
+type UsableSectionModel = LayoutRegion & {
+  primitive: string;
+  title: string;
+  guidance: string;
+  layoutClass: string;
+  items: Array<DetectionElement | LayoutRegion>;
+};
+
+export default function ${componentName}() {
   const sections = buildUsableSections(layoutRegions, detectedElements);
 
   return (
@@ -1166,6 +1818,8 @@ export default function GeneratedScreenScaffold() {
           </div>
         </header>
 
+        <ScaffoldSummary />
+
         <div className="grid gap-4 lg:grid-cols-2">
           {sections.map((section) => (
             <UsableSection key={section.id} section={section} />
@@ -1176,7 +1830,36 @@ export default function GeneratedScreenScaffold() {
   );
 }
 
-function UsableSection({ section }) {
+function ScaffoldSummary() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Detection recipe</CardTitle>
+        <CardDescription>
+          {detectedElements.length} elements, {layoutRegions.length} regions, and a {generatedLayoutGrid.columns}
+          -column layout blueprint are ready for review.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+        <p>
+          <span className="block font-medium text-foreground">Screen intent</span>
+          {screenIntent.label} ({Math.round(screenIntent.confidence * 100)}%)
+        </p>
+        <p>
+          <span className="block font-medium text-foreground">Responsive intent</span>
+          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+        </p>
+        <p>
+          <span className="block font-medium text-foreground">Grouped patterns</span>
+          {detectedPatterns.appShells.length} shells, {detectedPatterns.formGroups.length} forms,{" "}
+          {detectedPatterns.dataTables.length} tables
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function UsableSection({ section }: { section: UsableSectionModel }) {
   if (section.primitive === "tab-set") {
     return (
       <Card>
@@ -1261,8 +1944,8 @@ function UsableSection({ section }) {
   );
 }
 
-function PrimitiveBlock({ item }) {
-  const role = item.componentRole || item.primitive || item.kind;
+function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
+  const role = item.componentRole || item.primitive || item.kind || "section";
   const label = item.label || formatPrimitiveLabel(role);
   const confidence = Math.round((item.confidence ?? item.patternConfidence ?? 0.55) * 100);
 
@@ -1288,11 +1971,19 @@ function PrimitiveBlock({ item }) {
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
         Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
+      <PrimitiveBody item={item} />
     </article>
   );
 }
 
-function buildUsableSections(regions, elements) {
+function PrimitiveBody({ item }: { item: DetectionElement | LayoutRegion }) {
+  return renderPrimitiveBody(item, designTokens);
+}
+
+function buildUsableSections(
+  regions: LayoutRegion[],
+  elements: DetectionElement[],
+): UsableSectionModel[] {
   const elementSections = regions.length
     ? regions
     : elements.map((element) => ({
@@ -1325,7 +2016,7 @@ function buildUsableSections(regions, elements) {
   });
 }
 
-export function ${componentName}() {
+export function DetectionGridReference() {
   return (
     <section
       aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
@@ -1410,11 +2101,11 @@ export function ${componentName}() {
           <article
             key={region.id}
             aria-label={region.label}
-            role={region.role}
+            role={region.role ?? "region"}
             className="border text-sm shadow-sm"
             style={{
               backgroundColor:
-                region.tone === "accent" ? designTokens.accent : designTokens[region.tone],
+                region.tone === "accent" ? designTokens.accent : designTokens[region.tone ?? "surface"],
               borderColor: designTokens.border,
               borderRadius: designTokens.radius,
               color:
@@ -1438,7 +2129,7 @@ export function ${componentName}() {
   );
 }
 
-function renderPrimitiveBody(region, tokens) {
+function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: typeof designTokens) {
   const primitive = region.primitive || region.kind || "section";
   const componentRole = region.componentRole || primitive;
   const label = formatPrimitiveLabel(primitive);
@@ -1820,7 +2511,7 @@ function renderPrimitiveBody(region, tokens) {
   );
 }
 
-function formatPrimitiveLabel(value) {
+function formatPrimitiveLabel(value: string | undefined) {
   return String(value || "section")
     .replace(/[-_]+/g, " ")
     .split(" ")

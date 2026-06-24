@@ -49,7 +49,8 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
   assert.ok(
     artifact.plan.some((section) => section.title === "Component Map"),
   );
-  assert.match(artifact.generatedCode, /export function GeneratedDashboard/);
+  assert.match(artifact.generatedCode, /export default function GeneratedDashboard/);
+  assert.match(artifact.generatedCode, /const detectedElements: DetectionElement\[\]/);
   assert.equal(artifact.previewStats.length, 4);
 });
 

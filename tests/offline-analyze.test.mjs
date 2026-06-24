@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import * as ts from "typescript";
 
 import {
   buildAdvancedOfflineOverrides,
@@ -28,6 +29,29 @@ import {
   SAMPLE_REFERENCE_NAME,
 } from "../src/features/analysis/lib/demo-fixtures.mjs";
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
+import {
+  buildScaffoldZipEntries,
+  extractProductionScaffoldBlueprint,
+} from "../src/features/export/lib/github-repo.mjs";
+
+function assertGeneratedTsxSyntax(code, label) {
+  const result = ts.transpileModule(code, {
+    fileName: `${label}.tsx`,
+    reportDiagnostics: true,
+    compilerOptions: {
+      jsx: ts.JsxEmit.ReactJSX,
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+    },
+  });
+  const errors = (result.diagnostics ?? [])
+    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error)
+    .map((diagnostic) =>
+      ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
+    );
+
+  assert.deepEqual(errors, [], `${label} generated TSX should parse`);
+}
 
 function createSyntheticScreenshot(width, height) {
   const data = new Uint8ClampedArray(width * height * 4);
@@ -647,6 +671,45 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
+test("known reference samples export as production scaffold bundles", () => {
+  const names = [
+    "dashboard-reference.png",
+    "auth-reference.svg",
+    "mobile-reference.svg",
+    "landing-reference.svg",
+    "settings-reference.svg",
+    "ecommerce-reference.svg",
+  ];
+
+  for (const name of names) {
+    const known = lookupKnownSample(name);
+    assert.ok(known, `${name} should resolve`);
+    assert.match(known.generatedCode, /const detectedElements: DetectionElement\[\]/);
+    assert.match(known.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
+    assert.match(known.generatedCode, /const shadcnPrimitiveMap: Record<string, string>/);
+    assert.doesNotMatch(known.generatedCode, /@\/features\/(?:home|mobile|landing|settings|catalog)\/components/);
+
+    const blueprint = extractProductionScaffoldBlueprint(known.generatedCode);
+    assert.ok(blueprint, `${name} should include export metadata`);
+    assert.equal(blueprint.generator, "offline-detection");
+    assert.ok(blueprint.detectedElements.length > 0);
+    assert.ok(blueprint.layoutRegions.length > 0);
+    assert.equal(blueprint.reviewChecklist.length >= 3, true);
+
+    const entries = buildScaffoldZipEntries({
+      content: known.generatedCode,
+      filename: name.replace(/\.[^.]+$/, ".tsx"),
+      description: known.summary,
+    });
+    assert.equal(entries.length, 6);
+    assert.ok(entries.some((entry) => entry.name.endsWith(".recipe.json")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".manifest.json")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".tokens.css")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".detection.md")));
+    assertGeneratedTsxSyntax(known.generatedCode, name.replace(/\W+/g, "-"));
+  }
+});
+
 test("contrastRatio follows WCAG black/white maximum", () => {
   assert.equal(
     contrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }),
@@ -1125,9 +1188,12 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
   assert.match(advanced.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
-  assert.match(advanced.generatedCode, /export default function GeneratedScreenScaffold/);
+  assert.match(advanced.generatedCode, /export default function GeneratedDashboard/);
   assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(advanced.generatedCode, /type DetectionElement/);
+  assert.match(advanced.generatedCode, /type UsableSectionModel/);
+  assert.match(advanced.generatedCode, /Detection recipe/);
   assert.match(advanced.generatedCode, /CardTitle/);
   assert.match(advanced.generatedCode, /Input placeholder="Connect real value"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
@@ -1142,10 +1208,11 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
   assert.match(advanced.generatedCode, /Component primitive/);
-  assert.match(advanced.generatedCode, /Local screenshot scaffold/);
+  assert.match(advanced.generatedCode, /DetectionGridReference/);
   assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
+  assertGeneratedTsxSyntax(advanced.generatedCode, "advanced-offline-dashboard");
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold regions", () => {
@@ -1452,6 +1519,18 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /export default function GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /const detectedElements: SvgElement\[\]/);
+  assert.match(artifact.generatedCode, /const layoutRegions: SvgLayoutRegion\[\]/);
+  assert.match(artifact.generatedCode, /const shadcnPrimitiveMap: Record<string, string>/);
+
+  const blueprint = extractProductionScaffoldBlueprint(artifact.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.componentName, "GeneratedAuthScreen");
+  assert.equal(blueprint.generator, "offline-detection");
+  assert.ok(blueprint.detectedElements.length > 0);
+  assert.ok(blueprint.layoutRegions.length > 0);
+  assertGeneratedTsxSyntax(artifact.generatedCode, "svg-auth-screen");
 });
 
 test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", () => {
@@ -1504,7 +1583,12 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
   assert.match(regenerated.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
-  assert.match(regenerated.generatedCode, /export default function GeneratedScreenScaffold/);
+  assert.match(regenerated.generatedCode, /export default function CorrectedGeneratedScaffold/);
+  assert.match(regenerated.generatedCode, /const detectedElements: CorrectedElement\[\]/);
+  assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
+  assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
+  assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
+  assert.match(regenerated.generatedCode, /Correction recipe/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
@@ -1513,6 +1597,15 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /Detected app shell/);
   assert.match(regenerated.generatedCode, /App shell/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+
+  const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.componentName, "CorrectedGeneratedScaffold");
+  assert.equal(blueprint.generator, "offline-detection");
+  assert.ok(blueprint.detectedElements.length > 0);
+  assert.ok(blueprint.layoutRegions.length > 0);
+  assert.equal(blueprint.primitiveSummary.patternCounts.appShells, 1);
+  assertGeneratedTsxSyntax(regenerated.generatedCode, "corrected-offline-dashboard");
 });
 
 test("regenerateArtifactFromDetections preserves repeated-list scaffold groups", () => {
@@ -1758,7 +1851,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
 
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
-  assert.match(regenerated.generatedCode, /Corrected screenshot scaffold/);
+  assert.match(regenerated.generatedCode, /CorrectionGridReference/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);

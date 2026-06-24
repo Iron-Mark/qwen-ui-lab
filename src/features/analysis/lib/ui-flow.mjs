@@ -238,13 +238,15 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     primitive: element.primitive ?? element.kind ?? "section",
     componentRole: element.componentRole ?? element.primitive ?? element.kind ?? "section",
     confidence: element.confidence ?? 0.5,
-    box: element.box,
+    box: element.box ?? { x: 0, y: 0, width: source.width, height: Math.max(48, source.height / 12) },
   }));
   const patterns = buildCorrectedPatternBlueprint(detections, elements);
   const responsiveIntent = buildCorrectedResponsiveBlueprint(detections);
   const screenIntent = buildCorrectedScreenIntentBlueprint(detections);
+  const layoutRegions = buildCorrectedLayoutRegionBlueprint(patterns, elements);
 
-  return `import { Badge } from "@/components/ui/badge";
+  return `import type { AriaRole } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -256,17 +258,98 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+type ElementBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+type CorrectedElement = {
+  id: string;
+  kind: string;
+  primitive: string;
+  componentRole: string;
+  confidence: number;
+  label?: string;
+  box: ElementBox;
+};
+
+type CorrectedPattern = {
+  id: string;
+  children: string[];
+  confidence?: number;
+  rows?: number;
+  columns?: number;
+  cardCount?: number;
+  seriesCount?: number;
+  tabCount?: number;
+  selectedIndex?: number;
+  shellType?: string;
+  modalType?: string;
+  tabKind?: string;
+  navCount?: number;
+  regions?: {
+    topNavigation?: string | null;
+    sideNavigation?: string | null;
+    bottomNavigation?: string | null;
+  };
+  [key: string]: unknown;
+};
+
+type CorrectedPatterns = {
+  textLines: number;
+  appShells: CorrectedPattern[];
+  repeatedLists: CorrectedPattern[];
+  repeatedGrids: CorrectedPattern[];
+  statRows: CorrectedPattern[];
+  formGroups: CorrectedPattern[];
+  dataTables: CorrectedPattern[];
+  charts: CorrectedPattern[];
+  actionClusters: CorrectedPattern[];
+  tabSets: CorrectedPattern[];
+  dialogPanels: CorrectedPattern[];
+  emptyStates: CorrectedPattern[];
+};
+
+type LayoutRegion = {
+  id: string;
+  kind: string;
+  primitive: string;
+  componentRole: string;
+  label: string;
+  confidence: number;
+  role: AriaRole;
+  children: string[];
+};
+
+type GeneratedSection = {
+  id: string;
+  kind: string;
+  primitive: string;
+  title: string;
+  description: string;
+  layoutClass: string;
+  items: CorrectedElement[];
+};
+
 const designTokens = ${JSON.stringify(tokens, null, 2)};
 
 const sourceFrame = ${JSON.stringify(source, null, 2)};
 
-const correctedElements = ${JSON.stringify(elements, null, 2)};
+const detectedElements: CorrectedElement[] = ${JSON.stringify(elements, null, 2)};
 
-const correctedPatterns = ${JSON.stringify(patterns, null, 2)};
+const correctedElements = detectedElements;
+
+const detectedPatterns: CorrectedPatterns = ${JSON.stringify(patterns, null, 2)};
+
+const correctedPatterns = detectedPatterns;
 
 const responsiveIntent = ${JSON.stringify(responsiveIntent, null, 2)};
 
 const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
+
+const layoutRegions: LayoutRegion[] = ${JSON.stringify(layoutRegions, null, 2)};
 
 const groupedElementIds = new Set(
   [
@@ -284,11 +367,11 @@ const groupedElementIds = new Set(
   ].flatMap((pattern) => pattern.children),
 );
 
-const correctedElementById = new Map(
-  correctedElements.map((element) => [element.id, element]),
+const correctedElementById = new Map<string, CorrectedElement>(
+  correctedElements.map((element) => [element.id, element] as [string, CorrectedElement]),
 );
 
-const shadcnPrimitiveMap = {
+const shadcnPrimitiveMap: Record<string, string> = {
   "top-navigation": "semantic nav + Button ghost controls",
   "side-navigation": "aside navigation + Button ghost controls",
   "bottom-navigation": "mobile nav + Button icon controls",
@@ -308,7 +391,7 @@ const shadcnPrimitiveMap = {
 
 const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
 
-export default function GeneratedScreenScaffold() {
+export default function CorrectedGeneratedScaffold() {
   return (
     <main
       aria-label="Generated production scaffold from ${safeName}"
@@ -317,7 +400,7 @@ export default function GeneratedScreenScaffold() {
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Screenshot scaffold</Badge>
+            <Badge variant="outline">Corrected screenshot scaffold</Badge>
             <Badge variant="secondary">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
@@ -330,6 +413,8 @@ export default function GeneratedScreenScaffold() {
             </p>
           </div>
         </header>
+
+        <CorrectionRecipeSummary />
 
         {generatedSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -357,7 +442,34 @@ export default function GeneratedScreenScaffold() {
   );
 }
 
-function ScaffoldSection({ section }) {
+function CorrectionRecipeSummary() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Correction recipe</CardTitle>
+        <CardDescription>
+          Manual edits are preserved as canonical detection metadata for deterministic export review.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+        <p>
+          <span className="block font-medium text-foreground">Active elements</span>
+          {correctedElements.length} reviewed primitives
+        </p>
+        <p>
+          <span className="block font-medium text-foreground">Layout regions</span>
+          {layoutRegions.length} export-ready groups
+        </p>
+        <p>
+          <span className="block font-medium text-foreground">Responsive intent</span>
+          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ScaffoldSection({ section }: { section: GeneratedSection }) {
   if (section.kind === "tab-set") {
     return (
       <Card>
@@ -432,7 +544,7 @@ function ScaffoldSection({ section }) {
   );
 }
 
-function PrimitivePreview({ element }) {
+function PrimitivePreview({ element }: { element: CorrectedElement }) {
   const role = element.componentRole || element.primitive || element.kind;
   const label = element.label || primitiveLabel(role);
   const confidence = Math.round((element.confidence ?? 0.5) * 100);
@@ -467,8 +579,13 @@ function PrimitivePreview({ element }) {
   );
 }
 
-function buildGeneratedSections(patterns, elements) {
-  const byId = new Map(elements.map((element) => [element.id, enrichElement(element)]));
+function buildGeneratedSections(
+  patterns: CorrectedPatterns,
+  elements: CorrectedElement[],
+): GeneratedSection[] {
+  const byId = new Map<string, CorrectedElement>(
+    elements.map((element) => [element.id, enrichElement(element)] as [string, CorrectedElement]),
+  );
   const groups = [
     ...patterns.appShells.map((pattern) => sectionFromPattern(pattern, byId, "app-shell", "Application shell", "Navigation and page regions grouped as landmarks.", "grid gap-3")),
     ...patterns.dialogPanels.map((pattern) => sectionFromPattern(pattern, byId, "dialog-panel", "Dialog surface", "Modal-ready content with close and action affordances.", "grid gap-3")),
@@ -485,7 +602,14 @@ function buildGeneratedSections(patterns, elements) {
   return groups.filter((section) => section.items.length);
 }
 
-function sectionFromPattern(pattern, byId, primitive, title, description, layoutClass) {
+function sectionFromPattern(
+  pattern: CorrectedPattern,
+  byId: Map<string, CorrectedElement>,
+  primitive: string,
+  title: string,
+  description: string,
+  layoutClass: string,
+): GeneratedSection {
   return {
     id: pattern.id,
     kind: primitive,
@@ -493,11 +617,13 @@ function sectionFromPattern(pattern, byId, primitive, title, description, layout
     title,
     description,
     layoutClass,
-    items: (pattern.children ?? []).map((id) => byId.get(id)).filter(Boolean),
+    items: (pattern.children ?? [])
+      .map((id) => byId.get(id))
+      .filter((item): item is CorrectedElement => Boolean(item)),
   };
 }
 
-function enrichElement(element) {
+function enrichElement(element: CorrectedElement): CorrectedElement {
   const role = element.componentRole || element.primitive || element.kind;
   return {
     ...element,
@@ -505,7 +631,7 @@ function enrichElement(element) {
   };
 }
 
-export function CorrectedScreenshotScaffold() {
+export function CorrectionGridReference() {
   return (
     <section
       aria-label="Corrected scaffold from ${safeName}"
@@ -550,13 +676,13 @@ export function CorrectedScreenshotScaffold() {
                   <p className="text-[11px] opacity-70">{pattern.navCount} navigation landmarks</p>
                 </aside>
                 <div className="grid gap-2">
-                  {pattern.regions.topNavigation ? (
+                  {pattern.regions?.topNavigation ? (
                     <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
                       Top navigation
                     </nav>
                   ) : null}
                   <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
-                    {pattern.regions.sideNavigation ? (
+                    {pattern.regions?.sideNavigation ? (
                       <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
                         Side navigation
                       </nav>
@@ -565,7 +691,7 @@ export function CorrectedScreenshotScaffold() {
                       Page content region
                     </section>
                   </main>
-                  {pattern.regions.bottomNavigation ? (
+                  {pattern.regions?.bottomNavigation ? (
                     <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
                       Bottom navigation
                     </nav>
@@ -967,7 +1093,7 @@ export function CorrectedScreenshotScaffold() {
   );
 }
 
-function renderCorrectedPrimitive(element, tokens) {
+function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof designTokens) {
   const primitive = element.primitive || element.kind || "section";
   const componentRole = element.componentRole || primitive;
   const label = primitiveLabel(primitive);
@@ -1084,7 +1210,7 @@ function renderCorrectedPrimitive(element, tokens) {
   );
 }
 
-function primitiveLabel(value) {
+function primitiveLabel(value: string | undefined) {
   return String(value || "section")
     .replace(/[-_]+/g, " ")
     .split(" ")
@@ -1093,9 +1219,10 @@ function primitiveLabel(value) {
     .join(" ");
 }
 
-function elementTone(primitive, tokens) {
-  if (/header|nav|action|button|field/.test(primitive)) return tokens.accent;
-  if (/card|media|section/.test(primitive)) return tokens.muted;
+function elementTone(primitive: string | undefined, tokens: typeof designTokens) {
+  const value = String(primitive || "");
+  if (/header|nav|action|button|field/.test(value)) return tokens.accent;
+  if (/card|media|section/.test(value)) return tokens.muted;
   return tokens.surface;
 }`;
 }
@@ -1287,6 +1414,88 @@ function buildCorrectedPatternBlueprint(detections, elements) {
       })
       .filter(Boolean),
   };
+}
+
+function buildCorrectedLayoutRegionBlueprint(patterns, elements) {
+  const patternGroups = [
+    ...patterns.appShells.map((pattern) =>
+      correctedRegionFromPattern(pattern, "app-shell", "Application shell", "navigation"),
+    ),
+    ...patterns.dialogPanels.map((pattern) =>
+      correctedRegionFromPattern(pattern, "dialog-panel", "Dialog surface", "dialog"),
+    ),
+    ...patterns.emptyStates.map((pattern) =>
+      correctedRegionFromPattern(pattern, "empty-state", "Empty state", "status"),
+    ),
+    ...patterns.repeatedLists.map((pattern) =>
+      correctedRegionFromPattern(pattern, "repeated-list", "Repeated list", "list"),
+    ),
+    ...patterns.repeatedGrids.map((pattern) =>
+      correctedRegionFromPattern(pattern, "repeated-grid", "Card grid", "region"),
+    ),
+    ...patterns.statRows.map((pattern) =>
+      correctedRegionFromPattern(pattern, "stat-row", "Metric cards", "region"),
+    ),
+    ...patterns.formGroups.map((pattern) =>
+      correctedRegionFromPattern(pattern, "form-group", "Form group", "form"),
+    ),
+    ...patterns.dataTables.map((pattern) =>
+      correctedRegionFromPattern(pattern, "data-table", "Data table", "table"),
+    ),
+    ...patterns.charts.map((pattern) =>
+      correctedRegionFromPattern(pattern, "chart-panel", "Chart panel", "figure"),
+    ),
+    ...patterns.actionClusters.map((pattern) =>
+      correctedRegionFromPattern(pattern, "action-cluster", "Action cluster", "toolbar"),
+    ),
+    ...patterns.tabSets.map((pattern) =>
+      correctedRegionFromPattern(pattern, "tab-set", "Tabs", "tablist"),
+    ),
+  ];
+
+  if (patternGroups.length) return patternGroups;
+
+  return elements.slice(0, 12).map((element, index) => ({
+    id: `corrected-region-${index + 1}`,
+    kind: element.kind,
+    primitive: element.primitive,
+    componentRole: element.componentRole,
+    label: toTitleLabel(element.componentRole || element.primitive || element.kind),
+    confidence: element.confidence,
+    role: roleForCorrectedPrimitive(element.componentRole || element.primitive || element.kind),
+    children: [element.id],
+  }));
+}
+
+function correctedRegionFromPattern(pattern, primitive, label, role) {
+  return {
+    id: pattern.id,
+    kind: primitive,
+    primitive,
+    componentRole: primitive,
+    label,
+    confidence: pattern.confidence ?? 0.5,
+    role,
+    children: pattern.children ?? [],
+  };
+}
+
+function roleForCorrectedPrimitive(primitive) {
+  if (/nav|shell/.test(primitive)) return "navigation";
+  if (/form/.test(primitive)) return "form";
+  if (/table/.test(primitive)) return "table";
+  if (/dialog/.test(primitive)) return "dialog";
+  if (/empty/.test(primitive)) return "status";
+  return "region";
+}
+
+function toTitleLabel(value) {
+  return String(value || "section")
+    .replace(/[-_]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function buildCorrectedResponsiveBlueprint(detections) {
