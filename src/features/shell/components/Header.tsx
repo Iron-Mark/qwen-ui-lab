@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
 import { AppearanceMenu } from "./AppearanceMenu";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +23,19 @@ const DemoModeSnackbar = dynamic(
   { ssr: false },
 );
 
+type ShellTitleContext = {
+  title: string;
+  subtitle?: string;
+};
+
 export function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { locale, dict } = useLocale();
   const t = dict.header;
+  const [shellTitleContext, setShellTitleContext] =
+    useState<ShellTitleContext | null>(null);
+  const isDesignSystemPath = pathname?.startsWith("/design-system") ?? false;
   const accountOpen = searchParams.get("account") === "1";
   const accountHref = useMemo(
     () =>
@@ -42,9 +50,80 @@ export function Header() {
     const config = createExperimentConfig(process.env);
     return resolveExperimentVariant("headerDesignSystemCta", "anonymous", config);
   }, []);
+  const activeShellTitleContext = isDesignSystemPath ? shellTitleContext : null;
+  const brandTitle = activeShellTitleContext?.title ?? t.siteTitle;
+  const brandSubtitle = activeShellTitleContext?.subtitle ?? t.siteTagline;
+
+  useEffect(() => {
+    if (!isDesignSystemPath) return;
+
+    let animationFrame = 0;
+    let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const updateTitleContext = () => {
+      const marker = document.querySelector<HTMLElement>(
+        "[data-shell-title-context]",
+      );
+      const shellHeader =
+        document.querySelector<HTMLElement>("[data-shell-header]");
+
+      if (!marker) {
+        setShellTitleContext(null);
+        return;
+      }
+
+      const headerHeight = shellHeader?.offsetHeight ?? 64;
+      const markerBottom = marker.getBoundingClientRect().bottom;
+      const isPastIntro = markerBottom <= headerHeight + 4;
+
+      if (!isPastIntro) {
+        setShellTitleContext(null);
+        return;
+      }
+
+      const nextTitle = marker.dataset.shellTitle?.trim();
+      if (!nextTitle) {
+        setShellTitleContext(null);
+        return;
+      }
+
+      const nextSubtitle = marker.dataset.shellSubtitle?.trim() || undefined;
+      setShellTitleContext((current) => {
+        if (current?.title === nextTitle && current.subtitle === nextSubtitle) {
+          return current;
+        }
+        return { title: nextTitle, subtitle: nextSubtitle };
+      });
+    };
+
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(updateTitleContext);
+    };
+
+    scheduleUpdate();
+    fallbackTimer = setTimeout(scheduleUpdate, 250);
+
+    const observer = new MutationObserver(scheduleUpdate);
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+      observer.disconnect();
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, [isDesignSystemPath]);
 
   return (
-    <header lang={locale} className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md">
+    <header
+      lang={locale}
+      data-shell-header
+      className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md"
+    >
       <DemoModeSnackbar />
       <PageContainer className="flex h-16 min-w-0 items-center gap-2 px-2 sm:gap-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link
@@ -61,8 +140,18 @@ export function Header() {
             fetchPriority="low"
           />
           <div className="hidden min-w-0 md:block">
-            <p className="truncate text-lg font-bold text-card-foreground">{t.siteTitle}</p>
-            <p className="truncate text-xs text-muted-foreground">{t.siteTagline}</p>
+            <p
+              data-testid="header-brand-title"
+              className="truncate text-lg font-bold text-card-foreground transition-colors"
+            >
+              {brandTitle}
+            </p>
+            <p
+              data-testid="header-brand-subtitle"
+              className="truncate text-xs text-muted-foreground transition-colors"
+            >
+              {brandSubtitle}
+            </p>
           </div>
         </Link>
         <nav

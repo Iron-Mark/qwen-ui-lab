@@ -329,20 +329,6 @@ export function ComponentPreviewCard({
                   </TabsList>
                 </Tabs>
               ) : null}
-              <ExportButton
-                text={activeSnippet}
-                variant="copy"
-                label="Copy"
-                analyticsSource="component_preview_card"
-                analyticsFeature="design_system_snippet"
-              />
-              <ExportButton
-                text={activeSnippet}
-                variant="export"
-                filename={filename}
-                analyticsSource="component_preview_card"
-                analyticsFeature="design_system_snippet"
-              />
             </div>
           </div>
           <div className="min-w-0 p-3 sm:p-4">
@@ -386,6 +372,24 @@ export function ComponentPreviewCard({
           code={activeSnippet}
           title={`${title} snippet`}
           showCopy={false}
+          headerActions={
+            <div className="flex flex-wrap items-center gap-1.5">
+              <ExportButton
+                text={activeSnippet}
+                variant="copy"
+                label="Copy"
+                analyticsSource="component_preview_card"
+                analyticsFeature="design_system_snippet"
+              />
+              <ExportButton
+                text={activeSnippet}
+                variant="export"
+                filename={filename}
+                analyticsSource="component_preview_card"
+                analyticsFeature="design_system_snippet"
+              />
+            </div>
+          }
         />
       ) : null}
     </Card>
