@@ -251,7 +251,7 @@ export const zh = {
     exportReviewPackage: "检视包",
     exportPackageReady: "导出包",
     exportPackageReadyDesc:
-      "下载前预览文件、截图变更和交接文案。",
+      "下载前预览文件、截图变更和包说明。",
     exportPackageTitle: "检视导出包",
     exportPackageDesc:
       "这是从截图分析生成的起步包，会将组件、配方、manifest、tokens 和检测记录放在一起。",
@@ -263,7 +263,7 @@ export const zh = {
       "包导出会下载这些文件组成的 zip。直接组件下载仅导出 TSX 文件。",
     exportPackageChangesIntro: "相比上传截图，已完成：",
     exportPackageCopyIntro:
-      "这是团队成员在导入生成组件前看到的明确说明。",
+      "这是团队成员在导入生成组件前查看的包说明。",
     exportMetricFiles: "文件",
     exportMetricRegions: "区域",
     exportMetricPrimitives: "原语",
@@ -292,7 +292,7 @@ export const zh = {
     toastScaffoldCopied: "组件已复制",
     toastScaffoldExported: "组件已导出",
     toastDesignDocExported: "Design.md 已导出",
-    toastHandoffBundleExported: "启动包已导出",
+    toastHandoffBundleExported: "起步包已导出",
     exportGenerateHint: "生成预览以在片段旁查看实时统计。",
     generatedScaffold: "生成的组件",
     livePreview: "实时预览",
