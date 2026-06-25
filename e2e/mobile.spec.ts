@@ -57,7 +57,7 @@ test("upload flow completes analyze and generate on mobile", async ({ page }) =>
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
     timeout: 15_000,
   });
 

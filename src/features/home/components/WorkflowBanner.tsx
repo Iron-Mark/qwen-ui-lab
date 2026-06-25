@@ -15,7 +15,7 @@ export function WorkflowBanner() {
     { label: "UI Screenshot", icon: Camera },
     { label: "Qwen3-VL Analysis", icon: SearchCheck },
     { label: "Component Plan", icon: Sparkles },
-    { label: "Qwen Code Scaffold", icon: Code2 },
+    { label: "React Code", icon: Code2 },
     { label: "Human Refactor", icon: Wrench },
     { label: "Final Component", icon: CheckCircle2 },
   ];
@@ -24,7 +24,7 @@ export function WorkflowBanner() {
     <Card aria-label="Workflow pipeline">
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Screenshot → Plan → Patch
+          Screenshot → Plan → React
         </CardTitle>
       </CardHeader>
       <CardContent>

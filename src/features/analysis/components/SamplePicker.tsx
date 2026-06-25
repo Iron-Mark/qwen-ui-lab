@@ -3,6 +3,7 @@
 import {
   LayoutDashboard,
   ListChecks,
+  Loader2,
   LogIn,
   PanelsTopLeft,
   Settings2,
@@ -163,12 +164,16 @@ export function SamplePicker({
           variant="outline"
           onClick={() => onLoadSample(selectedSample.id)}
           className="min-h-11 gap-2 px-3 sm:w-auto"
-          disabled={disabled}
+          disabled={disabled || loading}
           aria-label={interpolate(copy.loadSampleAria, {
             label: selectedCopy.label,
           })}
         >
-          <UploadCloud className="size-4" aria-hidden />
+          {loading ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <UploadCloud className="size-4" aria-hidden />
+          )}
           {loading ? copy.loading : copy.loadSampleButton}
         </Button>
       </div>

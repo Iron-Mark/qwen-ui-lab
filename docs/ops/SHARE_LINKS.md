@@ -17,7 +17,7 @@ Payload shape (v1, secret-free):
   "v": 1,
   "summary": "Admin dashboard with stat grid…",
   "stats": [{ "l": "Components", "v": "6" }],
-  "mode": "Local demo mode",
+  "mode": "Analyzer ready",
   "file": "dashboard-reference.svg"
 }
 ```
@@ -33,7 +33,7 @@ Fields such as `generatedCode`, `plan`, or API keys are stripped by `buildSharea
 
 ## Storage backends
 
-### Development / demo (default)
+### Development / local analysis (default)
 
 `src/features/share/lib/share-store.mjs` keeps an in-memory `Map` per Node/serverless instance. Links survive until TTL expiry (default 7 days) but may not resolve across cold starts or other instances.
 

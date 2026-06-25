@@ -85,7 +85,7 @@ export function sanitizeSharePayload(input) {
             value: String(/** @type {{ v?: string }} */ (stat)?.v ?? ""),
           }))
         : [],
-      modeLabel: String(record.mode ?? "Local demo mode"),
+      modeLabel: String(record.mode ?? "Analyzer ready"),
       file: String(record.file ?? "screenshot"),
       detections: record.detections,
     });

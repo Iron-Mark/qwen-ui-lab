@@ -213,7 +213,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(runPipeline).toBeEnabled({ timeout: 10_000 });
   await runPipeline.click();
 
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
     timeout: 10_000,
   });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
@@ -319,12 +319,12 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(page.getByTestId("detection-box")).toHaveCount(0);
 
   await page.getByRole("button", { name: /copy all code/i }).click();
-  await expect(page.getByText(/Scaffold copied/i)).toBeVisible({
+  await expect(page.getByText(/Component copied/i)).toBeVisible({
     timeout: 5_000,
   });
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
+  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 
@@ -359,8 +359,8 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   const repoZipDownloadPromise = page.waitForEvent("download");
   await page.getByTestId("repo-export-button").click();
   const repoZipDownload = await repoZipDownloadPromise;
-  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-scaffold.zip");
-  await expect(page.getByText(/Scaffold zip downloaded/i)).toBeVisible({
+  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
+  await expect(page.getByText(/Export package downloaded/i)).toBeVisible({
     timeout: 5_000,
   });
 

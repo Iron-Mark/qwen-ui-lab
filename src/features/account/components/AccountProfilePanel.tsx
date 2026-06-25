@@ -35,6 +35,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
     () => auth.displayName ?? "",
   );
   const [emailInput, setEmailInput] = useState(() => auth.email ?? "");
+  const [emailError, setEmailError] = useState("");
 
   function handleSaveDisplayName() {
     const next = setDisplayName(displayNameInput);
@@ -49,9 +50,11 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
     event.preventDefault();
     const result = sendMagicLinkStub(emailInput);
     if (!result.ok) {
+      setEmailError(t.errorInvalidEmail);
       toast(t.errorInvalidEmail, "error");
       return;
     }
+    setEmailError("");
     toast(t.toastMagicLinkStub, "default");
   }
 
@@ -67,6 +70,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
     signOut();
     setDisplayNameInput("");
     setEmailInput("");
+    setEmailError("");
     toast(t.toastSignedOut, "default");
   }
 
@@ -223,11 +227,25 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
                 data-testid="account-email-input"
                 type="email"
                 value={emailInput}
-                onChange={(event) => setEmailInput(event.target.value)}
+                onChange={(event) => {
+                  setEmailInput(event.target.value);
+                  if (emailError) setEmailError("");
+                }}
                 placeholder={t.emailPlaceholder}
                 autoComplete="email"
+                aria-invalid={emailError ? "true" : undefined}
+                aria-describedby={emailError ? "account-email-error" : undefined}
                 className="min-h-12 rounded-xl px-3 text-base sm:text-sm"
               />
+              {emailError ? (
+                <p
+                  id="account-email-error"
+                  role="alert"
+                  className="text-xs font-medium text-destructive"
+                >
+                  {emailError}
+                </p>
+              ) : null}
             </div>
             <Button
               type="submit"

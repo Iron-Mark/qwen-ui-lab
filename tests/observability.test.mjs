@@ -31,7 +31,7 @@ test("observability can be enabled explicitly with env flags", () => {
   assert.equal(config.allowInDemoMode, true);
 });
 
-test("tracking is blocked in demo mode unless explicitly allowed", () => {
+test("tracking is blocked in local sample mode unless explicitly allowed", () => {
   const defaultConfig = createObservabilityConfig({
     NEXT_PUBLIC_OBSERVABILITY_ENABLED: "true",
   });

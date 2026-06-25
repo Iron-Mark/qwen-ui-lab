@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import * as ts from "typescript";
 
 import {
   buildAdvancedOfflineOverrides,
@@ -28,6 +29,29 @@ import {
   SAMPLE_REFERENCE_NAME,
 } from "../src/features/analysis/lib/demo-fixtures.mjs";
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
+import {
+  buildScaffoldZipEntries,
+  extractProductionScaffoldBlueprint,
+} from "../src/features/export/lib/github-repo.mjs";
+
+function assertGeneratedTsxSyntax(code, label) {
+  const result = ts.transpileModule(code, {
+    fileName: `${label}.tsx`,
+    reportDiagnostics: true,
+    compilerOptions: {
+      jsx: ts.JsxEmit.ReactJSX,
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+    },
+  });
+  const errors = (result.diagnostics ?? [])
+    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error)
+    .map((diagnostic) =>
+      ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
+    );
+
+  assert.deepEqual(errors, [], `${label} generated TSX should parse`);
+}
 
 function createSyntheticScreenshot(width, height) {
   const data = new Uint8ClampedArray(width * height * 4);
@@ -468,6 +492,76 @@ function createSyntheticDialogScreenshot(width, height) {
   return { data, width, height, sourceWidth: width, sourceHeight: height };
 }
 
+function createSyntheticEmptyStateScreenshot(width, height) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  const centerX = Math.floor(width * 0.5);
+  const iconRadius = Math.max(10, Math.floor(Math.min(width, height) * 0.045));
+  const iconY = Math.floor(height * 0.34);
+  const titleWidth = Math.floor(width * 0.42);
+  const titleHeight = Math.max(10, Math.floor(height * 0.045));
+  const titleLeft = centerX - Math.floor(titleWidth / 2);
+  const titleTop = Math.floor(height * 0.43);
+  const bodyWidth = Math.floor(width * 0.58);
+  const bodyHeight = Math.max(8, Math.floor(height * 0.028));
+  const bodyLeft = centerX - Math.floor(bodyWidth / 2);
+  const bodyTop = Math.floor(height * 0.52);
+  const buttonWidth = Math.floor(width * 0.28);
+  const buttonHeight = Math.max(16, Math.floor(height * 0.07));
+  const buttonLeft = centerX - Math.floor(buttonWidth / 2);
+  const buttonTop = Math.floor(height * 0.64);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      let color = [248, 250, 252];
+      const iconDistance = Math.hypot(x - centerX, y - iconY);
+
+      if (iconDistance <= iconRadius) {
+        color = [37, 99, 235];
+      }
+      if (
+        x >= titleLeft &&
+        x <= titleLeft + titleWidth &&
+        y >= titleTop &&
+        y <= titleTop + titleHeight
+      ) {
+        color = [15, 23, 42];
+      }
+      if (
+        x >= bodyLeft &&
+        x <= bodyLeft + bodyWidth &&
+        y >= bodyTop &&
+        y <= bodyTop + bodyHeight
+      ) {
+        color = [100, 116, 139];
+      }
+      if (
+        x >= bodyLeft + Math.floor(bodyWidth * 0.16) &&
+        x <= bodyLeft + Math.floor(bodyWidth * 0.82) &&
+        y >= bodyTop + Math.floor(height * 0.045) &&
+        y <= bodyTop + Math.floor(height * 0.045) + bodyHeight
+      ) {
+        color = [148, 163, 184];
+      }
+      if (
+        x >= buttonLeft &&
+        x <= buttonLeft + buttonWidth &&
+        y >= buttonTop &&
+        y <= buttonTop + buttonHeight
+      ) {
+        color = [37, 99, 235];
+      }
+
+      data[offset] = color[0];
+      data[offset + 1] = color[1];
+      data[offset + 2] = color[2];
+      data[offset + 3] = 255;
+    }
+  }
+
+  return { data, width, height, sourceWidth: width, sourceHeight: height };
+}
+
 const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg">
   <title>Sign in</title>
   <desc>Email and password authentication form</desc>
@@ -480,7 +574,7 @@ const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="htt
   </g>
 </svg>`;
 
-test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
+test("BUNDLED_REFERENCE_SAMPLES lists all reference samples", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
   assert.deepEqual(fileNames, [
     "dashboard-reference.png",
@@ -575,6 +669,45 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.summary, /E-commerce catalog/i);
   assert.match(known.generatedCode, /ProductGrid/);
   assert.match(known.plan[2].body, /FilterSidebar/);
+});
+
+test("known reference samples export as starter packages", () => {
+  const names = [
+    "dashboard-reference.png",
+    "auth-reference.svg",
+    "mobile-reference.svg",
+    "landing-reference.svg",
+    "settings-reference.svg",
+    "ecommerce-reference.svg",
+  ];
+
+  for (const name of names) {
+    const known = lookupKnownSample(name);
+    assert.ok(known, `${name} should resolve`);
+    assert.match(known.generatedCode, /const detectedElements: DetectionElement\[\]/);
+    assert.match(known.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
+    assert.match(known.generatedCode, /const shadcnPrimitiveMap: Record<string, string>/);
+    assert.doesNotMatch(known.generatedCode, /@\/features\/(?:home|mobile|landing|settings|catalog)\/components/);
+
+    const blueprint = extractProductionScaffoldBlueprint(known.generatedCode);
+    assert.ok(blueprint, `${name} should include export metadata`);
+    assert.equal(blueprint.generator, "offline-detection");
+    assert.ok(blueprint.detectedElements.length > 0);
+    assert.ok(blueprint.layoutRegions.length > 0);
+    assert.equal(blueprint.reviewChecklist.length >= 3, true);
+
+    const entries = buildScaffoldZipEntries({
+      content: known.generatedCode,
+      filename: name.replace(/\.[^.]+$/, ".tsx"),
+      description: known.summary,
+    });
+    assert.equal(entries.length, 6);
+    assert.ok(entries.some((entry) => entry.name.endsWith(".recipe.json")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".manifest.json")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".tokens.css")));
+    assert.ok(entries.some((entry) => entry.name.endsWith(".detection.md")));
+    assertGeneratedTsxSyntax(known.generatedCode, name.replace(/\W+/g, "-"));
+  }
 });
 
 test("contrastRatio follows WCAG black/white maximum", () => {
@@ -737,6 +870,11 @@ test("inspectImageDataPixels detects grouped form flows offline", () => {
   assert.equal(inspection.quality.patterns.formGroups >= 1, true);
   assert.equal(inspection.layoutTree.responsive.mode, "form-flow");
   assert.equal(inspection.layoutTree.screenIntent.id, "auth");
+  assert.ok(
+    inspection.elements
+      .filter((element) => formGroup.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "form-group")),
+  );
 });
 
 test("inspectImageDataPixels detects aligned data tables offline", () => {
@@ -754,6 +892,11 @@ test("inspectImageDataPixels detects aligned data tables offline", () => {
   assert.equal(inspection.quality.patterns.dataTables >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "data-table");
   assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+  assert.ok(
+    inspection.elements
+      .filter((element) => table.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "data-table")),
+  );
 });
 
 test("inspectImageDataPixels detects bar chart series offline", () => {
@@ -771,6 +914,11 @@ test("inspectImageDataPixels detects bar chart series offline", () => {
   assert.equal(inspection.quality.patterns.charts >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "analytics-chart");
   assert.equal(inspection.layoutTree.screenIntent.id, "dashboard");
+  assert.ok(
+    inspection.elements
+      .filter((element) => chart.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "chart-series")),
+  );
 });
 
 test("inspectImageDataPixels detects horizontal action clusters offline", () => {
@@ -805,6 +953,11 @@ test("inspectImageDataPixels detects tab sets offline", () => {
   assert.equal(inspection.layoutTree.patterns.actionClusters.length, 0);
   assert.equal(inspection.quality.patterns.tabSets >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "tabbed-content");
+  assert.ok(
+    inspection.elements
+      .filter((element) => tabSet.children.includes(element.id))
+      .every((element) => element.reasons.some((reason) => reason.code === "tab-set")),
+  );
 });
 
 test("inspectImageDataPixels detects centered dialog panels offline", () => {
@@ -823,6 +976,35 @@ test("inspectImageDataPixels detects centered dialog panels offline", () => {
   assert.equal(inspection.quality.patterns.dialogPanels >= 1, true);
   assert.equal(inspection.quality.responsive.mode, "modal-dialog");
   assert.equal(inspection.layoutTree.screenIntent.id, "modal");
+  assert.ok(
+    inspection.elements
+      .filter((element) => dialog.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "dialog-panel")),
+  );
+});
+
+test("inspectImageDataPixels detects centered empty states offline", () => {
+  const inspection = inspectImageDataPixels(createSyntheticEmptyStateScreenshot(360, 260));
+
+  assert.ok(inspection.elements.length >= 1);
+  assert.ok(inspection.layoutTree.patterns.emptyStates.length >= 1);
+  const emptyState = inspection.layoutTree.patterns.emptyStates[0];
+  assert.equal(emptyState.kind, "empty-state");
+  assert.equal(emptyState.axis, "centered");
+  assert.ok(emptyState.children.length >= 1);
+  assert.ok(emptyState.textCount >= 1);
+  assert.ok(emptyState.actionCount >= 1);
+  assert.ok(emptyState.centeredness >= 0.55);
+  assert.ok(emptyState.confidence >= 0.64);
+  assert.equal(inspection.layoutTree.groups.some((group) => group.kind === "empty-state"), true);
+  assert.equal(inspection.quality.patterns.emptyStates >= 1, true);
+  assert.equal(inspection.layoutTree.responsive.mode, "empty-state");
+  assert.equal(inspection.layoutTree.screenIntent.id, "empty");
+  assert.ok(
+    inspection.elements
+      .filter((element) => emptyState.children.includes(element.id))
+      .some((element) => element.reasons.some((reason) => reason.code === "empty-state")),
+  );
 });
 
 test("inspectSvgMarkup extracts labels, counts, viewBox, and archetype hints", () => {
@@ -1005,6 +1187,15 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const designTokens/);
   assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
+  assert.match(advanced.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
+  assert.match(advanced.generatedCode, /export default function GeneratedDashboard/);
+  assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
+  assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(advanced.generatedCode, /type DetectionElement/);
+  assert.match(advanced.generatedCode, /type UsableSectionModel/);
+  assert.match(advanced.generatedCode, /Detection recipe/);
+  assert.match(advanced.generatedCode, /CardTitle/);
+  assert.match(advanced.generatedCode, /Input placeholder="Connect real value"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
   assert.match(advanced.generatedCode, /Responsive intent/);
@@ -1017,10 +1208,11 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
   assert.match(advanced.generatedCode, /Component primitive/);
-  assert.match(advanced.generatedCode, /Local screenshot scaffold/);
+  assert.match(advanced.generatedCode, /DetectionGridReference/);
   assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
+  assertGeneratedTsxSyntax(advanced.generatedCode, "advanced-offline-dashboard");
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold regions", () => {
@@ -1045,8 +1237,8 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"primitive": "list-item"/);
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
-  assert.match(advanced.generatedCode, /repeated item scaffold/);
-  assert.match(advanced.generatedCode, /text-line signals shape the scaffold/);
+  assert.match(advanced.generatedCode, /repeated item/);
+  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1235,6 +1427,29 @@ test("buildAdvancedOfflineOverrides renders dialog-panel patterns as scaffold re
   assert.match(advanced.generatedCode, /dialog panels/);
 });
 
+test("buildAdvancedOfflineOverrides renders empty-state patterns as scaffold regions", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticEmptyStateScreenshot(360, 260),
+  );
+  const advanced = buildAdvancedOfflineOverrides(
+    {
+      name: "no-results-empty.png",
+      type: "image/png",
+      size: 512000,
+      width: 360,
+      height: 260,
+      offlineInspection,
+    },
+    { readableSize: "500.0 KB", dimensionLine: "360x260px desktop frame." },
+  );
+
+  assert.match(advanced.summary, /Empty state/i);
+  assert.match(advanced.generatedCode, /empty-state/);
+  assert.match(advanced.generatedCode, /No results yet/);
+  assert.match(advanced.generatedCode, /role="status"/);
+  assert.match(advanced.generatedCode, /empty states/);
+});
+
 test("buildUiFlowArtifact uses known sample registry for dashboard-reference.svg", () => {
   const file = getSampleReferenceFile();
   const artifact = buildUiFlowArtifact(file);
@@ -1300,10 +1515,22 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /Local SVG scaffold/);
+  assert.match(artifact.generatedCode, /SVG starter/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /export default function GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /const detectedElements: SvgElement\[\]/);
+  assert.match(artifact.generatedCode, /const layoutRegions: SvgLayoutRegion\[\]/);
+  assert.match(artifact.generatedCode, /const shadcnPrimitiveMap: Record<string, string>/);
+
+  const blueprint = extractProductionScaffoldBlueprint(artifact.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.componentName, "GeneratedAuthScreen");
+  assert.equal(blueprint.generator, "offline-detection");
+  assert.ok(blueprint.detectedElements.length > 0);
+  assert.ok(blueprint.layoutRegions.length > 0);
+  assertGeneratedTsxSyntax(artifact.generatedCode, "svg-auth-screen");
 });
 
 test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", () => {
@@ -1340,7 +1567,7 @@ test("buildUiFlowArtifact surfaces offline pixel signals for unknown uploads", (
 });
 
 const REGENERATED_PATTERN_SUMMARY_RE =
-  /app shell patterns, .* dialog panels, .* repeated list patterns, .* repeated grid patterns, .* stat rows, .* form groups, .* data tables, .* chart series, .* action clusters, and .* tab sets remain grouped/;
+  /app shell patterns, .* dialog panels, .* empty states, .* repeated list patterns, .* repeated grid patterns, .* stat rows, .* form groups, .* data tables, .* chart series, .* action clusters, and .* tab sets remain grouped/;
 
 test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
@@ -1355,10 +1582,30 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
 
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
+  assert.match(regenerated.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
+  assert.match(regenerated.generatedCode, /export default function ReviewedScreenshotStarter/);
+  assert.match(regenerated.generatedCode, /const detectedElements: CorrectedElement\[\]/);
+  assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
+  assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
+  assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
+  assert.match(regenerated.generatedCode, /Correction recipe/);
+  assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
+  assert.match(regenerated.generatedCode, /CardTitle/);
+  assert.match(regenerated.generatedCode, /TabsList/);
+  assert.match(regenerated.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(regenerated.generatedCode, /appShells/);
   assert.match(regenerated.generatedCode, /Detected app shell/);
   assert.match(regenerated.generatedCode, /App shell/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+
+  const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.componentName, "ReviewedScreenshotStarter");
+  assert.equal(blueprint.generator, "offline-detection");
+  assert.ok(blueprint.detectedElements.length > 0);
+  assert.ok(blueprint.layoutRegions.length > 0);
+  assert.equal(blueprint.primitiveSummary.patternCounts.appShells, 1);
+  assertGeneratedTsxSyntax(regenerated.generatedCode, "corrected-offline-dashboard");
 });
 
 test("regenerateArtifactFromDetections preserves repeated-list scaffold groups", () => {
@@ -1555,6 +1802,27 @@ test("regenerateArtifactFromDetections preserves dialog-panel scaffold groups", 
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
+test("regenerateArtifactFromDetections preserves empty-state scaffold groups", () => {
+  const offlineInspection = inspectImageDataPixels(
+    createSyntheticEmptyStateScreenshot(360, 260),
+  );
+  const artifact = buildUiFlowArtifact({
+    name: "no-results-empty.png",
+    type: "image/png",
+    size: 8192,
+    width: 360,
+    height: 260,
+    offlineInspection,
+  });
+  const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
+
+  assert.match(regenerated.generatedCode, /emptyStates/);
+  assert.match(regenerated.generatedCode, /Detected empty state/);
+  assert.match(regenerated.generatedCode, /Empty state/);
+  assert.match(regenerated.generatedCode, /role="status"/);
+  assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
+});
+
 test("regenerateArtifactFromDetections uses corrected active elements", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
   const artifact = buildUiFlowArtifact({
@@ -1583,7 +1851,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
 
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
-  assert.match(regenerated.generatedCode, /Corrected screenshot scaffold/);
+  assert.match(regenerated.generatedCode, /CorrectionGridReference/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);

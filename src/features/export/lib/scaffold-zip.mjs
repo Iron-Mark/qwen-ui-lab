@@ -1,5 +1,5 @@
 /**
- * Minimal ZIP writer (stored, no compression) for scaffold export bundles.
+ * Minimal ZIP writer (stored, no compression) for export packages.
  */
 
 const ENCODER = new TextEncoder();
@@ -98,4 +98,4 @@ export function createStoredZip(files) {
   return archive;
 }
 
-export const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-scaffold.zip";
+export const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";

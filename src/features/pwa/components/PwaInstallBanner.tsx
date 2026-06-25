@@ -148,7 +148,7 @@ export function PwaInstallBanner() {
           {iosHint ? (
             <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
               Tap <Share className="inline size-3.5 align-[-2px]" aria-hidden /> Share, then{" "}
-              <strong>Add to Home Screen</strong> for offline meetup demos.
+              <strong>Add to Home Screen</strong> for quick access to saved analyses.
             </p>
           ) : (
             <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">

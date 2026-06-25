@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   channelMixData,
   performanceData,
@@ -22,7 +23,23 @@ const UploadFlow = dynamic(
         className="scroll-mt-20 py-8"
         aria-hidden
       >
-        <div className="min-h-[28rem] animate-pulse rounded-xl border border-border/60 bg-muted/25" />
+        <div className="grid gap-5 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="grid gap-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-72 max-w-full" />
+              <Skeleton className="h-4 w-96 max-w-full" />
+            </div>
+            <Skeleton className="h-8 w-36 rounded-full" />
+          </div>
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <Skeleton className="min-h-72 rounded-xl" />
+            <div className="hidden rounded-xl border border-dashed border-border/70 p-5 lg:grid">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="mt-6 h-48 w-full" />
+            </div>
+          </div>
+        </div>
       </PageContainer>
     ),
   },
@@ -35,7 +52,18 @@ const DashboardShell = dynamic(
     ssr: false,
     loading: () => (
       <PageContainer className="py-10" aria-hidden>
-        <div className="min-h-[48rem] animate-pulse rounded-xl bg-muted/20" />
+        <div className="grid gap-5">
+          <Skeleton className="h-24 rounded-2xl" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-32 rounded-xl" />
+            ))}
+          </div>
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Skeleton className="h-80 rounded-xl" />
+            <Skeleton className="h-80 rounded-xl" />
+          </div>
+        </div>
       </PageContainer>
     ),
   },

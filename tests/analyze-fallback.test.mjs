@@ -58,13 +58,13 @@ test("resolveAnalyzeOutcome falls back when API key is missing", () => {
   assert.equal(outcome.message, FALLBACK_BANNER_MISSING);
   assert.match(outcome.detail, /DASHSCOPE_API_KEY/);
   assert.equal(outcome.artifact.file.name, sampleFile.name);
-  assert.equal(outcome.artifact.modeLabel, "Local demo mode");
+  assert.equal(outcome.artifact.modeLabel, "Analyzer ready");
   assert.ok(outcome.artifact.generatedCode.includes("GeneratedDashboard"));
   assert.equal(outcome.artifact.previewStats.length, 4);
   assert.equal(outcome.instantDemo, true);
 });
 
-test("resolveAnalyzeOutcome marks instant demo for missing key flag", () => {
+test("resolveAnalyzeOutcome marks local analysis for missing key flag", () => {
   const outcome = resolveAnalyzeOutcome({
     file: sampleFile,
     responseOk: false,
@@ -183,7 +183,7 @@ test("postAnalyzeUi skips analyze route when live analysis is disabled", async (
   assert.equal(outcome.providerState, "fallback");
   assert.equal(outcome.instantDemo, true);
   assert.equal(outcome.code, "live_analysis_disabled");
-  assert.equal(outcome.artifact.modeLabel, "Local demo mode");
+  assert.equal(outcome.artifact.modeLabel, "Analyzer ready");
 });
 
 test("postAnalyzeUi falls back when route returns missing key", async () => {
@@ -201,7 +201,7 @@ test("postAnalyzeUi falls back when route returns missing key", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.equal(outcome.artifact.modeLabel, "Local demo mode");
+  assert.equal(outcome.artifact.modeLabel, "Analyzer ready");
 });
 
 test("postAnalyzeUi falls back on non-JSON responses", async () => {
@@ -257,7 +257,7 @@ test("analyzeUiImageWithQwen returns demo mock when key is set but live is disab
   assert.equal(fetchCalled, false);
   assert.equal(result.ok, true);
   assert.equal(result.demo, true);
-  assert.equal(result.artifact.modeLabel, "Local demo mode");
+  assert.equal(result.artifact.modeLabel, "Analyzer ready");
 });
 
 test("resolveAnalyzeOutcome treats server demo payload as instant offline", () => {
@@ -267,7 +267,7 @@ test("resolveAnalyzeOutcome treats server demo payload as instant offline", () =
     payload: {
       ok: true,
       demo: true,
-      artifact: { file: { name: sampleFile.name }, modeLabel: "Local demo mode" },
+      artifact: { file: { name: sampleFile.name }, modeLabel: "Analyzer ready" },
       provider: { model: "demo" },
     },
   });

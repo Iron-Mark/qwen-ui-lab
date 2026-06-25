@@ -565,6 +565,7 @@ function summarizeDetectedElements(inspection) {
   const actionClusterCount = tree?.patterns?.actionClusters?.length ?? 0;
   const tabSetCount = tree?.patterns?.tabSets?.length ?? 0;
   const dialogPanelCount = tree?.patterns?.dialogPanels?.length ?? 0;
+  const emptyStateCount = tree?.patterns?.emptyStates?.length ?? 0;
   const appShellCount = tree?.patterns?.appShells?.length ?? 0;
   const patternText = tree?.patterns
     ? `${tree.patterns.textLines ?? 0} OCR-free text-line signals, ${repeatedListCount} repeated-list pattern${
@@ -577,7 +578,9 @@ function summarizeDetectedElements(inspection) {
         actionClusterCount === 1 ? "" : "s"
       }, ${tabSetCount} tab set${tabSetCount === 1 ? "" : "s"}, ${dialogPanelCount} dialog panel${
         dialogPanelCount === 1 ? "" : "s"
-      }, and ${appShellCount} app shell${appShellCount === 1 ? "" : "s"} were grouped.`
+      }, ${emptyStateCount} empty state${emptyStateCount === 1 ? "" : "s"}, and ${appShellCount} app shell${
+        appShellCount === 1 ? "" : "s"
+      } were grouped.`
     : null;
 
   return [
@@ -714,7 +717,7 @@ function summarizeSmartDetection({
       }),
     )
     .filter((element) => element.confidence >= 0.42);
-  const elements = snapComponentRoles(
+  const snappedElements = snapComponentRoles(
     enhanceDetectedPatterns(detectedElements, {
       sourceWidth,
       sourceHeight,
@@ -725,6 +728,11 @@ function summarizeSmartDetection({
     .slice(0, 24)
     .map((element, index) => ({ ...element, id: `element-${index + 1}` }));
 
+  const firstPassPatterns = summarizeDetectedPatterns(snappedElements, { sourceWidth, sourceHeight });
+  const elements = refineElementsWithPatternSemantics(snappedElements, firstPassPatterns, {
+    sourceWidth,
+    sourceHeight,
+  });
   const patterns = summarizeDetectedPatterns(elements, { sourceWidth, sourceHeight });
   const responsiveIntent = inferResponsiveIntent(elements, {
     sourceWidth,
@@ -768,6 +776,7 @@ function summarizeSmartDetection({
         actionClusters: patterns.actionClusters.length,
         tabSets: patterns.tabSets.length,
         dialogPanels: patterns.dialogPanels.length,
+        emptyStates: patterns.emptyStates.length,
         appShells: patterns.appShells.length,
       },
       roles,
@@ -801,6 +810,7 @@ function inferScreenIntent(elements, { sourceWidth, sourceHeight, patterns, resp
     landing: 0,
     ecommerce: 0,
     modal: 0,
+    empty: 0,
   };
   const evidenceByIntent = Object.fromEntries(
     Object.keys(scores).map((key) => [key, []]),
@@ -832,6 +842,7 @@ function inferScreenIntent(elements, { sourceWidth, sourceHeight, patterns, resp
   const actionClusters = patterns?.actionClusters?.length ?? 0;
   const tabSets = patterns?.tabSets?.length ?? 0;
   const dialogPanels = patterns?.dialogPanels?.length ?? 0;
+  const emptyStates = patterns?.emptyStates?.length ?? 0;
   const appShells = patterns?.appShells?.length ?? 0;
   const primaryShell = patterns?.appShells?.[0] ?? null;
   const sourceRatio = sourceWidth / Math.max(1, sourceHeight);
@@ -920,6 +931,11 @@ function inferScreenIntent(elements, { sourceWidth, sourceHeight, patterns, resp
     add("auth", formGroups >= 1 ? 1.4 : 0.6, "Dialog panels often contain sign-in or confirmation flows.");
     add("settings", 1, "Dialog panels can also represent local profile or preference editing.");
   }
+  if (emptyStates >= 1) {
+    add("empty", 2.8, "A centered empty-state block was grouped from sparse copy and action affordances.");
+    add("mobile", responsiveIntent?.source === "mobile" ? 0.8 : 0.2, "Empty states often appear in compact mobile flows.");
+    add("settings", 0.5, "Empty states can appear in setup, profile, or preference surfaces.");
+  }
 
   const ranked = Object.entries(scores).sort((first, second) => second[1] - first[1]);
   const [topId, topScore] = ranked[0] ?? ["dashboard", 0];
@@ -948,6 +964,7 @@ const SCREEN_INTENT_LABELS = {
   landing: "Marketing or landing page",
   ecommerce: "Product catalog or commerce flow",
   modal: "Modal dialog or focused overlay",
+  empty: "Empty state or onboarding fallback",
 };
 
 function titleCase(value) {
@@ -988,6 +1005,7 @@ function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }
   const actionClusters = patterns?.actionClusters?.length ?? 0;
   const tabSets = patterns?.tabSets?.length ?? 0;
   const dialogPanels = patterns?.dialogPanels?.length ?? 0;
+  const emptyStates = patterns?.emptyStates?.length ?? 0;
   const statRows = patterns?.statRows?.length ?? 0;
   const appShells = patterns?.appShells?.length ?? 0;
   const primaryShell = patterns?.appShells?.[0] ?? null;
@@ -995,6 +1013,8 @@ function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }
   const mode =
     dialogPanels >= 1
       ? "modal-dialog"
+      : emptyStates >= 1
+        ? "empty-state"
       : hasSideNavigation && source !== "mobile"
       ? "sidebar-grid"
       : primaryShell?.shellType === "mobile-tab-shell"
@@ -1027,6 +1047,8 @@ function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }
       ? "collapse sidebar into top filter drawer below lg"
       : mode === "modal-dialog"
         ? "center dialog on desktop and use a near-fullscreen sheet on mobile"
+      : mode === "empty-state"
+        ? "center the empty-state copy and keep one clear recovery action"
       : mode === "mobile-shell"
         ? "keep top landmarks and bottom navigation fixed while content scrolls"
       : mode === "responsive-card-grid"
@@ -1067,6 +1089,7 @@ function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }
       actionClusterCount: actionClusters,
       tabSetCount: tabSets,
       dialogPanelCount: dialogPanels,
+      emptyStateCount: emptyStates,
     },
     columns: {
       base: 1,
@@ -1077,7 +1100,9 @@ function inferResponsiveIntent(elements, { sourceWidth, sourceHeight, patterns }
       mode === "sidebar-grid"
         ? "grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]"
         : mode === "modal-dialog"
-          ? "fixed inset-0 grid place-items-center p-4 sm:p-6"
+        ? "fixed inset-0 grid place-items-center p-4 sm:p-6"
+        : mode === "empty-state"
+          ? "grid min-h-[24rem] place-items-center text-center"
         : mode === "mobile-shell"
           ? "grid min-h-dvh grid-rows-[auto_1fr_auto]"
         : mode === "responsive-card-grid"
@@ -1180,9 +1205,13 @@ function classifyDetectedElement(region, box, { inkRatio, edgeRatio, sourceWidth
   const yRatio = box.y / Math.max(1, sourceHeight);
   const xRatio = box.x / Math.max(1, sourceWidth);
   const areaRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const mobileLike = isMobileLikeSource({ sourceWidth, sourceHeight });
+  const shallowBottomBand = box.height <= sourceHeight * 0.14;
 
   if (yRatio <= 0.08 && box.width >= sourceWidth * 0.35) return "header";
-  if (yRatio >= 0.78 && box.width >= sourceWidth * 0.28) return "bottom-nav";
+  if (mobileLike && shallowBottomBand && yRatio >= 0.78 && box.width >= sourceWidth * 0.28) {
+    return "bottom-nav";
+  }
   if (xRatio <= 0.12 && box.height >= sourceHeight * 0.32) return "side-nav";
   if (aspect >= 3.6 && box.height <= sourceHeight * 0.12) return "input-or-button-row";
   if (aspect >= 1.5 && aspect <= 4.5 && box.height <= sourceHeight * 0.16 && edgeRatio >= 0.018) {
@@ -1397,6 +1426,172 @@ function snapComponentRoles(elements, { sourceWidth, sourceHeight }) {
         .slice(0, 5),
     };
   });
+}
+
+function isMobileLikeSource({ sourceWidth, sourceHeight }) {
+  return sourceWidth <= 640 || sourceHeight >= sourceWidth * 1.2;
+}
+
+function refineElementsWithPatternSemantics(elements, patterns) {
+  const updates = new Map(elements.map((element) => [element.id, element]));
+  const addReason = (elementId, reason, pattern, roleHint = null) => {
+    const current = updates.get(elementId);
+    if (!current) return;
+    const patternRoles = current.signals?.patternRoles ?? [];
+    const nextPatternRoles = patternRoles.includes(pattern.kind)
+      ? patternRoles
+      : [...patternRoles, pattern.kind];
+    const nextReasons = [...(current.reasons ?? []), reason]
+      .sort((first, second) => second.weight - first.weight)
+      .slice(0, 6);
+
+    updates.set(elementId, {
+      ...current,
+      confidence: round(Math.min(0.99, current.confidence + Math.min(0.05, reason.weight * 0.08)), 2),
+      ...(roleHint ? { componentRole: roleHint } : {}),
+      signals: {
+        ...current.signals,
+        patternRoles: nextPatternRoles,
+        patternConfidence: Math.max(current.signals?.patternConfidence ?? 0, pattern.confidence ?? 0),
+        ...(roleHint ? { componentRole: roleHint } : {}),
+      },
+      reasons: nextReasons,
+    });
+  };
+
+  for (const pattern of patterns?.appShells ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(
+        childId,
+        buildPatternReason("app-shell", pattern),
+        pattern,
+      );
+    }
+  }
+  for (const pattern of patterns?.repeatedLists ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("repeated-list", pattern), pattern, "list-row");
+    }
+  }
+  for (const pattern of patterns?.repeatedGrids ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("repeated-grid", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.statRows ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("stat-row", pattern), pattern, "metric-card");
+    }
+  }
+  for (const pattern of patterns?.formGroups ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("form-group", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.dataTables ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("data-table", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.charts ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("chart-series", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.actionClusters ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("action-cluster", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.tabSets ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("tab-set", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.dialogPanels ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("dialog-panel", pattern), pattern);
+    }
+  }
+  for (const pattern of patterns?.emptyStates ?? []) {
+    for (const childId of pattern.children ?? []) {
+      addReason(childId, buildPatternReason("empty-state", pattern), pattern, "empty-state");
+    }
+  }
+
+  return elements.map((element) => updates.get(element.id) ?? element);
+}
+
+function buildPatternReason(kind, pattern) {
+  const definitions = {
+    "app-shell": {
+      label: "Grouped app shell",
+      evidence: `${titleCase(pattern.shellType ?? "navigation shell")} with ${pattern.navCount ?? pattern.children?.length ?? 0} navigation landmarks.`,
+      weight: 0.34,
+    },
+    "repeated-list": {
+      label: "Repeated list rhythm",
+      evidence: `${pattern.children?.length ?? 0} rows share x-alignment, width, and vertical rhythm.`,
+      weight: 0.3,
+    },
+    "repeated-grid": {
+      label: "Repeated card grid",
+      evidence: `${pattern.rows ?? 0} by ${pattern.columns ?? 0} aligned card matrix with matching item sizes.`,
+      weight: 0.31,
+    },
+    "stat-row": {
+      label: "Metric row grouping",
+      evidence: `${pattern.cardCount ?? pattern.children?.length ?? 0} KPI-like cards align on one horizontal baseline.`,
+      weight: 0.29,
+    },
+    "form-group": {
+      label: "Form flow grouping",
+      evidence: `${pattern.fieldCount ?? 0} fields and ${pattern.actionCount ?? 0} actions share a form rhythm.`,
+      weight: 0.32,
+    },
+    "data-table": {
+      label: "Table grid alignment",
+      evidence: `${pattern.rows ?? 0} rows and ${pattern.columns ?? 0} columns align into a tabular grid.`,
+      weight: 0.35,
+    },
+    "chart-series": {
+      label: "Chart series baseline",
+      evidence: `${pattern.seriesCount ?? pattern.children?.length ?? 0} marks share an axis baseline and spacing.`,
+      weight: 0.34,
+    },
+    "action-cluster": {
+      label: "Grouped controls",
+      evidence: `${pattern.controlCount ?? pattern.children?.length ?? 0} controls align as a ${pattern.clusterType ?? "toolbar"}.`,
+      weight: 0.29,
+    },
+    "tab-set": {
+      label: "Tab set alignment",
+      evidence: `${pattern.tabCount ?? pattern.children?.length ?? 0} adjacent triggers form a ${pattern.tabKind ?? "tab"} control.`,
+      weight: 0.33,
+    },
+    "dialog-panel": {
+      label: "Dialog surface grouping",
+      evidence: `Floating panel is ${Math.round((pattern.centeredness ?? 0) * 100)}% centered with grouped inner content.`,
+      weight: 0.36,
+    },
+    "empty-state": {
+      label: "Empty-state composition",
+      evidence: `${pattern.textCount ?? 0} copy rows and ${pattern.actionCount ?? 0} recovery actions are centered in sparse space.`,
+      weight: 0.35,
+    },
+  };
+  const definition = definitions[kind] ?? {
+    label: "Pattern grouping",
+    evidence: "Higher-level layout pattern grouped this element.",
+    weight: 0.24,
+  };
+
+  return {
+    code: kind,
+    label: definition.label,
+    evidence: definition.evidence,
+    weight: definition.weight,
+  };
 }
 
 function inferComponentRole(element, { sourceWidth, sourceHeight }) {
@@ -2386,6 +2581,174 @@ function buildDialogPanelPattern(panel, elements, index, { sourceWidth, sourceHe
   };
 }
 
+function detectEmptyStatePatterns(
+  elements,
+  { sourceWidth, sourceHeight },
+  relatedPatterns = {},
+) {
+  const occupiedPatterns = [
+    ...(relatedPatterns.dataTables ?? []),
+    ...(relatedPatterns.charts ?? []),
+    ...(relatedPatterns.statRows ?? []),
+    ...(relatedPatterns.repeatedLists ?? []),
+    ...(relatedPatterns.repeatedGrids ?? []),
+  ];
+  const candidates = elements
+    .filter((element) =>
+      isEmptyStateCandidate(element, {
+        sourceWidth,
+        sourceHeight,
+        occupiedPatterns,
+      }),
+    )
+    .sort(readingOrderSort);
+
+  const centered = candidates.filter((element) => {
+    const xCenter = element.box.x + element.box.width / 2;
+    const yCenter = element.box.y + element.box.height / 2;
+    const horizontalOffset = Math.abs(xCenter - sourceWidth / 2) / Math.max(1, sourceWidth);
+    const yRatio = yCenter / Math.max(1, sourceHeight);
+    return horizontalOffset <= 0.28 && yRatio >= 0.22 && yRatio <= 0.82;
+  });
+  const singleSurfaceCandidates = centered.filter((element) =>
+    /chart-panel|media-panel|content-card|content-section|empty-state/.test(element.componentRole ?? ""),
+  );
+  if (centered.length < 2 && !singleSurfaceCandidates.length) return [];
+
+  const clusters = [];
+  for (const candidate of centered) {
+    const cluster = clusters.find((current) =>
+      current.some((element) => areRelatedEmptyStateParts(candidate, element, { sourceWidth, sourceHeight })),
+    );
+    if (cluster) {
+      cluster.push(candidate);
+    } else {
+      clusters.push([candidate]);
+    }
+  }
+
+  return clusters
+    .map((cluster, index) =>
+      buildEmptyStatePattern(cluster, index, {
+        sourceWidth,
+        sourceHeight,
+        occupiedPatterns,
+      }),
+    )
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
+function isEmptyStateCandidate(element, { sourceWidth, sourceHeight, occupiedPatterns }) {
+  if (/header|side-nav|bottom-nav/i.test(element.kind)) return false;
+  const role = element.componentRole ?? "";
+  const hasChartPattern = occupiedPatterns.some((pattern) => pattern.kind === "chart-series");
+  if (/navigation|metric-card|side-navigation|top-navigation|bottom-navigation/.test(role)) {
+    return false;
+  }
+  const primitive = element.primitive ?? "";
+  const widthRatio = element.box.width / Math.max(1, sourceWidth);
+  const heightRatio = element.box.height / Math.max(1, sourceHeight);
+  const areaRatio = (element.box.width * element.box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const inkRatio = element.signals?.inkRatio ?? 0;
+  const edgeRatio = element.signals?.edgeRatio ?? 0;
+  const signal = inkRatio + edgeRatio * 2;
+  const emptyStateLike =
+    /text|field-or-action|control|card|section/.test(primitive) ||
+    /text-line|primary-action|icon-action|content-card|content-section|form-field|search-field|media-panel|empty-state/.test(
+      role,
+    );
+  const centeredSurfaceLike =
+    !hasChartPattern &&
+    /chart-panel|media-panel|content-card|content-section/.test(role) &&
+    inkRatio <= 0.55 &&
+    areaRatio >= 0.08 &&
+    areaRatio <= 0.38;
+
+  if ((!emptyStateLike && !centeredSurfaceLike) || signal < 0.02) return false;
+  if (widthRatio > 0.82 || heightRatio > 0.52 || areaRatio > 0.46) return false;
+
+  return !occupiedPatterns.some(
+    (pattern) => pattern.box && boxOverlapRatio(pattern.box, element.box) >= 0.62,
+  );
+}
+
+function areRelatedEmptyStateParts(first, second, { sourceWidth, sourceHeight }) {
+  const firstCenterX = first.box.x + first.box.width / 2;
+  const secondCenterX = second.box.x + second.box.width / 2;
+  const firstCenterY = first.box.y + first.box.height / 2;
+  const secondCenterY = second.box.y + second.box.height / 2;
+  const horizontalDelta = Math.abs(firstCenterX - secondCenterX);
+  const verticalDelta = Math.abs(firstCenterY - secondCenterY);
+  const overlap = horizontalOverlapRatio(first.box, second.box);
+
+  return (
+    horizontalDelta <= sourceWidth * 0.28 &&
+    verticalDelta <= sourceHeight * 0.22 &&
+    (overlap >= 0.28 || horizontalDelta <= sourceWidth * 0.16)
+  );
+}
+
+function buildEmptyStatePattern(cluster, index, { sourceWidth, sourceHeight, occupiedPatterns }) {
+  const sorted = cluster.slice().sort(readingOrderSort);
+  const box = mergeBoxes(sorted.map((element) => element.box));
+  const boxCenterX = box.x + box.width / 2;
+  const boxCenterY = box.y + box.height / 2;
+  const xOffset = Math.abs(boxCenterX - sourceWidth / 2) / Math.max(1, sourceWidth);
+  const yOffset = Math.abs(boxCenterY - sourceHeight / 2) / Math.max(1, sourceHeight);
+  const areaRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const textCount = sorted.filter((element) =>
+    /text-line|content-section/.test(element.componentRole ?? "") || element.primitive === "text",
+  ).length;
+  const actionCount = sorted.filter((element) =>
+    /primary-action|icon-action|form-field|search-field/.test(element.componentRole ?? ""),
+  ).length;
+  const supportCount = sorted.filter((element) =>
+    /content-card|content-section|media-panel|chart-panel|control/.test(element.componentRole ?? "") ||
+    /card|control|media/.test(element.primitive ?? ""),
+  ).length;
+  const surfaceOnly = sorted.length === 1 && supportCount >= 1;
+  const centeredness = clamp(1 - (xOffset + yOffset) / 0.42, 0, 1);
+  const sparsity = clamp((0.46 - areaRatio) / 0.38, 0, 1);
+  const hasRecoveryCue = actionCount >= 1 || supportCount >= 1;
+  const conflicts = occupiedPatterns.some(
+    (pattern) => pattern.box && boxOverlapRatio(pattern.box, box) >= 0.48,
+  );
+
+  if (!surfaceOnly && (sorted.length < 2 || textCount < 1 || !hasRecoveryCue || conflicts)) return null;
+  if (surfaceOnly && (centeredness < 0.5 || conflicts)) return null;
+  if (box.width > sourceWidth * 0.82 || box.height > sourceHeight * 0.5) return null;
+  const normalizedTextCount = Math.max(textCount, surfaceOnly ? 1 : 0);
+  const normalizedActionCount = Math.max(actionCount, surfaceOnly ? 1 : 0);
+
+  const confidence = round(
+    clamp(
+      0.58 +
+        centeredness * 0.18 +
+        sparsity * 0.12 +
+        Math.min(0.08, normalizedTextCount * 0.03) +
+        Math.min(0.08, normalizedActionCount * 0.05 + supportCount * 0.025),
+      0.58,
+      0.94,
+    ),
+    2,
+  );
+  if (confidence < 0.64) return null;
+
+  return {
+    id: `empty-state-${index + 1}`,
+    kind: "empty-state",
+    axis: "centered",
+    textCount: normalizedTextCount,
+    actionCount: normalizedActionCount,
+    supportCount,
+    centeredness: round(centeredness, 2),
+    confidence,
+    box,
+    children: sorted.map((element) => element.id),
+  };
+}
+
 function boxContains(outer, inner, toleranceRatio, { sourceWidth, sourceHeight }) {
   const tolerance = Math.max(2, Math.min(sourceWidth, sourceHeight) * toleranceRatio);
   return (
@@ -2394,6 +2757,18 @@ function boxContains(outer, inner, toleranceRatio, { sourceWidth, sourceHeight }
     inner.x + inner.width <= outer.x + outer.width + tolerance &&
     inner.y + inner.height <= outer.y + outer.height + tolerance
   );
+}
+
+function boxOverlapRatio(first, second) {
+  const left = Math.max(first.x, second.x);
+  const top = Math.max(first.y, second.y);
+  const right = Math.min(first.x + first.width, second.x + second.width);
+  const bottom = Math.min(first.y + first.height, second.y + second.height);
+  const width = Math.max(0, right - left);
+  const height = Math.max(0, bottom - top);
+  const overlap = width * height;
+  const smaller = Math.min(first.width * first.height, second.width * second.height);
+  return smaller ? overlap / smaller : 0;
 }
 
 function isRepeatedListCandidate(element, { sourceWidth, sourceHeight }) {
@@ -2464,6 +2839,7 @@ function horizontalOverlapRatio(first, second) {
 }
 
 function detectAppShellPatterns(elements, { sourceWidth, sourceHeight }) {
+  const mobileLike = isMobileLikeSource({ sourceWidth, sourceHeight });
   const candidates = elements
     .filter((element) => isAppShellNavCandidate(element))
     .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
@@ -2471,7 +2847,9 @@ function detectAppShellPatterns(elements, { sourceWidth, sourceHeight }) {
 
   const topNavigation = pickStrongestNavigationLandmark(candidates, "top-navigation");
   const sideNavigation = pickStrongestNavigationLandmark(candidates, "side-navigation");
-  const bottomNavigation = pickStrongestNavigationLandmark(candidates, "bottom-navigation");
+  const bottomNavigation = mobileLike
+    ? pickStrongestNavigationLandmark(candidates, "bottom-navigation")
+    : null;
   const landmarks = [topNavigation, sideNavigation, bottomNavigation].filter(Boolean);
   const hasDesktopShell = Boolean(topNavigation && sideNavigation);
   const hasMobileShell = Boolean(topNavigation && bottomNavigation);
@@ -2549,20 +2927,48 @@ function pickStrongestNavigationLandmark(elements, role) {
 }
 
 function summarizeDetectedPatterns(elements, context) {
-  const appShells = detectAppShellPatterns(elements, context);
-  const repeatedLists = detectRepeatedListRuns(elements, context);
-  const repeatedGrids = detectRepeatedGridPatterns(elements, context);
-  const statRows = detectStatRowPatterns(elements, context, repeatedGrids);
-  const formGroups = detectFormGroups(elements, context);
-  const dataTables = detectDataTablePatterns(elements, context);
-  const charts = detectChartSeriesPatterns(elements, context);
-  const tabSets = detectTabSetPatterns(elements, context);
-  const dialogPanels = detectDialogPanelPatterns(elements, context);
+  const appShells = normalizePatternList(detectAppShellPatterns(elements, context), "app-shell");
+  const repeatedLists = normalizePatternList(detectRepeatedListRuns(elements, context), "repeated-list");
+  const repeatedGrids = normalizePatternList(
+    detectRepeatedGridPatterns(elements, context),
+    "repeated-grid",
+  );
+  const statRows = normalizePatternList(
+    detectStatRowPatterns(elements, context, repeatedGrids),
+    "stat-row",
+  );
+  const formGroups = normalizePatternList(detectFormGroups(elements, context), "form-group");
+  const dataTables = normalizePatternList(detectDataTablePatterns(elements, context), "data-table");
+  const charts = normalizePatternList(detectChartSeriesPatterns(elements, context), "chart-series");
+  const tabSets = normalizePatternList(detectTabSetPatterns(elements, context), "tab-set");
+  let dialogPanels = normalizePatternList(
+    detectDialogPanelPatterns(elements, context),
+    "dialog-panel",
+  );
   const tabSetElementIds = new Set(tabSets.flatMap((pattern) => pattern.children ?? []));
   const actionClusters = detectActionClusterPatterns(
     elements.filter((element) => !tabSetElementIds.has(element.id)),
     context,
   );
+  const emptyStates = normalizePatternList(
+    detectEmptyStatePatterns(elements, context, {
+      repeatedLists,
+      repeatedGrids,
+      formGroups,
+      dataTables,
+      charts,
+      statRows,
+      actionClusters,
+      tabSets,
+      dialogPanels,
+    }),
+    "empty-state",
+  );
+  if (emptyStates.length) {
+    dialogPanels = dialogPanels.filter(
+      (dialog) => !emptyStates.some((emptyState) => isDialogCoveredByEmptyState(dialog, emptyState)),
+    );
+  }
   const textLines = elements.filter(
     (element) =>
       element.primitive === "text" ||
@@ -2578,10 +2984,44 @@ function summarizeDetectedPatterns(elements, context) {
     formGroups,
     dataTables,
     charts,
-    actionClusters,
+    actionClusters: normalizePatternList(actionClusters, "action-cluster"),
     tabSets,
     dialogPanels,
+    emptyStates,
   };
+}
+
+function isDialogCoveredByEmptyState(dialog, emptyState) {
+  const dialogChildren = new Set(dialog.children ?? []);
+  const emptyChildren = new Set(emptyState.children ?? []);
+  const sharedChildren = [...dialogChildren].filter((id) => emptyChildren.has(id)).length;
+  const childOverlap =
+    sharedChildren > 0 &&
+    sharedChildren === Math.min(dialogChildren.size || 1, emptyChildren.size || 1);
+  const boxOverlap =
+    dialog.box && emptyState.box ? boxOverlapRatio(dialog.box, emptyState.box) >= 0.82 : false;
+
+  return childOverlap && boxOverlap && (dialog.childCount ?? dialogChildren.size) <= 1;
+}
+
+function normalizePatternList(patterns, prefix) {
+  return (patterns ?? [])
+    .filter(Boolean)
+    .slice()
+    .sort(patternReadingOrderSort)
+    .map((pattern, index) => ({
+      ...pattern,
+      id: `${prefix}-${index + 1}`,
+      children: (pattern.children ?? []).slice(),
+    }));
+}
+
+function patternReadingOrderSort(first, second) {
+  const firstBox = first.box ?? { x: 0, y: 0, width: 0, height: 0 };
+  const secondBox = second.box ?? { x: 0, y: 0, width: 0, height: 0 };
+  if (firstBox.y !== secondBox.y) return firstBox.y - secondBox.y;
+  if (firstBox.x !== secondBox.x) return firstBox.x - secondBox.x;
+  return (second.confidence ?? 0) - (first.confidence ?? 0);
 }
 
 function readingOrderSort(first, second) {
@@ -2609,6 +3049,7 @@ function buildLayoutTree(elements, { sourceWidth, sourceHeight, patterns, respon
       ...(patterns?.actionClusters ?? []),
       ...(patterns?.tabSets ?? []),
       ...(patterns?.dialogPanels ?? []),
+      ...(patterns?.emptyStates ?? []),
     ].flatMap((pattern) => pattern.children ?? []),
   );
   const content = elements.filter(
@@ -2762,6 +3203,20 @@ function buildLayoutTree(elements, { sourceWidth, sourceHeight, patterns, respon
     });
   }
 
+  for (const pattern of patterns?.emptyStates ?? []) {
+    groups.push({
+      id: `${pattern.id}-group`,
+      kind: pattern.kind,
+      box: pattern.box,
+      axis: pattern.axis,
+      textCount: pattern.textCount,
+      actionCount: pattern.actionCount,
+      centeredness: pattern.centeredness,
+      confidence: pattern.confidence,
+      children: pattern.children,
+    });
+  }
+
   const contentGroups = groupElementsByRows(content, { sourceHeight });
   groups.push(...contentGroups);
 
@@ -2780,6 +3235,7 @@ function buildLayoutTree(elements, { sourceWidth, sourceHeight, patterns, respon
       actionClusters: patterns?.actionClusters ?? [],
       tabSets: patterns?.tabSets ?? [],
       dialogPanels: patterns?.dialogPanels ?? [],
+      emptyStates: patterns?.emptyStates ?? [],
     },
     responsive: responsiveIntent ?? null,
     screenIntent: screenIntent ?? null,

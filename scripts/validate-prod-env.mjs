@@ -137,10 +137,10 @@ export function validateProdEnv(env = process.env, options = {}) {
     }
     if (liveRequested) {
       failures.push(
-        "Production meetup host must stay demo-safe: unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN (see docs/ops/LIVE_QWEN_ROLLOUT.md).",
+        "Production deploys must stay local-analysis-first: unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN unless a staged live rollout is approved.",
       );
     } else {
-      notes.push("Live Qwen: demo-safe (flag unset/false) — documented production default.");
+      notes.push("Live Qwen: local-analysis-first (flag unset/false) — documented production default.");
     }
     if (env.DASHSCOPE_API_KEY?.trim() && !liveRequested) {
       warnings.push(
@@ -186,7 +186,7 @@ export function validateProdEnv(env = process.env, options = {}) {
       }
       notes.push("Live Qwen: enabled on Preview — matches docs/ops/LIVE_QWEN_ROLLOUT.md Stage A.");
     } else {
-      notes.push("Live Qwen: disabled on Preview (demo-safe preview build).");
+      notes.push("Live Qwen: disabled on Preview (local-analysis preview build).");
     }
   }
 
@@ -213,10 +213,10 @@ export function validateProdEnv(env = process.env, options = {}) {
     warnings.push(
       "NEXT_PUBLIC_SENTRY_DSN is set but error monitoring flags are off — Sentry will not initialize.",
     );
-    notes.push("Sentry: DSN present but monitoring disabled (demo-safe default).");
+    notes.push("Sentry: DSN present but monitoring disabled (local-first default).");
   } else if (target === "production") {
     notes.push(
-      "Sentry: unset — demo-safe default. Enable observability + DSN per docs/ops/OBSERVABILITY.md when ready.",
+      "Sentry: unset — local-first default. Enable observability + DSN per docs/ops/OBSERVABILITY.md when ready.",
     );
   } else {
     notes.push("Sentry: optional on Preview — enable with observability flags + DSN.");

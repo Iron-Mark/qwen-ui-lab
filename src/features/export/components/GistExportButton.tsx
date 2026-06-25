@@ -45,7 +45,7 @@ const STATUS_LABELS: Record<GistExportStatus, string> = {
 export function GistExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
   label,
   className,
   analyticsSource = "snippet_preview",
@@ -73,7 +73,7 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Copy your scaffold code, open gist.github.com, paste into a new secret gist, and save.";
+        "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
 
       const copyResult = await copy(text, "Code copied for manual gist paste");
       const copied = copyResult.ok;

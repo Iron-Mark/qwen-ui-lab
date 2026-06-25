@@ -14,7 +14,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await expect(footer).toBeVisible();
 
   await expect(footer.locator('img[src="/icons/icon.svg"]')).toHaveCount(1);
-  await expect(footer.getByText("Screenshot to scaffold lab")).toBeVisible();
+  await expect(footer.getByText("Screenshot to React lab")).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
   const githubIconLink = footer.locator('a[aria-label="GitHub"]');

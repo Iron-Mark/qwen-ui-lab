@@ -35,21 +35,21 @@ export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="gap-1.5 text-xs font-medium">
                   <Sparkles className="size-3.5" aria-hidden />
-                  One-click demo
+                  Sample reference
                 </Badge>
                 <Badge
                   variant="outline"
                   className="border-amber-500/40 bg-amber-500/10 text-xs text-amber-900 dark:text-amber-100"
                 >
-                  Offline-safe · no upload required
+                  Preloaded screenshot
                 </Badge>
               </div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Preloaded {label} analysis
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                This route loads a bundled reference, runs analyze, and opens the
-                scaffold export panel—ideal for stage demos. Try{" "}
+                This route loads a sample screenshot, runs analysis, and opens the
+                component export panel. Try{" "}
                 <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">
                   ?archetype=auth|mobile|landing|settings|shop
                 </code>{" "}

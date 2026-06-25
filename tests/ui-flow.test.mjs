@@ -49,7 +49,8 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
   assert.ok(
     artifact.plan.some((section) => section.title === "Component Map"),
   );
-  assert.match(artifact.generatedCode, /export function GeneratedDashboard/);
+  assert.match(artifact.generatedCode, /export default function GeneratedDashboard/);
+  assert.match(artifact.generatedCode, /const detectedElements: DetectionElement\[\]/);
   assert.equal(artifact.previewStats.length, 4);
 });
 
@@ -124,6 +125,10 @@ test("buildQwenVisionRequest uses OpenAI-compatible image_url content", () => {
   assert.equal(request.messages[0].role, "system");
   assert.equal(request.messages[1].role, "user");
   assert.equal(request.messages[1].content[1].type, "image_url");
+  assert.match(request.messages[1].content[0].text, /production-usable TSX/);
+  assert.match(request.messages[1].content[0].text, /shadcn-style primitives/);
+  assert.match(request.messages[1].content[0].text, /export a default top-level component/);
+  assert.match(request.messages[1].content[0].text, /semantic landmarks/);
   assert.equal(
     request.messages[1].content[1].image_url.url,
     "data:image/png;base64,abc123",

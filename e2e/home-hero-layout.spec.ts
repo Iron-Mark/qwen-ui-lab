@@ -18,10 +18,10 @@ test("home hero is visual-led, compact, and leaves the workflow visible", async 
     await expect(hero).toBeVisible();
     await expect(hero.getByTestId("home-hero-visual")).toBeVisible();
     await expect(
-      hero.getByRole("heading", { name: /scaffold ui in minutes/i }),
+      hero.getByRole("heading", { name: /turn screenshots into editable react/i }),
     ).toBeVisible();
     await expect(hero.locator(".growth-snippet")).toContainText(
-      /layout plan, editable preview, and export-ready react/i,
+      /inspect the detected structure, then export/i,
     );
     const benefitRail = hero.getByTestId("hero-benefit-rail");
     await expect(benefitRail).toBeVisible();

@@ -1,6 +1,6 @@
 /**
- * Demo-safe local auth — guest mode by default, optional display name or
- * magic-link stub stored in sessionStorage only (no OAuth, no real email).
+ * Browser-local profile — guest mode by default, optional display name or
+ * contact label stored in sessionStorage only.
  *
  * Real OAuth / email plan: docs/ops/OAUTH_ROADMAP.md
  */
@@ -108,7 +108,7 @@ export function setDisplayName(name, storage = null) {
 }
 
 /**
- * Demo stub — records pending email locally; no network or outbound mail.
+ * Records a pending contact label locally; no network or outbound mail.
  * @param {string} email
  * @param {Storage | null | undefined} [storage]
  * @returns {{ ok: true, state: AuthState } | { ok: false, error: string }}
@@ -126,7 +126,7 @@ export function requestMagicLink(email, storage = null) {
 }
 
 /**
- * Completes the demo magic-link flow without verifying a token.
+ * Completes the local contact-label flow without verifying a token.
  * @param {Storage | null | undefined} [storage]
  * @returns {AuthState}
  */

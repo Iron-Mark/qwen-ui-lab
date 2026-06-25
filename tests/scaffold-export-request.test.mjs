@@ -30,7 +30,7 @@ test("normalizeScaffoldExportRequestBody rejects invalid bodies and empty conten
   assert.deepEqual(normalizeScaffoldExportRequestBody({ content: "   " }), {
     ok: false,
     code: "missing_content",
-    message: "Scaffold content is required.",
+    message: "Component content is required.",
   });
 });
 
@@ -42,6 +42,6 @@ test("normalizeScaffoldExportRequestBody enforces content byte limit", () => {
   assert.deepEqual(result, {
     ok: false,
     code: "content_too_large",
-    message: `Scaffold exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
+    message: `Component exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
   });
 });
