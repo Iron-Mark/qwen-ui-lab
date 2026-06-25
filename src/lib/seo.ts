@@ -257,8 +257,8 @@ export function createManifestConfig(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: "Live screenshot workflow",
-        short_name: "Live flow",
+        name: "Analyze screenshot",
+        short_name: "Analyze",
         description: "Upload a UI screenshot and export a React component.",
         url: "/#upload-flow",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],

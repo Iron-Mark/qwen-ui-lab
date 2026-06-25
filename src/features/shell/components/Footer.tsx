@@ -20,7 +20,7 @@ const PRODUCT_LINKS = [
   {
     href: "/",
     label: "Dashboard",
-    tooltip: "Return to the screenshot workflow and sample dashboard.",
+    tooltip: "Return to your workspace and continue building from the uploaded screenshots.",
   },
   {
     href: "/design-system",
@@ -30,7 +30,7 @@ const PRODUCT_LINKS = [
   {
     href: "/demo",
     label: "Sample run",
-    tooltip: "Load a prebuilt screenshot sample without uploading a file.",
+    tooltip: "Load a ready-to-run screenshot sample to preview export results.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -197,14 +197,14 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    Screenshot to React lab
+                    React + Tailwind starter
                   </span>
                 </span>
               </Link>
             </FooterTooltip>
             <p className="mt-3 max-w-sm text-sm leading-5 text-muted-foreground">
-              Screenshot-to-React starters with reviewable export packages for
-              product teams.
+              Create reviewable React + Tailwind starter packages from
+              screenshot analysis.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ href, label, tooltip, icon: Icon }) => (
@@ -234,7 +234,10 @@ export function Footer() {
         </div>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <p>&copy; 2026 {SITE_NAME}. Built for screenshot-to-code workflows.</p>
+          <p>
+            &copy; 2026 {SITE_NAME}. Built for practical React+Tailwind
+            starter exports.
+          </p>
           <FooterTooltip content="Open Mark's portfolio and project work.">
             <a
               href="https://marksiazon.dev"

@@ -40,7 +40,7 @@ export function getHomeRouteStructuredDataInput() {
     additionalGraph: [
       {
         "@type": "SoftwareApplication",
-        name: "qwen-ui-lab dashboard workflow",
+        name: "qwen-ui-lab dashboard",
         applicationCategory: "DeveloperApplication",
         operatingSystem: "Web",
         offers: {
@@ -65,7 +65,7 @@ export function createHomeRouteStructuredData() {
 export function getHomeRouteSocialPreviewImage() {
   return {
     eyebrow: "qwen-ui-lab",
-    badge: "Screenshot workflow",
+    badge: "Screenshot to React",
     title: "Screenshot to React starter",
     description: "Upload, inspect detected UI, refine boxes, and export starter files",
     workflow: "Upload → Detect → Refine → Export",
