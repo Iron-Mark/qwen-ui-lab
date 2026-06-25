@@ -108,14 +108,14 @@ export function ExampleButton() {
     ],
     variants: [
       { id: "default", label: "Default", preview: <Badge>Live</Badge> },
-      { id: "secondary", label: "Secondary", preview: <Badge variant="secondary">Demo</Badge> },
+      { id: "secondary", label: "Secondary", preview: <Badge variant="secondary">Ready</Badge> },
       { id: "outline", label: "Outline", preview: <Badge variant="outline">Outline</Badge> },
     ],
-    preview: <Badge variant="secondary">Demo mode</Badge>,
+    preview: <Badge variant="secondary">Ready</Badge>,
     code: `import { Badge } from "@/components/ui/badge";
 
 export function ExampleBadge() {
-  return <Badge variant="secondary">Demo mode</Badge>;
+  return <Badge variant="secondary">Ready</Badge>;
 }`,
     exportFilename: "badge.tsx",
   },
@@ -515,7 +515,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React scaffold with offline demo fallback."
+      description="Screenshot to React starter with reviewable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />
@@ -528,7 +528,7 @@ export function ExampleLawInformationCard() {
     level: "organism",
     domain: "uilaws",
     name: "UI law compliance checklist",
-    description: "Interactive checklist for reviewing scaffolds against UX laws.",
+    description: "Interactive checklist for reviewing generated UI against UX laws.",
     usage: "Manual review below Generate Preview; extend `items` for project rules.",
     sourcePath: "features/design-system/components/UiLawComplianceChecklist.tsx",
     principles: ["fitts", "hick", "jakob", "consistency", "contrast"],

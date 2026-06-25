@@ -15,11 +15,11 @@ import {
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Bundled meetup samples — exact filename match (normalized). */
+/** Bundled reference samples — exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
-      "Admin dashboard shell with stat grid, revenue chart, and activity feed — tuned for live demos.",
+      "Admin dashboard shell with stat grid, revenue chart, and activity feed.",
     previewStats: [
       { label: "Sections", value: "6" },
       { label: "Components", value: "11" },
@@ -29,7 +29,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "dashboard-reference.svg is the bundled meetup reference (SVG, landscape admin dashboard).",
+        body: "dashboard-reference.svg is the sample reference (SVG, landscape admin dashboard).",
       },
       {
         title: "Layout Read",
@@ -72,7 +72,7 @@ export function GeneratedDashboard() {
   },
   "auth-reference.svg": {
     summary:
-      "Centered sign-in screen with brand mark, email/password fields, OAuth row, and recovery links — tuned for live demos.",
+      "Centered sign-in screen with brand mark, email/password fields, OAuth row, and recovery links.",
     previewStats: [
       { label: "Sections", value: "4" },
       { label: "Components", value: "7" },
@@ -82,7 +82,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "auth-reference.svg is the bundled meetup reference (SVG, centered authentication card on a neutral canvas).",
+        body: "auth-reference.svg is the sample reference (SVG, centered authentication card on a neutral canvas).",
       },
       {
         title: "Layout Read",
@@ -130,7 +130,7 @@ export function GeneratedAuthScreen() {
   },
   "mobile-reference.svg": {
     summary:
-      "Mobile app shell with sticky header, stacked feed cards, floating action button, and bottom navigation — tuned for live demos.",
+      "Mobile app shell with sticky header, stacked feed cards, floating action button, and bottom navigation.",
     previewStats: [
       { label: "Sections", value: "4" },
       { label: "Components", value: "8" },
@@ -140,7 +140,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "mobile-reference.svg is the bundled meetup reference (SVG, portrait phone frame ~390×844).",
+        body: "mobile-reference.svg is the sample reference (SVG, portrait phone frame ~390×844).",
       },
       {
         title: "Layout Read",
@@ -185,7 +185,7 @@ export function GeneratedMobileShell() {
   },
   "landing-reference.svg": {
     summary:
-      "Marketing landing page with hero band, three-up feature grid, testimonial row, pricing cards, and footer CTA — tuned for live demos.",
+      "Marketing landing page with hero band, three-up feature grid, testimonial row, pricing cards, and footer CTA.",
     previewStats: [
       { label: "Sections", value: "5" },
       { label: "Components", value: "9" },
@@ -195,7 +195,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "landing-reference.svg is the bundled meetup reference (SVG, wide marketing landing ~1440×900).",
+        body: "landing-reference.svg is the sample reference (SVG, wide marketing landing ~1440×900).",
       },
       {
         title: "Layout Read",
@@ -228,7 +228,7 @@ export function GeneratedLanding() {
         aria-label="Hero from landing-reference.svg"
         headline="Ship UI faster with AI-assisted scaffolding"
         primaryCta="Start free"
-        secondaryCta="View demo"
+        secondaryCta="View sample"
       />
       <FeatureGrid features={featureItems} className="py-16" />
       <TestimonialRow quotes={testimonials} />
@@ -240,7 +240,7 @@ export function GeneratedLanding() {
   },
   "settings-reference.svg": {
     summary:
-      "Account settings panel with side nav, grouped profile fields, notification toggles, and sticky save bar — tuned for live demos.",
+      "Account settings panel with side nav, grouped profile fields, notification toggles, and sticky save bar.",
     previewStats: [
       { label: "Sections", value: "4" },
       { label: "Components", value: "6" },
@@ -250,7 +250,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "settings-reference.svg is the bundled meetup reference (SVG, desktop settings layout with left rail).",
+        body: "settings-reference.svg is the sample reference (SVG, desktop settings layout with left rail).",
       },
       {
         title: "Layout Read",
@@ -301,7 +301,7 @@ export function GeneratedSettings() {
   },
   "ecommerce-reference.svg": {
     summary:
-      "E-commerce catalog with filter sidebar, product grid, cart badge, and quick-add CTAs — tuned for live demos.",
+      "E-commerce catalog with filter sidebar, product grid, cart badge, and quick-add CTAs.",
     previewStats: [
       { label: "Sections", value: "5" },
       { label: "Components", value: "10" },
@@ -311,7 +311,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "ecommerce-reference.svg is the bundled meetup reference (SVG, desktop catalog with left filter rail).",
+        body: "ecommerce-reference.svg is the sample reference (SVG, desktop catalog with left filter rail).",
       },
       {
         title: "Layout Read",
@@ -813,19 +813,19 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="Generated ${profile.label.toLowerCase()} scaffold from ${sampleKey}"
-      className="qwen-generated-shell min-h-dvh bg-background text-foreground"
+      aria-label="${profile.label} starter"
+      className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Offline sample</Badge>
+            <Badge variant="secondary">Starter</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Production-ready starter generated from a bundled reference. Replace sample copy,
+              Starter component generated from the detected screenshot structure. Replace sample copy,
               connect data, then keep the recipe JSON beside this component during review.
             </p>
           </div>
@@ -843,7 +843,7 @@ export default function ${profile.componentName}() {
             ))}
           </div>
           <aside className="grid content-start gap-3 rounded-xl border bg-card p-4 shadow-sm">
-            <p className="text-sm font-medium">Export review</p>
+            <p className="text-sm font-medium">Implementation notes</p>
             <dl className="grid gap-3 text-sm">
               <div>
                 <dt className="text-muted-foreground">Responsive mode</dt>
@@ -935,7 +935,7 @@ function buildKnownSampleProfile(sampleKey, sample) {
       id: archetypeId,
       label: archetype.label,
       confidence: 0.95,
-      source: "bundled-reference",
+      source: "sample-screenshot",
       reference: sampleKey,
     },
     responsiveIntent: knownSampleResponsiveIntent(archetypeId),
@@ -1482,12 +1482,12 @@ export default function ${componentName}() {
   return (
     <main
       aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
-      className="qwen-generated-shell min-h-dvh bg-background text-foreground"
+      className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Local SVG scaffold</Badge>
+            <Badge variant="secondary">SVG starter</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1496,7 +1496,7 @@ export default function ${componentName}() {
             </h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
-              {svgStructure.textCount} labels were parsed locally into export-ready regions.
+              {svgStructure.textCount} labels were parsed into reviewable regions.
             </p>
           </div>
           <dl className="grid gap-3 text-sm sm:grid-cols-3">
@@ -1623,7 +1623,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} scaffold.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} starter.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1644,7 +1644,7 @@ function buildGeneratedSvgElementBlueprint(labels) {
       label: item.label,
       confidence: Math.max(0.72, 0.9 - index * 0.02),
       reasons: [
-        "SVG text and group labels were parsed locally without OCR or network calls.",
+        "SVG text and group labels define this region.",
         `${titleCase(item.intent)} label maps to ${samplePrimitiveName(componentRole)}.`,
       ],
       guidance: item.guidance,
@@ -1731,16 +1731,29 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
 const shadcnPrimitiveMap: Record<string, string> = {
+  "app-shell": "App shell with semantic landmarks",
   "top-navigation": "semantic nav + Button ghost controls",
   "side-navigation": "aside navigation + Button ghost controls",
   "bottom-navigation": "mobile nav + Button icon controls",
+  "section": "semantic section",
+  "text": "typographic content",
+  "media": "responsive media surface",
+  "field-or-action": "Input or Button",
   "search-field": "Input with visible label",
   "form-field": "Input with helper text",
+  "form-group": "Fieldset-style form group",
   "primary-action": "Button",
   "icon-action": "Button size icon",
+  "action-cluster": "Button toolbar",
+  "card-grid": "responsive Card grid",
+  "repeated-grid": "responsive Card grid",
+  "repeated-list": "stacked Card rows",
   "metric-card": "Card + Badge trend",
+  "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
+  "chart-series": "Chart card with text fallback",
+  "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
   "tab-set": "Tabs",
@@ -1798,13 +1811,13 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="Generated production scaffold from ${safeName}"
+      aria-label="${archetype.label} starter from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Screenshot scaffold</Badge>
+            <Badge variant="outline">Screenshot starter</Badge>
             <Badge variant="secondary">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
@@ -1812,7 +1825,7 @@ export default function ${componentName}() {
               ${archetype.label} interface shell
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Generated from local detection signals with shadcn-style primitives, semantic sections,
+              Generated from reviewed detection signals with shadcn-style primitives, semantic sections,
               and responsive layout defaults ready for real copy and data.
             </p>
           </div>
@@ -2024,12 +2037,12 @@ export function DetectionGridReference() {
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Local screenshot scaffold</p>
+        <p className="text-xs font-medium uppercase">Screenshot starter</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
-          {detectedElements.length} deterministic UI elements were detected before scaffold generation.
+          {detectedElements.length} UI elements were detected before component generation.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the scaffold.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the starter.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
@@ -2187,7 +2200,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         <div className="grid max-w-xs gap-2">
           <p className="text-sm font-semibold">No results yet</p>
           <p className="text-[11px] opacity-70">
-            Empty-state scaffold with short explanation and one recovery action.
+            Empty state with short explanation and one recovery action.
           </p>
           <button
             type="button"
@@ -2210,7 +2223,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             className="rounded border px-2 py-1 text-xs"
             style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
           >
-            Row {itemIndex + 1} - repeated item scaffold
+            Row {itemIndex + 1} - repeated item
           </li>
         ))}
       </ul>
@@ -2480,7 +2493,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     return (
       <div className="mt-3 rounded border p-3" style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}>
         <p className="text-xs font-semibold">{roleLabel}</p>
-        <p className="mt-1 text-[11px] opacity-70">Card scaffold with grouped title, content, and supporting metadata.</p>
+        <p className="mt-1 text-[11px] opacity-70">Card surface with grouped title, content, and supporting metadata.</p>
       </div>
     );
   }
@@ -2497,7 +2510,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (/text|list/.test(primitive)) {
     return (
-      <div className="mt-3 space-y-1.5" aria-label={label + " text scaffold"}>
+      <div className="mt-3 space-y-1.5" aria-label={label + " text preview"}>
         <span className="block h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
         <span className="block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
       </div>

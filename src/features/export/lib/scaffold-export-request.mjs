@@ -29,13 +29,13 @@ export function normalizeScaffoldExportRequestBody(body) {
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
-      : "qwen-ui-lab scaffold export";
+      : "qwen-ui-lab component export";
 
   if (!content.trim()) {
     return {
       ok: false,
       code: "missing_content",
-      message: "Scaffold content is required.",
+      message: "Component content is required.",
     };
   }
 
@@ -44,7 +44,7 @@ export function normalizeScaffoldExportRequestBody(body) {
     return {
       ok: false,
       code: "content_too_large",
-      message: `Scaffold exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
+      message: `Component exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
     };
   }
 

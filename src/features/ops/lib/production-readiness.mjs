@@ -46,7 +46,7 @@ export function buildProductionReadiness(env = process.env) {
   const checks = [
     createCheck({
       id: "demo-fallback",
-      label: "Offline demo fallback",
+      label: "Local analysis fallback",
       status: "ready",
       active: health.provider === "demo",
       detail:
@@ -65,7 +65,7 @@ export function buildProductionReadiness(env = process.env) {
         ? `Enabled with ${health.model}.`
         : health.hasApiKey
           ? "API key is present, but live analysis remains disabled until QWEN_LIVE_ANALYSIS=true."
-          : "Missing DASHSCOPE_API_KEY; deterministic offline analysis is serving requests.",
+          : "Provider credentials are missing; deterministic local analysis is serving requests.",
     }),
     createCheck({
       id: "share-storage",
@@ -92,7 +92,7 @@ export function buildProductionReadiness(env = process.env) {
       active: repoExportConfigured,
       detail: repoExportConfigured
         ? "Repo compare export can use GitHub credentials."
-        : "Repo export falls back to a downloaded scaffold zip.",
+        : "Repo export falls back to a downloaded starter package.",
     }),
     createCheck({
       id: "public-site-url",

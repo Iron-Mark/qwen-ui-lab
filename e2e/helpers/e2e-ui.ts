@@ -131,7 +131,7 @@ export async function waitForUploadFlowReady(page: Page, timeoutMs = 20_000) {
   await expect(page.locator('input[type="file"]')).toBeAttached({ timeout: timeoutMs });
 }
 
-/** Bottom-left demo snackbar should clear the sticky header and stay in viewport. */
+/** Bottom-left local analysis notice should clear the sticky header and stay in viewport. */
 export async function expectDemoSnackbarInViewport(
   page: Page,
   snackbar: Locator,
@@ -161,7 +161,7 @@ export async function expectDemoSnackbarInViewport(
 export function demoModeSnackbar(page: Page): Locator {
   return page
     .getByRole("status")
-    .filter({ hasText: /demo mode.*safe for live demos/i })
+    .filter({ hasText: /local analysis available/i })
     .first();
 }
 

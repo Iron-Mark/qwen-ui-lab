@@ -40,6 +40,7 @@ export function AppearanceMenu() {
       <Button
         variant="ghost"
         size="icon-lg"
+        className="min-h-11 min-w-11 sm:min-h-10 sm:min-w-10"
         aria-label="Appearance settings"
         disabled
       >
@@ -52,7 +53,12 @@ export function AppearanceMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-lg" aria-label="Appearance settings">
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            className="min-h-11 min-w-11 sm:min-h-10 sm:min-w-10"
+            aria-label="Appearance settings"
+          >
             {theme === "light" ? (
               <Sun className="size-4" aria-hidden />
             ) : (

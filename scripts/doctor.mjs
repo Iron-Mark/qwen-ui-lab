@@ -49,8 +49,8 @@ for (const dep of ["next", "react", "recharts", "chart.js", "prismjs"]) {
 const config = getQwenConfig();
 const liveEnabled = isLiveQwenAnalysisEnabled();
 if (!config.ok) {
-  check("DASHSCOPE_API_KEY", false, "not set — offline demo mode only");
-  check("QWEN_LIVE_ANALYSIS", false, "demo mode (no upstream calls)");
+  check("DASHSCOPE_API_KEY", false, "not set — local analysis only");
+  check("QWEN_LIVE_ANALYSIS", false, "local analysis mode (no upstream calls)");
 } else {
   check("DASHSCOPE_API_KEY", true, "configured");
   if (liveEnabled) {
@@ -59,7 +59,7 @@ if (!config.ok) {
     check(
       "QWEN_LIVE_ANALYSIS",
       false,
-      "not enabled — demo mode only (key alone does not call Qwen)",
+      "not enabled — local analysis only (key alone does not call Qwen)",
     );
   }
   try {

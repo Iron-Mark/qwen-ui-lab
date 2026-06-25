@@ -76,7 +76,7 @@ test("repo export API falls back to zip when GitHub export is unavailable", asyn
     assert.equal(response.headers.get("Content-Type"), "application/zip");
     assert.match(
       response.headers.get("Content-Disposition") ?? "",
-      /qwen-ui-lab-scaffold\.zip/,
+      /qwen-ui-lab-export-package\.zip/,
     );
     assert.ok((await response.arrayBuffer()).byteLength > 0);
   });

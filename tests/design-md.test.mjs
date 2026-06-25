@@ -39,8 +39,8 @@ export function GeneratedDashboard() {
   return <main>Dashboard scaffold</main>;
 }
 `,
-  modeLabel: "Local demo mode",
-  summary: "Offline detector produced a dashboard scaffold from visible geometry.",
+  modeLabel: "Analyzer ready",
+  summary: "Local detector produced a dashboard starter from visible geometry.",
   detections: {
     source: { width: 1200, height: 800 },
     designTokens: {

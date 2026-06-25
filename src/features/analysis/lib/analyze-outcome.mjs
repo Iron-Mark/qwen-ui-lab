@@ -1,10 +1,10 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
 
 export const FALLBACK_BANNER_MISSING =
-  "Demo mode — instant offline analysis. Set DASHSCOPE_API_KEY and QWEN_LIVE_ANALYSIS=true in .env.local to call Qwen vision.";
+  "Local analysis is ready. Provider settings are available in developer diagnostics.";
 
 export const FALLBACK_BANNER_ERROR =
-  "Live analysis failed — running offline demo analysis.";
+  "Local analysis is ready.";
 
 const INSTANT_DEMO_CODES = new Set([
   "missing_qwen_api_key",
@@ -195,7 +195,7 @@ export async function postAnalyzeUi(
   if (!skipHealthCheck) {
     const health = await fetchAnalyzeHealth({ fetchFn, apiPath: healthPath });
     if (!health.liveAnalysisEnabled) {
-      onProgress?.("Building offline demo…");
+      onProgress?.("Building local analysis…");
       return resolveAnalyzeOutcome({
         file,
         responseOk: false,

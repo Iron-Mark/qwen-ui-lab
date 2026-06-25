@@ -1205,9 +1205,13 @@ function classifyDetectedElement(region, box, { inkRatio, edgeRatio, sourceWidth
   const yRatio = box.y / Math.max(1, sourceHeight);
   const xRatio = box.x / Math.max(1, sourceWidth);
   const areaRatio = (box.width * box.height) / Math.max(1, sourceWidth * sourceHeight);
+  const mobileLike = isMobileLikeSource({ sourceWidth, sourceHeight });
+  const shallowBottomBand = box.height <= sourceHeight * 0.14;
 
   if (yRatio <= 0.08 && box.width >= sourceWidth * 0.35) return "header";
-  if (yRatio >= 0.78 && box.width >= sourceWidth * 0.28) return "bottom-nav";
+  if (mobileLike && shallowBottomBand && yRatio >= 0.78 && box.width >= sourceWidth * 0.28) {
+    return "bottom-nav";
+  }
   if (xRatio <= 0.12 && box.height >= sourceHeight * 0.32) return "side-nav";
   if (aspect >= 3.6 && box.height <= sourceHeight * 0.12) return "input-or-button-row";
   if (aspect >= 1.5 && aspect <= 4.5 && box.height <= sourceHeight * 0.16 && edgeRatio >= 0.018) {
@@ -1422,6 +1426,10 @@ function snapComponentRoles(elements, { sourceWidth, sourceHeight }) {
         .slice(0, 5),
     };
   });
+}
+
+function isMobileLikeSource({ sourceWidth, sourceHeight }) {
+  return sourceWidth <= 640 || sourceHeight >= sourceWidth * 1.2;
 }
 
 function refineElementsWithPatternSemantics(elements, patterns) {
@@ -2831,6 +2839,7 @@ function horizontalOverlapRatio(first, second) {
 }
 
 function detectAppShellPatterns(elements, { sourceWidth, sourceHeight }) {
+  const mobileLike = isMobileLikeSource({ sourceWidth, sourceHeight });
   const candidates = elements
     .filter((element) => isAppShellNavCandidate(element))
     .sort((first, second) => first.box.y - second.box.y || first.box.x - second.box.x);
@@ -2838,7 +2847,9 @@ function detectAppShellPatterns(elements, { sourceWidth, sourceHeight }) {
 
   const topNavigation = pickStrongestNavigationLandmark(candidates, "top-navigation");
   const sideNavigation = pickStrongestNavigationLandmark(candidates, "side-navigation");
-  const bottomNavigation = pickStrongestNavigationLandmark(candidates, "bottom-navigation");
+  const bottomNavigation = mobileLike
+    ? pickStrongestNavigationLandmark(candidates, "bottom-navigation")
+    : null;
   const landmarks = [topNavigation, sideNavigation, bottomNavigation].filter(Boolean);
   const hasDesktopShell = Boolean(topNavigation && sideNavigation);
   const hasMobileShell = Boolean(topNavigation && bottomNavigation);

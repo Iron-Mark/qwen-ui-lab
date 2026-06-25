@@ -2,9 +2,9 @@ import type { Metadata, MetadataRoute, Viewport } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
-export const SITE_TAGLINE = "Screenshot-to-scaffold meetup demo";
+export const SITE_TAGLINE = "Screenshot to React starter";
 export const SITE_PITCH =
-  "Turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code.";
+  "Turn UI screenshots into inspectable React + Tailwind starter packages.";
 export const DEFAULT_OG_IMAGE = "/opengraph-image";
 export const MANIFEST_PATH = "/manifest.webmanifest";
 export const LEGACY_MANIFEST_PATH = "/manifest.json";
@@ -123,7 +123,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Meetup-ready demo: turn UI screenshots into React + Tailwind scaffolds with Qwen3-VL and Qwen Code - offline-safe by default, no API key on stage.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind starter package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -131,10 +131,10 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     authors: [{ name: SITE_NAME }],
     keywords: [
       "Qwen UI Lab",
-      "AI UI scaffolding",
+      "AI UI analysis",
       "screenshot to component",
       "React Tailwind generator",
-      "design system demo",
+      "design system starter",
     ],
     alternates: {
       canonical: "/",
@@ -142,7 +142,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     openGraph: {
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Live meetup demo - screenshot to React/Tailwind scaffold in minutes. Offline-safe; enable live Qwen only when you choose.",
+        "Screenshot-to-React workflow with detected UI review, editable boxes, and export-ready starter files.",
       type: "website",
       url: "/",
       siteName: SITE_NAME,
@@ -152,7 +152,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
           url: ogImagePath,
           width: 1200,
           height: 630,
-          alt: "qwen-ui-lab AI-assisted UI scaffolding",
+          alt: "qwen-ui-lab screenshot-to-React workflow",
         },
       ],
     },
@@ -160,7 +160,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       card: "summary_large_image",
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Mass-presentation demo: upload, analyze, and export scaffold-ready UI - no production API required.",
+        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind starter.",
       images: [ogImagePath],
     },
     robots: {
@@ -203,10 +203,10 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
 export function createManifestConfig(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: `${SITE_NAME} - meetup demo`,
+    name: `${SITE_NAME} - screenshot to React`,
     short_name: SITE_NAME,
     description:
-      "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
+      "Screenshot-to-React workflow with reviewable starter exports.",
     start_url: "/",
     scope: "/",
     lang: "en-US",
@@ -259,7 +259,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Live screenshot workflow",
         short_name: "Live flow",
-        description: "Upload a UI screenshot and export a React scaffold.",
+        description: "Upload a UI screenshot and export a React component.",
         url: "/#upload-flow",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -271,9 +271,9 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "One-click demo",
-        short_name: "Demo",
-        description: "Open the bundled offline-safe demo flow.",
+        name: "Sample run",
+        short_name: "Sample",
+        description: "Open a preloaded screenshot sample run.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -284,14 +284,14 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         sizes: "1440x900",
         type: "image/png",
         form_factor: "wide",
-        label: "Dashboard screenshot scaffold reference",
+        label: "Dashboard screenshot reference",
       },
       {
         src: "/references/mobile-reference.png",
         sizes: "390x844",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile app screenshot scaffold reference",
+        label: "Mobile app screenshot reference",
       },
     ],
     launch_handler: {
@@ -430,7 +430,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Meetup demo for converting UI screenshots into React/Tailwind scaffolds with Qwen3-VL and Qwen Code.",
+            "Screenshot-to-React tool for converting UI references into reviewable React/Tailwind starter packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,
@@ -449,7 +449,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           operatingSystem: "Web",
           url: siteUrl,
           description:
-            "Offline-safe meetup workflow: screenshot upload, layout analysis, and React/Tailwind scaffold export.",
+            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind starter export.",
           image: toAbsoluteUrl(ogImagePath),
           offers: {
             "@type": "Offer",

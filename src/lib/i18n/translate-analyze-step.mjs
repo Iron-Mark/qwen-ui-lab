@@ -1,7 +1,8 @@
 const EN_PROGRESS_TO_KEY = {
   "Checking provider…": "progressCheckingProvider",
-  "Building offline demo…": "progressBuildingOffline",
+  "Building local analysis…": "progressBuildingOffline",
   "Calling Qwen vision API…": "progressCallingApi",
+  "Analyzing screenshot…": "progressCallingApi",
   "Retrying after transient error…": "progressRetrying",
   "Analysis complete": "progressComplete",
   "Reading image…": "analyzeStepReading",
@@ -47,8 +48,9 @@ const EN_STEP_ORDER = [
 
 const PROGRESS_INDEX = {
   "Checking provider…": 2,
-  "Building offline demo…": 3,
+  "Building local analysis…": 3,
   "Calling Qwen vision API…": 3,
+  "Analyzing screenshot…": 3,
   "Retrying after transient error…": 3,
   "Analysis complete": 4,
 };

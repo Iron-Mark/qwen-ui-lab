@@ -7,9 +7,9 @@
 1. The user opens `/`, `/demo`, or a shared result route.
 2. Route files in `src/app` compose feature entry components and metadata.
 3. The analysis feature checks `GET /api/health`.
-4. Demo mode returns an offline artifact from `src/features/analysis/lib`.
+4. Local analysis returns an offline artifact from `src/features/analysis/lib`.
 5. Live mode posts to `POST /api/analyze-ui`, which delegates to Qwen only when an API key and explicit live flag are both present.
-6. The resulting artifact drives plan cards, scaffold preview, export, share links, and UX-law compliance feedback.
+6. The resulting artifact drives plan cards, component preview, export, share links, and UX-law compliance feedback.
 
 ## Source Layout
 
@@ -18,16 +18,16 @@ src/app/
   Route entries, metadata, redirects, and API handlers only.
 
 src/features/
-  account/          account page and demo-safe auth state
+  account/          browser-local profile modal and session state
   analysis/         upload flow, image preprocess, offline/Qwen analysis, UX compliance
   analytics/        internal analytics dashboard
-  demo/             one-click demo route shell
+  demo/             sample run route shell
   design-system/    catalog UI/registry, laws data, catalog filters
   export/           copy/download/Gist/repo export UI and server helpers
   home/             home hero, dashboard widgets, charts, dashboard data
   pwa/              install banner, service worker registration, install helpers
   share/            shared result route, summary card, share storage/API helpers
-  shell/            header, footer, theme controls, demo-mode snackbar
+  shell/            header, footer, theme controls, local-analysis notice
 
 src/components/
   ui/               shadcn/ui primitives
@@ -63,7 +63,7 @@ src/lib/
 - Feature `lib` and `data` modules must not import component modules.
 - Feature `data` folders hold plain data/types; JSX registries belong under the owning feature's `components` boundary.
 - Domain data lives with the feature that owns it, for example `src/features/home/data` and `src/features/design-system/data`.
-- Generated scaffold examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
+- Generated component examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
 
 ## Component-Driven Conventions
 
@@ -92,7 +92,7 @@ docs/
 
 Only three direct docs subfolders are used:
 
-- `media` for meetup scripts, slide copy, and social copy.
+- `media` for walkthrough scripts, slide copy, and social copy.
 - `ops` for CI, deploy, observability, reliability, security, release, and PWA operations.
 - `specs` for artifact notes, PR template text, and implementation specs.
 
@@ -100,6 +100,6 @@ Only three direct docs subfolders are used:
 
 - [README](./README.md) - project overview and commands.
 - [Contributing](./CONTRIBUTING.md) - workflow and PR expectations.
-- [Demo script](./DEMO.md) - presenter flow and live-demo guardrails.
-- [Offline E2E](./ops/OFFLINE_DEMO_E2E.md) - deterministic demo/testing contract.
+- [Sample run](./DEMO.md) - presenter flow and local-analysis guardrails.
+- [Offline E2E](./ops/OFFLINE_DEMO_E2E.md) - deterministic local-analysis testing contract.
 - [Reliability ops](./ops/RELIABILITY_OPS.md) - checks, thresholds, and response targets.

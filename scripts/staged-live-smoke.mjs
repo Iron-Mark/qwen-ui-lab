@@ -15,7 +15,7 @@ import { dirname, join } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const smokeScript = join(__dirname, "post-deploy-smoke.mjs");
 
-/** Public meetup production — live smoke requires explicit override. */
+/** Public production smoke requires explicit live-analysis override. */
 const BLOCKED_PRODUCTION_HOSTS = new Set(["qwen-ui-lab.vercel.app"]);
 
 const args = process.argv.slice(2);

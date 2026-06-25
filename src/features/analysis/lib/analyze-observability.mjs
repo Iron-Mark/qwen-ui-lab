@@ -1,4 +1,4 @@
-/** Expected demo/offline paths — not reliability incidents. */
+/** Expected local-analysis paths — not reliability incidents. */
 const NON_REPORTABLE_CODES = new Set([
   "missing_qwen_api_key",
   "live_analysis_disabled",

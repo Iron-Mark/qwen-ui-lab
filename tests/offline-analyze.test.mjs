@@ -574,7 +574,7 @@ const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="htt
   </g>
 </svg>`;
 
-test("BUNDLED_REFERENCE_SAMPLES lists all meetup references", () => {
+test("BUNDLED_REFERENCE_SAMPLES lists all reference samples", () => {
   const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
   assert.deepEqual(fileNames, [
     "dashboard-reference.png",
@@ -671,7 +671,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known reference samples export as production scaffold bundles", () => {
+test("known reference samples export as starter packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -1237,8 +1237,8 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"primitive": "list-item"/);
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
-  assert.match(advanced.generatedCode, /repeated item scaffold/);
-  assert.match(advanced.generatedCode, /text-line signals shape the scaffold/);
+  assert.match(advanced.generatedCode, /repeated item/);
+  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1515,7 +1515,7 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /Local SVG scaffold/);
+  assert.match(artifact.generatedCode, /SVG starter/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
@@ -1583,7 +1583,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
   assert.match(regenerated.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
-  assert.match(regenerated.generatedCode, /export default function CorrectedGeneratedScaffold/);
+  assert.match(regenerated.generatedCode, /export default function ReviewedScreenshotStarter/);
   assert.match(regenerated.generatedCode, /const detectedElements: CorrectedElement\[\]/);
   assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
@@ -1600,7 +1600,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
 
   const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
   assert.ok(blueprint);
-  assert.equal(blueprint.componentName, "CorrectedGeneratedScaffold");
+  assert.equal(blueprint.componentName, "ReviewedScreenshotStarter");
   assert.equal(blueprint.generator, "offline-detection");
   assert.ok(blueprint.detectedElements.length > 0);
   assert.ok(blueprint.layoutRegions.length > 0);

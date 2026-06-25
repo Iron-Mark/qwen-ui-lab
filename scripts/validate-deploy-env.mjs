@@ -37,13 +37,13 @@ checkUrl(process.env.QWEN_BASE_URL, "QWEN_BASE_URL");
 if (target === "demo") {
   if (isLiveRequested) {
     failures.push(
-      "Demo deploy target forbids live upstream calls. Unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN.",
+      "Local-analysis deploy target forbids live upstream calls. Unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN.",
     );
   }
 
   if (process.env.DASHSCOPE_API_KEY) {
     warnings.push(
-      "DASHSCOPE_API_KEY is set, but demo target is still safe because QWEN_LIVE_ANALYSIS is disabled.",
+      "DASHSCOPE_API_KEY is set, but local analysis is still used because QWEN_LIVE_ANALYSIS is disabled.",
     );
   }
 }
@@ -70,7 +70,7 @@ if (!config.ok && target === "live") {
   failures.push("Live deploy target has no usable Qwen config.");
 }
 
-console.log(`Deploy env validation target: ${target}`);
+console.log(`Deploy env validation target: ${target === "demo" ? "local-analysis" : target}`);
 console.log(`- Live analysis requested: ${isLiveRequested ? "yes" : "no"}`);
 console.log(`- API key configured: ${config.ok ? "yes" : "no"}`);
 console.log(`- Live calls executable: ${canUseLiveQwen() ? "yes" : "no"}`);

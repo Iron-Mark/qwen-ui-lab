@@ -21,7 +21,7 @@ const shareFixturePayload = {
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
   ],
-  mode: "Local demo mode",
+  mode: "Analyzer ready",
   file: "dashboard-reference.svg",
 };
 
@@ -120,7 +120,7 @@ test("post-analyze state has no serious a11y violations", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
     timeout: 15_000,
   });
 

@@ -58,12 +58,12 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
     timeout: 15_000,
   });
 
   const scaffoldCard = page
-    .getByText("Generated scaffold", { exact: true })
+    .getByText("Generated component", { exact: true })
     .locator("xpath=ancestor::div[contains(@class,'group/card')][1]");
   await expect(scaffoldCard).toHaveScreenshot("post-analyze-scaffold-panel.png", {
     maxDiffPixelRatio: 0.03,
@@ -91,7 +91,7 @@ for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
     await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
     await primaryAnalyzeButton(page).click();
 
-    await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+    await expect(page.getByText(/Generated component/i)).toBeVisible({
       timeout: 15_000,
     });
 

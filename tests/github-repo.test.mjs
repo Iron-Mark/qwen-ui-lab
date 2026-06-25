@@ -44,7 +44,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "generated-auth.tsx",
-    description: "demo export",
+    description: "component export",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
@@ -72,7 +72,7 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
 
   assert.ok(blueprint);
   assert.equal(blueprint.schema, "qwen-ui-lab/scaffold-recipe@1");
-  assert.equal(blueprint.componentName, "GeneratedScreenScaffold");
+  assert.equal(blueprint.componentName, "GeneratedComponent");
   assert.equal(blueprint.screenIntent.label, "Dashboard workspace");
   assert.equal(blueprint.responsiveIntent.mode, "sidebar-grid");
   assert.equal(blueprint.shadcnPrimitiveMap["data-table"], "semantic table inside Card");
@@ -92,7 +92,7 @@ test("extractProductionScaffoldBlueprint handles CRLF generated scaffolds", () =
   assert.equal(blueprint.shadcnPrimitiveMap["primary-action"], "Button");
 });
 
-test("buildScaffoldZipEntries creates production bundle for offline scaffolds", () => {
+test("buildScaffoldZipEntries creates starter package for offline scaffolds", () => {
   const entries = buildScaffoldZipEntries({
     content: RICH_GENERATED_SCAFFOLD,
     filename: "detected-dashboard.tsx",
@@ -108,8 +108,8 @@ test("buildScaffoldZipEntries creates production bundle for offline scaffolds", 
     "src/components/generated/detected-dashboard.tokens.css",
     "docs/detected-dashboard.detection.md",
   ]);
-  assert.match(entries[0].content, /production scaffold/i);
-  assert.match(entries[1].content, /GeneratedScreenScaffold/);
+  assert.match(entries[0].content, /starter package/i);
+  assert.match(entries[1].content, /GeneratedComponent/);
   assert.match(entries[4].content, /--qwen-generated-accent: #2563eb/);
   assert.match(entries[5].content, /Dashboard workspace/);
   assert.match(entries[5].content, /dataTables: 1/);
@@ -208,7 +208,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "primary-action": "Button",
 };
 
-export default function GeneratedScreenScaffold() {
+export default function GeneratedComponent() {
   return <section><Badge>Dashboard</Badge></section>;
 }
 `;

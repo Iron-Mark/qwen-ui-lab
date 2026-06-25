@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub repo export helpers (compare URL stub + zip fallback).
+ * Server-side GitHub repo export helpers (compare URL + package download fallback).
  */
 
 import { createHash } from "node:crypto";
@@ -11,7 +11,7 @@ const SCAFFOLD_RECIPE_SCHEMA = "qwen-ui-lab/scaffold-recipe@1";
 const EXPORT_BUNDLE_SCHEMA = "qwen-ui-lab/export-bundle@1";
 
 export const REPO_EXPORT_COMPARE_INSTRUCTIONS =
-  "Use the compare view: create the export branch, add your scaffold file, paste code from the panel, and open a pull request.";
+  "Use the compare view: create the export branch, add the generated component, paste code from the panel, and open a pull request.";
 
 /**
  * @param {Record<string, string | undefined>} [env]
@@ -62,14 +62,14 @@ export function buildRepoCompareExport({
   repo,
   base,
   filename,
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
 }) {
   const safeFilename = sanitizeGistFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
-  const title = encodeURIComponent("Add qwen-ui-lab scaffold");
+  const title = encodeURIComponent("Add qwen-ui-lab generated component");
   const body = encodeURIComponent(
     [
-      "## qwen-ui-lab export",
+      "## qwen-ui-lab component export",
       "",
       description,
       "",
@@ -77,11 +77,11 @@ export function buildRepoCompareExport({
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,
-      `2. Add \`${safeFilename}\` with your generated scaffold.`,
+      `2. Add \`${safeFilename}\` with your generated component.`,
       "3. Open a pull request.",
       "",
       "---",
-      "_Compare link stub — paste scaffold content manually._",
+      "_Compare link helper — paste component content manually._",
     ].join("\n"),
   );
 
@@ -101,20 +101,20 @@ export function buildRepoCompareExport({
  *   description?: string;
  * }} args
  */
-export function buildScaffoldReadme({ filename, description = "qwen-ui-lab scaffold export" }) {
+export function buildScaffoldReadme({ filename, description = "qwen-ui-lab component export" }) {
   const safeFilename = sanitizeGistFilename(filename);
-  return `# qwen-ui-lab scaffold export
+  return `# qwen-ui-lab component export
 
 ${description}
 
 ## Files
 
-- \`${safeFilename}\` — generated React + Tailwind scaffold
+- \`${safeFilename}\` — generated React + Tailwind component
 
 ## Next steps
 
 1. Unzip this archive into your app (for example \`src/components/\`).
-2. Install any missing dependencies referenced in the scaffold.
+2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
@@ -254,7 +254,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
 }
 
 function buildProductionScaffoldReadme({
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
   files,
   componentName,
   blueprint,
@@ -264,13 +264,13 @@ function buildProductionScaffoldReadme({
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
-  const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive scaffold";
+  const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
 
-  return `# qwen-ui-lab production scaffold
+  return `# qwen-ui-lab starter package
 
 ${description}
 
-This bundle was generated from offline screenshot detection. It is meant to be reviewed, imported, and iterated in source control rather than pasted as a one-off snippet.
+This starter package was generated from a screenshot analysis. It is meant to be reviewed, imported, and iterated in source control rather than pasted as a one-off snippet.
 
 ## What changed from the screenshot
 
@@ -283,7 +283,7 @@ This bundle was generated from offline screenshot detection. It is meant to be r
 
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - deterministic detection recipe, primitive map, and regeneration context
-- \`${files.manifest}\` - bundle identity, dependency hints, and quality gates for review
+- \`${files.manifest}\` - package identity, dependency hints, and quality gates for review
 - \`${files.tokens}\` - CSS variables derived from the screenshot palette
 - \`${files.detectionSummary}\` - human-readable detection notes, confidence summary, and integration checklist
 
@@ -337,7 +337,7 @@ function buildDetectionSummaryMarkdown(blueprint) {
 
   return `# Detection summary
 
-This file explains how the uploaded screenshot was translated into the generated scaffold. Use it to review confidence, decide which sections need product data, and keep future regeneration deterministic.
+This file explains how the uploaded screenshot was translated into the generated component. Use it to review confidence, decide which sections need product data, and keep future regeneration deterministic.
 
 ## Screen intent
 
@@ -351,7 +351,7 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 
 - Visible regions were grouped into ${regions.length} layout region${regions.length === 1 ? "" : "s"}.
 - ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
-- Primitive mappings were exported so the scaffold can move toward shadcn-style UI without guessing later.
+- Primitive mappings were exported so the component can move toward shadcn-style UI without guessing later.
 - The recipe and manifest keep the generated output reviewable in source control.
 
 ## Responsive intent
@@ -513,7 +513,7 @@ function inferGeneratedComponentName(source) {
   const defaultMatch = /export\s+default\s+function\s+([A-Za-z_$][\w$]*)/.exec(source);
   if (defaultMatch) return defaultMatch[1];
   const namedMatch = /export\s+function\s+([A-Za-z_$][\w$]*)/.exec(source);
-  return namedMatch?.[1] ?? "GeneratedScreenScaffold";
+  return namedMatch?.[1] ?? "GeneratedComponent";
 }
 
 function inferShadcnDependencies(content, primitiveMap) {
@@ -588,7 +588,7 @@ function buildReviewChecklist({
     );
   }
   if ((patterns.dataTables ?? []).length) {
-    checklist.push("Replace scaffolded table rows with typed data and accessible column headers.");
+    checklist.push("Replace sample table rows with typed data and accessible column headers.");
   }
   if ((patterns.formGroups ?? []).length) {
     checklist.push("Connect form fields to validation, helper text, and submit states.");
@@ -611,9 +611,9 @@ function hashContent(content) {
 }
 
 function toExportStem(filename) {
-  const withoutExtension = String(filename || "generated-scaffold")
+  const withoutExtension = String(filename || "generated-component")
     .replace(/\.[^.]+$/, "")
     .replace(/[^\w.-]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return withoutExtension || "generated-scaffold";
+  return withoutExtension || "generated-component";
 }

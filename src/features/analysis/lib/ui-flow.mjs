@@ -125,7 +125,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     plan,
     previewStats,
     generatedCode,
-    modeLabel: overrides.modeLabel || "Local demo mode",
+    modeLabel: overrides.modeLabel || "Analyzer ready",
     summary: overrides.summary ?? offline.summary ?? "",
     ...(detections ? { detections } : {}),
   };
@@ -372,16 +372,29 @@ const correctedElementById = new Map<string, CorrectedElement>(
 );
 
 const shadcnPrimitiveMap: Record<string, string> = {
+  "app-shell": "App shell with semantic landmarks",
   "top-navigation": "semantic nav + Button ghost controls",
   "side-navigation": "aside navigation + Button ghost controls",
   "bottom-navigation": "mobile nav + Button icon controls",
+  "section": "semantic section",
+  "text": "typographic content",
+  "media": "responsive media surface",
+  "field-or-action": "Input or Button",
   "search-field": "Input with visible label",
   "form-field": "Input with helper text",
+  "form-group": "Fieldset-style form group",
   "primary-action": "Button",
   "icon-action": "Button size icon",
+  "action-cluster": "Button toolbar",
+  "card-grid": "responsive Card grid",
+  "repeated-grid": "responsive Card grid",
+  "repeated-list": "stacked Card rows",
   "metric-card": "Card + Badge trend",
+  "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
+  "chart-series": "Chart card with text fallback",
+  "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
   "tab-set": "Tabs",
@@ -391,16 +404,16 @@ const shadcnPrimitiveMap: Record<string, string> = {
 
 const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
 
-export default function CorrectedGeneratedScaffold() {
+export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Generated production scaffold from ${safeName}"
+      aria-label="Reviewed screenshot starter from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Corrected screenshot scaffold</Badge>
+            <Badge variant="outline">Reviewed screenshot</Badge>
             <Badge variant="secondary">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">

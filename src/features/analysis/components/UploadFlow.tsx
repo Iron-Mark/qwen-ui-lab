@@ -20,7 +20,6 @@ import {
   FileCode2,
   FileText,
   Grid2X2,
-  Info,
   ListChecks,
   Loader2,
   PackageOpen,
@@ -654,7 +653,7 @@ function DetectedReferencePreview({
                 tabIndex={0}
                 key={element.id}
                 className={cn(
-                  "pointer-events-auto absolute cursor-move rounded-[3px] border bg-background/15 text-left shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)] transition",
+                  "pointer-events-auto absolute cursor-move rounded-[3px] border bg-background/15 text-left shadow-[0_0_0_1px_rgb(255_255_255_/_0.55)] transition focus-visible:z-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   detectionClassName(element.kind),
                   element.included === false && "border-dashed opacity-35",
                   selectedElement?.id === element.id &&
@@ -674,10 +673,16 @@ function DetectedReferencePreview({
                 data-box={`${element.box.x},${element.box.y},${element.box.width},${element.box.height}`}
                 aria-label={`Select ${element.kind}`}
                 onClick={() => setSelectedElementId(element.id)}
+                onFocus={() => setSelectedElementId(element.id)}
                 onKeyDown={(event) => handleDetectionBoxKeyDown(event, element)}
                 onPointerDown={(event) => startBoxInteraction(event, element, "move")}
               >
-                <span className="pointer-events-none absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm">
+                <span
+                  className={cn(
+                    "pointer-events-none absolute left-0 top-0 max-w-full truncate rounded-br-[3px] bg-background/90 px-1 py-0.5 text-[10px] font-medium leading-none text-foreground shadow-sm",
+                    selectedElement?.id === element.id ? "block" : "hidden sm:block",
+                  )}
+                >
                   {element.kind} - {Math.round(element.confidence * 100)}%
                 </span>
                 {debugEnabled ? (
@@ -691,7 +696,7 @@ function DetectedReferencePreview({
                   </span>
                 ) : null}
                 <span
-                  className="absolute bottom-0 right-0 z-30 size-4 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80"
+                  className="absolute bottom-0 right-0 z-30 size-5 cursor-se-resize rounded-tl-[3px] border-l border-t border-background/70 bg-foreground/80 sm:size-4"
                   data-testid="detection-resize-handle-se"
                   aria-hidden
                   onPointerDown={(event) => startBoxInteraction(event, element, "resize")}
@@ -725,7 +730,7 @@ function DetectedReferencePreview({
                   type="button"
                   variant={debugEnabled ? "secondary" : "outline"}
                   size="sm"
-                  className="gap-2"
+                  className="min-h-10 gap-2"
                   onClick={() => setDebugEnabled((value) => !value)}
                   aria-pressed={debugEnabled}
                   data-testid="toggle-detector-debug"
@@ -737,7 +742,7 @@ function DetectedReferencePreview({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="min-h-10 gap-2"
                   onClick={onUndoDetections}
                   disabled={!canUndoDetections}
                   data-testid="undo-detection-edit"
@@ -749,7 +754,7 @@ function DetectedReferencePreview({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="min-h-10 gap-2"
                   onClick={onRedoDetections}
                   disabled={!canRedoDetections}
                   data-testid="redo-detection-edit"
@@ -761,7 +766,7 @@ function DetectedReferencePreview({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="min-h-10 gap-2"
                   onClick={onSnapDetections}
                   data-testid="snap-detections-grid"
                 >
@@ -772,7 +777,7 @@ function DetectedReferencePreview({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="min-h-10 gap-2"
                   onClick={onExportDetections}
                   data-testid="export-detections-json"
                 >
@@ -1299,7 +1304,7 @@ function buildExportPackagePreview(
       .size;
   const patternCount = countDetectedPatternGroups(detectedPatterns);
   const breakpoints = asStringArray(responsiveIntent.breakpoints);
-  const responsiveMode = stringValue(responsiveIntent.mode, "responsive scaffold");
+  const responsiveMode = stringValue(responsiveIntent.mode, "responsive layout");
   const intentLabel = stringValue(screenIntent.label, artifact.modeLabel ?? "Generated screen");
   const tokenCount = Object.keys(designTokens).length;
   const files: ExportPackageFile[] = [
@@ -1411,7 +1416,7 @@ function buildExportReadmePreview({
   responsiveMode: string;
 }) {
   return [
-    "# qwen-ui-lab production scaffold",
+    "# qwen-ui-lab starter package",
     "",
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
@@ -1433,7 +1438,7 @@ function inferGeneratedComponentName(code: string) {
   return (
     /export\s+default\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
     /export\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
-    "GeneratedScaffold"
+    "GeneratedComponent"
   );
 }
 
@@ -1442,7 +1447,7 @@ function toExportStem(filename: string) {
     filename
       .replace(/\.[^.]+$/, "")
       .replace(/[^\w.-]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "generated-scaffold"
+      .replace(/^-+|-+$/g, "") || "generated-component"
   );
 }
 
@@ -1525,6 +1530,17 @@ function asStringArray(value: unknown) {
 
 function stringValue(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function userFacingModeLabel(
+  modeLabel: string | null | undefined,
+  copy: UploadFlowDictionary,
+) {
+  const trimmed = modeLabel?.trim();
+  if (!trimmed) return copy.modeLocalDemo;
+  return /demo|fallback|api key|provider|qwen route/i.test(trimmed)
+    ? copy.modeLocalDemo
+    : trimmed;
 }
 
 function ExportPackageSummary({
@@ -1615,16 +1631,16 @@ function ExportPackageReviewDialog({
 
         <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0">
           <div className="px-5 pb-2 pt-4">
-            <TabsList className="h-auto w-full flex-wrap overflow-visible rounded-xl border-border/70 bg-muted/45 p-1 shadow-inner sm:w-fit">
-              <TabsTrigger value="files" className="min-h-9 gap-2 px-3">
+            <TabsList className="h-auto w-full flex-wrap overflow-visible rounded-xl border-border/70 bg-muted/45 p-1 shadow-inner group-data-horizontal/tabs:h-auto sm:w-fit">
+              <TabsTrigger value="files" className="h-9 min-h-9 gap-2 px-3">
                 <FileCode2 className="size-4" aria-hidden />
                 {copy.exportPackageFilesTab}
               </TabsTrigger>
-              <TabsTrigger value="changes" className="min-h-9 gap-2 px-3">
+              <TabsTrigger value="changes" className="h-9 min-h-9 gap-2 px-3">
                 <ListChecks className="size-4" aria-hidden />
                 {copy.exportPackageChangesTab}
               </TabsTrigger>
-              <TabsTrigger value="copy" className="min-h-9 gap-2 px-3">
+              <TabsTrigger value="copy" className="h-9 min-h-9 gap-2 px-3">
                 <FileText className="size-4" aria-hidden />
                 {copy.exportPackageCopyTab}
               </TabsTrigger>
@@ -1740,7 +1756,7 @@ function ExportPackageReviewDialog({
           <RepoExportButton
             text={artifact.generatedCode}
             filename={exportFilename}
-            description="qwen-ui-lab production scaffold bundle"
+            description="qwen-ui-lab starter package"
             analyticsSource="upload_flow"
             analyticsFeature="generated_scaffold"
           />
@@ -1935,7 +1951,7 @@ function GeneratedMockPrimitive({
 export interface UploadFlowProps {
   /** Bundled reference sample id (dashboard, auth, mobile, …) for /demo */
   demoArchetype?: string;
-  /** Load sample + run analyze on mount (one-click demo route) */
+  /** Load sample + run analyze on mount (sample route) */
   autoRunDemo?: boolean;
 }
 
@@ -1968,8 +1984,6 @@ export function UploadFlow({
   const [stage, setStage] = useState<Stage>("empty");
   const [error, setError] = useState<string | null>(null);
   const [providerState, setProviderState] = useState<ProviderState>("idle");
-  const [providerMessage, setProviderMessage] = useState<string | null>(null);
-  const [providerDetail, setProviderDetail] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
   const [selectedSampleId, setSelectedSampleId] = useState(
     BUNDLED_REFERENCE_SAMPLES[0]?.id ?? "dashboard",
@@ -2153,12 +2167,12 @@ export function UploadFlow({
       }
 
       const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
-      return `generated-${base || "scaffold"}.tsx`;
+      return `generated-${base || "component"}.tsx`;
     }
     if (demoArchetype) {
       return referenceSampleExportFilename(demoArchetype);
     }
-    return "generated-scaffold.tsx";
+    return "generated-component.tsx";
   }, [demoArchetype, file]);
 
   const exportPackagePreview = useMemo(
@@ -2189,8 +2203,6 @@ export function UploadFlow({
     setError(null);
     setArtifact(null);
     setProviderState("idle");
-    setProviderMessage(null);
-    setProviderDetail(null);
     originalDetectionsRef.current = null;
     resetDetectionHistory(null);
 
@@ -2310,8 +2322,6 @@ export function UploadFlow({
 
       setArtifact(nextArtifact);
       setProviderState(outcome.providerState as ProviderState);
-      setProviderMessage(outcome.message);
-      setProviderDetail(outcome.detail);
       setStage("analyzed");
       reportAnalyzeFailure(outcome);
 
@@ -2321,7 +2331,7 @@ export function UploadFlow({
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        modeLabel: nextArtifact.modeLabel || t.modeLocalDemo,
+        modeLabel: userFacingModeLabel(nextArtifact.modeLabel, t),
         providerState: outcome.providerState as "qwen" | "fallback",
         savedBy: savedByLabel,
         summary: nextArtifact.summary,
@@ -2329,7 +2339,7 @@ export function UploadFlow({
           plan: nextArtifact.plan,
           previewStats: nextArtifact.previewStats,
           generatedCode: nextArtifact.generatedCode,
-          modeLabel: nextArtifact.modeLabel,
+          modeLabel: userFacingModeLabel(nextArtifact.modeLabel, t),
           summary: nextArtifact.summary,
           detections: nextArtifact.detections,
         },
@@ -2345,11 +2355,11 @@ export function UploadFlow({
       }
 
       if (outcome.instantDemo) {
-        toast(t.toastInstantDemo, "warning");
+        toast(t.toastInstantDemo, "success");
       } else if (outcome.providerState === "qwen") {
         toast(t.toastQwenComplete, "success");
       } else {
-        toast(t.toastFallback, "warning");
+        toast(t.toastFallback, "default");
       }
       analytics.track(AnalyticsEvent.AnalyzeCompleted, {
         source: "upload_flow",
@@ -2373,11 +2383,9 @@ export function UploadFlow({
       resetDetectionHistory(nextArtifact.detections);
       setArtifact(nextArtifact);
       setProviderState(outcome.providerState as ProviderState);
-      setProviderMessage(outcome.message);
-      setProviderDetail(outcome.detail);
       setStage("analyzed");
       reportAnalyzeFailure(outcome);
-      toast(t.toastAnalyzeFailed, "error");
+      toast(t.toastAnalyzeFailed, "default");
       analytics.track(AnalyticsEvent.AnalyzeFailed, {
         source: "upload_flow",
         providerState: String(outcome.providerState ?? "fallback"),
@@ -2550,8 +2558,8 @@ export function UploadFlow({
       detections: artifact.detections,
       shareSummary,
       notes: [
-        "Generated code is included for handoff only; review imports before dropping it into another app.",
-        "Detection boxes may include user edits from the current browser session.",
+        "Review imports and data before adding the generated component to an app.",
+        "Manual detection edits from this browser session are included in the recipe.",
       ],
     };
     downloadTextFile(
@@ -2574,7 +2582,7 @@ export function UploadFlow({
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        modeLabel: nextArtifact.modeLabel || t.modeLocalDemo,
+        modeLabel: userFacingModeLabel(nextArtifact.modeLabel, t),
         providerState: providerState === "qwen" ? "qwen" : "fallback",
         savedBy: savedByLabel,
         summary: nextArtifact.summary,
@@ -2582,7 +2590,7 @@ export function UploadFlow({
           plan: nextArtifact.plan,
           previewStats: nextArtifact.previewStats,
           generatedCode: nextArtifact.generatedCode,
-          modeLabel: nextArtifact.modeLabel,
+          modeLabel: userFacingModeLabel(nextArtifact.modeLabel, t),
           summary: nextArtifact.summary,
           detections: nextArtifact.detections,
         },
@@ -2671,9 +2679,6 @@ export function UploadFlow({
     );
     resetDetectionHistory(record.artifact.detections as UiFlowArtifact["detections"]);
     setProviderState(record.providerState === "qwen" ? "qwen" : "fallback");
-    setProviderMessage(
-      record.providerState === "qwen" ? t.toastRestoredQwen : t.toastRestoredDemo,
-    );
     setStage("analyzed");
     toast(
       interpolate(t.toastRestoredSession, { fileName: record.fileName }),
@@ -2759,24 +2764,6 @@ export function UploadFlow({
       lang={locale}
       className="scroll-mt-20 py-8"
     >
-      {providerState === "fallback" ? (
-        <Alert
-          role="status"
-          className="mb-4 border-amber-500/40 bg-amber-500/10 text-amber-900 shadow-sm dark:text-amber-100"
-        >
-          <Info className="size-4" aria-hidden />
-          <AlertTitle>{t.alertOfflineTitle}</AlertTitle>
-          <AlertDescription>
-            {providerMessage} {t.alertOfflineBody}
-            {providerDetail ? (
-              <span className="mt-1 block text-amber-800/80 dark:text-amber-200/80">
-                {interpolate(t.alertOfflineReason, { detail: providerDetail })}
-              </span>
-            ) : null}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
       {sharedSummary && !artifact ? (
         <div className="mb-6">
           <SharedSummaryCard summary={sharedSummary} />
@@ -2801,16 +2788,11 @@ export function UploadFlow({
         </div>
         <Badge
           variant="outline"
-          className={cn(
-            "px-3 py-2 text-sm",
-            providerState === "qwen" &&
-              "border-success/30 bg-success/10 text-success",
-            providerState === "fallback" &&
-              "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-100",
-          )}
+          className="px-3 py-2 text-sm"
         >
-          {artifact?.modeLabel ||
-            (providerState === "fallback" ? t.modeLocalDemo : t.modeQwenReady)}
+          {providerState === "loading"
+            ? t.ctaAnalyzing
+            : userFacingModeLabel(artifact?.modeLabel, t)}
         </Badge>
       </div>
 
@@ -3064,13 +3046,6 @@ export function UploadFlow({
               </Alert>
             ) : null}
 
-            {providerMessage && providerState === "qwen" ? (
-              <Alert className="mt-4 border-success/30 bg-success/10 text-success shadow-sm">
-                <Check className="size-4" aria-hidden />
-                <AlertTitle>{t.progressComplete}</AlertTitle>
-                <AlertDescription className="text-success">{providerMessage}</AlertDescription>
-              </Alert>
-            ) : null}
           </CardContent>
         </Card>
 
@@ -3202,14 +3177,14 @@ export function UploadFlow({
                           <GistExportButton
                             text={artifact.generatedCode}
                             filename={exportFilename}
-                            description="qwen-ui-lab generated scaffold"
+                            description="qwen-ui-lab generated component"
                             analyticsSource="upload_flow"
                             analyticsFeature="generated_scaffold"
                           />
                           <RepoExportButton
                             text={artifact.generatedCode}
                             filename={exportFilename}
-                            description="qwen-ui-lab generated scaffold"
+                            description="qwen-ui-lab generated component"
                             analyticsSource="upload_flow"
                             analyticsFeature="generated_scaffold"
                           />

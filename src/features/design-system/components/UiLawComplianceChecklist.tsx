@@ -49,13 +49,13 @@ const DEFAULT_ITEMS: ComplianceItem[] = [
   {
     id: "token-consistency",
     label: "Shared borders, rings, and card shells",
-    detail: "Consistency — catalog snippets mirror generated scaffold chrome.",
+    detail: "Consistency — catalog snippets mirror generated component chrome.",
     law: "consistency",
     status: "warn",
   },
   {
     id: "preview-contrast",
-    label: "Reference vs scaffold visually distinct",
+    label: "Reference vs component visually distinct",
     detail: "Contrast — split panes and labels separate screenshot from code.",
     law: "contrast",
     status: "pending",
@@ -82,7 +82,7 @@ interface UiLawComplianceChecklistProps {
 
 export function UiLawComplianceChecklist({
   items = DEFAULT_ITEMS,
-  title = "Scaffold compliance",
+  title = "Component compliance",
   className,
 }: UiLawComplianceChecklistProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
@@ -98,7 +98,7 @@ export function UiLawComplianceChecklist({
         <div>
           <CardTitle id="compliance-title">{title}</CardTitle>
           <CardDescription className="mt-1">
-            Quick review checklist for generated UI scaffolds (inspired by{" "}
+            Quick review checklist for generated UI components (inspired by{" "}
             <a
               href="https://www.uilaws.com/components"
               className="font-medium text-card-foreground underline-offset-2 hover:underline"

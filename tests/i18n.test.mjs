@@ -111,5 +111,5 @@ test("zh dictionaries cover remaining route strings", () => {
   assert.match(zhDictionarySource, /title:\s*"只读分析摘要"/);
   assert.match(zhDictionarySource, /backToDemo:\s*"返回工作流"/);
   assert.match(enDictionarySource, /title:\s*"Page not found"/);
-  assert.match(enDictionarySource, /tryLiveDemo:\s*"Try the live demo"/);
+  assert.match(enDictionarySource, /tryLiveDemo:\s*"Open workflow"/);
 });

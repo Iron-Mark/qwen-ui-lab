@@ -18,7 +18,7 @@ export function createDesignSystemRouteMetadata(): Metadata {
   return createRouteMetadata({
     title: "Design System Playground",
     description:
-      "Browse atomic UI snippets, UX-law patterns, and one-click exports - your polish lane after screenshot-to-scaffold generation.",
+      "Browse reusable UI snippets, UX-law patterns, and export-ready examples for screenshot-to-React work.",
     path: "/design-system",
     keywords: [
       "Design system playground",

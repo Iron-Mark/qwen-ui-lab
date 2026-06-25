@@ -10,7 +10,7 @@ import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
-const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-scaffold.zip";
+const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
 
 type RepoExportStatus = "idle" | "exporting" | "success" | "error";
 
@@ -53,7 +53,7 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 export function RepoExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
   label,
   className,
   analyticsSource = "snippet_preview",
@@ -97,7 +97,7 @@ export function RepoExportButton({
         const blob = await response.blob();
         downloadZipBlob(blob);
         setStatus("success");
-        toast("Scaffold zip downloaded (includes README)", "success");
+        toast("Export package downloaded", "success");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -118,7 +118,7 @@ export function RepoExportButton({
 
       if (!response.ok || !payload || typeof payload !== "object") {
         setStatus("error");
-        toast("Could not export scaffold to repo", "error");
+        toast("Could not export component to repo", "error");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -135,7 +135,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened — add your scaffold file and open a PR.",
+            "Compare view opened — add your generated component and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {

@@ -28,7 +28,7 @@ test("buildGithubGistUnavailablePayload returns fallback instructions", () => {
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "Copy your scaffold code, open gist.github.com, paste into a new secret gist, and save.",
+        "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.",
     },
   });
 });
@@ -40,7 +40,7 @@ test("sanitizeGistFilename normalizes unsafe names", () => {
   assert.equal(sanitizeGistFilename(""), "component.tsx");
 });
 
-test("createGithubGist posts scaffold file and returns gist URL", async () => {
+test("createGithubGist posts component file and returns gist URL", async () => {
   let captured = null;
   const fetchImpl = async (url, init) => {
     captured = { url, init };

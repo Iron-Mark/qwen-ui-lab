@@ -174,7 +174,7 @@ export function AnalyticsDashboardClient({ liveDashboardEnabled }: AnalyticsDash
         <h1 className="text-3xl font-semibold tracking-tight">Analytics dashboard</h1>
         <p className="max-w-2xl text-muted-foreground">
           {liveDashboardEnabled
-            ? "Live view of allowlisted client events buffered in this browser. Demo mode stays suppressed unless explicitly allowed."
+            ? "Live view of allowlisted client events buffered in this browser. Local analysis events stay suppressed unless explicitly allowed."
             : "Documentation-only view. Client analytics are disabled until observability env flags are set."}
         </p>
       </header>

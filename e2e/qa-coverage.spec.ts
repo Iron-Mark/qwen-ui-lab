@@ -51,7 +51,7 @@ test("switches brand theme and persists selection", async ({ page }) => {
   await page.goto("/");
   await waitForSonnerToaster(page);
 
-  const dismissDemo = page.getByRole("button", { name: /dismiss demo mode notice/i });
+  const dismissDemo = page.getByRole("button", { name: /dismiss local analysis notice/i });
   await expect(dismissDemo).toBeVisible({ timeout: 15_000 });
   await dismissDemo.click();
   await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
@@ -92,7 +92,7 @@ test("filters and searches in design system catalog", async ({ page }) => {
   await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/level=molecule/);
 });
 
-test("runs deterministic offline demo flow", async ({ page }) => {
+test("runs deterministic local analysis flow", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
   await waitForSonnerToaster(page);
@@ -106,7 +106,7 @@ test("runs deterministic offline demo flow", async ({ page }) => {
 
   await primaryAnalyzeButton(page).click();
   await expect(
-    page.getByRole("status").filter({ hasText: /offline demo mode/i }).first(),
+    page.getByRole("status").filter({ hasText: /Analyzer ready|Analysis complete/i }).first(),
   ).toBeVisible();
   await expect(page.getByText(/Preview ready/i)).toBeVisible({ timeout: 15_000 });
 });
@@ -122,7 +122,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible();
+  await expect(page.getByText(/Generated component/i)).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
   await expect(complianceTrigger).toBeVisible();

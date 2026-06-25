@@ -90,7 +90,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           Laws of UX compliance
         </h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Heuristic check of this {stage === "generated" ? "scaffold" : "analysis"} against{" "}
+          Heuristic check of this {stage === "generated" ? "component" : "analysis"} against{" "}
           <a
             href={LAWS_OF_UX_SITE}
             target="_blank"
@@ -203,7 +203,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           href={`/design-system?domain=laws-of-ux&selected=law-of-ux-${highlightLawIds[0] ?? "fitts"}`}
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          Laws of UX demos →
+          Laws of UX examples →
         </Link>
         <Link
           href="/design-system?domain=uilaws"

@@ -160,7 +160,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "For any system there is a certain amount of complexity which cannot be reduced.",
     application:
-      "Demo mode hides API complexity; live Qwen is opt-in so the default path stays simple.",
+      "Provider details stay out of the main workflow so upload, review, and export remain focused.",
     demoSurface: "upload",
     inAppHref: "/",
   },

@@ -76,15 +76,15 @@ test("requestMagicLink rejects invalid email", () => {
   assert.deepEqual(loadAuthState(storage), { mode: "guest" });
 });
 
-test("confirmMagicLinkStub completes demo sign-in locally", () => {
+test("confirmMagicLinkStub completes contact-label sign-in locally", () => {
   const storage = createMemoryStorage();
-  requestMagicLink("meetup.user@example.com", storage);
+  requestMagicLink("reviewer@example.com", storage);
   const signedIn = confirmMagicLinkStub(storage);
 
   assert.equal(signedIn.mode, "named");
-  assert.equal(signedIn.displayName, "meetup.user");
-  assert.equal(signedIn.email, "meetup.user@example.com");
-  assert.equal(getSavedByLabel(signedIn), "meetup.user");
+  assert.equal(signedIn.displayName, "reviewer");
+  assert.equal(signedIn.email, "reviewer@example.com");
+  assert.equal(getSavedByLabel(signedIn), "reviewer");
 });
 
 test("clearAuthState removes persisted auth", () => {

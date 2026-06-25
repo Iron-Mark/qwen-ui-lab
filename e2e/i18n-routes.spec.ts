@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test";
 
 const shareFixturePayload = {
   file: "dashboard.png",
-  mode: "offline-demo",
-  summary: "Offline demo layout analysis for meetup presentation.",
+  mode: "Analyzer ready",
+  summary: "Local layout analysis for a dashboard screenshot.",
   stats: [{ l: "sections", v: "4" }],
 };
 
@@ -63,7 +63,7 @@ test("/account redirects to zh account modal with ?lang=zh", async ({ page }) =>
       level: 2,
     }),
   ).toBeVisible();
-  await expect(page.getByTestId("account-mode-badge")).toHaveText("访客会话");
+  await expect(page.getByTestId("account-mode-badge")).toHaveText("仅本地");
   await expect(page.getByTestId("header-account-link")).toContainText("访客");
 });
 
@@ -80,9 +80,9 @@ test("/share/[id] renders zh chrome with ?lang=zh", async ({ page, request }) =>
   await expect(page.getByTestId("shared-result-summary")).toBeVisible();
   await expect(page.getByText(shareFixturePayload.summary)).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "体验 live demo" }),
+    page.getByRole("link", { name: "打开工作流" }),
   ).toHaveAttribute("href", "/?lang=zh");
   await expect(
-    page.getByRole("link", { name: "一键演示" }),
+    page.getByRole("link", { name: "示例运行" }),
   ).toHaveAttribute("href", "/demo?lang=zh");
 });

@@ -13,22 +13,22 @@ export type DemoRoutePageProps = {
 
 export function createDemoRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "One-Click Demo",
+    title: "Sample Run",
     description:
-      "Preloaded meetup demo: instant offline analyze with dashboard, auth, mobile, landing, settings, or shop archetypes - export React scaffolds in one visit.",
+      "Preloaded screenshot sample with dashboard, auth, mobile, landing, settings, or shop layouts - inspect detection and export React starter files.",
     path: "/demo",
     keywords: [
-      "Qwen UI demo",
-      "offline analyze demo",
-      "UI archetype scaffold",
-      "meetup presentation",
+      "Qwen UI sample",
+      "screenshot sample run",
+      "UI archetype starter",
+      "React starter export",
     ],
     ogImage: "/opengraph-image",
-    ogImageAlt: "qwen-ui-lab one-click offline demo",
+    ogImageAlt: "qwen-ui-lab sample screenshot workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "Preloaded screenshot-to-scaffold demo",
+    twitterImageAlt: "Preloaded screenshot-to-React sample run",
     shareSnippet:
-      "Open /demo for an instant offline analyze flow - swap archetypes with ?archetype=auth|mobile|landing|settings|shop.",
+      "Open /demo for a preloaded sample run - swap layouts with ?archetype=auth|mobile|landing|settings|shop.",
   });
 }
 
@@ -50,13 +50,13 @@ export function getDemoRouteArchetypeLabel(value: string) {
 
 export function getDemoRouteStructuredDataInput() {
   return {
-    title: "One-Click Demo",
+    title: "Sample Run",
     description:
-      "Preloaded meetup demo with bundled references and instant offline analyze for common UI archetypes.",
+      "Preloaded screenshot sample with generated starter output for common UI archetypes.",
     path: "/demo",
-    breadcrumbLabel: "Demo",
-    about: ["Offline demo mode", "UI archetype analysis", "Scaffold export"],
-    callToAction: "Visit /demo for a one-click preloaded analyze and export flow.",
+    breadcrumbLabel: "Sample run",
+    about: ["Screenshot sample", "UI archetype analysis", "React export"],
+    callToAction: "Visit /demo for a preloaded analyze and export flow.",
   };
 }
 

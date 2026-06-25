@@ -45,7 +45,7 @@
         "value": "4"
       }
     ],
-    "modeLabel": "Local demo mode",
+    "modeLabel": "Analyzer ready",
     "summary": "Admin dashboard shell with stat grid, revenue chart, and activity feed — tuned for live demos."
   }
 }

@@ -84,8 +84,8 @@ const samplePlan = [
     icon: Boxes,
   },
   {
-    title: "Generate scaffold",
-    body: "Export a React + Tailwind component tree that matches the sample hierarchy.",
+    title: "Generate component",
+    body: "Export a React + Tailwind starter that matches the sample hierarchy.",
     icon: Code2,
   },
   {
@@ -125,7 +125,7 @@ const detectedUi = [
 const exportOptions = [
   {
     title: "React component",
-    body: "Dashboard layout scaffold with reusable cards, charts, and action groups.",
+    body: "Dashboard layout starter with reusable cards, charts, and action groups.",
     icon: FileCode2,
   },
   {
@@ -135,7 +135,7 @@ const exportOptions = [
   },
   {
     title: "Local download",
-    body: "Copy TSX or export the scaffold zip from the workflow.",
+    body: "Copy TSX or export the starter package from the workflow.",
     icon: Download,
   },
 ] as const;

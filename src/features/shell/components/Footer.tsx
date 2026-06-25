@@ -29,8 +29,8 @@ const PRODUCT_LINKS = [
   },
   {
     href: "/demo",
-    label: "One-click demo",
-    tooltip: "Load the bundled sample without uploading a file.",
+    label: "Sample run",
+    tooltip: "Load a prebuilt screenshot sample without uploading a file.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -43,7 +43,7 @@ const RESOURCE_LINKS = [
   {
     href: "https://qwenlm.github.io/qwen-code-docs/en/users/overview/",
     label: "Qwen Code",
-    tooltip: "Read the Qwen Code docs for scaffold generation.",
+    tooltip: "Read the Qwen Code docs for generated React output.",
   },
   {
     href: "https://github.com/Iron-Mark/qwen-ui-lab",
@@ -179,7 +179,7 @@ export function Footer() {
       <PageContainer className="py-5 sm:py-6">
         <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] sm:items-start lg:grid-cols-[minmax(0,1fr)_auto]">
           <div className="max-w-xl sm:max-w-md">
-            <FooterTooltip content="Return to the main screenshot-to-scaffold workspace.">
+            <FooterTooltip content="Return to the main screenshot-to-React workspace.">
               <Link
                 href="/"
                 className="inline-flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -197,14 +197,14 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    Screenshot to scaffold lab
+                    Screenshot to React lab
                   </span>
                 </span>
               </Link>
             </FooterTooltip>
             <p className="mt-3 max-w-sm text-sm leading-5 text-muted-foreground">
-              Screenshot-to-React scaffolds with Qwen-ready export. Offline-safe
-              for demos and reviews.
+              Screenshot-to-React starters with reviewable export packages for
+              product teams.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ href, label, tooltip, icon: Icon }) => (

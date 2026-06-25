@@ -1,4 +1,4 @@
-/** Bundled meetup reference screenshots for offline demo + E2E (client-safe). */
+/** Bundled reference screenshots for sample runs and E2E (client-safe). */
 export const BUNDLED_REFERENCE_SAMPLES = [
   {
     id: "dashboard",
