@@ -271,9 +271,9 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "Sample run",
+        name: "Sample reference",
         short_name: "Sample",
-        description: "Open a preloaded screenshot sample run.",
+        description: "Open a screenshot sample reference and generate a starter preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },

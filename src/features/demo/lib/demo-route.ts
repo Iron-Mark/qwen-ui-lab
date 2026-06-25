@@ -13,22 +13,22 @@ export type DemoRoutePageProps = {
 
 export function createDemoRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Sample Run",
+    title: "Sample reference",
     description:
-      "Preloaded screenshot sample with dashboard, auth, mobile, landing, settings, or shop layouts - inspect detection and export React starter files.",
+      "Preloaded screenshot references for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React starter.",
     path: "/demo",
     keywords: [
       "Qwen UI sample",
-      "screenshot sample run",
+      "sample reference",
       "UI archetype starter",
       "React starter export",
     ],
     ogImage: "/opengraph-image",
-    ogImageAlt: "qwen-ui-lab sample screenshot workflow",
+    ogImageAlt: "qwen-ui-lab sample reference workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "Preloaded screenshot-to-React sample run",
+    twitterImageAlt: "Preloaded screenshot-to-React sample",
     shareSnippet:
-      "Open /demo for a preloaded sample run - swap layouts with ?archetype=auth|mobile|landing|settings|shop.",
+      "Open /demo for a sample reference and swap layouts with ?archetype=auth|mobile|landing|settings|shop.",
   });
 }
 
@@ -50,13 +50,14 @@ export function getDemoRouteArchetypeLabel(value: string) {
 
 export function getDemoRouteStructuredDataInput() {
   return {
-    title: "Sample Run",
+    title: "Sample reference",
     description:
-      "Preloaded screenshot sample with generated starter output for common UI archetypes.",
+      "Preloaded screenshot sample references with starter output for common UI archetypes.",
     path: "/demo",
-    breadcrumbLabel: "Sample run",
+    breadcrumbLabel: "Sample reference",
     about: ["Screenshot sample", "UI archetype analysis", "React export"],
-    callToAction: "Visit /demo for a preloaded analyze and export flow.",
+    callToAction:
+      "Open /demo to run a sample layout and review the exported starter.",
   };
 }
 

@@ -35,7 +35,7 @@ export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="gap-1.5 text-xs font-medium">
                   <Sparkles className="size-3.5" aria-hidden />
-                  Sample run
+                  Sample reference
                 </Badge>
                 <Badge
                   variant="outline"

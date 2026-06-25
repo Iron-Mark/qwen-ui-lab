@@ -7,7 +7,7 @@ export const en = {
       "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind starter.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
-    oneClickDemo: "Load sample",
+    oneClickDemo: "Sample reference",
     trustDemo: "Browser-safe by default",
     trustOffline: "Runs locally",
     benefitUploadLabel: "Plan",
@@ -50,8 +50,8 @@ export const en = {
     title: "Read-only analysis summary",
     descriptionLead: "Short link",
     descriptionTrail: "— summary only, no generated code or API secrets.",
-    tryLiveDemo: "Open workflow",
-    oneClickDemo: "Sample run",
+    tryLiveDemo: "Back to workflow",
+    oneClickDemo: "Sample reference",
     metadataNotFoundTitle: "Share not found",
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
@@ -379,3 +379,4 @@ export type Dictionary = {
   designSystem: DesignSystemDictionary;
   uploadFlow: UploadFlowDictionary;
 };
+

@@ -29,8 +29,8 @@ const PRODUCT_LINKS = [
   },
   {
     href: "/demo",
-    label: "Sample run",
-    tooltip: "Load a ready-to-run screenshot sample to preview export results.",
+    label: "Sample reference",
+    tooltip: "Open a screenshot sample reference and review the exported starter.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
