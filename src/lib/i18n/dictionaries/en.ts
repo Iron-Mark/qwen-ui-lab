@@ -21,7 +21,7 @@ export const en = {
     benefitDesignLabel: "Export",
     benefitDesignTitle: "Export the starter",
     benefitDesignBody:
-      "Review TSX, Design.md, and project handoff files before using the result.",
+      "Review TSX, Design.md, and package files before using the result.",
     trustSignalsAria: "Trust signals",
     keyBenefitsAria: "Key benefits",
   },
@@ -260,7 +260,7 @@ export const en = {
     exportReviewPackage: "Review package",
     exportPackageReady: "Export package",
     exportPackageReadyDesc:
-      "Preview the files, screenshot changes, and handoff copy before downloading.",
+      "Preview the files, screenshot changes, and package summary before downloading.",
     exportPackageTitle: "Review export package",
     exportPackageDesc:
       "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
@@ -272,7 +272,7 @@ export const en = {
       "Package export downloads these files as a reviewable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
-      "This is the plain-language package copy a teammate sees before importing the generated component.",
+      "This is the package summary a teammate sees before importing the generated component.",
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
@@ -297,11 +297,11 @@ export const en = {
     exportCopyAll: "Copy all",
     exportDownload: "Download component",
     exportDesignDoc: "Design.md",
-    exportHandoffBundle: "Project handoff",
+    exportHandoffBundle: "Export package",
     toastScaffoldCopied: "Component copied",
     toastScaffoldExported: "Component exported",
     toastDesignDocExported: "Design.md exported",
-    toastHandoffBundleExported: "Project handoff exported",
+    toastHandoffBundleExported: "Starter package exported",
     exportGenerateHint: "Generate preview to see live stats alongside the snippet.",
     generatedScaffold: "Generated component",
     livePreview: "Live preview",
