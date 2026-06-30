@@ -163,7 +163,7 @@ export const en = {
     alertOfflineBody:
       "Upload, detection, preview, and export are ready.",
     alertOfflineReason: "Reason: {detail}",
-    liveFlowLabel: "Live flow",
+    liveFlowLabel: "Screenshot workflow",
     headlineDefault: "Build a component preview",
     headlineFaster: "Ship React-ready UI from one screenshot",
     subtitleDefault:
@@ -189,7 +189,7 @@ export const en = {
     errorSampleLoad:
       "Could not load the sample screenshot. Upload your own image instead.",
     failureTitle: "Could not continue",
-    loadingTitle: "Building preview",
+    loadingTitle: "Generating preview",
     loadingBody:
       "Reading the screenshot, mapping layout, and preparing the generated component.",
     tryBundledReference: "Try a bundled reference",
@@ -288,7 +288,7 @@ export const en = {
     exportChangeCorrections:
       "{edited} manual edits and {excluded} excluded boxes are captured in the recipe.",
     exportChangePackage:
-      "The export now includes {count} files: design handoff, component, recipe, manifest, tokens, and detection notes.",
+      "The export now includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",

@@ -159,7 +159,7 @@ export const zh = {
     alertOfflineTitle: "分析器就绪",
     alertOfflineBody: "上传、检测、预览和导出已准备好。",
     alertOfflineReason: "原因：{detail}",
-    liveFlowLabel: "实时流程",
+    liveFlowLabel: "截图工作流",
     headlineDefault: "上传截图，生成组件预览",
     headlineFaster: "一张截图，产出可落地的 React UI",
     subtitleDefault:
@@ -279,7 +279,7 @@ export const zh = {
     exportChangeCorrections:
       "{edited} 个手动修改和 {excluded} 个排除框已记入配方。",
     exportChangePackage:
-      "导出现在包含 {count} 个文件：设计交接、组件、配方、manifest、tokens 和检测记录。",
+      "导出现在包含 {count} 个文件：设计说明、组件、配方、manifest、tokens 和检测记录。",
     exportReadmeIntent: "界面意图",
     exportReadmeComponent: "入口组件",
     exportReadmeResponsive: "响应式模式",
