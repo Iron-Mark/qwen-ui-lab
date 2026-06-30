@@ -1692,7 +1692,7 @@ function ExportPackageReviewDialog({
         </DialogHeader>
 
         <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden bg-background">
-          <div className="shrink-0 border-b border-border/60 bg-background/95 px-4 py-3 sm:px-5">
+          <div className="shrink-0 overflow-visible border-b border-border/60 bg-background/95 px-4 py-3.5 sm:px-5">
             <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/45 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent)] group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto">
               <TabsTrigger value="files" className="h-10 min-h-10 gap-2 px-3">
                 <FileCode2 className="size-4" aria-hidden />
@@ -1709,8 +1709,8 @@ function ExportPackageReviewDialog({
             </TabsList>
           </div>
 
-          <TabsContent value="files" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(58dvh,30rem)]">
+          <TabsContent value="files" className="min-h-0 flex-1 overflow-hidden">
+            <ScrollArea className="h-full min-h-0">
               <div className="grid gap-3 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageFilesIntro}
@@ -1737,8 +1737,8 @@ function ExportPackageReviewDialog({
             </ScrollArea>
           </TabsContent>
 
-          <TabsContent value="changes" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(58dvh,30rem)]">
+          <TabsContent value="changes" className="min-h-0 flex-1 overflow-hidden">
+            <ScrollArea className="h-full min-h-0">
               <div className="grid gap-4 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageChangesIntro}
@@ -1762,8 +1762,8 @@ function ExportPackageReviewDialog({
             </ScrollArea>
           </TabsContent>
 
-          <TabsContent value="copy" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(58dvh,30rem)]">
+          <TabsContent value="copy" className="min-h-0 flex-1 overflow-hidden">
+            <ScrollArea className="h-full min-h-0">
               <div className="grid gap-4 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageCopyIntro}
