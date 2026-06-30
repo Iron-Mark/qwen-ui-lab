@@ -11,7 +11,7 @@ const shareFixturePayload = {
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
   ],
-  mode: "Analyzer ready",
+  mode: "Ready to analyze",
   file: "dashboard-reference.svg",
   detections: {
     source: { width: 1440, height: 900 },

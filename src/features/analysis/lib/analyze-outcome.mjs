@@ -1,10 +1,10 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
 
 export const FALLBACK_BANNER_MISSING =
-  "Local analysis is ready. Provider settings are available in developer diagnostics.";
+  "Analysis is ready. Provider settings are available in developer diagnostics.";
 
 export const FALLBACK_BANNER_ERROR =
-  "Local analysis is ready.";
+  "Analysis is ready.";
 
 const INSTANT_DEMO_CODES = new Set([
   "missing_qwen_api_key",
@@ -195,7 +195,7 @@ export async function postAnalyzeUi(
   if (!skipHealthCheck) {
     const health = await fetchAnalyzeHealth({ fetchFn, apiPath: healthPath });
     if (!health.liveAnalysisEnabled) {
-      onProgress?.("Building local analysis…");
+      onProgress?.("Preparing preview…");
       return resolveAnalyzeOutcome({
         file,
         responseOk: false,

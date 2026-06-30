@@ -125,7 +125,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     plan,
     previewStats,
     generatedCode,
-    modeLabel: overrides.modeLabel || "Analyzer ready",
+    modeLabel: overrides.modeLabel || "Ready to analyze",
     summary: overrides.summary ?? offline.summary ?? "",
     ...(detections ? { detections } : {}),
   };

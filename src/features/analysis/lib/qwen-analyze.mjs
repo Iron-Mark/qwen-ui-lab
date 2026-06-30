@@ -37,7 +37,7 @@ export function buildDemoAnalyzeResponse({ fileName, fileType, fileSize }) {
     demo: true,
     artifact: buildUiFlowArtifact(
       { name: fileName, type: fileType, size: fileSize },
-      { modeLabel: "Analyzer ready" },
+      { modeLabel: "Ready to analyze" },
     ),
     provider: { model: "demo" },
   };

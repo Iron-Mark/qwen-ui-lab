@@ -39,7 +39,7 @@ export function GeneratedDashboard() {
   return <main>Dashboard scaffold</main>;
 }
 `,
-  modeLabel: "Analyzer ready",
+  modeLabel: "Ready to analyze",
   summary: "Local detector produced a dashboard starter from visible geometry.",
   detections: {
     source: { width: 1200, height: 800 },

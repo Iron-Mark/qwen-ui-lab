@@ -1,6 +1,7 @@
 const EN_PROGRESS_TO_KEY = {
   "Preparing analysis…": "progressCheckingProvider",
   "Checking provider…": "progressCheckingProvider",
+  "Preparing preview…": "progressBuildingOffline",
   "Building local analysis…": "progressBuildingOffline",
   "Calling Qwen vision API…": "progressCallingApi",
   "Analyzing screenshot…": "progressCallingApi",
@@ -51,6 +52,7 @@ const EN_STEP_ORDER = [
 const PROGRESS_INDEX = {
   "Preparing analysis…": 2,
   "Checking provider…": 2,
+  "Preparing preview…": 3,
   "Building local analysis…": 3,
   "Calling Qwen vision API…": 3,
   "Analyzing screenshot…": 3,

@@ -92,7 +92,7 @@ test("runs deterministic local analysis flow", async ({ page }) => {
 
   await primaryAnalyzeButton(page).click();
   await expect(
-    page.getByRole("status").filter({ hasText: /Analyzer ready|Analysis complete/i }).first(),
+    page.getByRole("status").filter({ hasText: /Ready to analyze|Analysis complete/i }).first(),
   ).toBeVisible();
   await expect(page.getByText(/Preview ready/i)).toBeVisible({ timeout: 15_000 });
 });
