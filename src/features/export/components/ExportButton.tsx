@@ -186,7 +186,9 @@ export function ExportButton({
       )}
     >
       <StatusIcon status={effectiveStatus} variant={variant} />
-      <span className="sr-only sm:not-sr-only sm:inline">{visibleLabel}</span>
+      <span className={overlay ? "sr-only sm:not-sr-only sm:inline" : "inline"}>
+        {visibleLabel}
+      </span>
     </Button>
   );
 

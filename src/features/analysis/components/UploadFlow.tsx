@@ -1675,7 +1675,7 @@ function ExportPackageReviewDialog({
         <Archive className="size-4" aria-hidden />
         {copy.exportReviewPackage}
       </DialogTrigger>
-      <DialogContent className="flex max-h-[min(90dvh,46rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
+      <DialogContent className="flex max-h-[min(90dvh,46rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[calc(100%-3rem)] lg:max-w-5xl">
         <DialogHeader className="border-b border-border px-5 py-4">
           <div className="flex flex-col gap-3 pr-8 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
@@ -1691,8 +1691,8 @@ function ExportPackageReviewDialog({
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden">
-          <div className="shrink-0 px-4 pb-2 pt-4 sm:px-5">
+        <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden bg-background">
+          <div className="shrink-0 border-b border-border/60 bg-background/95 px-4 py-3 sm:px-5">
             <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/45 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent)] group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto">
               <TabsTrigger value="files" className="h-10 min-h-10 gap-2 px-3">
                 <FileCode2 className="size-4" aria-hidden />
@@ -1779,7 +1779,7 @@ function ExportPackageReviewDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-4 pt-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4">
+        <DialogFooter className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4">
           <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
