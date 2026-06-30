@@ -101,26 +101,30 @@ export function buildRepoCompareExport({
  *   description?: string;
  * }} args
  */
-export function buildScaffoldReadme({ filename, description = "qwen-ui-lab component export" }) {
+export function buildScaffoldReadme({ filename, description = "qwen-ui-lab starter package" }) {
   const safeFilename = sanitizeGistFilename(filename);
-  return `# qwen-ui-lab component export
+  return `# qwen-ui-lab starter package
 
 ${description}
 
+This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+
 ## Files
 
-- \`${safeFilename}\` — generated React + Tailwind component
+- \`README.md\` - package overview and import checklist
+- \`DESIGN.md\` - design handoff, review notes, and responsive assumptions
+- \`${safeFilename}\` - generated React + Tailwind component
 
 ## Next steps
 
-1. Unzip this archive into your app (for example \`src/components/\`).
+1. Unzip this starter package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
+4. Review the design handoff and detection notes before treating the component as final.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
 }
-
 /**
  * @param {string} content
  */
@@ -192,14 +196,96 @@ export function buildScaffoldZipEntries({ content, filename, description }) {
     });
   }
 
+  return buildFallbackScaffoldZipEntries({ content, filename: safeFilename, description });
+}
+
+function buildFallbackScaffoldZipEntries({ content, filename, description }) {
+  const stem = toExportStem(filename);
+  const componentPath = `src/components/generated/${stem}.tsx`;
+  const recipePath = `src/components/generated/${stem}.recipe.json`;
+  const manifestPath = `src/components/generated/${stem}.manifest.json`;
+  const tokensPath = `src/components/generated/${stem}.tokens.css`;
+  const detectionPath = `docs/${stem}.detection.md`;
+  const dependencies = inferShadcnDependencies(content, inferPrimitiveMapFromImports(content));
+  const files = {
+    designDoc: "DESIGN.md",
+    component: componentPath,
+    recipe: recipePath,
+    manifest: manifestPath,
+    tokens: tokensPath,
+    detectionSummary: detectionPath,
+  };
+  const fallbackBlueprint = {
+    schema: SCAFFOLD_RECIPE_SCHEMA,
+    generator: "manual-scaffold-export",
+    sourceHash: hashContent(content),
+    componentName: inferGeneratedComponentName(content),
+    designTokens: {},
+    screenIntent: { label: "Generated UI", confidence: 0.5 },
+    responsiveIntent: {
+      mode: "responsive starter",
+      breakpoints: ["mobile", "tablet", "desktop"],
+      primaryFlow: "Review layout against the original screenshot before shipping.",
+    },
+    detectedPatterns: {},
+    detectedElements: [],
+    layoutRegions: [],
+    shadcnPrimitiveMap: inferPrimitiveMapFromImports(content),
+    primitiveSummary: [],
+    reviewChecklist: [
+      "Review spacing, typography, and responsive behavior against the source screenshot.",
+      "Replace sample content with product data.",
+      "Run lint/build after importing the component.",
+    ],
+  };
+  const recipe = {
+    ...fallbackBlueprint,
+    files,
+    integration: {
+      entryComponent: fallbackBlueprint.componentName,
+      importPath: `@/components/generated/${stem}`,
+      dependencies,
+      nextSteps: fallbackBlueprint.reviewChecklist,
+    },
+  };
+  const manifest = buildProductionManifest({
+    blueprint: fallbackBlueprint,
+    dependencies,
+    files,
+    stem,
+  });
+
   return [
-    { name: "README.md", content: buildScaffoldReadme({ filename: safeFilename, description }) },
-    { name: safeFilename, content },
+    {
+      name: "README.md",
+      content: buildFallbackPackageReadme({
+        description,
+        files,
+        componentName: fallbackBlueprint.componentName,
+        dependencies,
+      }),
+    },
+    {
+      name: files.designDoc,
+      content: buildPackageDesignMarkdown({
+        description,
+        files,
+        componentName: fallbackBlueprint.componentName,
+        blueprint: fallbackBlueprint,
+        dependencies,
+      }),
+    },
+    { name: componentPath, content },
+    { name: recipePath, content: `${JSON.stringify(recipe, null, 2)}\n` },
+    { name: manifestPath, content: `${JSON.stringify(manifest, null, 2)}\n` },
+    { name: tokensPath, content: buildTokenCss(fallbackBlueprint.designTokens) },
+    { name: detectionPath, content: buildDetectionSummaryMarkdown(fallbackBlueprint) },
   ];
 }
 
 function buildProductionScaffoldZipEntries({ content, filename, description, blueprint }) {
   const stem = toExportStem(filename);
+  const designPath = "DESIGN.md";
   const componentPath = `src/components/generated/${stem}.tsx`;
   const recipePath = `src/components/generated/${stem}.recipe.json`;
   const manifestPath = `src/components/generated/${stem}.manifest.json`;
@@ -207,6 +293,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
   const detectionPath = `docs/${stem}.detection.md`;
   const dependencies = inferShadcnDependencies(content, blueprint.shadcnPrimitiveMap);
   const fileMap = {
+    designDoc: designPath,
     component: componentPath,
     recipe: recipePath,
     manifest: manifestPath,
@@ -238,6 +325,16 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
     {
       name: "README.md",
       content: buildProductionScaffoldReadme({
+        description,
+        files: fileMap,
+        componentName: blueprint.componentName,
+        blueprint,
+        dependencies,
+      }),
+    },
+    {
+      name: designPath,
+      content: buildPackageDesignMarkdown({
         description,
         files: fileMap,
         componentName: blueprint.componentName,
@@ -281,6 +378,7 @@ This starter package was generated from a screenshot analysis. It is meant to be
 
 ## Files
 
+- \`${files.designDoc}\` - design handoff, layout notes, and review checklist
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - deterministic detection recipe, primitive map, and regeneration context
 - \`${files.manifest}\` - package identity, dependency hints, and quality gates for review
@@ -298,6 +396,43 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 3. Replace placeholder content with real product data.
 4. Keep the recipe JSON during review so edits can be compared against the screenshot-derived source.
 5. Run lint/build and verify mobile, tablet, and desktop widths before merging.
+
+Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
+`;
+}
+
+function buildFallbackPackageReadme({
+  description = "qwen-ui-lab starter package",
+  files,
+  componentName,
+  dependencies = [],
+}) {
+  return `# qwen-ui-lab starter package
+
+${description}
+
+This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+
+## Files
+
+- \`README.md\` - package overview and import checklist
+- \`${files.designDoc}\` - design handoff, review notes, and responsive assumptions
+- \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
+- \`${files.recipe}\` - regeneration recipe and package context
+- \`${files.manifest}\` - package manifest and quality gates
+- \`${files.tokens}\` - theme token starter file
+- \`${files.detectionSummary}\` - detection and review notes
+
+## Expected dependencies
+
+${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
+
+## Next steps
+
+1. Unzip this starter package into your app.
+2. Install any missing dependencies referenced by the component.
+3. Adjust imports and routes to match your project structure.
+4. Review \`DESIGN.md\` and the detection notes before treating the component as final.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
@@ -379,6 +514,67 @@ ${elementLines || "- No detected elements were exported."}
 ## Integration notes
 
 ${blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")}
+`;
+}
+
+function buildPackageDesignMarkdown({
+  description = "Generated React starter package",
+  files,
+  componentName,
+  blueprint,
+  dependencies = [],
+}) {
+  const screenIntent = blueprint?.screenIntent?.label ?? "Generated UI";
+  const responsiveIntent = blueprint?.responsiveIntent;
+  const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
+    .sort(([first], [second]) => first.localeCompare(second))
+    .map(([primitive, reason]) => `- ${primitive}: ${reason}`)
+    .join("\n");
+  const reviewChecklist = blueprint?.reviewChecklist?.length
+    ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
+    : "- Review the generated component against the source screenshot.";
+
+  return `# Design handoff
+
+${description}
+
+## Component
+
+- Name: \`${componentName}\`
+- Entry: \`${files.component}\`
+- Intent: ${screenIntent}
+
+## Layout decisions
+
+- The generated component is structured as a source-controlled starter, not a final screenshot clone.
+- Repeated regions should remain as small subcomponents when you adapt the code.
+- Token values are isolated in \`${files.tokens}\` so visual tuning can happen without rewriting component structure.
+
+## Responsive assumptions
+
+- Mode: ${responsiveIntent?.mode ?? "responsive starter"}
+- Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
+- Primary flow: ${responsiveIntent?.primaryFlow ?? "Verify the layout manually at mobile, tablet, and desktop widths."}
+
+## Primitive mapping
+
+${primitiveMap || "- No shadcn-style primitive map was inferred. Review the JSX and map controls manually."}
+
+## Package contents
+
+- \`${files.component}\` - component source
+- \`${files.recipe}\` - regeneration recipe
+- \`${files.manifest}\` - package manifest
+- \`${files.tokens}\` - token CSS
+- \`${files.detectionSummary}\` - detection notes
+
+## Dependencies
+
+${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
+
+## Review checklist
+
+${reviewChecklist}
 `;
 }
 
@@ -525,6 +721,19 @@ function inferShadcnDependencies(content, primitiveMap) {
   );
 
   return [...new Set([...imports, ...mappedDependencies])].sort();
+}
+
+function inferPrimitiveMapFromImports(content) {
+  const imports = [
+    ...String(content || "").matchAll(/from\s+["']@\/components\/ui\/([^"']+)["']/g),
+  ].map((match) => match[1]);
+
+  return Object.fromEntries(
+    [...new Set(imports)].sort().map((name) => [
+      name,
+      `Imported shadcn-style ${name} primitive in the generated component.`,
+    ]),
+  );
 }
 
 function componentNamesFromText(value) {

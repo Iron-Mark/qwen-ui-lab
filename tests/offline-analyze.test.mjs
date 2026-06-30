@@ -701,7 +701,8 @@ test("known reference samples export as starter packages", () => {
       filename: name.replace(/\.[^.]+$/, ".tsx"),
       description: known.summary,
     });
-    assert.equal(entries.length, 6);
+    assert.equal(entries.length, 7);
+    assert.ok(entries.some((entry) => entry.name === "DESIGN.md"));
     assert.ok(entries.some((entry) => entry.name.endsWith(".recipe.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".manifest.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".tokens.css")));

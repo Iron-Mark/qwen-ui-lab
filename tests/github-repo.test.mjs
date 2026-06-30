@@ -60,11 +60,15 @@ test("buildScaffoldZipEntries includes readme and sanitized filename", () => {
     description: "test",
   });
 
-  assert.equal(entries.length, 2);
-  assert.equal(entries[0].name, "README.md");
-  assert.match(entries[0].content, /test/);
-  assert.equal(entries[1].name, "name.tsx");
-  assert.equal(entries[1].content, "export const x = 1;");
+  assert.equal(entries.length, 7);
+  assert.ok(entries.some((entry) => entry.name === "README.md"));
+  assert.ok(entries.some((entry) => entry.name === "DESIGN.md"));
+  assert.ok(entries.some((entry) => entry.name === "src/components/generated/name.tsx"));
+  assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /test/);
+  assert.equal(
+    entries.find((entry) => entry.name === "src/components/generated/name.tsx")?.content,
+    "export const x = 1;",
+  );
 });
 
 test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () => {
@@ -102,6 +106,7 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
 
   assert.deepEqual(names, [
     "README.md",
+    "DESIGN.md",
     "src/components/generated/detected-dashboard.tsx",
     "src/components/generated/detected-dashboard.recipe.json",
     "src/components/generated/detected-dashboard.manifest.json",
@@ -109,15 +114,17 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "docs/detected-dashboard.detection.md",
   ]);
   assert.match(entries[0].content, /starter package/i);
-  assert.match(entries[1].content, /GeneratedComponent/);
-  assert.match(entries[4].content, /--qwen-generated-accent: #2563eb/);
-  assert.match(entries[5].content, /Dashboard workspace/);
-  assert.match(entries[5].content, /dataTables: 1/);
-  assert.match(entries[5].content, /data-table: semantic table inside Card/);
+  assert.match(entries[1].content, /Design handoff/);
+  assert.match(entries[2].content, /GeneratedComponent/);
+  assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);
+  assert.match(entries[6].content, /Dashboard workspace/);
+  assert.match(entries[6].content, /dataTables: 1/);
+  assert.match(entries[6].content, /data-table: semantic table inside Card/);
 
-  const recipe = JSON.parse(entries[2].content);
+  const recipe = JSON.parse(entries[3].content);
   assert.equal(recipe.schema, "qwen-ui-lab/scaffold-recipe@1");
   assert.equal(recipe.files.component, "src/components/generated/detected-dashboard.tsx");
+  assert.equal(recipe.files.designDoc, "DESIGN.md");
   assert.equal(recipe.files.manifest, "src/components/generated/detected-dashboard.manifest.json");
   assert.equal(recipe.integration.importPath, "@/components/generated/detected-dashboard");
   assert.equal(recipe.primitiveSummary.primitives["data-table"], 1);
@@ -128,11 +135,12 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "@/components/ui/table",
   ]);
 
-  const manifest = JSON.parse(entries[3].content);
+  const manifest = JSON.parse(entries[4].content);
   assert.equal(manifest.schema, "qwen-ui-lab/export-bundle@1");
   assert.equal(manifest.bundleId, `qwen-${manifest.sourceHash.slice(0, 12)}`);
   assert.equal(manifest.contents.includesOriginalImage, false);
   assert.equal(manifest.contents.includesSecrets, false);
+  assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/generated/detected-dashboard.recipe.json");
 });
 
