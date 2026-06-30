@@ -1880,6 +1880,14 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
     ),
   );
   assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) =>
+        reason.code === "manual-correction" &&
+        /type, primitive, role, geometry/.test(reason.evidence),
+    ),
+    "manual correction reason should name the corrected dimensions",
+  );
+  assert.ok(
     regenerated.detections.elements[1].reasons.some(
       (reason) => reason.code === "manual-exclusion",
     ),

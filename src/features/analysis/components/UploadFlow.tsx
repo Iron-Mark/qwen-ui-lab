@@ -1257,7 +1257,12 @@ function buildEditedDetectionElement(
     primitive,
     confidence: nextConfidence,
     userEdited: true,
-    reasons: mergeEditedDetectionReasons(element.reasons, nextIncluded !== false, nextConfidence),
+    reasons: mergeEditedDetectionReasons(
+      element.reasons,
+      nextIncluded !== false,
+      nextConfidence,
+      describeDetectionPatch(element, { ...patch, primitive }),
+    ),
   };
 }
 
@@ -1271,6 +1276,7 @@ function mergeEditedDetectionReasons(
   reasons: DetectionReason[] | undefined,
   included: boolean,
   confidence: number,
+  changes: string[] = [],
 ) {
   const existing = (reasons ?? []).filter(
     (reason) =>
@@ -1283,7 +1289,9 @@ function mergeEditedDetectionReasons(
       code: "manual-correction",
       label: "Manual correction",
       evidence:
-        "This edited box is now the source of truth for regeneration and export.",
+        changes.length
+          ? `Edited ${changes.join(", ")}; this box is now the source of truth for regeneration and export.`
+          : "This edited box is now the source of truth for regeneration and export.",
       weight: 0.96,
     },
     {
@@ -1304,6 +1312,28 @@ function mergeEditedDetectionReasons(
   }
 
   return [...correctionReasons, ...existing];
+}
+
+function describeDetectionPatch(
+  element: DetectionElement,
+  patch: Partial<DetectionElement>,
+) {
+  const changes: string[] = [];
+  if (patch.kind && patch.kind !== element.kind) changes.push("type");
+  if (patch.primitive && patch.primitive !== element.primitive) changes.push("primitive");
+  if (patch.included !== undefined && patch.included !== (element.included ?? true)) {
+    changes.push("inclusion");
+  }
+  if (
+    patch.box &&
+    (patch.box.x !== element.box.x ||
+      patch.box.y !== element.box.y ||
+      patch.box.width !== element.box.width ||
+      patch.box.height !== element.box.height)
+  ) {
+    changes.push("geometry");
+  }
+  return changes;
 }
 
 function primitiveForKind(kind: string) {

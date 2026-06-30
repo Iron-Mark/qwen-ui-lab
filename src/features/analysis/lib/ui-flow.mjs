@@ -250,13 +250,16 @@ function mergeCorrectionReasons(element, included, confidence) {
       ),
   );
   if (!element.userEdited) return withoutCorrection;
+  const changes = summarizeManualElementChanges(element);
 
   const correctionReasons = [
     {
       code: "manual-correction",
       label: "Manual correction",
       evidence:
-        "User-edited kind, primitive, role, or geometry is the source of truth for regeneration.",
+        changes.length
+          ? `User-edited ${changes.join(", ")} is the source of truth for regeneration.`
+          : "User-edited kind, primitive, role, or geometry is the source of truth for regeneration.",
       weight: 0.96,
     },
     {
@@ -277,6 +280,16 @@ function mergeCorrectionReasons(element, included, confidence) {
   }
 
   return [...correctionReasons, ...withoutCorrection];
+}
+
+function summarizeManualElementChanges(element) {
+  const changes = [];
+  if (element.kind) changes.push("type");
+  if (element.primitive) changes.push("primitive");
+  if (element.componentRole) changes.push("role");
+  if (element.box) changes.push("geometry");
+  if (element.included === false) changes.push("inclusion");
+  return [...new Set(changes)].slice(0, 5);
 }
 
 function summarizeElementReasons(reasons) {
