@@ -248,7 +248,7 @@ const ANALYZE_STEPS_EN = [
   "Preprocessing image…",
   "Preparing analysis…",
   "Analyzing layout…",
-  "Building artifact…",
+  "Generating preview…",
 ] as const;
 
 const DETECTION_KIND_OPTIONS = [

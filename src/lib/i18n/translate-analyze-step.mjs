@@ -9,6 +9,7 @@ const EN_PROGRESS_TO_KEY = {
   "Reading image…": "analyzeStepReading",
   "Preprocessing image…": "analyzeStepPreprocessing",
   "Analyzing layout…": "analyzeStepLayout",
+  "Generating preview…": "analyzeStepBuilding",
   "Building artifact…": "analyzeStepBuilding",
 };
 
@@ -44,7 +45,7 @@ const EN_STEP_ORDER = [
   "Preprocessing image…",
   "Preparing analysis…",
   "Analyzing layout…",
-  "Building artifact…",
+  "Generating preview…",
 ];
 
 const PROGRESS_INDEX = {

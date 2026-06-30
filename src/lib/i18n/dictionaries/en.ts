@@ -146,7 +146,7 @@ export const en = {
     analyzeStepPreprocessing: "Preprocessing image…",
     analyzeStepChecking: "Preparing analysis…",
     analyzeStepLayout: "Analyzing layout…",
-    analyzeStepBuilding: "Building artifact…",
+    analyzeStepBuilding: "Generating preview…",
     progressCheckingProvider: "Preparing analysis…",
     progressBuildingOffline: "Building local analysis…",
     progressCallingApi: "Analyzing screenshot…",

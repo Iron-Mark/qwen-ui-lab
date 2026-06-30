@@ -30,7 +30,7 @@ const uploadFlowZh = {
   analyzeStepPreprocessing: "预处理图片…",
     analyzeStepChecking: "准备分析…",
   analyzeStepLayout: "分析布局…",
-  analyzeStepBuilding: "构建产物…",
+  analyzeStepBuilding: "生成预览…",
   progressCallingApi: "调用 Qwen 视觉 API…",
   stepUpload: "上传",
   stepAnalyze: "分析",
