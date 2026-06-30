@@ -2,7 +2,7 @@
   "id": "/",
   "name": "qwen-ui-lab - screenshot to React",
   "short_name": "qwen-ui-lab",
-  "description": "Reviewable React + Tailwind starter package for screenshot-to-code flows.",
+  "description": "Reviewable React + Tailwind export packages for screenshot-to-code flows.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-US",
@@ -81,7 +81,7 @@
     {
       "name": "Sample reference",
       "short_name": "Sample",
-      "description": "Open a screenshot sample reference and generate a starter preview.",
+      "description": "Open a screenshot sample reference and generate a component preview.",
       "url": "/demo",
       "icons": [
         {
@@ -98,14 +98,14 @@
       "sizes": "1440x900",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard screenshot starter reference"
+      "label": "Dashboard screenshot reference"
     },
     {
       "src": "/references/mobile-reference.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile app screenshot starter reference"
+      "label": "Mobile app screenshot reference"
     }
   ],
   "launch_handler": {
