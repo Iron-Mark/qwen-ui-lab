@@ -525,9 +525,10 @@ body {
 }
 
 [data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
-  padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
-  max-width: calc(100vw - 1rem);
-  width: auto !important;
+  left: max(1rem, env(safe-area-inset-left, 0px)) !important;
+  padding-left: 0;
+  max-width: calc(100vw - 2rem);
+  width: min(var(--width, 356px), calc(100vw - 2rem)) !important;
   right: auto !important;
 }
 
