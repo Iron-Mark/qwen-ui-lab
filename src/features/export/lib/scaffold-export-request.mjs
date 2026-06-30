@@ -30,7 +30,7 @@ export function normalizeScaffoldExportRequestBody(body) {
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
-      : "qwen-ui-lab component export";
+      : "qwen-ui-lab starter package";
   const mode = record.mode === "zip" ? "zip" : "auto";
 
   if (!content.trim()) {

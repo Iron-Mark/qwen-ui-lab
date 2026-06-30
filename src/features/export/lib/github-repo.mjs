@@ -62,26 +62,26 @@ export function buildRepoCompareExport({
   repo,
   base,
   filename,
-  description = "qwen-ui-lab component export",
+  description = "qwen-ui-lab starter package",
 }) {
   const safeFilename = sanitizeGistFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
-  const title = encodeURIComponent("Add qwen-ui-lab generated component");
+  const title = encodeURIComponent("Add qwen-ui-lab generated UI starter");
   const body = encodeURIComponent(
     [
-      "## qwen-ui-lab component export",
+      "## qwen-ui-lab starter package",
       "",
       description,
       "",
-      `Add \`${safeFilename}\` from the export panel.`,
+      `Add \`${safeFilename}\` from the export package.`,
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,
-      `2. Add \`${safeFilename}\` with your generated component.`,
+      `2. Add \`${safeFilename}\` with the generated UI starter.`,
       "3. Open a pull request.",
       "",
       "---",
-      "_Compare link helper — paste component content manually._",
+      "_Compare link helper - paste package contents manually._",
     ].join("\n"),
   );
 
@@ -351,7 +351,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
 }
 
 function buildProductionScaffoldReadme({
-  description = "qwen-ui-lab component export",
+  description = "qwen-ui-lab starter package",
   files,
   componentName,
   blueprint,

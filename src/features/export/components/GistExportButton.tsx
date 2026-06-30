@@ -45,7 +45,7 @@ const STATUS_LABELS: Record<GistExportStatus, string> = {
 export function GistExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab component export",
+  description = "qwen-ui-lab starter package",
   label,
   className,
   analyticsSource = "snippet_preview",

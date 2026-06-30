@@ -55,7 +55,7 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 export function RepoExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab component export",
+  description = "qwen-ui-lab starter package",
   label,
   className,
   exportMode = "auto",

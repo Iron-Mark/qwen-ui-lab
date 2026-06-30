@@ -44,7 +44,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "generated-auth.tsx",
-    description: "component export",
+    description: "starter package",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);

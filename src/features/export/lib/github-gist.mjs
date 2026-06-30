@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub Gist helpers for component export.
+ * Server-side GitHub Gist helpers for generated UI starter exports.
  */
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
@@ -47,7 +47,7 @@ export function getGithubGistToken(env = process.env) {
  */
 export async function createGithubGist({
   token,
-  description = "qwen-ui-lab component export",
+  description = "qwen-ui-lab starter package",
   filename,
   content,
   isPublic = false,
