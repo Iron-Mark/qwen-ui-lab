@@ -57,7 +57,7 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A003 | App icon raster mark | PNG | `public/icons/icon-192.png`, `public/icons/icon-512.png` | `public/manifest.json:18,24,62,75,88`, `public/offline.html:163`, `public/sw.js:15,16`, `src/lib/seo.ts:13,14,471` | PWA icons, shortcut icons, offline icon, organization logo | 192x192, 512x512 | Used | High |
 | A004 | Maskable app icon set | SVG + PNG | `public/icons/icon-maskable.svg`, `public/icons/icon-maskable-512.png` | `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191` | PWA maskable icon and mask icon | 512x512 | Used | High |
 | A005 | Apple touch icon set | SVG + PNG | `public/icons/apple-touch-icon.svg`, `public/icons/apple-touch-icon.png` | `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16` | iOS/PWA touch icon | 180x180 | Used | High |
-| A006 | Static social preview file | PNG | `public/images/og-image.png` | No exact runtime reference found | Older/static Open Graph style image candidate | 1200x630 | Unconfirmed | Medium |
+| A006 | Static social preview file | PNG | Removed: `public/images/og-image.png` | No exact runtime reference found | Older/static Open Graph style image candidate | 1200x630 | Removed | Medium |
 | A007 | Dashboard reference sample | SVG + PNG + WebP | `public/references/dashboard-reference.svg`, `.png`, `.webp` | `HomeMarketingHero.tsx:95`, `reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, tests/docs | Home hero background, bundled sample, PWA screenshot | 1440x900 | Used | High |
 | A008 | Auth reference sample | SVG + PNG + WebP | `public/references/auth-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests | Bundled sign-in sample | 1200x720 | Used | High |
 | A009 | Mobile reference sample | SVG + PNG + WebP | `public/references/mobile-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, tests | Bundled mobile/PWA screenshot sample | 390x844 | Used | High |
@@ -90,7 +90,7 @@ Local file variants covered by grouped entries:
 | Asset set | Files and sizes |
 |---|---|
 | App icons | `src/app/favicon.ico` 25931 bytes; `public/icons/icon.svg` 222 bytes; `icon-maskable.svg` 357 bytes; `apple-touch-icon.svg` 349 bytes; `icon-192.png` 1127 bytes; `icon-512.png` 3234 bytes; `icon-maskable-512.png` 11751 bytes; `apple-touch-icon.png` 1094 bytes |
-| Static social | `public/images/og-image.png` 19527 bytes |
+| Static social | Removed after confirming generated Open Graph and Twitter image routes provide social previews: `public/images/og-image.png` |
 | Reference samples | `dashboard-reference` SVG 10014 bytes, PNG 89887 bytes, WebP 33302 bytes; `auth-reference` SVG 2487, PNG 24253, WebP 7900; `mobile-reference` SVG 3371, PNG 25704, WebP 7668; `landing-reference` SVG 4573, PNG 72781, WebP 29986; `settings-reference` SVG 3090, PNG 32314, WebP 10928; `ecommerce-reference` SVG 6182, PNG 42386, WebP 15554; `stress-dashboard-reference` SVG 4261, PNG 38306, WebP 19798; `stress-list-reference` SVG 4006, PNG 27264, WebP 10896 |
 | Result/demo graphic | `public/results/before-after-comparison.svg` 10780 bytes |
 | Starter leftovers | Removed after confirming no runtime references: `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, `public/window.svg` |
@@ -185,20 +185,20 @@ Local file variants covered by grouped entries:
 
 ### Asset ID: A006
 - **Asset name:** Static social preview file.
-- **Asset path or URL:** `public/images/og-image.png`.
+- **Asset path or URL:** Removed: `public/images/og-image.png`.
 - **Asset type:** PNG.
 - **Dimensions:** 1200x630.
 - **File size:** 19527 bytes.
 - **Usage locations:** No exact runtime source reference found.
 - **Usage purpose:** Likely older Open Graph/social preview fallback.
 - **Visual description:** Dark navy social card with cyan horizontal grid lines, a rounded cyan UI panel, the text `qwen-ui-lab` and `AI-assisted UI scaffolding from screenshots`, plus a purple Q-like mark.
-- **Replacement recommendation:** Either remove after confirming it is unused, or regenerate as a static fallback matching the generated social preview routes.
+- **Replacement recommendation:** Completed: removed after confirming generated social preview routes cover home, demo, and design-system metadata.
 - **Suggested AI prompt:** Create a 1200x630 social preview card for `[PRODUCT_NAME]`, a screenshot-to-React developer tool. Dark navy technical background with subtle cyan grid lines, large rounded UI-analysis panel, abstract magnifying-lens/code-frame symbol, concise editable headline area, premium SaaS/devtool mood, crisp composition, high contrast, no trademarked logos.
 - **Negative prompt:** Illegible generated text, copied Qwen branding, stock people, noisy cyberpunk background, watermark, distorted UI panels.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
-- **Notes:** If retained, wire it deliberately in metadata; otherwise treat as cleanup candidate.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage. The app uses generated `opengraph-image` and `twitter-image` routes instead.
 
 ### Asset ID: A007
 - **Asset name:** Dashboard reference sample.
@@ -851,7 +851,7 @@ Recommended verification after actual replacement:
 - `offline-analyze.mjs` contains known-sample signatures and mappings. Replacing sample visuals without updating this logic can make known sample recognition incorrect.
 - `scripts/generate-reference-rasters.mjs` hardcodes reference stems and dimensions. New aspect ratios need script, metadata, manifest, and tests updated.
 - `landing-reference.svg` and `ecommerce-reference.svg` contain invalid/control-character text issues. Their rasters render, but replacement should clean the SVG sources.
-- `public/images/og-image.png` appears unused but is still publicly reachable. Confirm before deleting.
+- Static social fallback `public/images/og-image.png` was removed after generated social preview routes were confirmed as the active metadata path.
 - Starter leftovers `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, and `public/window.svg` were removed after reference search confirmed no runtime usage.
 - Footer GitHub and LinkedIn inline SVG marks may require brand/legal review if kept as official social marks.
 - Generated social images are not static files. Replacing them may require code changes, not image uploads.
