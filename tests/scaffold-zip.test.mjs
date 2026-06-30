@@ -40,7 +40,10 @@ export default function GeneratedComponent() {
     "src/components/generated/generated.tokens.css",
     "src/components/generated/generated.tsx",
   ]);
-  assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /export package/);
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Screenshot UI starter package/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")

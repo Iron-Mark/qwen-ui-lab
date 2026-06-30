@@ -365,11 +365,22 @@ function buildProductionScaffoldReadme({
   const correctionSummary = summarizeManualCorrections(blueprint);
   const reviewSummary = summarizeUnresolvedReviewNotes(blueprint);
 
-  return `# qwen-ui-lab export package
+  return `# Screenshot UI starter package
 
 ${description}
 
-This export package turns the screenshot review into files you can import, compare, and iterate in source control.
+This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter handoff, not a final production component.
+
+## What this package is
+
+- A generated React + Tailwind starting point based on the reviewed screenshot.
+- A deterministic recipe that records detected regions, primitive mappings, and manual corrections.
+- Design and detection notes intended for code review.
+
+## What this package is not
+
+- It does not include the original screenshot, user data, secrets, or production data wiring.
+- It should not be merged until visual parity, accessibility, responsive layout, and real data states have been reviewed.
 
 ## What changed from the screenshot
 
@@ -399,7 +410,8 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 2. Add the exported component to the route or page where it belongs.
 3. Replace sample content with real product data.
 4. Keep the recipe JSON during review so edits can be compared against the screenshot-derived source.
-5. Run lint/build and verify mobile, tablet, and desktop widths before merging.
+5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
+6. Run lint/build and verify mobile, tablet, and desktop widths before merging.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
@@ -451,11 +463,22 @@ function buildFallbackPackageReadme({
   componentName,
   dependencies = [],
 }) {
-  return `# qwen-ui-lab export package
+  return `# Screenshot UI starter package
 
 ${description}
 
-This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+
+## What this package is
+
+- A generated component file plus supporting review documents.
+- A portable handoff for adapting screenshot-inspired UI inside your app.
+- A source-control friendly export package with recipe, manifest, tokens, and detection notes.
+
+## What this package is not
+
+- It is not a final production screen.
+- It does not include the original screenshot, user data, secrets, or production data wiring.
 
 ## Files
 
@@ -477,6 +500,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review \`DESIGN.md\` and the detection notes before treating the component as final.
+5. Verify keyboard order, focus states, responsive behavior, and real empty/loading/error states.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
@@ -513,6 +537,8 @@ function buildDetectionSummaryMarkdown(blueprint) {
       return `- ${role}: ${confidence}%${reason ? ` - ${reason}` : ""}`;
     })
     .join("\n");
+  const confidenceSummary = summarizeConfidenceBands([...regions, ...elements]);
+  const manualCorrectionNotes = buildManualCorrectionNotes(elements);
 
   return `# Detection summary
 
@@ -532,6 +558,17 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 - ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
 - Primitive mappings were exported so the component can move toward shadcn-style UI without guessing later.
 - The recipe and manifest keep the generated output reviewable in source control.
+
+## Confidence summary
+
+- High confidence: ${confidenceSummary.high}
+- Medium confidence: ${confidenceSummary.medium}
+- Low confidence: ${confidenceSummary.low}
+- Unknown confidence: ${confidenceSummary.unknown}
+
+## Manual corrections
+
+${manualCorrectionNotes}
 
 ## Responsive intent
 
@@ -559,6 +596,44 @@ ${elementLines || "- No detected elements were exported."}
 
 ${blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")}
 `;
+}
+
+function summarizeConfidenceBands(items) {
+  return items.reduce(
+    (summary, item) => {
+      const confidence = item?.confidence ?? item?.patternConfidence;
+      if (typeof confidence !== "number") {
+        summary.unknown += 1;
+      } else if (confidence >= 0.85) {
+        summary.high += 1;
+      } else if (confidence >= 0.7) {
+        summary.medium += 1;
+      } else {
+        summary.low += 1;
+      }
+      return summary;
+    },
+    { high: 0, medium: 0, low: 0, unknown: 0 },
+  );
+}
+
+function buildManualCorrectionNotes(elements) {
+  const edited = elements.filter((element) => element.userEdited === true);
+  const excluded = elements.filter((element) => element.included === false);
+  if (!edited.length && !excluded.length) {
+    return "- No manual detection-box edits were captured in this export.";
+  }
+
+  return [
+    ...edited.map((element) => {
+      const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
+      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry before merging.`;
+    }),
+    ...excluded.map((element) => {
+      const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
+      return `- Excluded ${element.id ?? role}: ${role}; confirm it is decorative or intentionally omitted.`;
+    }),
+  ].join("\n");
 }
 
 function buildPackageDesignMarkdown({
@@ -619,6 +694,12 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 ## Review checklist
 
 ${reviewChecklist}
+
+## Accessibility and state checks
+
+- Confirm interactive controls have visible labels and keyboard focus.
+- Add real loading, empty, and error states for data-backed sections.
+- Check color contrast after replacing sample content and tokens.
 `;
 }
 
@@ -640,8 +721,10 @@ function buildProductionManifest({ blueprint, dependencies, files, stem }) {
       includesOfflineDetectionMetadata: true,
     },
     qualityGates: [
-      "Review detection summary before merging.",
-      "Replace sample data and copy.",
+      "Compare the imported component against the source screenshot before merging.",
+      "Review detection summary, low-confidence regions, and manual corrections.",
+      "Replace sample data and copy with product-owned content.",
+      "Add or verify loading, empty, error, and keyboard focus states.",
       "Run app lint/build after importing.",
       "Verify responsive layout at mobile, tablet, and desktop widths.",
     ],

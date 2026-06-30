@@ -113,7 +113,8 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     "src/components/generated/detected-dashboard.tokens.css",
     "docs/detected-dashboard.detection.md",
   ]);
-  assert.match(entries[0].content, /export package/i);
+  assert.match(entries[0].content, /Screenshot UI starter package/);
+  assert.match(entries[0].content, /It is a starter handoff, not a final production component/);
   assert.match(
     entries[0].content,
     /Manual corrections: 1 edited detection box, 1 excluded element captured in the recipe JSON\./,
@@ -128,6 +129,10 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /Dashboard workspace/);
   assert.match(entries[6].content, /dataTables: 1/);
   assert.match(entries[6].content, /data-table: semantic table inside Card/);
+  assert.match(entries[6].content, /High confidence: 2/);
+  assert.match(entries[6].content, /Low confidence: 1/);
+  assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
+  assert.match(entries[6].content, /Excluded element-2: primary-action/);
 
   const recipe = JSON.parse(entries[3].content);
   assert.equal(recipe.schema, "qwen-ui-lab/scaffold-recipe@1");
@@ -150,6 +155,11 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.equal(manifest.contents.includesSecrets, false);
   assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/generated/detected-dashboard.recipe.json");
+  assert.ok(
+    manifest.qualityGates.includes(
+      "Add or verify loading, empty, error, and keyboard focus states.",
+    ),
+  );
 });
 
 test("buildScaffoldReadme documents the scaffold file", () => {
