@@ -47,6 +47,10 @@ import {
   EXTERNAL_REF_LINK_CLASS,
   getCatalogReferences,
 } from "../lib/design-system-references";
+import {
+  CollectionPill,
+  ComponentLevelPill,
+} from "./DesignSystemMetaPills";
 
 /** Desktop keeps the catalog picker fixed-height while preview content scrolls with the page. */
 const DESKTOP_CATALOG_GRID_CLASS =
@@ -541,17 +545,15 @@ export function DesignSystemPreview() {
                   </div>
                   <div
                     data-testid="component-list-metadata"
-                    className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground"
+                    className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <span className="inline-flex items-center gap-1">
-                      <TierIcon className="size-3.5 text-primary" aria-hidden="true" />
-                      <span>{tierMeta.label}</span>
-                    </span>
-                    <span className="text-muted-foreground/50" aria-hidden="true">
-                      /
-                    </span>
-                    <span>{domainLabel}</span>
+                    <ComponentLevelPill
+                      label={tierMeta.label}
+                      Icon={TierIcon}
+                      compact
+                    />
+                    <CollectionPill label={domainLabel} compact />
                   </div>
                 </button>
               );

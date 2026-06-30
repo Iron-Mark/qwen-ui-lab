@@ -50,7 +50,7 @@ export function DeveloperReadinessDialog() {
             Configuration checks for analysis, sharing, exports, and public metadata.
           </DialogDescription>
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="themed-scrollbar min-h-0 flex-1 overflow-y-auto p-4">
           <ProductionReadinessPanel
             compact
             contained={false}

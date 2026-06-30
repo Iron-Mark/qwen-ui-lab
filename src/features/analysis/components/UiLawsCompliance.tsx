@@ -151,7 +151,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2">
+          <div className="themed-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-2">
             <Accordion multiple className="w-full">
               {checks.map((check) => {
                 const law = lawOfUxById(check.id);
