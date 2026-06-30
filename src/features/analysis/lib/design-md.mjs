@@ -287,7 +287,7 @@ function renderDetectedElements(elements) {
  */
 export function buildDesignMarkdown({
   artifact,
-  componentFilename = "generated-scaffold.tsx",
+  componentFilename = "generated-component.tsx",
   exportedAt = new Date().toISOString(),
 }) {
   const allElements = detectionElements(artifact);

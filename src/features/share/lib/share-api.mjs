@@ -27,7 +27,7 @@ function buildShareStorageStatus(storage) {
       ? {}
       : {
           warning:
-            "Short share links are stored in memory because KV is not configured. Links may expire after cold starts or redeploys.",
+            "Short share links are temporary in this environment and may expire sooner than expected.",
         }),
   };
 }

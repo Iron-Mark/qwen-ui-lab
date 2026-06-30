@@ -109,7 +109,7 @@ export function HomeMarketingHero() {
           <div className="space-y-5">
             <div
               className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-2xl border border-border/70 bg-background/80 p-1 text-xs shadow-sm backdrop-blur-md"
-              aria-label="Demo status"
+              aria-label="Workflow status"
             >
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-1 font-semibold text-primary-foreground shadow-sm">
                 <Sparkles className="size-3.5" aria-hidden />

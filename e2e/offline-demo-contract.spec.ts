@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
-test("demo mode skips POST /api/analyze-ui entirely", async ({ page }) => {
+test("local sample mode skips POST /api/analyze-ui entirely", async ({ page }) => {
   const analyzePosts: string[] = [];
 
   page.on("request", (request) => {
@@ -36,7 +36,7 @@ test("demo mode skips POST /api/analyze-ui entirely", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated scaffold|Preview ready/i)).toBeVisible({
+  await expect(page.getByText(/Generated component|Preview ready/i)).toBeVisible({
     timeout: 15_000,
   });
 
@@ -54,7 +54,7 @@ test("sample upload produces deterministic offline artifact content", async ({
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated scaffold/i)).toBeVisible({
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
     timeout: 15_000,
   });
 
@@ -64,7 +64,7 @@ test("sample upload produces deterministic offline artifact content", async ({
   await expect(page.getByText(E2E_SAMPLE_ARTIFACT.previewStats[0].value, { exact: true }).first()).toBeVisible();
 });
 
-test("offline demo completes when health fetch fails", async ({ page }) => {
+test("local analysis completes when health fetch fails", async ({ page }) => {
   await page.unroute("**/api/health");
   await page.route("**/api/health", async (route) => {
     await route.abort("failed");
@@ -79,7 +79,7 @@ test("offline demo completes when health fetch fails", async ({ page }) => {
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Generated scaffold|Preview ready|offline demo/i).first(),
+    page.getByText(/Generated component|Preview ready|Analyzer ready/i).first(),
   ).toBeVisible({
     timeout: 20_000,
   });

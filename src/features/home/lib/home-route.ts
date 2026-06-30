@@ -2,45 +2,45 @@ import type { Metadata } from "next";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 const homeRouteDescription =
-  "Demo-safe workflow: upload a UI screenshot, analyze layout with Qwen3-VL, and export React + Tailwind scaffolds - no API key required on stage.";
+  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind starter package.";
 
 export const homeRouteSocialPreviewImageAlt =
-  "qwen-ui-lab — meetup screenshot-to-scaffold demo";
+  "qwen-ui-lab screenshot-to-React workflow";
 
 export function createHomeRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Live Meetup Demo",
+    title: "Screenshot to React Starter",
     description: homeRouteDescription,
     path: "/",
     keywords: [
-      "Qwen meetup demo",
+      "screenshot to React",
       "UI screenshot to React",
-      "Qwen3-VL scaffolding",
+      "Qwen3-VL UI analysis",
       "Tailwind component generator",
-      "offline demo mode",
+      "UI detection workflow",
     ],
     ogImage: "/opengraph-image",
-    ogImageAlt: "qwen-ui-lab - screenshot to React scaffold meetup demo",
+    ogImageAlt: "qwen-ui-lab screenshot to React starter workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "qwen-ui-lab live demo for mass presentation",
+    twitterImageAlt: "qwen-ui-lab screenshot to React starter workflow",
     shareSnippet:
-      "Meetup-ready demo: screenshot -> analyze -> React/Tailwind scaffold in minutes, offline-safe.",
+      "Upload a screenshot, review detected UI, and export a React/Tailwind starter.",
   });
 }
 
 export function getHomeRouteStructuredDataInput() {
   return {
-    title: "Live Meetup Demo",
+    title: "Screenshot to React Starter",
     description: homeRouteDescription,
     path: "/",
-    breadcrumbLabel: "Live demo",
-    about: ["UI screenshot analysis", "React scaffolding", "Meetup presentation"],
+    breadcrumbLabel: "Workflow",
+    about: ["UI screenshot analysis", "React component starter", "Design system export"],
     callToAction:
-      "Turn UI screenshots into scaffold-ready React with an offline-safe meetup demo.",
+      "Turn UI screenshots into reviewable React and Tailwind starter files.",
     additionalGraph: [
       {
         "@type": "SoftwareApplication",
-        name: "qwen-ui-lab dashboard workflow",
+        name: "qwen-ui-lab dashboard",
         applicationCategory: "DeveloperApplication",
         operatingSystem: "Web",
         offers: {
@@ -51,7 +51,7 @@ export function getHomeRouteStructuredDataInput() {
         featureList: [
           "Screenshot upload flow",
           "AI analysis summary",
-          "React + Tailwind scaffold export",
+          "React + Tailwind starter export",
         ],
       },
     ],
@@ -65,10 +65,10 @@ export function createHomeRouteStructuredData() {
 export function getHomeRouteSocialPreviewImage() {
   return {
     eyebrow: "qwen-ui-lab",
-    badge: "Meetup demo",
-    title: "Screenshot to scaffold in minutes",
-    description: "Live demo with Qwen3-VL + Qwen Code — offline-safe on stage",
-    workflow: "Upload → Analyze → Preview → Export",
+    badge: "Screenshot to React",
+    title: "Screenshot to React starter",
+    description: "Upload, inspect detected UI, refine boxes, and export starter files",
+    workflow: "Upload → Detect → Refine → Export",
     background:
       "linear-gradient(135deg, rgb(15, 23, 42) 0%, rgb(37, 99, 235) 45%, rgb(16, 185, 129) 100%)",
   };

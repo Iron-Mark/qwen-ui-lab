@@ -9,7 +9,7 @@ const baseProd = {
   NEXT_PUBLIC_SITE_URL: "https://demo.example",
 };
 
-test("production passes with KV, gist, demo-safe live Qwen", () => {
+test("production passes with KV, gist, and local-analysis-first Qwen", () => {
   const result = validateProdEnv(baseProd, { target: "production" });
   assert.equal(result.ok, true);
   assert.equal(result.summary.liveAnalysisRequested, false);
@@ -154,7 +154,7 @@ test("production fails when live Qwen enabled", () => {
     { target: "production" },
   );
   assert.equal(result.ok, false);
-  assert.match(result.failures.join(" "), /demo-safe/);
+  assert.match(result.failures.join(" "), /local-analysis-first/);
 });
 
 test("production requires Sentry DSN when error monitoring on", () => {

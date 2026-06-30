@@ -10,7 +10,7 @@ import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
-const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-scaffold.zip";
+const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
 
 type RepoExportStatus = "idle" | "exporting" | "success" | "error";
 
@@ -20,6 +20,8 @@ interface RepoExportButtonProps {
   description?: string;
   label?: string;
   className?: string;
+  exportMode?: "auto" | "zip";
+  testId?: string;
   analyticsSource?: string;
   analyticsFeature?: string;
   onExported?: (result: { mode: "zip" | "compare"; url?: string }) => void;
@@ -32,8 +34,8 @@ interface RepoCompareResponse {
 }
 
 const STATUS_LABELS: Record<RepoExportStatus, string> = {
-  idle: "Export to repo",
-  exporting: "Preparing export…",
+  idle: "Open PR instructions",
+  exporting: "Preparing export...",
   success: "Export ready",
   error: "Export failed",
 };
@@ -53,9 +55,11 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 export function RepoExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
   label,
   className,
+  exportMode = "auto",
+  testId = "repo-export-button",
   analyticsSource = "snippet_preview",
   analyticsFeature = "code_export",
   onExported,
@@ -88,6 +92,7 @@ export function RepoExportButton({
           content: text,
           filename,
           description,
+          mode: exportMode,
         }),
       });
 
@@ -97,7 +102,7 @@ export function RepoExportButton({
         const blob = await response.blob();
         downloadZipBlob(blob);
         setStatus("success");
-        toast("Scaffold zip downloaded (includes README)", "success");
+        toast("Export package downloaded", "success");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -118,7 +123,7 @@ export function RepoExportButton({
 
       if (!response.ok || !payload || typeof payload !== "object") {
         setStatus("error");
-        toast("Could not export scaffold to repo", "error");
+        toast("Could not export component to repo", "error");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -135,7 +140,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened — add your scaffold file and open a PR.",
+            "Compare view opened. Add your generated component and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -174,6 +179,7 @@ export function RepoExportButton({
     analyticsFeature,
     analyticsSource,
     description,
+    exportMode,
     filename,
     onExported,
     resetStatus,
@@ -201,7 +207,7 @@ export function RepoExportButton({
       disabled={!text?.trim() || status === "exporting"}
       aria-label={`${visibleLabel} code`}
       aria-busy={status === "exporting"}
-      data-testid="repo-export-button"
+      data-testid={testId}
       className={cn(
         "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
         status === "success" &&

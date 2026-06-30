@@ -22,7 +22,7 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/demo");
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/preloaded dashboard/i);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard screen analysis/i);
   await expect(exportPanel(page)).toBeVisible({
     timeout: 20_000,
   });
@@ -31,7 +31,7 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await expect(page.getByTestId("ux-law-link-jakob")).toBeVisible();
 });
 
-test("/demo?archetype=auth loads sign-in scaffold", async ({ page }) => {
+test("/demo?archetype=auth loads sign-in component export", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
@@ -48,7 +48,7 @@ test("/demo?archetype=auth loads sign-in scaffold", async ({ page }) => {
   await expect(page.getByTestId("ux-law-link-fitts")).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
-  await exportPanel(page).getByRole("button", { name: /download \.tsx code/i }).click();
+  await exportPanel(page).getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("generated-auth.tsx");
 });

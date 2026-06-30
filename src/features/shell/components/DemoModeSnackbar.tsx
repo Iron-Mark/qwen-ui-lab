@@ -63,7 +63,7 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
             role="status"
             aria-live="polite"
             className={cn(
-              "relative w-[min(92vw,460px)] overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-sm",
+              "relative w-[calc(100vw-2rem)] max-w-[460px] overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-sm",
               "px-4 py-3.5 pb-4",
             )}
           >

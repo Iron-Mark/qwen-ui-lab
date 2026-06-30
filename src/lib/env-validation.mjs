@@ -17,14 +17,14 @@ export function validateEnvOnBoot(env = process.env) {
 
   if (!config.ok) {
     console.warn(
-      `${WARN_PREFIX} DASHSCOPE_API_KEY is not set — analyze uses instant offline demo mode.`,
+      `${WARN_PREFIX} DASHSCOPE_API_KEY is not set — analyze uses local analysis mode.`,
     );
     return;
   }
 
   if (!isLiveQwenAnalysisEnabled(env)) {
     console.warn(
-      `${WARN_PREFIX} DASHSCOPE_API_KEY is set but QWEN_LIVE_ANALYSIS is not enabled — no upstream Qwen calls (demo mode). Set QWEN_LIVE_ANALYSIS=true to spend API credits.`,
+      `${WARN_PREFIX} DASHSCOPE_API_KEY is set but QWEN_LIVE_ANALYSIS is not enabled — no upstream Qwen calls. Set QWEN_LIVE_ANALYSIS=true to spend API credits.`,
     );
     return;
   }

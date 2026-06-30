@@ -1,11 +1,11 @@
 /**
- * Server-side GitHub Gist helpers for scaffold export.
+ * Server-side GitHub Gist helpers for component export.
  */
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Copy your scaffold code, open gist.github.com, paste into a new secret gist, and save.";
+  "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
@@ -47,7 +47,7 @@ export function getGithubGistToken(env = process.env) {
  */
 export async function createGithubGist({
   token,
-  description = "qwen-ui-lab scaffold export",
+  description = "qwen-ui-lab component export",
   filename,
   content,
   isPublic = false,

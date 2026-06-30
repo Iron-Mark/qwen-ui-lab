@@ -15,7 +15,7 @@ test("design system title block is foreground content, not a card", async ({
   const titleBlock = page.getByTestId("design-system-title-block");
   await expect(titleBlock).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Atomic component lab" }),
+    page.getByRole("heading", { name: "Component library" }),
   ).toBeVisible();
 
   await expect
@@ -217,7 +217,7 @@ test("design system selected preview avoids duplicate page actions", async ({
   await expect(previewPanel.getByText("Back to dashboard demo")).toHaveCount(0);
   await expect(previewPanel.getByText("Export all snippets")).toHaveCount(0);
   await expect(
-    previewPanel.getByText("Try screenshot-to-scaffold workflow"),
+    previewPanel.getByText("Try screenshot-to-React workflow"),
   ).toHaveCount(0);
   await expect(
     previewPanel.getByText("Button (shadcn)", { exact: true }),

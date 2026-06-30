@@ -8,7 +8,7 @@ const ROUTE_HINTS: Partial<Record<UiLawId, { label: string; href: string }>> = {
   jakob: { label: "App header navigation", href: "/" },
   consistency: { label: "Atomic catalog", href: "/design-system" },
   proximity: { label: "Plan cards after analyze", href: "/" },
-  contrast: { label: "Reference vs scaffold split", href: "/" },
+  contrast: { label: "Reference vs component split", href: "/" },
   "white-space": { label: "Catalog preview panes", href: "/design-system" },
   "typography-hierarchy": { label: "UILaws section", href: "/design-system?domain=uilaws" },
 };

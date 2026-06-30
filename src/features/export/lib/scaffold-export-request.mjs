@@ -9,6 +9,7 @@ export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
  *   content: string;
  *   filename: string;
  *   description: string;
+ *   mode: "auto" | "zip";
  * } | { ok: false; code: string; message: string }}
  */
 export function normalizeScaffoldExportRequestBody(body) {
@@ -29,13 +30,14 @@ export function normalizeScaffoldExportRequestBody(body) {
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
-      : "qwen-ui-lab scaffold export";
+      : "qwen-ui-lab component export";
+  const mode = record.mode === "zip" ? "zip" : "auto";
 
   if (!content.trim()) {
     return {
       ok: false,
       code: "missing_content",
-      message: "Scaffold content is required.",
+      message: "Component content is required.",
     };
   }
 
@@ -44,7 +46,7 @@ export function normalizeScaffoldExportRequestBody(body) {
     return {
       ok: false,
       code: "content_too_large",
-      message: `Scaffold exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
+      message: `Component exceeds ${MAX_SCAFFOLD_EXPORT_CONTENT_BYTES} bytes.`,
     };
   }
 
@@ -53,5 +55,6 @@ export function normalizeScaffoldExportRequestBody(body) {
     content,
     filename,
     description,
+    mode,
   };
 }

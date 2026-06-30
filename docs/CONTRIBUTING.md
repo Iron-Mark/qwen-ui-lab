@@ -30,11 +30,11 @@ Use `dev` as the normal integration branch for all product, docs, and maintenanc
 - Treat `main` as production-only. Direct pushes to `main` are blocked by branch protection.
 - Create release tags only from commits already on `main`.
 
-## Demo vs Live Analysis (Important)
+## Local vs Live Analysis (Important)
 
-`qwen-ui-lab` defaults to offline demo behavior.
+`qwen-ui-lab` defaults to local analysis behavior.
 
-- Demo mode (default): no upstream Qwen call.
+- Local analysis (default): no upstream Qwen call.
 - Live mode (opt-in): requires API key **and** live toggle.
 
 Use live mode only when intentionally testing real provider behavior:
@@ -77,7 +77,7 @@ Then run:
 npm run test:e2e
 ```
 
-`test:e2e` is expected to stay offline-safe: Playwright clears live env vars and mocks health/analyze responses.
+`test:e2e` is expected to stay local-analysis safe: Playwright clears live env vars and mocks health/analyze responses.
 
 ## Contribution Scope Guidance
 

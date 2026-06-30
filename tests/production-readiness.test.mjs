@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { buildProductionReadiness } from "../src/features/ops/lib/production-readiness.mjs";
 import { handleReadinessGet } from "../src/features/ops/lib/readiness-api.mjs";
 
-test("production readiness reports demo-safe fallbacks without secrets", () => {
+test("production readiness reports local-analysis fallbacks without secrets", () => {
   const readiness = buildProductionReadiness({});
 
   assert.equal(readiness.ok, true);

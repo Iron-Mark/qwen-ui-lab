@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "qwen-ui-lab - meetup demo",
+  "name": "qwen-ui-lab - screenshot to React",
   "short_name": "qwen-ui-lab",
-  "description": "Screenshot-to-React scaffold demo. Offline-safe for live presentations.",
+  "description": "Reviewable React + Tailwind starter package for screenshot-to-code flows.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-US",
@@ -53,7 +53,7 @@
   ],
   "shortcuts": [
     {
-      "name": "Live screenshot workflow",
+      "name": "Analyze workflow",
       "short_name": "Live flow",
       "description": "Upload a UI screenshot and export a React scaffold.",
       "url": "/#upload-flow",
@@ -79,9 +79,9 @@
       ]
     },
     {
-      "name": "One-click demo",
-      "short_name": "Demo",
-      "description": "Open the bundled offline-safe demo flow.",
+      "name": "Sample reference",
+      "short_name": "Sample",
+      "description": "Open a screenshot sample reference and generate a starter preview.",
       "url": "/demo",
       "icons": [
         {

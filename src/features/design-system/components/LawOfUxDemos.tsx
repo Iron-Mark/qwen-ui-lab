@@ -247,15 +247,15 @@ function TeslerDemo() {
         onClick={() => setAdvanced((value) => !value)}
         className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
       >
-        {advanced ? "Hide" : "Show"} live Qwen settings
+        {advanced ? "Hide" : "Show"} advanced settings
       </button>
       {advanced ? (
         <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-left text-xs text-amber-900 dark:text-amber-100">
-          DASHSCOPE_API_KEY, QWEN_LIVE_ANALYSIS, model endpoints…
+          Live provider setup stays opt-in and outside the default workflow.
         </div>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Default path: instant demo analyze (complexity moved to opt-in).
+          Default path: local analysis first, advanced complexity on request.
         </p>
       )}
     </div>
