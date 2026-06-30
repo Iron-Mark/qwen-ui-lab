@@ -85,7 +85,7 @@ const samplePlan = [
   },
   {
     title: "Generate component",
-    body: "Export a React + Tailwind starter that matches the sample hierarchy.",
+    body: "Export a React + Tailwind package that matches the sample hierarchy.",
     icon: Code2,
   },
   {
@@ -125,7 +125,7 @@ const detectedUi = [
 const exportOptions = [
   {
     title: "React component",
-    body: "Dashboard layout starter with reusable cards, charts, and action groups.",
+    body: "Dashboard component with reusable cards, charts, and action groups.",
     icon: FileCode2,
   },
   {

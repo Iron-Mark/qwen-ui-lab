@@ -515,7 +515,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React starter with reviewable detection notes."
+      description="Screenshot to React export with reviewable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />

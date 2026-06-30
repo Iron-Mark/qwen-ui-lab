@@ -20,7 +20,7 @@ export const zh = {
     benefitAnalyzeBody: "导出前先审查生成的 React + Tailwind 组件。",
     benefitDesignLabel: "导出",
     benefitDesignTitle: "导出项目包",
-    benefitDesignBody: "使用结果前先检查 TSX、Design.md 和启动包文件。",
+    benefitDesignBody: "使用结果前先检查 TSX、Design.md 和项目包文件。",
     trustSignalsAria: "信任标识",
     keyBenefitsAria: "核心优势",
   },
@@ -103,7 +103,7 @@ export const zh = {
   designSystem: {
     eyebrow: "设计系统",
     title: "组件库",
-    subtitle: "筛选可复用组件、预览变体，并复制可用于起步的代码片段。",
+    subtitle: "筛选可复用组件、预览变体，并复制更接近产品使用的代码片段。",
     searchLabel: "搜索目录",
     searchPlaceholder: "搜索组件…",
     domain: "集合",
@@ -160,7 +160,7 @@ export const zh = {
     subtitleDefault:
       "适合快速设计评审：分析一张截图，生成组件，并在下一个迭代中复用导出片段。",
     subtitleFaster:
-      "更快获得价值：上传、分析并导出可复用的 React/Tailwind 起步组件，只需几分钟。",
+      "更快获得价值：上传、分析并导出可复用的 React/Tailwind 组件，只需几分钟。",
     modeLocalDemo: "可以开始分析",
     modeQwenReady: "可以开始分析",
     recentAnalyses: "最近分析",

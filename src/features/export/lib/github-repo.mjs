@@ -66,7 +66,7 @@ export function buildRepoCompareExport({
 }) {
   const safeFilename = sanitizeGistFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
-  const title = encodeURIComponent("Add qwen-ui-lab generated UI starter");
+  const title = encodeURIComponent("Add qwen-ui-lab generated UI package");
   const body = encodeURIComponent(
     [
       "## qwen-ui-lab export package",
@@ -77,7 +77,7 @@ export function buildRepoCompareExport({
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,
-      `2. Add \`${safeFilename}\` with the generated UI starter.`,
+      `2. Add \`${safeFilename}\` with the generated UI package.`,
       "3. Open a pull request.",
       "",
       "---",
@@ -221,9 +221,9 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     sourceHash: hashContent(content),
     componentName: inferGeneratedComponentName(content),
     designTokens: {},
-    screenIntent: { label: "Screenshot starter", confidence: 0.5 },
+    screenIntent: { label: "Screenshot export", confidence: 0.5 },
     responsiveIntent: {
-      mode: "responsive starter",
+      mode: "responsive export",
       breakpoints: ["mobile", "tablet", "desktop"],
       primaryFlow: "Review layout against the original screenshot before shipping.",
     },
@@ -357,7 +357,7 @@ function buildProductionScaffoldReadme({
   blueprint,
   dependencies = [],
 }) {
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
@@ -420,7 +420,7 @@ This export is a reviewable package. Import it into source control, connect real
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - regeneration recipe and package context
 - \`${files.manifest}\` - package manifest and quality gates
-- \`${files.tokens}\` - theme token starter file
+- \`${files.tokens}\` - theme token file
 - \`${files.detectionSummary}\` - detection and review notes
 
 ## Expected dependencies
@@ -546,13 +546,13 @@ ${description}
 
 ## Layout decisions
 
-- The generated component is structured as a source-controlled starter, not a final screenshot clone.
+- The generated component is structured as source-controlled project files, not a final screenshot clone.
 - Repeated regions should remain as small subcomponents when you adapt the code.
 - Token values are isolated in \`${files.tokens}\` so visual tuning can happen without rewriting component structure.
 
 ## Responsive assumptions
 
-- Mode: ${responsiveIntent?.mode ?? "responsive starter"}
+- Mode: ${responsiveIntent?.mode ?? "responsive export"}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Verify the layout manually at mobile, tablet, and desktop widths."}
 

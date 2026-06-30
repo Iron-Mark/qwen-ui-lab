@@ -4,7 +4,7 @@ export const en = {
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
-      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind starter.",
+      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
     oneClickDemo: "Sample reference",
@@ -19,7 +19,7 @@ export const en = {
     benefitAnalyzeBody:
       "Review the generated React + Tailwind component before exporting it.",
     benefitDesignLabel: "Export",
-    benefitDesignTitle: "Export the starter",
+    benefitDesignTitle: "Export the package",
     benefitDesignBody:
       "Review TSX, Design.md, and package files before using the result.",
     trustSignalsAria: "Trust signals",
@@ -106,7 +106,7 @@ export const en = {
     eyebrow: "Design system",
     title: "Component library",
     subtitle:
-      "Filter reusable components, preview variants, and copy starter snippets for your next build.",
+      "Filter reusable components, preview variants, and copy production-minded snippets for your next build.",
     searchLabel: "Search catalog",
     searchPlaceholder: "Search components…",
     domain: "Collection",
@@ -164,7 +164,7 @@ export const en = {
     subtitleDefault:
       "Ideal for rapid design reviews: analyze one screenshot, generate a component, then reuse exported snippets across your next sprint.",
     subtitleFaster:
-      "A faster path to conversion: upload, analyze, and export reusable React/Tailwind starters in minutes.",
+      "A faster path to conversion: upload, analyze, and export reusable React/Tailwind components in minutes.",
     modeLocalDemo: "Ready to analyze",
     modeQwenReady: "Ready to analyze",
     recentAnalyses: "Recent analyses",

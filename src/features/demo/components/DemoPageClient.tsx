@@ -49,7 +49,7 @@ export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
                 Review a bundled reference, inspect detected UI, and export a
-                React + Tailwind starter without uploading a new screenshot.
+                React + Tailwind package without uploading a new screenshot.
               </p>
             </div>
           </div>
