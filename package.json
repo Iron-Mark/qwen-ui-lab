@@ -14,6 +14,7 @@
     "start:prod:e2e": "node scripts/start-prod-e2e.mjs",
     "doctor": "node scripts/doctor.mjs",
     "validate:assets": "node scripts/validate-public-assets.mjs",
+    "generate:app-icons": "node scripts/generate-app-icons.mjs",
     "deploy:env:demo": "node scripts/validate-deploy-env.mjs --target=demo",
     "deploy:env:live": "node scripts/validate-deploy-env.mjs --target=live",
     "validate:prod": "node scripts/validate-prod-env.mjs --target=production",

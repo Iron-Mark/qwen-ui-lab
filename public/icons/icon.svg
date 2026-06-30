@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="12" fill="#18181b"/>
-  <path d="M12 44V20h8v24h-8zm16-16v16h8V28h-8zm16 8v8h8v-8h-8z" fill="#fafafa"/>
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+  <path d="M6.5 16.75h43M6.5 24.25h43M6.5 31.75h43M6.5 39.25h43M17 6.5v43M24.5 6.5v43M32 6.5v43M39.5 6.5v43M47 6.5v43" stroke="#22d3ee" stroke-opacity=".12" stroke-width="0.625"/>
+  <rect x="15.75" y="16.5" width="32.5" height="29" rx="4.75" fill="#111827" stroke="#67e8f9" stroke-width="2.25"/>
+  <path d="M20.75 25.5h16M20.75 31.25h9.75M20.75 37h12" stroke="#e0f2fe" stroke-width="2.25" stroke-linecap="round"/>
+  <rect x="21.25" y="41.75" width="4.75" height="8.5" rx="1.5" fill="#34d399"/>
+  <rect x="28.75" y="38" width="4.75" height="12.25" rx="1.5" fill="#67e8f9"/>
+  <rect x="36.25" y="34.25" width="4.75" height="16" rx="1.5" fill="#a78bfa"/>
+  <circle cx="38.25" cy="37.5" r="7.25" fill="#0f172a" stroke="#f8fafc" stroke-width="2.75"/>
+  <path d="M43.25 42.5l8.75 8.75" stroke="#f8fafc" stroke-width="3.75" stroke-linecap="round"/>
+  <path d="M34.5 37.5l3.5 3.5 6.75-9" stroke="#34d399" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

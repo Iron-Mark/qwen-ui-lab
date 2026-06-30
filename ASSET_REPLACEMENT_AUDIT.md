@@ -89,7 +89,7 @@ Local file variants covered by grouped entries:
 
 | Asset set | Files and sizes |
 |---|---|
-| App icons | `src/app/favicon.ico` 25931 bytes; `public/icons/icon.svg` 222 bytes; `icon-maskable.svg` 357 bytes; `apple-touch-icon.svg` 349 bytes; `icon-192.png` 1127 bytes; `icon-512.png` 3234 bytes; `icon-maskable-512.png` 11751 bytes; `apple-touch-icon.png` 1094 bytes |
+| App icons | `src/app/favicon.ico` 13315 bytes; `public/icons/icon.svg` 1102 bytes; `icon-maskable.svg` 1034 bytes; `apple-touch-icon.svg` 1294 bytes; `icon-192.png` 7436 bytes; `icon-512.png` 19406 bytes; `icon-maskable-512.png` 19906 bytes; `apple-touch-icon.png` 7204 bytes |
 | Static social | Removed after confirming generated Open Graph and Twitter image routes provide social previews: `public/images/og-image.png` |
 | Reference samples | `dashboard-reference` SVG 10014 bytes, PNG 89887 bytes, WebP 33302 bytes; `auth-reference` SVG 2487, PNG 24253, WebP 7900; `mobile-reference` SVG 3371, PNG 25704, WebP 7668; `landing-reference` SVG 4573, PNG 72781, WebP 29986; `settings-reference` SVG 3090, PNG 32314, WebP 10928; `ecommerce-reference` SVG 6182, PNG 42386, WebP 15554; `stress-dashboard-reference` SVG 4261, PNG 38306, WebP 19798; `stress-list-reference` SVG 4006, PNG 27264, WebP 10896 |
 | Documentation graphic | `docs/media/before-after-comparison.svg` |
@@ -103,85 +103,85 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `src/app/favicon.ico`.
 - **Asset type:** ICO multi-size icon.
 - **Dimensions:** 16x16, 32x32, 48x48, 256x256 entries.
-- **File size:** 25931 bytes.
+- **File size:** 13315 bytes.
 - **Usage locations:** `src/lib/seo.ts:179`; tested in `tests/pwa.test.mjs:96` and `e2e/metadata-assets.spec.ts:91`.
 - **Usage purpose:** Browser tab favicon and metadata shortcut icon.
-- **Visual description:** Black circular mark with a white upward triangle, visually closer to a generic deployment/provider mark than to the current app icon family.
-- **Replacement recommendation:** Regenerate with the full app-icon family. The current favicon does not visually match the PNG Q-mark icons or the bar-chart SVG icons.
+- **Visual description:** Unified dark navy app mark with a cyan screenshot frame, subtle grid, analysis magnifier/check, and export bars.
+- **Replacement recommendation:** Completed: generated from the shared app-icon source in `scripts/generate-app-icons.mjs`.
 - **Suggested AI prompt:** Create an original favicon for a developer tool that converts UI screenshots into React components. Use a simple geometric mark that combines a camera frame, UI grid, and three ascending code bars. Minimal high-contrast design, readable at 16 px, centered on a transparent or solid dark background, no text, no trademarked logos, clean vector-like edges.
 - **Negative prompt:** Existing brand logos, Next.js logo, Vercel triangle, GitHub mark, LinkedIn mark, tiny unreadable text, complex illustration, gradients that blur at small sizes, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** Generate master at 1024x1024, export ICO entries at 16, 32, 48, and 256 px.
 - **Transparency needed:** Optional. Transparent background is acceptable; ensure contrast in light and dark browser tabs.
-- **Notes:** Coordinate replacement with `src/lib/seo.ts`, PWA tests, and browser cache behavior.
+- **Notes:** ICO includes 16, 32, 48, and 256 px entries generated from the same source as the PWA icon family.
 
 ### Asset ID: A002
 - **Asset name:** App icon SVG mark.
 - **Asset path or URL:** `public/icons/icon.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 64x64 viewBox.
-- **File size:** 222 bytes.
+- **File size:** 1102 bytes.
 - **Usage locations:** `src/features/shell/components/Header.tsx:141`, `src/features/shell/components/Footer.tsx:188`, `src/lib/seo.ts:11`, `public/manifest.json:42`, `public/sw.js:19`.
 - **Usage purpose:** Header/footer logo, metadata icon, cached public asset.
-- **Visual description:** Black rounded square with three white vertical bars of descending height, iconographic and monochrome.
-- **Replacement recommendation:** Replace as the primary SVG source for the app mark. Keep it simple enough to render at 36 to 40 px in the shell.
+- **Visual description:** Dark navy rounded square with subtle cyan grid, cyan UI frame, white analysis lens/check, and mint/cyan/violet export bars.
+- **Replacement recommendation:** Completed: replaced with the generated shared app mark.
 - **Suggested AI prompt:** Design an original SVG-style app icon for a product named `[PRODUCT_NAME]`, a screenshot-to-code lab. Use a dark rounded square, a crisp cyan or mint outline accent, and a central abstract symbol made from a UI frame plus three ascending analysis bars. Minimal, modern, high contrast, no text, no existing brand logos, vector-friendly shapes, strong silhouette at small sizes.
 - **Negative prompt:** Photorealism, mascot, copied Qwen/Next/Vercel/GitHub/LinkedIn logos, cluttered dashboard screenshot inside the icon, illegible letters, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG master plus 64x64 preview.
 - **Transparency needed:** No for the square background; yes only if exporting a standalone mark variant.
-- **Notes:** This file currently differs from `icon-192.png` and `icon-512.png`; regenerate all icon variants together.
+- **Notes:** Regenerate with `npm run generate:app-icons` so header/footer SVG, PNG icons, maskable icon, Apple touch icon, and favicon stay aligned.
 
 ### Asset ID: A003
 - **Asset name:** App icon raster mark.
 - **Asset path or URL:** `public/icons/icon-192.png`, `public/icons/icon-512.png`.
 - **Asset type:** PNG.
 - **Dimensions:** 192x192 and 512x512.
-- **File size:** 1127 bytes and 3234 bytes.
+- **File size:** 7436 bytes and 19406 bytes.
 - **Usage locations:** `public/manifest.json:18,24,62,75,88`, `public/offline.html:163`, `public/sw.js:15-16`, `src/lib/seo.ts:13-14,471`.
 - **Usage purpose:** PWA install icons, app shortcuts, offline shell icon, structured-data organization logo.
-- **Visual description:** Dark navy square/card with horizontal cyan grid lines, cyan rounded rectangle frame, and a purple letter-like Q mark in the center.
-- **Replacement recommendation:** Generate from the same master as A002. Preserve square crops and clear safe margins. Replace both PNG sizes at once.
+- **Visual description:** Raster exports of the unified screenshot-analysis mark: dark navy rounded square, cyan frame/grid, white magnifier/check, and mint/cyan/violet bars.
+- **Replacement recommendation:** Completed: generated from the same source as A002 and A001.
 - **Suggested AI prompt:** Create a coherent raster app icon for `[PRODUCT_NAME]`, a UI screenshot analysis and React export tool. Dark navy background, subtle cyan grid lines, rounded cyan UI-frame outline, central abstract symbol blending a magnifying lens and code brackets, modern product icon style, crisp edges, high contrast, no text, original design, scalable from 512 px to 192 px.
 - **Negative prompt:** Trademarked logos, literal letter Q if brand review is uncertain, photo texture, busy interface mockup, unreadable microtext, low contrast, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 512x512 and 192x192 PNG.
 - **Transparency needed:** No.
-- **Notes:** Also update manifest shortcut icons and service-worker cache name after replacement.
+- **Notes:** Manifest paths and service-worker references stayed unchanged; generated dimensions remain 192x192 and 512x512.
 
 ### Asset ID: A004
 - **Asset name:** Maskable app icon set.
 - **Asset path or URL:** `public/icons/icon-maskable.svg`, `public/icons/icon-maskable-512.png`.
 - **Asset type:** SVG + PNG.
 - **Dimensions:** 512x512.
-- **File size:** 357 bytes and 11751 bytes.
+- **File size:** 1034 bytes and 19906 bytes.
 - **Usage locations:** `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191`.
 - **Usage purpose:** PWA maskable icon and mask icon metadata.
-- **Visual description:** Black rounded square with three white vertical bars; raster version has large corner radius and strong safe-area padding.
-- **Replacement recommendation:** Use the same visual identity as A002/A003 but keep the symbol inside the maskable safe zone. Do not place essential detail near edges.
+- **Visual description:** Maskable variant of the unified screenshot-analysis mark with larger safe-area padding for platform crops.
+- **Replacement recommendation:** Completed: generated from the shared app-icon source with a maskable safe inset.
 - **Suggested AI prompt:** Produce a maskable PWA app icon for `[PRODUCT_NAME]`. Use the same abstract screenshot-analysis mark as the main app icon, centered within a generous safe area, dark solid background, simple cyan/mint accent, no text, crisp vector-like geometry, works when cropped by circular, rounded-square, and squircle masks.
 - **Negative prompt:** Edge-critical details, thin lines near the border, text, brand imitation, photographic elements, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 512x512 PNG plus 512x512 SVG.
 - **Transparency needed:** No; use opaque background.
-- **Notes:** Check Android install surfaces after replacing.
+- **Notes:** Manifest still exposes SVG and 512 px PNG maskable entries; dimensions verified by PWA tests.
 
 ### Asset ID: A005
 - **Asset name:** Apple touch icon set.
 - **Asset path or URL:** `public/icons/apple-touch-icon.svg`, `public/icons/apple-touch-icon.png`.
 - **Asset type:** SVG + PNG.
 - **Dimensions:** 180x180.
-- **File size:** 349 bytes and 1094 bytes.
+- **File size:** 1294 bytes and 7204 bytes.
 - **Usage locations:** `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16`.
 - **Usage purpose:** iOS home-screen/touch icon and cached icon.
-- **Visual description:** SVG is the three-bar black rounded-square mark; PNG is the dark Q/cyan-grid mark, so the family is inconsistent.
-- **Replacement recommendation:** Export from the same icon master as A002-A004 at 180x180. Keep the background opaque.
+- **Visual description:** Apple touch export of the unified screenshot-analysis mark, cropped to 180x180 with an opaque dark background.
+- **Replacement recommendation:** Completed: generated from the same icon master as A002-A004.
 - **Suggested AI prompt:** Create an Apple touch icon variant for `[PRODUCT_NAME]`, based on a unified app icon system: dark rounded square, central abstract UI-analysis symbol, subtle cyan and violet accents, clean geometry, high contrast, no text, no existing brand symbols, optimized for iOS home-screen display.
 - **Negative prompt:** Transparent edges that vanish on iOS, text, busy screenshots, trademarked marks, over-detailed gradients, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 180x180 PNG and optional SVG source.
 - **Transparency needed:** No.
-- **Notes:** Keep manifest, metadata, offline page, and service-worker cache aligned.
+- **Notes:** Offline page, manifest, metadata, and service-worker paths remain aligned.
 
 ### Asset ID: A006
 - **Asset name:** Static social preview file.
