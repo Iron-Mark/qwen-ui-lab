@@ -1779,7 +1779,10 @@ function ExportPackageReviewDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4">
+        <DialogFooter
+          data-testid="export-package-actions"
+          className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4"
+        >
           <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"

@@ -228,9 +228,7 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   const layout = await dialog.evaluate((node) => {
     const dialogRect = node.getBoundingClientRect();
     const tablist = node.querySelector('[role="tablist"]');
-    const footer = Array.from(node.querySelectorAll("div")).find((element) =>
-      element.textContent?.includes("Download package"),
-    );
+    const footer = node.querySelector('[data-testid="export-package-actions"]');
     const tablistRect = tablist?.getBoundingClientRect();
     const footerRect = footer?.getBoundingClientRect();
 
