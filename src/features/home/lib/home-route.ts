@@ -66,10 +66,12 @@ export function getHomeRouteSocialPreviewImage() {
   return {
     eyebrow: "qwen-ui-lab",
     badge: "Screenshot to React",
-    title: "Screenshot to React workflow",
-    description: "Upload, inspect detected UI, refine boxes, and export project files",
-    workflow: "Upload → Detect → Refine → Export",
+    title: "Turn screenshots into starter UI",
+    description:
+      "Upload a reference, inspect detected regions, refine boxes, and export React + Tailwind files.",
+    workflow: "Upload -> Detect -> Refine -> Export package",
     background:
-      "linear-gradient(135deg, rgb(15, 23, 42) 0%, rgb(37, 99, 235) 45%, rgb(16, 185, 129) 100%)",
+      "linear-gradient(135deg, #08061f 0%, #111827 46%, #312e81 100%)",
+    accent: "#8b5cf6",
   };
 }
