@@ -67,11 +67,11 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A013 | Dense dashboard stress sample | SVG + PNG + WebP | `public/references/stress-dashboard-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:72-74`, tests, raster script | Bundled dense dashboard sample | 1440x900 | Used | High |
 | A014 | Repeated list stress sample | SVG + PNG + WebP | `public/references/stress-list-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:83-85`, tests, raster script | Bundled repeated-list sample | 1200x720 | Used | High |
 | A015 | Before/after comparison graphic | SVG | `public/results/before-after-comparison.svg` | `docs/media/DEMO_SCRIPT.md:78`, `docs/specs/ARTIFACT_CHECKLIST.md:11` | Demo/documentation comparison graphic | 1600x900 | Unconfirmed | Medium |
-| A016 | Next.js starter logo | SVG | `public/next.svg` | No exact runtime reference found | Starter/framework logo leftover | 394x80 viewBox | Unused | High |
-| A017 | Vercel starter logo | SVG | `public/vercel.svg` | No exact runtime reference found | Starter/deployment logo leftover | 1155x1000 viewBox | Unused | High |
-| A018 | Globe starter icon | SVG | `public/globe.svg` | No exact runtime reference found | Starter/global icon leftover | 16x16 viewBox | Unused | High |
-| A019 | File starter icon | SVG | `public/file.svg` | No exact runtime reference found | Starter/file icon leftover | 16x16 viewBox | Unused | High |
-| A020 | Window starter icon | SVG | `public/window.svg` | No exact runtime reference found | Starter/window icon leftover | 16x16 viewBox | Unused | High |
+| A016 | Next.js starter logo | SVG | Removed: `public/next.svg` | No exact runtime reference found | Starter/framework logo leftover | 394x80 viewBox | Removed | High |
+| A017 | Vercel starter logo | SVG | Removed: `public/vercel.svg` | No exact runtime reference found | Starter/deployment logo leftover | 1155x1000 viewBox | Removed | High |
+| A018 | Globe starter icon | SVG | Removed: `public/globe.svg` | No exact runtime reference found | Starter/global icon leftover | 16x16 viewBox | Removed | High |
+| A019 | File starter icon | SVG | Removed: `public/file.svg` | No exact runtime reference found | Starter/file icon leftover | 16x16 viewBox | Removed | High |
+| A020 | Window starter icon | SVG | Removed: `public/window.svg` | No exact runtime reference found | Starter/window icon leftover | 16x16 viewBox | Removed | High |
 | A021 | Home OG/Twitter image route | Generated PNG | `/opengraph-image`, `/twitter-image`; source `src/app/opengraph-image.tsx`, `src/features/home/lib/home-route.ts:65-74` | Metadata, `public/sw.js:13-14`, tests | Social preview image for home/demo | 1200x630 | Generated/Dynamic | High |
 | A022 | Design-system OG/Twitter image route | Generated PNG | `/design-system/opengraph-image`, `/design-system/twitter-image`; source `src/app/design-system/opengraph-image.tsx`, `design-system-route.ts:66-75` | Metadata/tests | Social preview for design system | 1200x630 | Generated/Dynamic | High |
 | A023 | Laws of UX OG/Twitter image route | Generated PNG | `/design-system/laws-of-ux/opengraph-image`, `/design-system/laws-of-ux/twitter-image`; source `src/app/design-system/laws-of-ux/opengraph-image.tsx`, `design-system-route.ts:120-132` | Metadata/tests | Social preview for Laws of UX route | 1200x630 | Generated/Dynamic | High |
@@ -93,7 +93,7 @@ Local file variants covered by grouped entries:
 | Static social | `public/images/og-image.png` 19527 bytes |
 | Reference samples | `dashboard-reference` SVG 10014 bytes, PNG 89887 bytes, WebP 33302 bytes; `auth-reference` SVG 2487, PNG 24253, WebP 7900; `mobile-reference` SVG 3371, PNG 25704, WebP 7668; `landing-reference` SVG 4573, PNG 72781, WebP 29986; `settings-reference` SVG 3090, PNG 32314, WebP 10928; `ecommerce-reference` SVG 6182, PNG 42386, WebP 15554; `stress-dashboard-reference` SVG 4261, PNG 38306, WebP 19798; `stress-list-reference` SVG 4006, PNG 27264, WebP 10896 |
 | Result/demo graphic | `public/results/before-after-comparison.svg` 10780 bytes |
-| Starter leftovers | `public/next.svg` 1375 bytes; `public/vercel.svg` 128 bytes; `public/globe.svg` 1035 bytes; `public/file.svg` 391 bytes; `public/window.svg` 385 bytes |
+| Starter leftovers | Removed after confirming no runtime references: `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, `public/window.svg` |
 | Visual snapshots | 18 PNG files under `e2e/visual-regression.spec.ts-snapshots/linux` and `.../win32`; dimensions include 1280x619, 960x685, 295x681, 298x29, 250x335, 239x399 |
 
 ## 4. Detailed Asset Breakdown
@@ -355,88 +355,88 @@ Local file variants covered by grouped entries:
 
 ### Asset ID: A016
 - **Asset name:** Next.js starter logo.
-- **Asset path or URL:** `public/next.svg`.
+- **Asset path or URL:** Removed: `public/next.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 394x80 viewBox.
 - **File size:** 1375 bytes.
 - **Usage locations:** No exact runtime reference found.
 - **Usage purpose:** Starter template leftover.
 - **Visual description:** Black `NEXT.js` wordmark.
-- **Replacement recommendation:** Prefer deletion after confirmation. If a framework badge is needed, use a generic original framework/stack wordmark, not a trademark imitation.
+- **Replacement recommendation:** Completed: deleted after confirmation. If a framework badge is needed later, use a generic original framework/stack wordmark, not a trademark imitation.
 - **Suggested AI prompt:** Create a generic monochrome "web framework" badge for documentation, original typography, simple geometric wordmark placeholder, neutral black-on-transparent style, no imitation of Next.js or other trademarked framework logos.
 - **Negative prompt:** Next.js wordmark, Vercel logo, copied typography, brand names, watermark.
 - **Suggested aspect ratio:** Wide wordmark.
 - **Suggested output size:** SVG or 800x160 PNG.
 - **Transparency needed:** Yes if used as a badge.
-- **Notes:** Status is unused with high confidence.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A017
 - **Asset name:** Vercel starter logo.
-- **Asset path or URL:** `public/vercel.svg`.
+- **Asset path or URL:** Removed: `public/vercel.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 1155x1000 viewBox.
 - **File size:** 128 bytes.
 - **Usage locations:** No exact runtime reference found.
 - **Usage purpose:** Starter/deployment logo leftover.
 - **Visual description:** White triangle mark on transparent background.
-- **Replacement recommendation:** Prefer deletion after confirmation. If kept, replace with a generic deployment/cloud icon.
+- **Replacement recommendation:** Completed: deleted after confirmation. If needed later, replace with a generic deployment/cloud icon.
 - **Suggested AI prompt:** Create an original deployment-platform icon: simple abstract upward triangle combined with a cloud/server base, monochrome, vector, generic, no resemblance to any existing hosting provider logo.
 - **Negative prompt:** Vercel triangle, AWS/Azure/GCP logos, brand imitation, text, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG or 512x512 PNG.
 - **Transparency needed:** Yes.
-- **Notes:** Public file is unused, but still web-accessible.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A018
 - **Asset name:** Globe starter icon.
-- **Asset path or URL:** `public/globe.svg`.
+- **Asset path or URL:** Removed: `public/globe.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 16x16 viewBox.
 - **File size:** 1035 bytes.
 - **Usage locations:** No exact runtime reference found. Footer uses `Globe2` from Lucide instead.
 - **Usage purpose:** Starter icon leftover.
 - **Visual description:** Gray globe outline with longitude/latitude bands.
-- **Replacement recommendation:** Delete if unused, or replace with an icon from the chosen unified icon set.
+- **Replacement recommendation:** Completed: deleted after confirmation. Use Lucide or a unified custom icon set if needed later.
 - **Suggested AI prompt:** Create a simple 16x16 globe/navigation icon in a consistent thin-line icon style, neutral stroke, transparent background, no brand marks.
 - **Negative prompt:** Filled globe illustration, flags, photorealism, complex map detail, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG.
 - **Transparency needed:** Yes.
-- **Notes:** Prefer using Lucide or a unified custom icon set instead of public loose SVGs.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A019
 - **Asset name:** File starter icon.
-- **Asset path or URL:** `public/file.svg`.
+- **Asset path or URL:** Removed: `public/file.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 16x16 viewBox.
 - **File size:** 391 bytes.
 - **Usage locations:** No exact runtime reference found.
 - **Usage purpose:** Starter icon leftover.
 - **Visual description:** Gray document/file icon with folded corner and text lines.
-- **Replacement recommendation:** Delete if unused, or replace through the app-wide icon system.
+- **Replacement recommendation:** Completed: deleted after confirmation. Replace through the app-wide icon system if needed later.
 - **Suggested AI prompt:** Create a simple 16x16 document/file icon, thin-line style, folded corner, two subtle horizontal content lines, transparent background, matches a modern developer-tool icon system.
 - **Negative prompt:** Real document scan, brand logos, excessive detail, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG.
 - **Transparency needed:** Yes.
-- **Notes:** No runtime reference found.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A020
 - **Asset name:** Window starter icon.
-- **Asset path or URL:** `public/window.svg`.
+- **Asset path or URL:** Removed: `public/window.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 16x16 viewBox.
 - **File size:** 385 bytes.
 - **Usage locations:** No exact runtime reference found.
 - **Usage purpose:** Starter icon leftover.
 - **Visual description:** Gray browser/app window icon with three top dots.
-- **Replacement recommendation:** Delete if unused, or replace through the app-wide icon system.
+- **Replacement recommendation:** Completed: deleted after confirmation. Replace through the app-wide icon system if needed later.
 - **Suggested AI prompt:** Create a simple 16x16 browser-window icon, thin-line style, rounded rectangle, three small top controls, transparent background, consistent with a developer-tool icon set.
 - **Negative prompt:** Brand browser logos, 3D window, complex chrome, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG.
 - **Transparency needed:** Yes.
-- **Notes:** No runtime reference found.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A021
 - **Asset name:** Home OG/Twitter image route.
@@ -851,7 +851,8 @@ Recommended verification after actual replacement:
 - `offline-analyze.mjs` contains known-sample signatures and mappings. Replacing sample visuals without updating this logic can make known sample recognition incorrect.
 - `scripts/generate-reference-rasters.mjs` hardcodes reference stems and dimensions. New aspect ratios need script, metadata, manifest, and tests updated.
 - `landing-reference.svg` and `ecommerce-reference.svg` contain invalid/control-character text issues. Their rasters render, but replacement should clean the SVG sources.
-- `public/images/og-image.png`, `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, and `public/window.svg` appear unused but are still publicly reachable. Confirm before deleting.
+- `public/images/og-image.png` appears unused but is still publicly reachable. Confirm before deleting.
+- Starter leftovers `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, and `public/window.svg` were removed after reference search confirmed no runtime usage.
 - Footer GitHub and LinkedIn inline SVG marks may require brand/legal review if kept as official social marks.
 - Generated social images are not static files. Replacing them may require code changes, not image uploads.
 - Chart and upload preview visuals are runtime-generated; replacing them with AI images may reduce responsiveness and accessibility.
