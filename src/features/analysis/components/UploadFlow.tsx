@@ -1480,7 +1480,7 @@ function buildExportReadmePreview({
   responsiveMode: string;
 }) {
   return [
-    "# qwen-ui-lab starter package",
+    "# qwen-ui-lab export package",
     "",
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
@@ -1813,7 +1813,7 @@ function ExportPackageReviewDialog({
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
-              description="qwen-ui-lab starter package"
+              description="qwen-ui-lab export package"
               label={copy.exportRepoInstructions}
               className="min-h-11"
               analyticsSource="upload_flow"
@@ -1822,7 +1822,7 @@ function ExportPackageReviewDialog({
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
-              description="qwen-ui-lab starter package"
+              description="qwen-ui-lab export package"
               label={copy.exportHandoffBundle}
               exportMode="zip"
               testId="export-handoff-bundle"
@@ -3195,7 +3195,7 @@ export function UploadFlow({
                           <RepoExportButton
                             text={artifact.generatedCode}
                             filename={exportFilename}
-                            description="qwen-ui-lab starter package"
+                            description="qwen-ui-lab export package"
                             label={t.exportHandoffBundle}
                             exportMode="zip"
                             testId="export-handoff-bundle"

@@ -47,7 +47,7 @@ export function getGithubGistToken(env = process.env) {
  */
 export async function createGithubGist({
   token,
-  description = "qwen-ui-lab starter package",
+  description = "qwen-ui-lab export package",
   filename,
   content,
   isPublic = false,

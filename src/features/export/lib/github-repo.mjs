@@ -62,14 +62,14 @@ export function buildRepoCompareExport({
   repo,
   base,
   filename,
-  description = "qwen-ui-lab starter package",
+  description = "qwen-ui-lab export package",
 }) {
   const safeFilename = sanitizeGistFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
   const title = encodeURIComponent("Add qwen-ui-lab generated UI starter");
   const body = encodeURIComponent(
     [
-      "## qwen-ui-lab starter package",
+      "## qwen-ui-lab export package",
       "",
       description,
       "",
@@ -101,13 +101,13 @@ export function buildRepoCompareExport({
  *   description?: string;
  * }} args
  */
-export function buildScaffoldReadme({ filename, description = "qwen-ui-lab starter package" }) {
+export function buildScaffoldReadme({ filename, description = "qwen-ui-lab export package" }) {
   const safeFilename = sanitizeGistFilename(filename);
-  return `# qwen-ui-lab starter package
+  return `# qwen-ui-lab export package
 
 ${description}
 
-This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
 
 ## Files
 
@@ -117,7 +117,7 @@ This export is a reviewable starter package. Import it into source control, conn
 
 ## Next steps
 
-1. Unzip this starter package into your app.
+1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review the design notes and detection notes before treating the component as final.
@@ -351,7 +351,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
 }
 
 function buildProductionScaffoldReadme({
-  description = "qwen-ui-lab starter package",
+  description = "qwen-ui-lab export package",
   files,
   componentName,
   blueprint,
@@ -363,11 +363,11 @@ function buildProductionScaffoldReadme({
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
   const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
 
-  return `# qwen-ui-lab starter package
+  return `# qwen-ui-lab export package
 
 ${description}
 
-This starter package turns the screenshot review into files you can import, compare, and iterate in source control.
+This export package turns the screenshot review into files you can import, compare, and iterate in source control.
 
 ## What changed from the screenshot
 
@@ -402,16 +402,16 @@ Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 }
 
 function buildFallbackPackageReadme({
-  description = "qwen-ui-lab starter package",
+  description = "qwen-ui-lab export package",
   files,
   componentName,
   dependencies = [],
 }) {
-  return `# qwen-ui-lab starter package
+  return `# qwen-ui-lab export package
 
 ${description}
 
-This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
 
 ## Files
 
@@ -429,7 +429,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 ## Next steps
 
-1. Unzip this starter package into your app.
+1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review \`DESIGN.md\` and the detection notes before treating the component as final.
@@ -518,13 +518,13 @@ ${blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")}
 }
 
 function buildPackageDesignMarkdown({
-  description = "React starter package",
+  description = "React export package",
   files,
   componentName,
   blueprint,
   dependencies = [],
 }) {
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
   const responsiveIntent = blueprint?.responsiveIntent;
   const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
     .sort(([first], [second]) => first.localeCompare(second))

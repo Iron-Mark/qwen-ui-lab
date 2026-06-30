@@ -6,7 +6,7 @@ export const zh = {
     badgeOffline: "本地预览",
     title: "将截图转为可编辑 React",
     subtitle:
-      "上传 UI 截图，检查识别出的结构，然后导出 React + Tailwind 起步包。",
+      "上传 UI 截图，检查识别出的结构，然后导出 React + Tailwind 项目包。",
     ctaPrimary: "开始工作流",
     ctaSecondary: "浏览设计系统",
     oneClickDemo: "示例参考",
@@ -19,7 +19,7 @@ export const zh = {
     benefitAnalyzeTitle: "检查组件",
     benefitAnalyzeBody: "导出前先审查生成的 React + Tailwind 组件。",
     benefitDesignLabel: "导出",
-    benefitDesignTitle: "导出起步包",
+    benefitDesignTitle: "导出项目包",
     benefitDesignBody: "使用结果前先检查 TSX、Design.md 和启动包文件。",
     trustSignalsAria: "信任标识",
     keyBenefitsAria: "核心优势",
@@ -241,14 +241,14 @@ export const zh = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "导出组件",
     exportScaffoldDesc:
-      "先检视生成文件，然后复制代码、下载组件，或导出起步包。",
+      "先检视生成文件，然后复制代码、下载组件，或导出项目包。",
     exportReviewPackage: "检视包",
     exportPackageReady: "导出包",
     exportPackageReadyDesc:
       "下载前预览文件、截图变更和包说明。",
     exportPackageTitle: "检视导出包",
     exportPackageDesc:
-      "这是从截图分析生成的起步包，会将组件、配方、manifest、tokens 和检测记录放在一起。",
+      "这是从截图分析生成的项目包，会将组件、配方、manifest、tokens 和检测记录放在一起。",
     exportPackageFilesLabel: "个文件",
     exportPackageFilesTab: "文件",
     exportPackageChangesTab: "变更",
@@ -287,7 +287,7 @@ export const zh = {
     toastScaffoldCopied: "组件已复制",
     toastScaffoldExported: "组件已导出",
     toastDesignDocExported: "Design.md 已导出",
-    toastHandoffBundleExported: "起步包已下载",
+    toastHandoffBundleExported: "项目包已下载",
     exportGenerateHint: "生成预览以在片段旁查看实时统计。",
     generatedScaffold: "生成的组件",
     livePreview: "实时预览",

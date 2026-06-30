@@ -671,7 +671,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known reference samples export as starter packages", () => {
+test("known reference samples export as export packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",

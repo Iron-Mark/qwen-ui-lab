@@ -203,7 +203,7 @@ export function Footer() {
               </Link>
             </FooterTooltip>
             <p className="mt-3 max-w-sm text-sm leading-5 text-muted-foreground">
-              Create reviewable React + Tailwind starter packages from
+              Create reviewable React + Tailwind export packages from
               screenshot analysis.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">

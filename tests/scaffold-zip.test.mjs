@@ -18,7 +18,7 @@ test("createStoredZip produces a readable zip with README and scaffold", () => {
   assert.match(text, /export function Demo/);
 });
 
-test("buildScaffoldZipEntries exports fallback code as a starter package", () => {
+test("buildScaffoldZipEntries exports fallback code as an export package", () => {
   const entries = buildScaffoldZipEntries({
     filename: "generated.tsx",
     description: "Fallback export",
@@ -40,7 +40,7 @@ export default function GeneratedComponent() {
     "src/components/generated/generated.tokens.css",
     "src/components/generated/generated.tsx",
   ]);
-  assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /starter package/);
+  assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /export package/);
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")

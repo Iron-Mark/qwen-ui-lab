@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 const homeRouteDescription =
-  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind starter package.";
+  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind package.";
 
 export const homeRouteSocialPreviewImageAlt =
   "qwen-ui-lab screenshot-to-React workflow";

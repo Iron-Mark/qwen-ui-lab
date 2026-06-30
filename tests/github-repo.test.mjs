@@ -44,7 +44,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "generated-auth.tsx",
-    description: "starter package",
+    description: "export package",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
@@ -96,7 +96,7 @@ test("extractProductionScaffoldBlueprint handles CRLF generated scaffolds", () =
   assert.equal(blueprint.shadcnPrimitiveMap["primary-action"], "Button");
 });
 
-test("buildScaffoldZipEntries creates starter package for offline scaffolds", () => {
+test("buildScaffoldZipEntries creates export package for offline scaffolds", () => {
   const entries = buildScaffoldZipEntries({
     content: RICH_GENERATED_SCAFFOLD,
     filename: "detected-dashboard.tsx",
@@ -113,7 +113,7 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "src/components/generated/detected-dashboard.tokens.css",
     "docs/detected-dashboard.detection.md",
   ]);
-  assert.match(entries[0].content, /starter package/i);
+  assert.match(entries[0].content, /export package/i);
   assert.match(entries[1].content, /Design notes/);
   assert.match(entries[2].content, /GeneratedComponent/);
   assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);

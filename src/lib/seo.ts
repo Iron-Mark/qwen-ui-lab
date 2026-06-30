@@ -4,7 +4,7 @@ const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
 export const SITE_TAGLINE = "Screenshot to React starter";
 export const SITE_PITCH =
-  "Turn UI screenshots into inspectable React + Tailwind starter packages.";
+  "Turn UI screenshots into inspectable React + Tailwind export packages.";
 export const DEFAULT_OG_IMAGE = "/opengraph-image";
 export const MANIFEST_PATH = "/manifest.webmanifest";
 export const LEGACY_MANIFEST_PATH = "/manifest.json";
@@ -123,7 +123,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind starter package.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -430,7 +430,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Screenshot-to-React tool for converting UI references into reviewable React/Tailwind starter packages.",
+            "Screenshot-to-React tool for converting UI references into reviewable React/Tailwind export packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,

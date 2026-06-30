@@ -250,14 +250,14 @@ export const en = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "Export component",
     exportScaffoldDesc:
-      "Review the generated files, then copy code, download the component, or export the starter package.",
+      "Review the generated files, then copy code, download the component, or export the package.",
     exportReviewPackage: "Review package",
     exportPackageReady: "Export package",
     exportPackageReadyDesc:
       "Preview the files, screenshot changes, and package summary before downloading.",
     exportPackageTitle: "Review export package",
     exportPackageDesc:
-      "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
+      "This export package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
@@ -296,7 +296,7 @@ export const en = {
     toastScaffoldCopied: "Component copied",
     toastScaffoldExported: "Component exported",
     toastDesignDocExported: "Design.md exported",
-    toastHandoffBundleExported: "Starter package downloaded",
+    toastHandoffBundleExported: "Export package downloaded",
     exportGenerateHint: "Generate preview to see live stats alongside the snippet.",
     generatedScaffold: "Generated component",
     livePreview: "Live preview",

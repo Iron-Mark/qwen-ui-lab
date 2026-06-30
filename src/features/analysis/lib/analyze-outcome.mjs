@@ -1,7 +1,7 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
 
 export const FALLBACK_BANNER_MISSING =
-  "Analysis is ready. Provider settings are available in developer diagnostics.";
+  "Analysis is ready.";
 
 export const FALLBACK_BANNER_ERROR =
   "Analysis is ready.";
