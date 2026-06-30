@@ -1355,7 +1355,22 @@ function buildExportPackagePreview(
     0,
     (artifact.detections?.elements.length ?? 0) - activeDetections.length,
   );
+  const correctionSummary =
+    editedCount || excludedCount
+      ? interpolate(copy.exportChangeCorrections, {
+          edited: String(editedCount),
+          excluded: String(excludedCount),
+        })
+      : copy.exportReadmeNoCorrections;
   const elementCount = detectedElements.length || activeDetections.length;
+  const lowConfidenceCount = (detectedElements.length ? detectedElements : activeDetections).filter(
+    (element) => numericRecordValue(element, "confidence") < 0.75,
+  ).length;
+  const reviewSummary = lowConfidenceCount
+    ? interpolate(copy.exportReadmeReviewSummary, {
+        count: String(lowConfidenceCount),
+      })
+    : copy.exportReadmeReviewClear;
   const regionCount = layoutRegions.length || artifact.plan.length;
   const primitiveCount =
     Object.keys(primitiveMap).length ||
@@ -1461,6 +1476,8 @@ function buildExportPackagePreview(
       files,
       intentLabel,
       responsiveMode,
+      correctionSummary,
+      reviewSummary,
     }),
     codePreview: generatedCode,
   };
@@ -1472,12 +1489,16 @@ function buildExportReadmePreview({
   files,
   intentLabel,
   responsiveMode,
+  correctionSummary,
+  reviewSummary,
 }: {
   copy: UploadFlowDictionary;
   componentName: string;
   files: ExportPackageFile[];
   intentLabel: string;
   responsiveMode: string;
+  correctionSummary: string;
+  reviewSummary: string;
 }) {
   return [
     "# qwen-ui-lab export package",
@@ -1485,6 +1506,8 @@ function buildExportReadmePreview({
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
     `${copy.exportReadmeResponsive}: ${responsiveMode}`,
+    `${copy.exportReadmeCorrections}: ${correctionSummary}`,
+    `${copy.exportReadmeReviewNotes}: ${reviewSummary}`,
     "",
     `## ${copy.exportReadmeContains}`,
     "",
@@ -1594,6 +1617,16 @@ function asStringArray(value: unknown) {
 
 function stringValue(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function numericRecordValue(value: unknown, key: string, fallback = 1) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return fallback;
+  }
+  const nextValue = (value as Record<string, unknown>)[key];
+  return typeof nextValue === "number" && Number.isFinite(nextValue)
+    ? nextValue
+    : fallback;
 }
 
 function userFacingModeLabel(

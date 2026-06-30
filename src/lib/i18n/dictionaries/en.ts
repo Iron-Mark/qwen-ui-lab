@@ -287,6 +287,12 @@ export const en = {
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",
+    exportReadmeCorrections: "Manual corrections",
+    exportReadmeNoCorrections: "No manual corrections captured.",
+    exportReadmeReviewNotes: "Review notes",
+    exportReadmeReviewSummary:
+      "{count} low-confidence element(s) need review before merge.",
+    exportReadmeReviewClear: "Use the checklist before merge.",
     exportReadmeContains: "What this package contains",
     exportReadmeNext: "Next steps",
     exportCopyAll: "Copy all",
