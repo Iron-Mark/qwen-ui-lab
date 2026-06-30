@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   handleCspReportPost,
+  isLocalCspDocumentUri,
   normalizeCspReportPayload,
 } from "../src/lib/csp-report.mjs";
 
@@ -78,6 +79,31 @@ test("handleCspReportPost logs normalized reports and always returns 204", async
     blockedUri: "inline",
     userAgent: "test-agent",
   });
+});
+
+test("handleCspReportPost suppresses localhost report noise", async () => {
+  const warnings = [];
+  const response = await handleCspReportPost(
+    reportRequest({
+      "csp-report": {
+        "document-uri": "http://127.0.0.1:3211/",
+        "violated-directive": "style-src-attr",
+        "blocked-uri": "inline",
+      },
+    }),
+    {
+      logger: {
+        warn(...args) {
+          warnings.push(args);
+        },
+      },
+    },
+  );
+
+  assert.equal(response.status, 204);
+  assert.deepEqual(warnings, []);
+  assert.equal(isLocalCspDocumentUri("http://localhost:3001/"), true);
+  assert.equal(isLocalCspDocumentUri("https://qwen-ui-lab.vercel.app/"), false);
 });
 
 test("handleCspReportPost ignores invalid JSON report bodies", async () => {
