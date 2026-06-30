@@ -15,7 +15,7 @@ export function createDemoRouteMetadata(): Metadata {
   return createRouteMetadata({
     title: "Sample reference",
     description:
-      "Preloaded screenshot references for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React starter.",
+      "Bundled screenshot references for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React starter.",
     path: "/demo",
     keywords: [
       "Qwen UI sample",
@@ -26,7 +26,7 @@ export function createDemoRouteMetadata(): Metadata {
     ogImage: "/opengraph-image",
     ogImageAlt: "qwen-ui-lab sample reference workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "Preloaded screenshot-to-React sample",
+    twitterImageAlt: "Screenshot-to-React sample reference",
     shareSnippet:
       "Open /demo for a sample reference and swap layouts with ?archetype=auth|mobile|landing|settings|shop.",
   });
@@ -52,7 +52,7 @@ export function getDemoRouteStructuredDataInput() {
   return {
     title: "Sample reference",
     description:
-      "Preloaded screenshot sample references with starter output for common UI archetypes.",
+      "Bundled screenshot references with starter output for common UI archetypes.",
     path: "/demo",
     breadcrumbLabel: "Sample reference",
     about: ["Screenshot sample", "UI archetype analysis", "React export"],

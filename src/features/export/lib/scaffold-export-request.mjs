@@ -9,6 +9,7 @@ export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
  *   content: string;
  *   filename: string;
  *   description: string;
+ *   mode: "auto" | "zip";
  * } | { ok: false; code: string; message: string }}
  */
 export function normalizeScaffoldExportRequestBody(body) {
@@ -30,6 +31,7 @@ export function normalizeScaffoldExportRequestBody(body) {
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
       : "qwen-ui-lab component export";
+  const mode = record.mode === "zip" ? "zip" : "auto";
 
   if (!content.trim()) {
     return {
@@ -53,5 +55,6 @@ export function normalizeScaffoldExportRequestBody(body) {
     content,
     filename,
     description,
+    mode,
   };
 }

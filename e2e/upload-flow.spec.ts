@@ -340,16 +340,10 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   expect(designMd).toContain("## E2E Contract");
   expect(designMd).toContain("Download DESIGN.md");
 
-  const handoffDownloadPromise = page.waitForEvent("download");
+  const packageDownloadPromise = page.waitForEvent("download");
   await page.getByTestId("export-handoff-bundle").click();
-  const handoffDownload = await handoffDownloadPromise;
-  expect(handoffDownload.suggestedFilename()).toMatch(/\.handoff\.json$/);
-  const handoffPath = await handoffDownload.path();
-  expect(handoffPath).toBeTruthy();
-  const handoff = JSON.parse(await fs.readFile(handoffPath!, "utf8"));
-  expect(handoff.generatedCode).toContain("export function");
-  expect(handoff.detections.elements.length).toBeGreaterThan(0);
-  expect(handoff.exports.designMarkdownFilename).toBe("DESIGN.md");
+  const packageDownload = await packageDownloadPromise;
+  expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
 
   await page.getByTestId("gist-export-button").click();
   await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({
@@ -360,7 +354,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.getByTestId("repo-export-button").click();
   const repoZipDownload = await repoZipDownloadPromise;
   expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
-  await expect(page.getByText(/Export package downloaded/i)).toBeVisible({
+  await expect(page.getByText(/Export package downloaded/i).first()).toBeVisible({
     timeout: 5_000,
   });
 

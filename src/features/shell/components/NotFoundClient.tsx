@@ -66,7 +66,7 @@ export function NotFoundClient() {
         >
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <span className="size-2 rounded-full bg-primary" />
-            Route recovery
+            Suggested pages
           </div>
           <div className="mt-4 grid gap-2">
             {[t.backDashboard, t.designSystem].map((label) => (

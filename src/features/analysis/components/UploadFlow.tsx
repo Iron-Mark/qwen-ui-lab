@@ -1591,7 +1591,6 @@ function ExportPackageReviewDialog({
   artifact,
   exportFilename,
   onExportDesignMarkdown,
-  onExportHandoffBundle,
   onExported,
 }: {
   preview: ExportPackagePreview;
@@ -1599,7 +1598,6 @@ function ExportPackageReviewDialog({
   artifact: UiFlowArtifact;
   exportFilename: string;
   onExportDesignMarkdown: () => void;
-  onExportHandoffBundle: () => void;
   onExported: (message: string) => void;
 }) {
   return (
@@ -1727,15 +1725,17 @@ function ExportPackageReviewDialog({
             <FileText className="size-4" aria-hidden />
             {copy.exportDesignDoc}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 gap-2"
-            onClick={onExportHandoffBundle}
-          >
-            <PackageOpen className="size-4" aria-hidden />
-            {copy.exportHandoffBundle}
-          </Button>
+          <RepoExportButton
+            text={artifact.generatedCode}
+            filename={exportFilename}
+            description="qwen-ui-lab starter package"
+            label={copy.exportHandoffBundle}
+            exportMode="zip"
+            testId="export-handoff-bundle"
+            analyticsSource="upload_flow"
+            analyticsFeature="generated_scaffold"
+            onExported={() => onExported(copy.toastHandoffBundleExported)}
+          />
           <ExportButton
             text={preview.codePreview}
             variant="copy"
@@ -1757,6 +1757,7 @@ function ExportPackageReviewDialog({
             text={artifact.generatedCode}
             filename={exportFilename}
             description="qwen-ui-lab starter package"
+            label={copy.exportRepoInstructions}
             analyticsSource="upload_flow"
             analyticsFeature="generated_scaffold"
           />
@@ -2528,48 +2529,6 @@ export function UploadFlow({
     toast(t.toastDesignDocExported, "success");
   }
 
-  function exportHandoffBundle() {
-    if (!artifact || typeof document === "undefined") return;
-    const baseName =
-      artifact.file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-") ||
-      "screenshot";
-    const shareSummary =
-      buildShareableSummary({
-        summary: artifact.summary,
-        previewStats: artifact.previewStats,
-        modeLabel: artifact.modeLabel,
-        detections: artifact.detections,
-        file: file?.name ?? artifact.file.name ?? t.defaultScreenshotName,
-      }) ?? sharedSummary;
-    const payload = {
-      version: 1,
-      exportedAt: new Date(currentTimestamp()).toISOString(),
-      file: artifact.file,
-      modeLabel: artifact.modeLabel,
-      summary: artifact.summary,
-      previewStats: artifact.previewStats,
-      plan: artifact.plan,
-      generatedCode: artifact.generatedCode,
-      exports: {
-        tsxFilename: exportFilename,
-        detectionsFilename: `${baseName}.detections.json`,
-        designMarkdownFilename: DESIGN_MD_FILENAME,
-      },
-      detections: artifact.detections,
-      shareSummary,
-      notes: [
-        "Review imports and data before adding the generated component to an app.",
-        "Manual detection edits from this browser session are included in the recipe.",
-      ],
-    };
-    downloadTextFile(
-      JSON.stringify(payload, null, 2),
-      `${baseName}.handoff.json`,
-      "application/json;charset=utf-8",
-    );
-    toast(t.toastHandoffBundleExported, "success");
-  }
-
   async function finishPreviewGeneration(
     nextArtifact: UiFlowArtifact | null,
     toastMessage = t.toastPreviewGenerated,
@@ -3125,7 +3084,6 @@ export function UploadFlow({
                             artifact={artifact}
                             exportFilename={exportFilename}
                             onExportDesignMarkdown={exportDesignMarkdown}
-                            onExportHandoffBundle={exportHandoffBundle}
                             onExported={(message) => toast(message, "success")}
                           />
                         ) : null}
@@ -3163,17 +3121,17 @@ export function UploadFlow({
                             <FileText className="size-3.5" aria-hidden />
                             {t.exportDesignDoc}
                           </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={exportHandoffBundle}
-                            data-testid="export-handoff-bundle"
-                          >
-                            <PackageOpen className="size-3.5" aria-hidden />
-                            {t.exportHandoffBundle}
-                          </Button>
+                          <RepoExportButton
+                            text={artifact.generatedCode}
+                            filename={exportFilename}
+                            description="qwen-ui-lab starter package"
+                            label={t.exportHandoffBundle}
+                            exportMode="zip"
+                            testId="export-handoff-bundle"
+                            analyticsSource="upload_flow"
+                            analyticsFeature="generated_scaffold"
+                            onExported={() => toast(t.toastHandoffBundleExported, "success")}
+                          />
                           <GistExportButton
                             text={artifact.generatedCode}
                             filename={exportFilename}
@@ -3185,6 +3143,7 @@ export function UploadFlow({
                             text={artifact.generatedCode}
                             filename={exportFilename}
                             description="qwen-ui-lab generated component"
+                            label={t.exportRepoInstructions}
                             analyticsSource="upload_flow"
                             analyticsFeature="generated_scaffold"
                           />

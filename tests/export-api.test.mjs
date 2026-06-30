@@ -81,3 +81,23 @@ test("repo export API falls back to zip when GitHub export is unavailable", asyn
     assert.ok((await response.arrayBuffer()).byteLength > 0);
   });
 });
+
+test("repo export API can force package zip when GitHub export is configured", async () => {
+  await withGithubEnv("ghp_test", async () => {
+    const response = await handleRepoExportPost(
+      jsonRequest({
+        content: "export const Demo = () => null;",
+        filename: "generated-demo.tsx",
+        description: "Demo export",
+        mode: "zip",
+      }),
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("Content-Type"), "application/zip");
+    assert.match(
+      response.headers.get("Content-Disposition") ?? "",
+      /qwen-ui-lab-export-package\.zip/,
+    );
+  });
+});

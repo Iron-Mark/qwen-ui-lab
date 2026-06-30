@@ -27,7 +27,7 @@ An API key alone does not enable upstream calls.
 | Route | Purpose |
 | --- | --- |
 | `/` | Home dashboard plus screenshot upload, analyze, generate, share, and export flow. |
-| `/demo` | Sample run with bundled references and `?archetype=auth|mobile|landing|settings|shop`. |
+| `/demo` | Sample reference with bundled layouts and `?archetype=auth|mobile|landing|settings|shop`. |
 | `/design-system` | Component catalog, UX-law domains, snippet previews, and export bundle. |
 | `/account` | Compatibility redirect to the browser-local profile modal. |
 | `/share/[id]` | Read-only shared summary route. |
@@ -89,7 +89,7 @@ Core docs:
 | --- | --- |
 | [Architecture](./ARCHITECTURE.md) | Feature colocation and component boundaries. |
 | [Contributing](./CONTRIBUTING.md) | Workflow, checks, and PR expectations. |
-| [Sample run](./DEMO.md) | Sample flow and troubleshooting table. |
+| [Sample reference](./DEMO.md) | Sample flow and troubleshooting table. |
 | [Agent notes](./AGENTS.md) | Repository-specific agent guidance. |
 
 Media docs:

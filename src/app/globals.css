@@ -526,6 +526,9 @@ body {
 
 [data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
   padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+  max-width: calc(100vw - 1rem);
+  width: auto !important;
+  right: auto !important;
 }
 
 /* Sonner — WCAG AA contrast (scoped to toaster theme to avoid hydration mismatches) */

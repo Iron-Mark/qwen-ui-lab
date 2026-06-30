@@ -80,8 +80,8 @@ test("/share/[id] renders read-only summary from API-created link", async ({
   ).toHaveCount(0);
   await expect(page.getByText(shareFixturePayload.summary)).toBeVisible();
   await expect(page.getByText(shareFixturePayload.file)).toBeVisible();
-  await expect(page.getByRole("link", { name: /open workflow/i })).toBeVisible();
-  await expect(page.locator("#main").getByRole("link", { name: /sample run/i })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /back to workflow/i })).toBeVisible();
+  await expect(page.locator("#main").getByRole("link", { name: /sample reference/i })).toHaveAttribute(
     "href",
     "/demo",
   );
@@ -91,5 +91,5 @@ test("/share/[id] returns 404 for unknown id", async ({ page }) => {
   const response = await page.goto("/share/ZZZZZZZZ");
   expect(response?.status()).toBe(404);
   await expect(page.getByRole("heading", { name: /share link unavailable/i })).toBeVisible();
-  await expect(page.getByTestId("share-not-found-storage-hint")).toContainText(/Persistent short links/i);
+  await expect(page.getByTestId("share-not-found-storage-hint")).toContainText(/fresh summary/i);
 });

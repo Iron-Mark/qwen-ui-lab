@@ -17,7 +17,18 @@ test("normalizeScaffoldExportRequestBody sanitizes export metadata", () => {
     content: "export const Demo = () => null;",
     filename: "component.tsx",
     description: "A".repeat(256),
+    mode: "auto",
   });
+});
+
+test("normalizeScaffoldExportRequestBody accepts forced zip mode", () => {
+  const result = normalizeScaffoldExportRequestBody({
+    content: "export const Demo = () => null;",
+    mode: "zip",
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.mode, "zip");
 });
 
 test("normalizeScaffoldExportRequestBody rejects invalid bodies and empty content", () => {

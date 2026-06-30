@@ -79,9 +79,9 @@
       ]
     },
     {
-      "name": "Sample run",
+      "name": "Sample reference",
       "short_name": "Sample",
-      "description": "Open a bundled screenshot sample and run analysis.",
+      "description": "Open a screenshot sample reference and generate a starter preview.",
       "url": "/demo",
       "icons": [
         {
