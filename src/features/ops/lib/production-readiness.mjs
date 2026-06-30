@@ -46,7 +46,7 @@ export function buildProductionReadiness(env = process.env) {
   const checks = [
     createCheck({
       id: "demo-fallback",
-      label: "Local analysis fallback",
+      label: "Local analysis mode",
       status: "ready",
       active: health.provider === "demo",
       detail:
@@ -64,8 +64,8 @@ export function buildProductionReadiness(env = process.env) {
       detail: health.liveAnalysisEnabled
         ? `Enabled with ${health.model}.`
         : health.hasApiKey
-          ? "API key is present, but live analysis remains disabled until QWEN_LIVE_ANALYSIS=true."
-          : "Provider credentials are missing; deterministic local analysis is serving requests.",
+          ? "Credentials are present; live analysis is still disabled by configuration."
+          : "Deterministic local analysis is serving requests.",
     }),
     createCheck({
       id: "share-storage",
@@ -74,7 +74,7 @@ export function buildProductionReadiness(env = process.env) {
       active: kvConfigured,
       detail: kvConfigured
         ? "KV REST storage is configured for short share links."
-        : `Using in-memory share storage with ${shareConfig.idLength}-character IDs; links can disappear after cold starts or redeploys.`,
+        : `Using temporary share storage with ${shareConfig.idLength}-character IDs; links may not survive redeploys.`,
     }),
     createCheck({
       id: "github-gist",
@@ -82,8 +82,8 @@ export function buildProductionReadiness(env = process.env) {
       status: gistConfigured ? "ready" : "fallback",
       active: gistConfigured,
       detail: gistConfigured
-        ? "GITHUB_TOKEN is present for server-side gist export."
-        : "Missing GITHUB_TOKEN; users can still copy, download TSX, and use local zip fallback.",
+        ? "GitHub export credentials are configured for gist publishing."
+        : "Users can still copy code, download the component, or download the starter package.",
     }),
     createCheck({
       id: "github-repo",
@@ -91,8 +91,8 @@ export function buildProductionReadiness(env = process.env) {
       status: repoExportConfigured ? "ready" : "fallback",
       active: repoExportConfigured,
       detail: repoExportConfigured
-        ? "Repo compare export can use GitHub credentials."
-        : "Repo export falls back to a downloaded starter package.",
+        ? "Repository compare export is configured."
+        : "Repository export is available as a downloadable starter package.",
     }),
     createCheck({
       id: "public-site-url",
@@ -108,8 +108,8 @@ export function buildProductionReadiness(env = process.env) {
         : publicSiteMisconfigured
           ? `${publicSite.source} must be a valid HTTPS public origin.`
           : publicSite.local
-            ? "Canonical URLs are pointing at localhost; set NEXT_PUBLIC_SITE_URL before production deploys."
-            : "Short share URLs fall back to localhost unless NEXT_PUBLIC_SITE_URL or Vercel production URL is set.",
+            ? "Canonical URLs are still local; set a public site URL before launch."
+            : "Short share URLs use the current host until a public site URL is configured.",
     }),
   ];
 

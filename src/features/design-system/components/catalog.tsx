@@ -383,8 +383,8 @@ export function ExampleChannelDonut() {
     level: "organism",
     domain: "product",
     name: "App header",
-    description: "Global nav with logo, routes, live/demo badge, and theme toggle.",
-    usage: "Rendered once in root layout; badge reflects /api/health provider state.",
+    description: "Global navigation with logo, route links, profile access, and theme controls.",
+    usage: "Rendered once in the app shell; status details stay in the footer developer dialog.",
     sourcePath: "features/shell/components/Header.tsx",
     preview: (
       <div className="overflow-hidden rounded-lg border border-border">
@@ -404,7 +404,7 @@ export function ExampleHeader() {
     domain: "product",
     name: "Workflow banner",
     description: "Session status strip for the upload-to-export pipeline.",
-    usage: "Shown on dashboard below UploadFlow during live demos.",
+    usage: "Shown near the workflow when a sample or uploaded screenshot is ready to review.",
     sourcePath: "features/home/components/WorkflowBanner.tsx",
     preview: <WorkflowBanner />,
     code: `import { WorkflowBanner } from "@/features/home/components/WorkflowBanner";
