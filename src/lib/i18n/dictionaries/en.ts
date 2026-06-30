@@ -68,6 +68,7 @@ export const en = {
     subtitle: "Choose how saved analyses are labeled in this browser.",
     statusTitle: "Local profile",
     statusDesc: "Used by the header and recent analysis list.",
+    profilePreviewDesc: "Label for saved analyses",
     localFactsTitle: "What stays local",
     currentLabelTitle: "Shown as",
     storedInTitle: "Saved in",

@@ -67,6 +67,7 @@ export const zh = {
       "选择这个浏览器中已保存分析显示的名称。",
     statusTitle: "本地资料",
     statusDesc: "用于页眉和最近分析列表。",
+    profilePreviewDesc: "已保存分析的显示标签",
     localFactsTitle: "本地保存",
     currentLabelTitle: "显示为",
     storedInTitle: "保存于",
