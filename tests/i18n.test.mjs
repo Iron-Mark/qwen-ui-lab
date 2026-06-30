@@ -28,7 +28,7 @@ const uploadFlowZh = {
   ctaAnalyzing: "分析中…",
   analyzeStepReading: "读取图片…",
   analyzeStepPreprocessing: "预处理图片…",
-  analyzeStepChecking: "检查提供方…",
+    analyzeStepChecking: "准备分析…",
   analyzeStepLayout: "分析布局…",
   analyzeStepBuilding: "构建产物…",
   progressCallingApi: "调用 Qwen 视觉 API…",

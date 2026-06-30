@@ -1,4 +1,5 @@
 const EN_PROGRESS_TO_KEY = {
+  "Preparing analysis…": "progressCheckingProvider",
   "Checking provider…": "progressCheckingProvider",
   "Building local analysis…": "progressBuildingOffline",
   "Calling Qwen vision API…": "progressCallingApi",
@@ -41,12 +42,13 @@ export function getFlowStepLabels(copy) {
 const EN_STEP_ORDER = [
   "Reading image…",
   "Preprocessing image…",
-  "Checking provider…",
+  "Preparing analysis…",
   "Analyzing layout…",
   "Building artifact…",
 ];
 
 const PROGRESS_INDEX = {
+  "Preparing analysis…": 2,
   "Checking provider…": 2,
   "Building local analysis…": 3,
   "Calling Qwen vision API…": 3,

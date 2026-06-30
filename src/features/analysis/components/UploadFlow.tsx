@@ -246,7 +246,7 @@ function loadAnalyzeModules() {
 const ANALYZE_STEPS_EN = [
   "Reading image…",
   "Preprocessing image…",
-  "Checking provider…",
+  "Preparing analysis…",
   "Analyzing layout…",
   "Building artifact…",
 ] as const;

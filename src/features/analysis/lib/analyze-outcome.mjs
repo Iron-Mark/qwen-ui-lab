@@ -190,7 +190,7 @@ export async function postAnalyzeUi(
     skipHealthCheck = false,
   } = {},
 ) {
-  onProgress?.("Checking provider…");
+  onProgress?.("Preparing analysis…");
 
   if (!skipHealthCheck) {
     const health = await fetchAnalyzeHealth({ fetchFn, apiPath: healthPath });
