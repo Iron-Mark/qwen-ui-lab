@@ -103,7 +103,7 @@ export const zh = {
   designSystem: {
     eyebrow: "设计系统",
     title: "组件库",
-    subtitle: "筛选可复用组件、预览变体，并复制更接近产品使用的代码片段。",
+    subtitle: "筛选可复用组件、预览变体，并复制便于审查和改造的代码片段。",
     searchLabel: "搜索目录",
     searchPlaceholder: "搜索组件…",
     domain: "集合",

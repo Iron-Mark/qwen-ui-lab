@@ -106,7 +106,7 @@ export const en = {
     eyebrow: "Design system",
     title: "Component library",
     subtitle:
-      "Filter reusable components, preview variants, and copy production-minded snippets for your next build.",
+      "Filter reusable components, preview variants, and copy review-ready snippets for your next build.",
     searchLabel: "Search catalog",
     searchPlaceholder: "Search components…",
     domain: "Collection",
