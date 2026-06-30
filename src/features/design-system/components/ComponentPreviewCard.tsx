@@ -139,11 +139,11 @@ export function ComponentPreviewCard({
       )}
     >
       <CardHeader className={cn("border-b", denseHeader ? "p-4" : undefined)}>
-        <div className="grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <div className="grid gap-3">
+          <div className="grid gap-3">
             <div className="flex min-w-0 gap-3">
               <span
-                className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary"
+                className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary"
                 aria-hidden="true"
               >
                 <Box className="size-4" />
@@ -158,20 +158,19 @@ export function ComponentPreviewCard({
                 <CardDescription className="max-w-2xl text-sm leading-6">
                   {description}
                 </CardDescription>
+                <div
+                  className="flex flex-wrap items-center gap-2 pt-1 text-[11px]"
+                  aria-label={`Component level ${levelLabel}. Collection ${domainLabel}.`}
+                >
+                  <ComponentLevelPill label={levelLabel} Icon={TierIcon} compact />
+                  <CollectionPill label={domainLabel} compact />
+                </div>
               </div>
-            </div>
-
-            <div
-              className="flex flex-wrap items-center gap-2 sm:max-w-80 sm:justify-end"
-              aria-label={`Component level ${levelLabel}. Collection ${domainLabel}.`}
-            >
-              <ComponentLevelPill label={levelLabel} Icon={TierIcon} />
-              <CollectionPill label={domainLabel} />
             </div>
           </div>
 
           {usage ? (
-            <p className="rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
+            <p className="border-l border-border/80 pl-3 text-xs leading-5 text-muted-foreground">
               <span className="font-semibold text-card-foreground">Usage </span>
               {usage}
             </p>
@@ -191,7 +190,7 @@ export function ComponentPreviewCard({
         </div>
 
         {props && props.length > 0 ? (
-          <dl className="mt-3 grid gap-1 text-xs">
+          <dl className="mt-3 grid gap-1 rounded-lg border border-border/70 bg-muted/20 p-2.5 text-xs">
             {props.map((prop) => (
               <div key={prop.name} className="grid grid-cols-[auto_1fr] gap-x-2">
                 <dt className="font-mono font-medium text-card-foreground">{prop.name}</dt>
