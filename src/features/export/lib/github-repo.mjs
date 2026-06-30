@@ -362,6 +362,8 @@ function buildProductionScaffoldReadme({
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
   const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
+  const correctionSummary = summarizeManualCorrections(blueprint);
+  const reviewSummary = summarizeUnresolvedReviewNotes(blueprint);
 
   return `# qwen-ui-lab export package
 
@@ -375,6 +377,8 @@ This export package turns the screenshot review into files you can import, compa
 - ${regionCount} layout region${regionCount === 1 ? "" : "s"} and ${elementCount} detected element${elementCount === 1 ? "" : "s"} were converted into React sections.
 - ${primitiveCount} shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"} were included for review.
 - Responsive mode: ${responsiveMode}
+- Manual corrections: ${correctionSummary}
+- Review notes: ${reviewSummary}
 
 ## Files
 
@@ -399,6 +403,46 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
+}
+
+function summarizeManualCorrections(blueprint) {
+  const elements = Array.isArray(blueprint?.detectedElements)
+    ? blueprint.detectedElements
+    : [];
+  const edited = elements.filter((element) => element.userEdited === true).length;
+  const excluded = elements.filter((element) => element.included === false).length;
+
+  if (!edited && !excluded) {
+    return "none captured in this export.";
+  }
+
+  const parts = [];
+  if (edited) {
+    parts.push(`${edited} edited detection box${edited === 1 ? "" : "es"}`);
+  }
+  if (excluded) {
+    parts.push(`${excluded} excluded element${excluded === 1 ? "" : "s"}`);
+  }
+  return `${parts.join(", ")} captured in the recipe JSON.`;
+}
+
+function summarizeUnresolvedReviewNotes(blueprint) {
+  const elements = Array.isArray(blueprint?.detectedElements)
+    ? blueprint.detectedElements
+    : [];
+  const lowConfidence = elements.filter(
+    (element) =>
+      typeof element.confidence === "number" && element.confidence < 0.75,
+  ).length;
+  const checklistCount = Array.isArray(blueprint?.reviewChecklist)
+    ? blueprint.reviewChecklist.length
+    : 0;
+
+  if (!lowConfidence) {
+    return `${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before merge.`;
+  }
+
+  return `${lowConfidence} low-confidence element${lowConfidence === 1 ? "" : "s"} plus ${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before merge.`;
 }
 
 function buildFallbackPackageReadme({

@@ -114,6 +114,14 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     "docs/detected-dashboard.detection.md",
   ]);
   assert.match(entries[0].content, /export package/i);
+  assert.match(
+    entries[0].content,
+    /Manual corrections: 1 edited detection box, 1 excluded element captured in the recipe JSON\./,
+  );
+  assert.match(
+    entries[0].content,
+    /Review notes: 1 low-confidence element plus \d+ checklist items before merge\./,
+  );
   assert.match(entries[1].content, /Design notes/);
   assert.match(entries[2].content, /GeneratedComponent/);
   assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);
@@ -173,6 +181,15 @@ const detectedElements = [
     "primitive": "data-table",
     "componentRole": "data-table",
     "confidence": 0.88
+  },
+  {
+    "id": "element-2",
+    "kind": "button",
+    "primitive": "button",
+    "componentRole": "primary-action",
+    "confidence": 0.68,
+    "included": false,
+    "userEdited": true
   }
 ];
 
