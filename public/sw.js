@@ -1,5 +1,5 @@
 /** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
-const CACHE_NAME = "qwen-ui-lab-v10";
+const CACHE_NAME = "qwen-ui-lab-v11";
 
 const HEALTH_API_PATH = "/api/health";
 

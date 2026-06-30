@@ -28,25 +28,68 @@ function appIconSvg({ size = 512, radius = 108, safeInset = 58 } = {}) {
   const px = (value) => Number((value * scale).toFixed(3));
   const r = px(radius);
   const inset = px(safeInset);
-  const frameX = px(126);
-  const frameY = px(132);
-  const frameW = px(260);
-  const frameH = px(232);
-  const lensCx = px(306);
-  const lensCy = px(300);
-  const lensR = px(58);
+  const id = `qui-${s}-${safeInset}-${radius}`;
+  const hexPoints = [
+    [256, 84],
+    [386, 158],
+    [386, 318],
+    [256, 428],
+    [126, 318],
+    [126, 158],
+  ]
+    .map(([x, y]) => `${px(x)},${px(y)}`)
+    .join(" ");
+  const innerHexPoints = [
+    [256, 134],
+    [342, 184],
+    [342, 300],
+    [256, 374],
+    [170, 300],
+    [170, 184],
+  ]
+    .map(([x, y]) => `${px(x)},${px(y)}`)
+    .join(" ");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${s} ${s}" fill="none">
-  <rect width="${s}" height="${s}" rx="${r}" fill="#0f172a"/>
-  <path d="M${inset} ${px(134)}h${px(396 - safeInset)}M${inset} ${px(194)}h${px(396 - safeInset)}M${inset} ${px(254)}h${px(396 - safeInset)}M${inset} ${px(314)}h${px(396 - safeInset)}M${px(136)} ${inset}v${px(396 - safeInset)}M${px(196)} ${inset}v${px(396 - safeInset)}M${px(256)} ${inset}v${px(396 - safeInset)}M${px(316)} ${inset}v${px(396 - safeInset)}M${px(376)} ${inset}v${px(396 - safeInset)}" stroke="#22d3ee" stroke-opacity=".12" stroke-width="${px(5)}"/>
-  <rect x="${frameX}" y="${frameY}" width="${frameW}" height="${frameH}" rx="${px(38)}" fill="#111827" stroke="#67e8f9" stroke-width="${px(18)}"/>
-  <path d="M${px(166)} ${px(204)}h${px(128)}M${px(166)} ${px(250)}h${px(78)}M${px(166)} ${px(296)}h${px(96)}" stroke="#e0f2fe" stroke-width="${px(18)}" stroke-linecap="round"/>
-  <rect x="${px(170)}" y="${px(334)}" width="${px(38)}" height="${px(68)}" rx="${px(12)}" fill="#34d399"/>
-  <rect x="${px(230)}" y="${px(304)}" width="${px(38)}" height="${px(98)}" rx="${px(12)}" fill="#67e8f9"/>
-  <rect x="${px(290)}" y="${px(274)}" width="${px(38)}" height="${px(128)}" rx="${px(12)}" fill="#a78bfa"/>
-  <circle cx="${lensCx}" cy="${lensCy}" r="${lensR}" fill="#0f172a" stroke="#f8fafc" stroke-width="${px(22)}"/>
-  <path d="M${px(346)} ${px(340)}l${px(70)} ${px(70)}" stroke="#f8fafc" stroke-width="${px(30)}" stroke-linecap="round"/>
-  <path d="M${px(276)} ${px(300)}l${px(28)} ${px(28)} ${px(54)}-${px(72)}" stroke="#34d399" stroke-width="${px(18)}" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="${id}-bg" x1="0" y1="0" x2="${s}" y2="${s}" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08061f"/>
+      <stop offset=".58" stop-color="#111827"/>
+      <stop offset="1" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="${id}-frame" x1="${px(132)}" y1="${px(96)}" x2="${px(388)}" y2="${px(420)}" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c4b5fd"/>
+      <stop offset=".42" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+    <linearGradient id="${id}-face" x1="${px(180)}" y1="${px(150)}" x2="${px(336)}" y2="${px(360)}" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171333"/>
+      <stop offset="1" stop-color="#050315"/>
+    </linearGradient>
+    <linearGradient id="${id}-letters" x1="${px(168)}" y1="${px(202)}" x2="${px(348)}" y2="${px(294)}" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5f3ff"/>
+      <stop offset=".42" stop-color="#c4b5fd"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="${px(18)}" stdDeviation="${px(20)}" flood-color="#020617" flood-opacity=".55"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="${px(16)}" flood-color="#8b5cf6" flood-opacity=".34"/>
+    </filter>
+  </defs>
+  <rect width="${s}" height="${s}" rx="${r}" fill="url(#${id}-bg)"/>
+  <path d="M${inset} ${px(150)}h${px(420 - safeInset)}M${inset} ${px(256)}h${px(420 - safeInset)}M${inset} ${px(362)}h${px(420 - safeInset)}M${px(150)} ${inset}v${px(420 - safeInset)}M${px(256)} ${inset}v${px(420 - safeInset)}M${px(362)} ${inset}v${px(420 - safeInset)}" stroke="#22d3ee" stroke-opacity=".12" stroke-width="${px(5)}"/>
+  <ellipse cx="${px(256)}" cy="${px(260)}" rx="${px(196)}" ry="${px(72)}" stroke="#22d3ee" stroke-opacity=".38" stroke-width="${px(9)}" transform="rotate(-18 ${px(256)} ${px(260)})"/>
+  <ellipse cx="${px(256)}" cy="${px(260)}" rx="${px(188)}" ry="${px(66)}" stroke="#c4b5fd" stroke-opacity=".55" stroke-width="${px(10)}" transform="rotate(24 ${px(256)} ${px(260)})"/>
+  <g filter="url(#${id}-shadow)">
+    <polygon points="${hexPoints}" fill="url(#${id}-frame)"/>
+    <polygon points="${innerHexPoints}" fill="url(#${id}-face)" stroke="#ede9fe" stroke-opacity=".34" stroke-width="${px(6)}"/>
+    <path d="M${px(156)} ${px(174)}L${px(256)} ${px(116)}L${px(356)} ${px(174)}" stroke="#ede9fe" stroke-opacity=".48" stroke-width="${px(10)}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M${px(148)} ${px(318)}L${px(256)} ${px(408)}L${px(364)} ${px(318)}" stroke="#4c1d95" stroke-opacity=".45" stroke-width="${px(12)}" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="${px(256)}" y="${px(285)}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="${px(112)}" font-weight="900" letter-spacing="${px(-5)}" fill="#4c1d95" opacity=".62">QUI</text>
+    <text x="${px(256)}" y="${px(274)}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="${px(112)}" font-weight="900" letter-spacing="${px(-5)}" fill="url(#${id}-letters)">QUI</text>
+  </g>
+  <circle cx="${px(380)}" cy="${px(168)}" r="${px(12)}" fill="#c4b5fd"/>
+  <circle cx="${px(132)}" cy="${px(342)}" r="${px(9)}" fill="#22d3ee" fill-opacity=".84"/>
 </svg>
 `;
 }
