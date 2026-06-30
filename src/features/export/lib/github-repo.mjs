@@ -221,7 +221,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     sourceHash: hashContent(content),
     componentName: inferGeneratedComponentName(content),
     designTokens: {},
-    screenIntent: { label: "Generated UI", confidence: 0.5 },
+    screenIntent: { label: "Screenshot starter", confidence: 0.5 },
     responsiveIntent: {
       mode: "responsive starter",
       breakpoints: ["mobile", "tablet", "desktop"],
@@ -357,7 +357,7 @@ function buildProductionScaffoldReadme({
   blueprint,
   dependencies = [],
 }) {
-  const screenIntent = blueprint?.screenIntent?.label ?? "Generated UI";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
@@ -367,7 +367,7 @@ function buildProductionScaffoldReadme({
 
 ${description}
 
-This starter package was generated from a screenshot analysis. It is meant to be reviewed, imported, and iterated in source control rather than pasted as a one-off snippet.
+This starter package turns the screenshot review into files you can import, compare, and iterate in source control.
 
 ## What changed from the screenshot
 
@@ -518,13 +518,13 @@ ${blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")}
 }
 
 function buildPackageDesignMarkdown({
-  description = "Generated React starter package",
+  description = "React starter package",
   files,
   componentName,
   blueprint,
   dependencies = [],
 }) {
-  const screenIntent = blueprint?.screenIntent?.label ?? "Generated UI";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
   const responsiveIntent = blueprint?.responsiveIntent;
   const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
     .sort(([first], [second]) => first.localeCompare(second))

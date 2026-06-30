@@ -1385,7 +1385,7 @@ function buildExportPackagePreview(
     {
       path: `src/components/generated/${stem}.recipe.json`,
       label: "Recipe",
-      description: "Detection recipe, primitive map, and deterministic regeneration hints.",
+      description: "Review recipe, primitive map, and deterministic regeneration hints.",
     },
     {
       path: `src/components/generated/${stem}.manifest.json`,

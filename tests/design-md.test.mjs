@@ -139,7 +139,7 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
 
   assert.equal(DESIGN_MD_FILENAME, "DESIGN.md");
   assert.match(markdown, /^# DESIGN\.md/);
-  assert.match(markdown, /Generated component file: generated-dashboard\.tsx/);
+  assert.match(markdown, /Component file: generated-dashboard\.tsx/);
   assert.match(markdown, /Exported components: GeneratedDashboard/);
   assert.match(markdown, /Average active confidence: 85% \(high\)/);
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);

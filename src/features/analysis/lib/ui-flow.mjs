@@ -310,7 +310,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Generated dashboard from ${fileName}">
+    <section aria-label="Dashboard starter based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -508,7 +508,7 @@ const generatedSections = buildGeneratedSections(correctedPatterns, correctedEle
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Reviewed screenshot starter from ${safeName}"
+      aria-label="Screenshot starter based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -519,7 +519,7 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Generated interface shell
+              Component starter
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Built from {correctedElements.length} reviewed detections with shadcn-style primitives,
@@ -560,7 +560,7 @@ function CorrectionRecipeSummary() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Correction recipe</CardTitle>
+        <CardTitle>Review recipe</CardTitle>
         <CardDescription>
           Manual edits are preserved as canonical detection metadata for deterministic export review.
         </CardDescription>

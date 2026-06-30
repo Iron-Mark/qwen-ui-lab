@@ -251,7 +251,7 @@ function renderDetectedElements(elements) {
 }
 
 /**
- * Build a deterministic DESIGN.md handoff from the current analysis artifact.
+ * Build deterministic DESIGN.md notes from the current analysis artifact.
  * The algorithm uses detected geometry, primitive snapping, and confidence
  * reasons so the document follows user edits and offline detector results.
  *
@@ -331,7 +331,7 @@ export function buildDesignMarkdown({
     `- Source dimensions: ${sourceDimensions(artifact)}`,
     `- Analysis mode: ${text(artifact?.modeLabel, "unknown")}`,
     `- Exported at: ${exportedAt}`,
-    `- Generated component file: ${componentFilename}`,
+    `- Component file: ${componentFilename}`,
     `- Exported components: ${componentNames}`,
     "",
     normalizeLine(artifact?.summary)
@@ -381,7 +381,7 @@ export function buildDesignMarkdown({
     "",
     "## Review Notes",
     "",
-    "- Generated code is a scaffold. Review imports, data wiring, and accessibility before production.",
+    "- Starter code needs review for imports, data wiring, and accessibility before production.",
     "- Detection boxes reflect the current browser session, including user edits and excluded elements.",
     "- Use the component inventory as a checklist for replacing scaffold primitives with app-specific components.",
     "",
