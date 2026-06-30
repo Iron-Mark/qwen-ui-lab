@@ -352,7 +352,7 @@ export function ComponentPreviewCard({
           }
           footer={
             sourcePath ? (
-              <p className="inline-flex min-w-0 items-center gap-2 font-mono text-[0.7rem] text-muted-foreground">
+              <p className="flex w-full min-w-0 items-center gap-2 font-mono text-[0.7rem] text-muted-foreground">
                 <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
                 <span className="shrink-0 font-sans text-[0.65rem] font-semibold uppercase tracking-wider">
                   Source
@@ -360,7 +360,7 @@ export function ComponentPreviewCard({
                 <span className="text-muted-foreground/50" aria-hidden="true">
                   /
                 </span>
-                <span className="min-w-0 truncate">src/{sourcePath}</span>
+                <span className="min-w-0 flex-1 truncate">src/{sourcePath}</span>
               </p>
             ) : null
           }
