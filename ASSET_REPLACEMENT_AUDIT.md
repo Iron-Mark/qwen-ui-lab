@@ -20,7 +20,7 @@ Important visual asset areas:
 - Static/public assets: `public`
 - App icons and PWA images: `public/icons`, `src/app/favicon.ico`
 - Reference screenshots: `public/references`
-- Demo/result graphics: `public/results`
+- Documentation graphics: `docs/media`
 - Visual regression baselines: `e2e/visual-regression.spec.ts-snapshots`
 
 Detected asset-handling patterns:
@@ -66,7 +66,7 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A012 | Ecommerce reference sample | SVG + PNG + WebP | `public/references/ecommerce-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, tests | Bundled shop catalog sample | 1200x720 | Used | High |
 | A013 | Dense dashboard stress sample | SVG + PNG + WebP | `public/references/stress-dashboard-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:72-74`, tests, raster script | Bundled dense dashboard sample | 1440x900 | Used | High |
 | A014 | Repeated list stress sample | SVG + PNG + WebP | `public/references/stress-list-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:83-85`, tests, raster script | Bundled repeated-list sample | 1200x720 | Used | High |
-| A015 | Before/after comparison graphic | SVG | `public/results/before-after-comparison.svg` | `docs/media/DEMO_SCRIPT.md:78`, `docs/specs/ARTIFACT_CHECKLIST.md:11` | Demo/documentation comparison graphic | 1600x900 | Unconfirmed | Medium |
+| A015 | Before/after comparison graphic | SVG | `docs/media/before-after-comparison.svg` | `docs/media/DEMO_SCRIPT.md:78`, `docs/specs/ARTIFACT_CHECKLIST.md:11` | Documentation comparison graphic | 1600x900 | Used in docs | Medium |
 | A016 | Next.js starter logo | SVG | Removed: `public/next.svg` | No exact runtime reference found | Starter/framework logo leftover | 394x80 viewBox | Removed | High |
 | A017 | Vercel starter logo | SVG | Removed: `public/vercel.svg` | No exact runtime reference found | Starter/deployment logo leftover | 1155x1000 viewBox | Removed | High |
 | A018 | Globe starter icon | SVG | Removed: `public/globe.svg` | No exact runtime reference found | Starter/global icon leftover | 16x16 viewBox | Removed | High |
@@ -82,8 +82,8 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A028 | Chart graphics | Generated SVG/canvas | `PerformanceLineChart.tsx:70-114`, `ChannelDonutChart.tsx:95`, catalog refs | Dashboard previews, design-system examples | Responsive, 180 px line chart, 160 px donut container | Generated/Dynamic | High |
 | A029 | Upload preview, generated mock canvas, detection boxes | Generated/dynamic image/canvas | `UploadDropzone.tsx:61-62`, `UploadFlow.tsx:621-622,1060-1141,1876-1877,1898` | User screenshot preview, visual diff, mock canvas | User/source dependent | Generated/Dynamic | High |
 | A030 | CSS/decorative gradient backgrounds | CSS/Generated | `public/offline.html:51`, `src/app/globals.css:291`, `DemoPageClient.tsx:30`, `HomeMarketingHero.tsx:103-104`, social preview backgrounds | Decorative surface backgrounds and overlays | Responsive CSS | Generated/Dynamic | Medium |
-| A031 | Playwright visual regression snapshots | PNG test baselines | `e2e/visual-regression.spec.ts-snapshots/{linux,win32}/*.png` | Visual tests only | 18 PNGs, varied sizes | Unconfirmed | Medium |
-| A032 | Test-only inline/base64 image fixtures | Inline/base64 test assets | `tests/offline-analyze.test.mjs:565`, several `tests/*` `data:image` strings | Test fixtures only | Varied/mock | Unconfirmed | Low |
+| A031 | Playwright visual regression snapshots | PNG test baselines | `e2e/visual-regression.spec.ts-snapshots/{linux,win32}/*.png` | Visual tests only | 18 PNGs, varied sizes | Test baseline | Medium |
+| A032 | Test-only inline/base64 image fixtures | Inline/base64 test assets | `tests/offline-analyze.test.mjs:565`, several `tests/*` `data:image` strings | Test fixtures only | Varied/mock | Test fixture | Low |
 
 Local file variants covered by grouped entries:
 
@@ -92,7 +92,7 @@ Local file variants covered by grouped entries:
 | App icons | `src/app/favicon.ico` 25931 bytes; `public/icons/icon.svg` 222 bytes; `icon-maskable.svg` 357 bytes; `apple-touch-icon.svg` 349 bytes; `icon-192.png` 1127 bytes; `icon-512.png` 3234 bytes; `icon-maskable-512.png` 11751 bytes; `apple-touch-icon.png` 1094 bytes |
 | Static social | Removed after confirming generated Open Graph and Twitter image routes provide social previews: `public/images/og-image.png` |
 | Reference samples | `dashboard-reference` SVG 10014 bytes, PNG 89887 bytes, WebP 33302 bytes; `auth-reference` SVG 2487, PNG 24253, WebP 7900; `mobile-reference` SVG 3371, PNG 25704, WebP 7668; `landing-reference` SVG 4573, PNG 72781, WebP 29986; `settings-reference` SVG 3090, PNG 32314, WebP 10928; `ecommerce-reference` SVG 6182, PNG 42386, WebP 15554; `stress-dashboard-reference` SVG 4261, PNG 38306, WebP 19798; `stress-list-reference` SVG 4006, PNG 27264, WebP 10896 |
-| Result/demo graphic | `public/results/before-after-comparison.svg` 10780 bytes |
+| Documentation graphic | `docs/media/before-after-comparison.svg` |
 | Starter leftovers | Removed after confirming no runtime references: `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, `public/window.svg` |
 | Visual snapshots | 18 PNG files under `e2e/visual-regression.spec.ts-snapshots/linux` and `.../win32`; dimensions include 1280x619, 960x685, 295x681, 298x29, 250x335, 239x399 |
 
@@ -338,20 +338,20 @@ Local file variants covered by grouped entries:
 
 ### Asset ID: A015
 - **Asset name:** Before/after comparison graphic.
-- **Asset path or URL:** `public/results/before-after-comparison.svg`.
+- **Asset path or URL:** `docs/media/before-after-comparison.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 1600x900 viewBox.
-- **File size:** 10780 bytes.
+- **File size:** 4599 bytes.
 - **Usage locations:** `docs/media/DEMO_SCRIPT.md:78`, `docs/specs/ARTIFACT_CHECKLIST.md:11`.
-- **Usage purpose:** Documentation/demo graphic comparing AI-generated scaffold and human-refactored final.
-- **Visual description:** Split before/after infographic with title, left red "before" panel, right green "after" panel, code blocks, issue/improvement lists, and metric cards. Some visible text is mojibake/encoding-corrupted.
-- **Replacement recommendation:** Recreate as a clean editorial infographic or actual screenshot montage. Fix text encoding manually.
+- **Usage purpose:** Documentation graphic comparing a first-pass scaffold and refined starter.
+- **Visual description:** Split before/after infographic with title, left red "before" panel, right green "after" panel, code blocks, issue/improvement lists, and metric cards.
+- **Replacement recommendation:** Completed: moved out of `public` into docs and rewritten with product-first ASCII wording.
 - **Suggested AI prompt:** Create a clean 1600x900 comparison infographic for a frontend workflow. Split layout: left "AI scaffold" panel with rough code block and red issue checklist, right "Refactored final" panel with polished code block and green improvement checklist. White cards on pale neutral background, crisp UI/editor styling, professional documentation look, editable text zones, no real brand logos.
 - **Negative prompt:** Garbled text, emoji artifacts, photorealistic people, dark unreadable code, cluttered layout, watermark.
 - **Suggested aspect ratio:** 16:9.
 - **Suggested output size:** 1600x900 SVG or PNG.
 - **Transparency needed:** No.
-- **Notes:** Treat as docs/media replacement, not primary runtime UI.
+- **Notes:** Treat as docs/media artwork, not primary runtime UI.
 
 ### Asset ID: A016
 - **Asset name:** Next.js starter logo.
@@ -625,7 +625,7 @@ Local file variants covered by grouped entries:
 - **Suggested aspect ratio:** Match test output.
 - **Suggested output size:** Generated by tests.
 - **Transparency needed:** No.
-- **Notes:** Listed for completeness because they are image files, but they are test artifacts.
+- **Notes:** Listed for completeness because they are image files, but they are intentional test baselines.
 
 ### Asset ID: A032
 - **Asset name:** Test-only inline/base64 image fixtures.
@@ -642,7 +642,7 @@ Local file variants covered by grouped entries:
 - **Suggested aspect ratio:** Match test case.
 - **Suggested output size:** Inline SVG.
 - **Transparency needed:** No.
-- **Notes:** Low-confidence app relevance; included because inline visual data was found.
+- **Notes:** Intentional deterministic test fixture; included because inline visual data was found.
 
 ## 5. Related Asset Groups
 
