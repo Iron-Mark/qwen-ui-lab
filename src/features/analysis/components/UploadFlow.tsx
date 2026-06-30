@@ -60,15 +60,19 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DialogActionFooter,
+  DialogActionGroup,
+} from "@/components/ui/dialog-action-footer";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
+import { ResponsiveTabsList } from "@/components/ui/responsive-tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { downloadTextFile } from "@/lib/clipboard.client";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
@@ -1706,7 +1710,7 @@ function ExportPackageReviewDialog({
 
         <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden bg-background">
           <div className="shrink-0 overflow-visible border-b border-border/60 bg-background/95 px-4 py-3.5 sm:px-5">
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/45 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent)] group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto">
+            <ResponsiveTabsList columns={3}>
               <TabsTrigger value="files" className="h-10 min-h-10 gap-2 px-3">
                 <FileCode2 className="size-4" aria-hidden />
                 {copy.exportPackageFilesTab}
@@ -1719,7 +1723,7 @@ function ExportPackageReviewDialog({
                 <FileText className="size-4" aria-hidden />
                 {copy.exportPackageCopyTab}
               </TabsTrigger>
-            </TabsList>
+            </ResponsiveTabsList>
           </div>
 
           <TabsContent value="files" className="min-h-0 flex-1 overflow-hidden">
@@ -1792,11 +1796,11 @@ function ExportPackageReviewDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter
+        <DialogActionFooter
           data-testid="export-package-actions"
-          className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4"
+          align="between"
         >
-          <div className="flex flex-wrap items-center gap-2">
+          <DialogActionGroup>
             <Button
               type="button"
               variant="outline"
@@ -1824,8 +1828,8 @@ function ExportPackageReviewDialog({
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
             />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+          </DialogActionGroup>
+          <DialogActionGroup className="sm:justify-end">
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
@@ -1847,8 +1851,8 @@ function ExportPackageReviewDialog({
               analyticsFeature="generated_scaffold"
               onExported={() => onExported(copy.toastHandoffBundleExported)}
             />
-          </div>
-        </DialogFooter>
+          </DialogActionGroup>
+        </DialogActionFooter>
       </DialogContent>
     </Dialog>
   );

@@ -36,18 +36,14 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DialogActionFooter } from "@/components/ui/dialog-action-footer";
+import { ResponsiveTabsList } from "@/components/ui/responsive-tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -236,9 +232,9 @@ export function DashboardSampleDialog({
 
         <Tabs defaultValue="preview" className="min-h-0 flex-1 gap-0">
           <div className="shrink-0 px-4 py-3 sm:px-5">
-            <TabsList
+            <ResponsiveTabsList
               aria-label="Dashboard sample sections"
-              className="grid h-auto w-full grid-cols-2 gap-1.5 overflow-visible rounded-2xl border border-border/70 bg-muted/35 p-1.5 shadow-inner group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto sm:grid-cols-4"
+              columns={4}
             >
               <TabsTrigger
                 value="preview"
@@ -268,7 +264,7 @@ export function DashboardSampleDialog({
                 <Download className="size-4" aria-hidden />
                 Export
               </TabsTrigger>
-            </TabsList>
+            </ResponsiveTabsList>
           </div>
 
           <TabsContent value="preview" className="min-h-0 flex-1">
@@ -406,7 +402,7 @@ export function DashboardSampleDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mx-0 mb-0 shrink-0 rounded-none border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-5">
+        <DialogActionFooter>
           <DialogClose
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
@@ -422,7 +418,7 @@ export function DashboardSampleDialog({
             <UploadCloud className="size-4" aria-hidden />
             Load into workflow
           </Link>
-        </DialogFooter>
+        </DialogActionFooter>
       </DialogContent>
     </Dialog>
   );
