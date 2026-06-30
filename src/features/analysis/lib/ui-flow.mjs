@@ -3,6 +3,11 @@ import {
   lookupKnownSample,
   lookupKnownSampleByInspection,
 } from "./offline-analyze.mjs";
+import {
+  correctedDetectionConfidence,
+  mergeManualCorrectionReasons,
+  summarizeCorrectedElementChanges,
+} from "./detection-corrections.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
@@ -235,61 +240,19 @@ function recomputeCorrectedElement(element) {
 }
 
 function correctedElementConfidence(element, included) {
-  const base = typeof element.confidence === "number" ? element.confidence : 0.5;
-  if (!element.userEdited) return clampConfidence(base);
-  if (!included) return clampConfidence(Math.min(base, 0.38));
-  return clampConfidence(Math.max(0.72, Math.min(0.97, base + 0.08)));
+  if (!element.userEdited) return clampConfidence(element.confidence ?? 0.5);
+  return correctedDetectionConfidence(element.confidence, included);
 }
 
 function mergeCorrectionReasons(element, included, confidence) {
-  const existing = Array.isArray(element.reasons) ? element.reasons : [];
-  const withoutCorrection = existing.filter(
-    (reason) =>
-      !["manual-correction", "manual-exclusion", "correction-confidence"].includes(
-        typeof reason === "string" ? reason : reason?.code,
-      ),
-  );
-  if (!element.userEdited) return withoutCorrection;
-  const changes = summarizeManualElementChanges(element);
-
-  const correctionReasons = [
-    {
-      code: "manual-correction",
-      label: "Manual correction",
-      evidence:
-        changes.length
-          ? `User-edited ${changes.join(", ")} is the source of truth for regeneration.`
-          : "User-edited kind, primitive, role, or geometry is the source of truth for regeneration.",
-      weight: 0.96,
-    },
-    {
-      code: "correction-confidence",
-      label: "Correction confidence",
-      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the manual edit.`,
-      weight: 0.82,
-    },
-  ];
-
-  if (!included) {
-    correctionReasons.splice(1, 0, {
-      code: "manual-exclusion",
-      label: "Excluded from scaffold",
-      evidence: "User excluded this detection, so it is omitted from generated sections.",
-      weight: 0.98,
-    });
-  }
-
-  return [...correctionReasons, ...withoutCorrection];
-}
-
-function summarizeManualElementChanges(element) {
-  const changes = [];
-  if (element.kind) changes.push("type");
-  if (element.primitive) changes.push("primitive");
-  if (element.componentRole) changes.push("role");
-  if (element.box) changes.push("geometry");
-  if (element.included === false) changes.push("inclusion");
-  return [...new Set(changes)].slice(0, 5);
+  if (!element.userEdited) return Array.isArray(element.reasons) ? element.reasons : [];
+  return mergeManualCorrectionReasons({
+    reasons: element.reasons,
+    included,
+    confidence,
+    changes: summarizeCorrectedElementChanges(element),
+    source: "regeneration",
+  });
 }
 
 function summarizeElementReasons(reasons) {

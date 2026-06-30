@@ -81,6 +81,11 @@ import {
   buildDesignMarkdown,
   DESIGN_MD_FILENAME,
 } from "../lib/design-md.mjs";
+import {
+  correctedDetectionConfidence,
+  describeManualDetectionChanges,
+  mergeManualCorrectionReasons,
+} from "../lib/detection-corrections.mjs";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import {
@@ -1261,15 +1266,9 @@ function buildEditedDetectionElement(
       element.reasons,
       nextIncluded !== false,
       nextConfidence,
-      describeDetectionPatch(element, { ...patch, primitive }),
+      describeManualDetectionChanges(element, { ...patch, primitive }),
     ),
   };
-}
-
-function correctedDetectionConfidence(confidence: number | undefined, included: boolean) {
-  const base = typeof confidence === "number" && Number.isFinite(confidence) ? confidence : 0.5;
-  if (!included) return Math.max(0, Math.min(0.99, Math.min(base, 0.38)));
-  return Math.max(0, Math.min(0.99, Math.max(0.72, Math.min(0.97, base + 0.08))));
 }
 
 function mergeEditedDetectionReasons(
@@ -1278,62 +1277,13 @@ function mergeEditedDetectionReasons(
   confidence: number,
   changes: string[] = [],
 ) {
-  const existing = (reasons ?? []).filter(
-    (reason) =>
-      !["manual-correction", "manual-exclusion", "correction-confidence"].includes(
-        reason.code,
-      ),
-  );
-  const correctionReasons: DetectionReason[] = [
-    {
-      code: "manual-correction",
-      label: "Manual correction",
-      evidence:
-        changes.length
-          ? `Edited ${changes.join(", ")}; this box is now the source of truth for regeneration and export.`
-          : "This edited box is now the source of truth for regeneration and export.",
-      weight: 0.96,
-    },
-    {
-      code: "correction-confidence",
-      label: "Correction confidence",
-      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after your edit.`,
-      weight: 0.82,
-    },
-  ];
-
-  if (!included) {
-    correctionReasons.splice(1, 0, {
-      code: "manual-exclusion",
-      label: "Excluded from scaffold",
-      evidence: "This box is omitted from generated sections until included again.",
-      weight: 0.98,
-    });
-  }
-
-  return [...correctionReasons, ...existing];
-}
-
-function describeDetectionPatch(
-  element: DetectionElement,
-  patch: Partial<DetectionElement>,
-) {
-  const changes: string[] = [];
-  if (patch.kind && patch.kind !== element.kind) changes.push("type");
-  if (patch.primitive && patch.primitive !== element.primitive) changes.push("primitive");
-  if (patch.included !== undefined && patch.included !== (element.included ?? true)) {
-    changes.push("inclusion");
-  }
-  if (
-    patch.box &&
-    (patch.box.x !== element.box.x ||
-      patch.box.y !== element.box.y ||
-      patch.box.width !== element.box.width ||
-      patch.box.height !== element.box.height)
-  ) {
-    changes.push("geometry");
-  }
-  return changes;
+  return mergeManualCorrectionReasons({
+    reasons,
+    included,
+    confidence,
+    changes,
+    source: "editor",
+  }) as DetectionReason[];
 }
 
 function primitiveForKind(kind: string) {
