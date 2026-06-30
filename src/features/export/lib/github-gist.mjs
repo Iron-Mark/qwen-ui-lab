@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub Gist helpers for generated UI starter exports.
+ * Server-side GitHub Gist helpers for generated UI package exports.
  */
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";

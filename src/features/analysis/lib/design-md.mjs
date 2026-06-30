@@ -381,7 +381,7 @@ export function buildDesignMarkdown({
     "",
     "## Review Notes",
     "",
-    "- Starter code needs review for imports, data wiring, and accessibility before production.",
+    "- Generated code needs review for imports, data wiring, and accessibility before production.",
     "- Detection boxes reflect the current browser session, including user edits and excluded elements.",
     "- Use the component inventory as a checklist for replacing scaffold primitives with app-specific components.",
     "",

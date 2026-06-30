@@ -55,7 +55,7 @@ import { ActivityList } from "@/features/home/components/ActivityList";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Dashboard starter based on dashboard-reference.svg">
+    <section aria-label="Dashboard export based on dashboard-reference.svg">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -109,7 +109,7 @@ import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
 export function GeneratedAuthScreen() {
   return (
-    <main aria-label="Auth starter based on auth-reference.svg" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth export based on auth-reference.svg" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -166,7 +166,7 @@ import { BottomNav } from "@/features/mobile/components/BottomNav";
 
 export function GeneratedMobileShell() {
   return (
-    <div aria-label="Mobile starter based on mobile-reference.svg" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile export based on mobile-reference.svg" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -276,7 +276,7 @@ import { SaveBar } from "@/features/settings/components/SaveBar";
 
 export function GeneratedSettings() {
   return (
-    <section aria-label="Settings starter based on settings-reference.svg" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings export based on settings-reference.svg" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -338,7 +338,7 @@ import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
 export function GeneratedCatalog() {
   return (
-    <div aria-label="Catalog starter based on ecommerce-reference.svg" className="min-h-dvh bg-background">
+    <div aria-label="Catalog export based on ecommerce-reference.svg" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -813,19 +813,19 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="${profile.label} starter"
+      aria-label="${profile.label} export"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Starter</Badge>
+            <Badge variant="secondary">Export</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component generated from the detected screenshot structure. Replace sample copy,
+              Generated component from the detected screenshot structure. Replace sample copy,
               connect data, then keep the recipe JSON beside this component during review.
             </p>
           </div>
@@ -1312,7 +1312,7 @@ import { Card } from "@/components/ui/card";
 
 export function GeneratedAuthScreen() {
   return (
-    <main aria-label="Auth starter based on ${safeName}">
+    <main aria-label="Auth export based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
         <h1 className="text-xl font-semibold">Sign in</h1>
         {/* Email + password fields */}
@@ -1324,7 +1324,7 @@ export function GeneratedAuthScreen() {
     case "mobile":
       return `export function GeneratedMobileShell() {
   return (
-    <div aria-label="Mobile starter based on ${safeName}" className="flex min-h-dvh flex-col">
+    <div aria-label="Mobile export based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
       <main className="flex-1 space-y-3 p-4">{/* stacked cards */}</main>
       <nav aria-label="Primary" className="border-t p-2">{/* bottom nav */}</nav>
@@ -1334,7 +1334,7 @@ export function GeneratedAuthScreen() {
     case "settings":
       return `export function GeneratedSettings() {
   return (
-    <section aria-label="Settings starter based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <section aria-label="Settings export based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
@@ -1343,7 +1343,7 @@ export function GeneratedAuthScreen() {
     case "modal":
       return `export function GeneratedDialogOverlay() {
   return (
-    <div aria-label="Dialog starter based on ${safeName}" className="fixed inset-0 grid place-items-center p-4">
+    <div aria-label="Dialog export based on ${safeName}" className="fixed inset-0 grid place-items-center p-4">
       <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border p-6 shadow-xl">
         <button type="button" aria-label="Close dialog">Close</button>
         <h1 className="mt-3 text-xl font-semibold">Dialog title</h1>
@@ -1359,7 +1359,7 @@ import { Card } from "@/components/ui/card";
 
 export function GeneratedEmptyState() {
   return (
-    <main aria-label="Empty state starter based on ${safeName}" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Empty state export based on ${safeName}" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
         <p className="text-sm text-muted-foreground">Connect real data, upload a source, or create the first item.</p>
@@ -1380,7 +1380,7 @@ export function GeneratedEmptyState() {
     case "ecommerce":
       return `export function GeneratedCatalog() {
   return (
-    <div aria-label="Catalog starter based on ${safeName}" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Catalog export based on ${safeName}" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -1392,7 +1392,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Dashboard starter based on ${safeName}">
+    <section aria-label="Dashboard export based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -1481,13 +1481,13 @@ const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap
 export default function ${componentName}() {
   return (
     <main
-      aria-label="${archetype.label} starter based on ${safeName}"
+      aria-label="${archetype.label} export based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">SVG starter</Badge>
+            <Badge variant="secondary">SVG export</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1623,7 +1623,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} starter.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} export.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1811,13 +1811,13 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="${archetype.label} starter from ${safeName}"
+      aria-label="${archetype.label} export from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Screenshot starter</Badge>
+            <Badge variant="outline">Screenshot export</Badge>
             <Badge variant="secondary">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
@@ -2032,17 +2032,17 @@ function buildUsableSections(
 export function DetectionGridReference() {
   return (
     <section
-      aria-label="${archetype.label} starter based on ${safeName}"
+      aria-label="${archetype.label} export based on ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Screenshot starter</p>
+        <p className="text-xs font-medium uppercase">Screenshot export</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
           {detectedElements.length} UI elements were detected before component generation.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the starter.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the export.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
