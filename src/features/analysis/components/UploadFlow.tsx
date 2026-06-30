@@ -453,16 +453,7 @@ function DetectedReferencePreview({
       ...detections,
       elements: elements.map((element) =>
         element.id === elementId
-          ? {
-              ...element,
-              ...patch,
-              userEdited: true,
-              primitive:
-                patch.primitive ??
-                (patch.kind
-                  ? primitiveForKind(patch.kind)
-                  : element.primitive ?? primitiveForKind(element.kind)),
-            }
+          ? buildEditedDetectionElement(element, patch)
           : element,
       ),
       quality: {
@@ -1245,6 +1236,74 @@ function detectionClassName(kind: string) {
   if (/button|input|control/i.test(kind)) return "border-emerald-500";
   if (/chart|media/i.test(kind)) return "border-amber-500";
   return "border-primary";
+}
+
+function buildEditedDetectionElement(
+  element: DetectionElement,
+  patch: Partial<DetectionElement>,
+): DetectionElement {
+  const nextIncluded = patch.included ?? element.included ?? true;
+  const primitive =
+    patch.primitive ??
+    (patch.kind ? primitiveForKind(patch.kind) : element.primitive ?? primitiveForKind(element.kind));
+  const nextConfidence = correctedDetectionConfidence(
+    patch.confidence ?? element.confidence,
+    nextIncluded !== false,
+  );
+
+  return {
+    ...element,
+    ...patch,
+    primitive,
+    confidence: nextConfidence,
+    userEdited: true,
+    reasons: mergeEditedDetectionReasons(element.reasons, nextIncluded !== false, nextConfidence),
+  };
+}
+
+function correctedDetectionConfidence(confidence: number | undefined, included: boolean) {
+  const base = typeof confidence === "number" && Number.isFinite(confidence) ? confidence : 0.5;
+  if (!included) return Math.max(0, Math.min(0.99, Math.min(base, 0.38)));
+  return Math.max(0, Math.min(0.99, Math.max(0.72, Math.min(0.97, base + 0.08))));
+}
+
+function mergeEditedDetectionReasons(
+  reasons: DetectionReason[] | undefined,
+  included: boolean,
+  confidence: number,
+) {
+  const existing = (reasons ?? []).filter(
+    (reason) =>
+      !["manual-correction", "manual-exclusion", "correction-confidence"].includes(
+        reason.code,
+      ),
+  );
+  const correctionReasons: DetectionReason[] = [
+    {
+      code: "manual-correction",
+      label: "Manual correction",
+      evidence:
+        "This edited box is now the source of truth for regeneration and export.",
+      weight: 0.96,
+    },
+    {
+      code: "correction-confidence",
+      label: "Correction confidence",
+      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after your edit.`,
+      weight: 0.82,
+    },
+  ];
+
+  if (!included) {
+    correctionReasons.splice(1, 0, {
+      code: "manual-exclusion",
+      label: "Excluded from scaffold",
+      evidence: "This box is omitted from generated sections until included again.",
+      weight: 0.98,
+    });
+  }
+
+  return [...correctionReasons, ...existing];
 }
 
 function primitiveForKind(kind: string) {

@@ -1859,6 +1859,9 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
   assert.match(regenerated.generatedCode, /button type="button"/);
+  assert.match(regenerated.generatedCode, /Manual correction/);
+  assert.match(regenerated.generatedCode, /Correction confidence/);
+  assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
     String(detections.elements.length - 1),
@@ -1867,6 +1870,22 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
     regenerated.previewStats.find((stat) => stat.label === "Edited").value,
     "2",
   );
+  assert.ok(
+    regenerated.detections.elements[0].confidence >= 0.72,
+    "edited included element confidence should be recomputed upward",
+  );
+  assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) => reason.code === "manual-correction",
+    ),
+  );
+  assert.ok(
+    regenerated.detections.elements[1].reasons.some(
+      (reason) => reason.code === "manual-exclusion",
+    ),
+  );
+  assert.equal(regenerated.detections.quality.correctedElementCount, 2);
+  assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
 });
 
 test("buildDemoArtifactForFile matches export fixture shape", () => {

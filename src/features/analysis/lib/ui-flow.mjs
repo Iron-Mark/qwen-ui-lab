@@ -150,7 +150,8 @@ function buildDetections(file) {
 
 export function regenerateArtifactFromDetections(artifact, detections) {
   if (!artifact || !detections) return artifact;
-  const activeElements = (detections.elements ?? []).filter(
+  const correctedDetections = recomputeCorrectedDetections(detections);
+  const activeElements = (correctedDetections.elements ?? []).filter(
     (element) => element.included !== false,
   );
   const existingSectionsStat = artifact.previewStats?.find(
@@ -159,7 +160,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
   const generatedCode = createGeneratedCodeFromDetections(
     artifact.file?.name ?? "uploaded-reference",
     {
-      ...detections,
+      ...correctedDetections,
       elements: activeElements,
     },
   );
@@ -170,7 +171,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     },
     {
       label: "Edited",
-      value: String((detections.elements ?? []).filter((element) => element.userEdited).length),
+      value: String((correctedDetections.elements ?? []).filter((element) => element.userEdited).length),
     },
     {
       label: "Primitive Types",
@@ -179,8 +180,8 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     {
       label: "Confidence",
       value:
-        typeof detections.quality?.confidence === "number"
-          ? `${Math.round(detections.quality.confidence * 100)}%`
+        typeof correctedDetections.quality?.confidence === "number"
+          ? `${Math.round(correctedDetections.quality.confidence * 100)}%`
           : "local",
     },
   ]);
@@ -190,14 +191,110 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     generatedCode,
     previewStats,
     detections: {
-      ...detections,
-      elements: detections.elements ?? [],
-      quality: {
-        ...(detections.quality ?? {}),
-        elementCount: activeElements.length,
-      },
+      ...correctedDetections,
+      elements: correctedDetections.elements ?? [],
     },
   };
+}
+
+function recomputeCorrectedDetections(detections) {
+  const elements = (detections.elements ?? []).map((element) =>
+    recomputeCorrectedElement(element),
+  );
+  const activeElements = elements.filter((element) => element.included !== false);
+  const averageConfidence = activeElements.length
+    ? activeElements.reduce((sum, element) => sum + (element.confidence ?? 0.5), 0) /
+      activeElements.length
+    : 0;
+  const editedCount = elements.filter((element) => element.userEdited).length;
+  const correctionPenalty = Math.min(0.1, editedCount * 0.015);
+
+  return {
+    ...detections,
+    elements,
+    quality: {
+      ...(detections.quality ?? {}),
+      confidence: clampConfidence(averageConfidence - correctionPenalty),
+      elementCount: activeElements.length,
+      correctedElementCount: editedCount,
+      strategy: editedCount
+        ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
+        : detections.quality?.strategy,
+    },
+  };
+}
+
+function recomputeCorrectedElement(element) {
+  const included = element.included !== false;
+  const confidence = correctedElementConfidence(element, included);
+  return {
+    ...element,
+    confidence,
+    reasons: mergeCorrectionReasons(element, included, confidence),
+  };
+}
+
+function correctedElementConfidence(element, included) {
+  const base = typeof element.confidence === "number" ? element.confidence : 0.5;
+  if (!element.userEdited) return clampConfidence(base);
+  if (!included) return clampConfidence(Math.min(base, 0.38));
+  return clampConfidence(Math.max(0.72, Math.min(0.97, base + 0.08)));
+}
+
+function mergeCorrectionReasons(element, included, confidence) {
+  const existing = Array.isArray(element.reasons) ? element.reasons : [];
+  const withoutCorrection = existing.filter(
+    (reason) =>
+      !["manual-correction", "manual-exclusion", "correction-confidence"].includes(
+        typeof reason === "string" ? reason : reason?.code,
+      ),
+  );
+  if (!element.userEdited) return withoutCorrection;
+
+  const correctionReasons = [
+    {
+      code: "manual-correction",
+      label: "Manual correction",
+      evidence:
+        "User-edited kind, primitive, role, or geometry is the source of truth for regeneration.",
+      weight: 0.96,
+    },
+    {
+      code: "correction-confidence",
+      label: "Correction confidence",
+      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the manual edit.`,
+      weight: 0.82,
+    },
+  ];
+
+  if (!included) {
+    correctionReasons.splice(1, 0, {
+      code: "manual-exclusion",
+      label: "Excluded from scaffold",
+      evidence: "User excluded this detection, so it is omitted from generated sections.",
+      weight: 0.98,
+    });
+  }
+
+  return [...correctionReasons, ...withoutCorrection];
+}
+
+function summarizeElementReasons(reasons) {
+  if (!Array.isArray(reasons)) return [];
+  return reasons
+    .map((reason) => {
+      if (typeof reason === "string") return reason;
+      const label = reason?.label || reason?.code;
+      const evidence = reason?.evidence ? `: ${reason.evidence}` : "";
+      return label ? `${label}${evidence}` : "";
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function clampConfidence(value) {
+  if (!Number.isFinite(value)) return 0.5;
+  return Math.max(0, Math.min(0.99, value));
 }
 
 function normalizePreviewStats(stats) {
@@ -238,6 +335,8 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     primitive: element.primitive ?? element.kind ?? "section",
     componentRole: element.componentRole ?? element.primitive ?? element.kind ?? "section",
     confidence: element.confidence ?? 0.5,
+    userEdited: element.userEdited === true,
+    reasons: summarizeElementReasons(element.reasons),
     box: element.box ?? { x: 0, y: 0, width: source.width, height: Math.max(48, source.height / 12) },
   }));
   const patterns = buildCorrectedPatternBlueprint(detections, elements);
@@ -271,6 +370,8 @@ type CorrectedElement = {
   primitive: string;
   componentRole: string;
   confidence: number;
+  userEdited?: boolean;
+  reasons?: string[];
   label?: string;
   box: ElementBox;
 };
