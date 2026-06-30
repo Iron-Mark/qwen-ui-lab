@@ -203,7 +203,7 @@ test("POST /api/share creates short link", async () => {
   assert.match(body.url, /^https:\/\/demo\.example\/share\//);
   assert.equal(body.storage, "memory");
   assert.equal(body.durable, false);
-  assert.match(body.warning, /temporary in this environment/i);
+  assert.match(body.warning, /may expire sooner than a permanent share link/i);
 });
 
 test("POST /api/share rejects empty payload", async () => {

@@ -250,7 +250,7 @@ export const en = {
     toastShareCopied: "Share link copied (read-only summary)",
     toastShortShareCopied: "Short share link copied (read-only summary)",
     toastShortShareMemory:
-      "Short link copied, but it uses temporary memory storage until KV is configured",
+      "Short link copied. It may expire sooner than a permanent share link.",
     toastShareHashCopied: "Share link copied (read-only summary)",
     toastShareFailed: "Could not copy share link",
     defaultScreenshotName: "screenshot",

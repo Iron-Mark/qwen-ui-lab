@@ -241,8 +241,8 @@ export const zh = {
     toastShareCopied: "分享链接已复制（只读摘要）",
     toastShortShareCopied: "短分享链接已复制（只读摘要）",
     toastShortShareMemory:
-      "短链接已复制；在配置 KV 之前它使用临时内存存储",
-    toastShareHashCopied: "分享链接已复制（哈希回退 — 只读摘要）",
+      "短链接已复制。它可能比永久分享链接更早失效。",
+    toastShareHashCopied: "分享链接已复制（只读摘要）",
     toastShareFailed: "无法复制分享链接",
     defaultScreenshotName: "screenshot",
     exportScaffold: "导出组件",
