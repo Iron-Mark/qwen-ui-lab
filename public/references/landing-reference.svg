@@ -12,11 +12,11 @@
   <!-- Hero -->
   <text x="720" y="200" font-family="Inter,sans-serif" font-size="48" font-weight="800" fill="#18181b" text-anchor="middle">Ship UI faster with AI</text>
   <text x="720" y="248" font-family="Inter,sans-serif" font-size="48" font-weight="800" fill="#18181b" text-anchor="middle">assisted scaffolding</text>
-  <text x="720" y="296" font-family="Inter,sans-serif" font-size="16" fill="#71717a" text-anchor="middle">Upload a screenshot, get a component plan, and export production-ready code.</text>
+  <text x="720" y="296" font-family="Inter,sans-serif" font-size="16" fill="#71717a" text-anchor="middle">Upload a screenshot, get a component plan, and export a starter component.</text>
   <rect x="560" y="328" width="140" height="44" rx="8" fill="#18181b"/>
   <text x="630" y="356" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">Start free</text>
   <rect x="720" y="328" width="140" height="44" rx="8" fill="#fff" stroke="#e4e4e7"/>
-  <text x="790" y="356" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18181b" text-anchor="middle">View demo</text>
+  <text x="790" y="356" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#18181b" text-anchor="middle">View sample</text>
   <!-- Feature grid -->
   <rect x="120" y="420" width="380" height="160" rx="10" fill="#fafafa" stroke="#e4e4e7"/>
   <rect x="144" y="444" width="32" height="32" rx="8" fill="#18181b"/>

@@ -1374,7 +1374,7 @@ function buildExportPackagePreview(
     },
     {
       path: "DESIGN.md",
-      label: "Design handoff",
+      label: "Design notes",
       description: "Layout decisions, responsive assumptions, primitive mapping, and review notes.",
     },
     {
