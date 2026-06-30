@@ -495,16 +495,16 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Generated component
+              Screenshot starter component
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Built from {correctedElements.length} reviewed detections with shadcn-style primitives,
+              Built from {correctedElements.length} reviewed UI regions with shadcn-style primitives,
               responsive sections, and semantic landmarks ready for real data wiring.
             </p>
           </div>
         </header>
 
-        <CorrectionRecipeSummary />
+        <ImplementationChecklist />
 
         {generatedSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -532,13 +532,13 @@ export default function ReviewedScreenshotStarter() {
   );
 }
 
-function CorrectionRecipeSummary() {
+function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Review recipe</CardTitle>
+        <CardTitle>Implementation checklist</CardTitle>
         <CardDescription>
-          Manual edits are preserved as canonical detection metadata for deterministic export review.
+          Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -651,7 +651,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
     return (
       <label className="grid gap-2 text-sm font-medium">
         {label}
-        <Input placeholder="Connect real value" />
+        <Input placeholder="Enter product data" />
       </label>
     );
   }

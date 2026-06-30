@@ -825,8 +825,8 @@ export default function ${profile.componentName}() {
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Generated component from the detected screenshot structure. Replace sample copy,
-              connect data, then keep the recipe JSON beside this component during review.
+              Starter component translated from the screenshot structure. Replace sample copy,
+              connect real data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1831,7 +1831,7 @@ export default function ${componentName}() {
           </div>
         </header>
 
-        <ScaffoldSummary />
+        <ImplementationChecklist />
 
         <div className="grid gap-4 lg:grid-cols-2">
           {sections.map((section) => (
@@ -1843,14 +1843,14 @@ export default function ${componentName}() {
   );
 }
 
-function ScaffoldSummary() {
+function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Review recipe</CardTitle>
+        <CardTitle>Implementation checklist</CardTitle>
         <CardDescription>
-          {detectedElements.length} elements, {layoutRegions.length} regions, and a {generatedLayoutGrid.columns}
-          -column layout blueprint are ready for review.
+          {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
+          {generatedLayoutGrid.columns}-column starter layout for implementation review.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -1918,7 +1918,7 @@ function UsableSection({ section }: { section: UsableSectionModel }) {
                 ) : (
                   <label key={item.id} className="grid gap-2 text-sm font-medium">
                     Field {index + 1}
-                    <Input placeholder={item.label} />
+                    <Input placeholder="Enter product data" />
                   </label>
                 ),
               )
@@ -1926,7 +1926,7 @@ function UsableSection({ section }: { section: UsableSectionModel }) {
               <>
                 <label className="grid gap-2 text-sm font-medium">
                   Primary field
-                  <Input placeholder="Connect real value" />
+                  <Input placeholder="Enter product data" />
                 </label>
                 <Button type="button" className="w-fit">Submit action</Button>
               </>
@@ -1970,7 +1970,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
     return (
       <label className="grid gap-2 text-sm font-medium">
         {label}
-        <Input placeholder="Connect real value" />
+        <Input placeholder="Enter product data" />
       </label>
     );
   }
