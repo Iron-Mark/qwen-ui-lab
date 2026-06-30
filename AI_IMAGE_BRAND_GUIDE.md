@@ -16,11 +16,27 @@ The visual system should feel like a practical frontend engineering tool: clear,
 
 **Personality:** Clear, reliable, intelligent, practical, modern, quietly premium.
 
-**Core visual metaphor:** Screenshot frame plus AI analysis lens plus code/export structure.
+**Core visual metaphor:** A glossy violet hexagonal product badge with bold `QUI` lettering, beveled shield geometry, orbiting screenshot-analysis arcs, and a dark technical core.
 
-**Avoid:** Generic AI magic, stock-photo people, cartoon mascots, cyberpunk noise, copied platform logos, and overly decorative abstract art.
+**Final logo reference:** Use the approved glossy purple `QUI` hexagonal badge source from the project asset handoff. Do not commit workstation-local file paths into prompts or documentation.
+
+**Avoid:** Generic AI magic, stock-photo people, cartoon mascots, cyberpunk noise, copied platform logos, and unrelated abstract art. Purple/violet is now the brand anchor, but supporting assets should still feel controlled, readable, and product-focused.
 
 ## Visual Identity
+
+### Final Logo Style
+
+The final logo style is a premium 3D badge:
+
+- Hexagonal shield silhouette.
+- Dark indigo/near-black inner face.
+- Glossy beveled violet frame pieces.
+- Bold extruded `QUI` lettering in lavender-to-electric-purple material.
+- Bright rim lighting and small neon edge highlights.
+- Curved orbital swooshes that suggest motion, analysis, and UI transformation.
+- Transparent-background master treatment, with enough shadow/depth to sit on light or dark surfaces.
+
+Use this as the anchor for all future generated assets. Other images do not need to literally repeat the logo, but they should echo its materials: dark technical base, violet/lavender glow, beveled precision, and controlled premium depth.
 
 ### Overall Style
 
@@ -29,17 +45,20 @@ The visual system should feel like a practical frontend engineering tool: clear,
 - Crisp vector-like detail.
 - Clean dashboard, form, card, chart, and component compositions.
 - Realistic app screenshots rather than fantasy interfaces.
-- Subtle depth through borders, shadows, and restrained gradients.
+- Subtle depth through borders, shadows, restrained gradients, and occasional beveled purple brand accents.
 
 ### Mood
 
 - Calm and capable.
 - Technical but approachable.
 - Focused and reviewable.
-- Modern without feeling flashy.
+- Premium and luminous without becoming noisy.
 
 ### Shape Language
 
+- Hexagonal badge and shield geometry for brand assets.
+- Beveled plates, faceted edges, and subtle extrusion for logo/social hero graphics.
+- Curved orbital arcs or analysis swooshes as secondary brand motion motifs.
 - Rounded rectangles with modest radii.
 - Clean UI cards and panels.
 - Thin dividers and soft borders.
@@ -54,14 +73,17 @@ Use this as the default palette for generated assets.
 |---|---|---|
 | Light background | `#FAFAFA` | Main neutral background |
 | White surface | `#FFFFFF` | Cards, panels, forms |
+| Deep indigo | `#08061F` | Final logo core and premium dark surfaces |
 | Dark background | `#0B1020` | Social cards, hero depth, icon background |
-| Charcoal | `#18181B` | Logo background, dark UI surfaces |
+| Charcoal | `#18181B` | Dark UI surfaces |
 | Primary text | `#18181B` | Light mode text |
 | Muted text | `#71717A` | Secondary labels |
 | Border | `#E4E4E7` | Subtle UI borders |
-| Primary accent | `#22D3EE` | Cyan, analysis frame, focus highlight |
-| Secondary accent | `#10B981` | Mint/green, success and progress |
-| Soft violet | `#A78BFA` | AI/analysis accent |
+| Primary brand violet | `#7C3AED` | Main brand accent and logo material |
+| Electric violet | `#8B5CF6` | Glow, bevel edges, active emphasis |
+| Lavender highlight | `#C4B5FD` | Logo shine and soft highlights |
+| Technical cyan | `#22D3EE` | Secondary analysis frame and scan-line accent |
+| Success mint | `#10B981` | Success and progress |
 | Positive | `#059669` | Success trends |
 | Negative | `#DC2626` | Error or negative trends |
 | Warning | `#F59E0B` | Warning state |
@@ -69,9 +91,10 @@ Use this as the default palette for generated assets.
 ### Palette Rules
 
 - Use neutral UI surfaces as the foundation.
-- Use cyan/mint as the primary brand accent.
-- Use violet only as a secondary AI/analysis accent.
-- Do not make the whole image purple, blue, beige, orange, or brown.
+- Use violet/lavender as the primary brand accent, especially in logos, social images, hero accents, and premium highlights.
+- Use cyan only as a secondary technical/analysis accent.
+- Keep UI screenshots mostly neutral with selective purple brand chrome; do not flood every screen with purple.
+- Avoid beige, brown, orange-heavy, or unrelated one-note palettes.
 - Keep status colors functional, not decorative.
 - Prefer high contrast over atmospheric blending.
 
@@ -99,12 +122,17 @@ The replacement logo family should be original and consistent.
 
 ### Preferred Logo Concept
 
-An abstract mark combining:
+Use the final logo reference as the master style: a glossy 3D hexagonal `QUI` badge. When describing or generating logo variants, ask for:
 
-- A screenshot or browser-frame outline.
-- A detection lens or analysis ring.
-- Three ascending code/data bars.
-- Optional subtle grid or scan-line motif.
+- Hexagonal shield badge silhouette.
+- Dark indigo inner face.
+- Purple and lavender beveled frame segments.
+- Bold extruded `QUI` lettering.
+- Neon violet rim highlights.
+- Curved orbital arcs/swooshes that imply screenshot analysis and transformation.
+- Transparent-background master export.
+
+For very small app icons, simplify the badge while preserving the hex silhouette, `QUI` letter mass, dark core, and violet/lavender bevel identity.
 
 ### Icon Style
 
@@ -112,7 +140,7 @@ An abstract mark combining:
 - Geometric.
 - Strong silhouette at small sizes.
 - High contrast.
-- No text inside small icons.
+- The full `QUI` letterform is acceptable for medium and large logo assets; use a simplified monogram or symbol for tiny favicon sizes.
 - No brand imitation.
 
 ### App Icon Requirements
@@ -167,11 +195,13 @@ Target size: 1200x630.
 Recommended layout:
 
 - Dark navy or charcoal background.
-- Subtle cyan grid or scan motif.
+- Deep indigo background with violet/lavender rim light.
+- Optional subtle cyan grid or scan motif as a secondary detail.
 - Abstract screenshot-analysis panel.
+- Small or medium final-logo badge placement.
 - Safe area for title and subtitle.
-- Cyan/mint primary accent.
-- Violet secondary accent.
+- Violet/lavender primary accent.
+- Cyan/mint secondary analysis accent.
 - Minimal UI/code elements.
 
 Social cards should not depend on exact generated text. Prefer editable text areas or manually added final text later.
@@ -210,7 +240,7 @@ Social cards should not depend on exact generated text. Prefer editable text are
 Use this at the top of image-generation requests:
 
 ```text
-Create an original visual asset for qwen-ui-lab, a developer tool that turns UI screenshots into reviewable React + Tailwind starter packages. The visual identity should feel like a premium but practical frontend engineering SaaS product: clean, precise, calm, technical, and polished. Use neutral UI surfaces, dark navy or charcoal contrast, cyan/mint primary accents, and subtle violet AI-analysis accents. Favor crisp vector-like UI detail, realistic product screenshots, clear grid alignment, modest rounded corners, readable hierarchy, and high contrast. The core visual metaphor is a screenshot frame plus AI analysis lens plus code/export structure.
+Use the final qwen-ui-lab logo direction as the brand anchor: a glossy 3D hexagonal shield badge with a dark indigo core, beveled violet/lavender frame, bold extruded QUI lettering, neon purple rim highlights, and curved orbital analysis swooshes. For supporting assets, preserve the same premium developer-tool feel: clean, precise, calm, technical, and polished. Use neutral UI surfaces, deep navy/charcoal contrast, violet/lavender primary brand accents, and cyan/mint only as secondary analysis or success accents. Favor crisp UI detail, realistic product screenshots, clear grid alignment, modest rounded corners, readable hierarchy, high contrast, and controlled luminous depth.
 ```
 
 ## Global Negative Prompt
@@ -218,7 +248,7 @@ Create an original visual asset for qwen-ui-lab, a developer tool that turns UI 
 Use this in every request:
 
 ```text
-Avoid copied brand logos, Qwen logo imitation, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, excessive purple gradients, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
+Avoid copied brand logos, Qwen logo imitation beyond the provided final QUI badge direction, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, flat one-note purple washes, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
 ```
 
 ## Reusable Prompt Template
@@ -245,7 +275,7 @@ Style:
 Premium developer-tool SaaS, clean UI-first design, crisp vector-like detail, realistic product interface, calm technical mood.
 
 Color:
-Neutral white/zinc UI foundation, dark navy or charcoal contrast, cyan/mint primary accents, subtle violet AI-analysis accents.
+Neutral white/zinc UI foundation, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final QUI badge, cyan/mint secondary analysis accents.
 
 Functional constraints:
 [SAFE AREA, TRANSPARENCY, MASKABLE ICON SAFE ZONE, TEXT AREA, NO TEXT, ETC.]
@@ -254,7 +284,7 @@ Output:
 [PNG / SVG / WEBP / ICO SOURCE]
 
 Negative prompt:
-Avoid copied brand logos, Qwen logo imitation, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, excessive purple gradients, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
+Avoid copied brand logos, Qwen logo imitation beyond the provided final QUI badge direction, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, flat one-note purple washes, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
 ```
 
 ## First Batch Recommendation

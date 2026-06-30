@@ -4,6 +4,8 @@ This audit covers visual assets in `qwen-ui-lab` and is intended to support a la
 
 IDs below track logical replaceable visuals. When a visual ships in several formats, the `Location` field lists every variant found so the asset is still traceable file by file.
 
+Brand refinement note: the final logo direction is now the approved glossy purple 3D `QUI` hexagonal badge from the project asset handoff. Use that style as the brand anchor for future generated assets: dark indigo core, beveled violet/lavender frame, bold extruded lettering, neon rim highlights, and orbital analysis swooshes. Do not commit workstation-local file paths into prompts or documentation.
+
 ## 1. Repository Summary
 
 This repository is a Next.js App Router application using React, TypeScript, Tailwind CSS v4, shadcn-style UI primitives, `lucide-react` icons, Recharts, Chart.js, and PWA metadata.
@@ -106,14 +108,14 @@ Local file variants covered by grouped entries:
 - **File size:** 13315 bytes.
 - **Usage locations:** `src/lib/seo.ts:179`; tested in `tests/pwa.test.mjs:96` and `e2e/metadata-assets.spec.ts:91`.
 - **Usage purpose:** Browser tab favicon and metadata shortcut icon.
-- **Visual description:** Unified dark navy app mark with a cyan screenshot frame, subtle grid, analysis magnifier/check, and export bars.
-- **Replacement recommendation:** Completed: generated from the shared app-icon source in `scripts/generate-app-icons.mjs`.
-- **Suggested AI prompt:** Create an original favicon for a developer tool that converts UI screenshots into React components. Use a simple geometric mark that combines a camera frame, UI grid, and three ascending code bars. Minimal high-contrast design, readable at 16 px, centered on a transparent or solid dark background, no text, no trademarked logos, clean vector-like edges.
-- **Negative prompt:** Existing brand logos, Next.js logo, Vercel triangle, GitHub mark, LinkedIn mark, tiny unreadable text, complex illustration, gradients that blur at small sizes, watermark.
+- **Visual description:** Current generated icon uses a dark technical app mark. New final target style should be a simplified favicon derived from the glossy purple 3D `QUI` hex badge: dark indigo core, violet/lavender bevels, and a strong small-size silhouette.
+- **Replacement recommendation:** Refine the next icon pass from the final purple `QUI` badge master, keeping the favicon simpler than the full 3D logo so it remains readable at 16 px.
+- **Suggested AI prompt:** Create a favicon derived from the final qwen-ui-lab logo: a simplified glossy purple hexagonal shield badge with a dark indigo core, lavender/violet beveled edges, and a compact `QUI` monogram or abstracted letter mass. High contrast, readable at 16 px, no extra text, no copied platform logos, premium developer-tool feel, clean silhouette.
+- **Negative prompt:** Existing platform logos, Next.js logo, Vercel triangle, GitHub mark, LinkedIn mark, tiny unreadable text, over-detailed 3D texture at favicon size, flat one-note purple blob, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** Generate master at 1024x1024, export ICO entries at 16, 32, 48, and 256 px.
 - **Transparency needed:** Optional. Transparent background is acceptable; ensure contrast in light and dark browser tabs.
-- **Notes:** ICO includes 16, 32, 48, and 256 px entries generated from the same source as the PWA icon family.
+- **Notes:** ICO should include 16, 32, 48, and 256 px entries generated from the same purple `QUI` badge source as the PWA icon family.
 
 ### Asset ID: A002
 - **Asset name:** App icon SVG mark.
@@ -123,14 +125,14 @@ Local file variants covered by grouped entries:
 - **File size:** 1102 bytes.
 - **Usage locations:** `src/features/shell/components/Header.tsx:141`, `src/features/shell/components/Footer.tsx:188`, `src/lib/seo.ts:11`, `public/manifest.json:42`, `public/sw.js:19`.
 - **Usage purpose:** Header/footer logo, metadata icon, cached public asset.
-- **Visual description:** Dark navy rounded square with subtle cyan grid, cyan UI frame, white analysis lens/check, and mint/cyan/violet export bars.
-- **Replacement recommendation:** Completed: replaced with the generated shared app mark.
-- **Suggested AI prompt:** Design an original SVG-style app icon for a product named `[PRODUCT_NAME]`, a screenshot-to-code lab. Use a dark rounded square, a crisp cyan or mint outline accent, and a central abstract symbol made from a UI frame plus three ascending analysis bars. Minimal, modern, high contrast, no text, no existing brand logos, vector-friendly shapes, strong silhouette at small sizes.
-- **Negative prompt:** Photorealism, mascot, copied Qwen/Next/Vercel/GitHub/LinkedIn logos, cluttered dashboard screenshot inside the icon, illegible letters, watermark.
+- **Visual description:** Current generated SVG uses a dark rounded-square screenshot-analysis mark. New final target style is the purple 3D `QUI` hexagonal badge with beveled frame segments, luminous violet/lavender highlights, dark indigo core, and orbital analysis swooshes.
+- **Replacement recommendation:** Replace/refine as the primary vector source for the final brand mark. Keep a simplified SVG-friendly variant that echoes the 3D badge without becoming too heavy in the header/footer.
+- **Suggested AI prompt:** Design an original SVG-friendly app icon based on the final qwen-ui-lab logo: glossy purple hexagonal shield badge, dark indigo inner face, beveled violet and lavender frame pieces, bold `QUI` monogram, neon violet rim highlights, and subtle orbital analysis arcs. Premium developer-tool brand, strong silhouette, no unrelated logos, transparent-background source plus square-safe export.
+- **Negative prompt:** Photorealism, mascot, copied Qwen/Next/Vercel/GitHub/LinkedIn logos, cluttered dashboard screenshot inside the icon, illegible letters, flat purple blob, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** SVG master plus 64x64 preview.
 - **Transparency needed:** No for the square background; yes only if exporting a standalone mark variant.
-- **Notes:** Regenerate with `npm run generate:app-icons` so header/footer SVG, PNG icons, maskable icon, Apple touch icon, and favicon stay aligned.
+- **Notes:** Regenerate the whole app-icon family from the final purple `QUI` badge source so header/footer SVG, PNG icons, maskable icon, Apple touch icon, and favicon stay aligned.
 
 ### Asset ID: A003
 - **Asset name:** App icon raster mark.
@@ -140,14 +142,14 @@ Local file variants covered by grouped entries:
 - **File size:** 7436 bytes and 19406 bytes.
 - **Usage locations:** `public/manifest.json:18,24,62,75,88`, `public/offline.html:163`, `public/sw.js:15-16`, `src/lib/seo.ts:13-14,471`.
 - **Usage purpose:** PWA install icons, app shortcuts, offline shell icon, structured-data organization logo.
-- **Visual description:** Raster exports of the unified screenshot-analysis mark: dark navy rounded square, cyan frame/grid, white magnifier/check, and mint/cyan/violet bars.
-- **Replacement recommendation:** Completed: generated from the same source as A002 and A001.
-- **Suggested AI prompt:** Create a coherent raster app icon for `[PRODUCT_NAME]`, a UI screenshot analysis and React export tool. Dark navy background, subtle cyan grid lines, rounded cyan UI-frame outline, central abstract symbol blending a magnifying lens and code brackets, modern product icon style, crisp edges, high contrast, no text, original design, scalable from 512 px to 192 px.
-- **Negative prompt:** Trademarked logos, literal letter Q if brand review is uncertain, photo texture, busy interface mockup, unreadable microtext, low contrast, watermark.
+- **Visual description:** Raster exports currently reflect the prior dark technical icon. New final target should be raster exports of the glossy purple `QUI` hex badge with dark indigo center, beveled violet/lavender frame, bold monogram, and luminous rim highlights.
+- **Replacement recommendation:** Generate 192 px and 512 px PNGs from the same final `QUI` badge master as A001/A002.
+- **Suggested AI prompt:** Create coherent raster app icons for qwen-ui-lab from the final logo style: glossy purple hexagonal shield badge, dark indigo core, beveled violet/lavender edge plates, bold extruded `QUI` lettering, neon purple rim light, and subtle orbital analysis swooshes. Premium developer SaaS icon, crisp edges, high contrast, scalable from 512 px to 192 px, no unrelated logos.
+- **Negative prompt:** Trademarked logos, unrelated Qwen logo variants, photo texture, busy interface mockup, unreadable microtext, low contrast, flat one-note purple blob, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 512x512 and 192x192 PNG.
 - **Transparency needed:** No.
-- **Notes:** Manifest paths and service-worker references stayed unchanged; generated dimensions remain 192x192 and 512x512.
+- **Notes:** Manifest paths and service-worker references can stay unchanged; generated dimensions should remain 192x192 and 512x512.
 
 ### Asset ID: A004
 - **Asset name:** Maskable app icon set.
@@ -157,14 +159,14 @@ Local file variants covered by grouped entries:
 - **File size:** 1034 bytes and 19906 bytes.
 - **Usage locations:** `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191`.
 - **Usage purpose:** PWA maskable icon and mask icon metadata.
-- **Visual description:** Maskable variant of the unified screenshot-analysis mark with larger safe-area padding for platform crops.
-- **Replacement recommendation:** Completed: generated from the shared app-icon source with a maskable safe inset.
-- **Suggested AI prompt:** Produce a maskable PWA app icon for `[PRODUCT_NAME]`. Use the same abstract screenshot-analysis mark as the main app icon, centered within a generous safe area, dark solid background, simple cyan/mint accent, no text, crisp vector-like geometry, works when cropped by circular, rounded-square, and squircle masks.
-- **Negative prompt:** Edge-critical details, thin lines near the border, text, brand imitation, photographic elements, watermark.
+- **Visual description:** Maskable target should be the final purple `QUI` hex badge adapted with generous safe-area padding so bevels and lettering survive platform crops.
+- **Replacement recommendation:** Generate from the final purple `QUI` badge master with a maskable safe inset and less edge-critical detail.
+- **Suggested AI prompt:** Produce a maskable PWA app icon based on the final qwen-ui-lab logo. Center a simplified glossy purple hexagonal `QUI` badge inside a generous safe area, with dark indigo core, violet/lavender bevels, readable monogram, and controlled neon rim light. Must work when cropped by circular, rounded-square, and squircle masks.
+- **Negative prompt:** Edge-critical details, thin lines near the border, unrelated text, brand imitation, photographic elements, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 512x512 PNG plus 512x512 SVG.
 - **Transparency needed:** No; use opaque background.
-- **Notes:** Manifest still exposes SVG and 512 px PNG maskable entries; dimensions verified by PWA tests.
+- **Notes:** Manifest should continue exposing SVG and 512 px PNG maskable entries; verify crop safety after replacement.
 
 ### Asset ID: A005
 - **Asset name:** Apple touch icon set.
@@ -174,14 +176,14 @@ Local file variants covered by grouped entries:
 - **File size:** 1294 bytes and 7204 bytes.
 - **Usage locations:** `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16`.
 - **Usage purpose:** iOS home-screen/touch icon and cached icon.
-- **Visual description:** Apple touch export of the unified screenshot-analysis mark, cropped to 180x180 with an opaque dark background.
-- **Replacement recommendation:** Completed: generated from the same icon master as A002-A004.
-- **Suggested AI prompt:** Create an Apple touch icon variant for `[PRODUCT_NAME]`, based on a unified app icon system: dark rounded square, central abstract UI-analysis symbol, subtle cyan and violet accents, clean geometry, high contrast, no text, no existing brand symbols, optimized for iOS home-screen display.
-- **Negative prompt:** Transparent edges that vanish on iOS, text, busy screenshots, trademarked marks, over-detailed gradients, watermark.
+- **Visual description:** Apple touch target should be the final purple `QUI` badge adapted to 180x180 with an opaque dark/indigo base and strong violet/lavender bevel readability.
+- **Replacement recommendation:** Generate from the same final purple `QUI` badge master as A001-A004.
+- **Suggested AI prompt:** Create an Apple touch icon variant for qwen-ui-lab based on the final glossy purple `QUI` hex badge. Use an opaque dark indigo background, beveled violet/lavender badge geometry, readable `QUI` monogram, premium neon rim highlights, and clean high-contrast edges optimized for iOS home-screen display.
+- **Negative prompt:** Transparent edges that vanish on iOS, unrelated text, busy screenshots, trademarked marks, over-detailed gradients, watermark.
 - **Suggested aspect ratio:** 1:1.
 - **Suggested output size:** 180x180 PNG and optional SVG source.
 - **Transparency needed:** No.
-- **Notes:** Offline page, manifest, metadata, and service-worker paths remain aligned.
+- **Notes:** Offline page, manifest, metadata, and service-worker paths should remain aligned after replacing the exported file.
 
 ### Asset ID: A006
 - **Asset name:** Static social preview file.
@@ -191,10 +193,10 @@ Local file variants covered by grouped entries:
 - **File size:** 19527 bytes.
 - **Usage locations:** No exact runtime source reference found.
 - **Usage purpose:** Likely older Open Graph/social preview fallback.
-- **Visual description:** Dark navy social card with cyan horizontal grid lines, a rounded cyan UI panel, the text `qwen-ui-lab` and `AI-assisted UI scaffolding from screenshots`, plus a purple Q-like mark.
+- **Visual description:** Removed static social preview used the older dark navy/cyan grid direction. If recreated, it should now use the final purple `QUI` badge as the anchor visual.
 - **Replacement recommendation:** Completed: removed after confirming generated social preview routes cover home, demo, and design-system metadata.
-- **Suggested AI prompt:** Create a 1200x630 social preview card for `[PRODUCT_NAME]`, a screenshot-to-React developer tool. Dark navy technical background with subtle cyan grid lines, large rounded UI-analysis panel, abstract magnifying-lens/code-frame symbol, concise editable headline area, premium SaaS/devtool mood, crisp composition, high contrast, no trademarked logos.
-- **Negative prompt:** Illegible generated text, copied Qwen branding, stock people, noisy cyberpunk background, watermark, distorted UI panels.
+- **Suggested AI prompt:** Create a 1200x630 social preview card for qwen-ui-lab, a screenshot-to-React developer tool. Use the final logo style as the anchor: glossy purple `QUI` hex badge, deep indigo background, violet/lavender rim lighting, subtle technical grid, screenshot-analysis panels, code/export motif, and a large safe editable headline area. Premium SaaS/devtool mood, crisp composition, high contrast.
+- **Negative prompt:** Illegible generated text, copied platform branding, unrelated Qwen logo variants, stock people, noisy cyberpunk background, flat purple wash, watermark, distorted UI panels.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
@@ -210,7 +212,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Home hero background, default sample reference, PWA wide screenshot, known offline-analysis sample.
 - **Visual description:** Light admin analytics dashboard with top nav, metric cards, revenue chart placeholder, activity feed, and quick actions. Mostly white/gray with black text, green/red trend accents.
 - **Replacement recommendation:** Replace as a UI screenshot/mockup, not a decorative illustration. Preserve 1440x900 and keep enough clean interface detail for the analyzer demo.
-- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS analytics dashboard screenshot for a screenshot-to-code demo. Clean white interface, top navigation, four metric cards, revenue line or bar chart, recent activity feed, quick action buttons, subtle green/red trend indicators, restrained neutral palette with one cyan/mint accent, realistic spacing, crisp readable UI structure, no real company logos, no copyrighted brand marks, no people.
+- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS analytics dashboard screenshot for a screenshot-to-code demo. Clean white interface, top navigation, four metric cards, revenue line or bar chart, recent activity feed, quick action buttons, subtle green/red trend indicators, restrained neutral palette with violet/lavender brand accents and optional cyan scan/detail accents, realistic spacing, crisp readable UI structure, no real company logos, no copyrighted brand marks, no people.
 - **Negative prompt:** Photorealistic office scene, cluttered dashboard, illegible text blobs, extreme gradients, dark-only design, trademarked logos, watermark, broken UI alignment.
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus SVG source if maintaining raster workflow.
@@ -261,7 +263,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Bundled marketing landing-page sample.
 - **Visual description:** Minimal SaaS landing page with top nav, hero headline, CTA buttons, feature cards, testimonial strip, and pricing cards. The SVG source contains an invalid control character in testimonial text but the raster previews render.
 - **Replacement recommendation:** Generate as a UI screenshot with clear marketing structure. Avoid baked-in copy that must be exact; use placeholders if future text will be manually recreated.
-- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS landing page screenshot for an AI UI tooling product. White background, compact top navigation, large hero headline area, two CTA buttons, three feature cards, subtle testimonial strip, three pricing cards, refined black/neutral typography with cyan/mint accent, polished product-led layout, no real brand logos, no people.
+- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS landing page screenshot for an AI UI tooling product. White background, compact top navigation, large hero headline area, two CTA buttons, three feature cards, subtle testimonial strip, three pricing cards, refined black/neutral typography with violet/lavender brand accents and small cyan technical highlights, polished product-led layout, no real brand logos, no people.
 - **Negative prompt:** Generic stock hero illustration, huge gradient blobs, illegible text, luxury ecommerce style, copied brand marks, broken pricing cards, watermark.
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus fixed SVG source if maintaining generator.
@@ -329,7 +331,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Stress test for repeated rows, list rhythm, item actions, and status pills.
 - **Visual description:** Desktop app list/table view with top bar, left sidebar, repeated rows with circular avatars/status indicators, text lines, pills, and action buttons.
 - **Replacement recommendation:** Preserve repeated structure and row rhythm for analyzer robustness.
-- **Suggested AI prompt:** Generate a desktop task or customer list UI screenshot. Top toolbar with search and action buttons, left navigation sidebar, main panel with 8 repeated list rows, each row containing avatar dot, primary/secondary text, status pill, metadata chip, and action button. Clean operational SaaS style, pale neutral background, blue/mint accent, consistent row spacing.
+- **Suggested AI prompt:** Generate a desktop task or customer list UI screenshot. Top toolbar with search and action buttons, left navigation sidebar, main panel with 8 repeated list rows, each row containing avatar dot, primary/secondary text, status pill, metadata chip, and action button. Clean operational SaaS style, pale neutral background, violet/lavender brand accents with mint status details, consistent row spacing.
 - **Negative prompt:** Spreadsheet-only view, random photos, dense unreadable text, inconsistent row heights, trademarked logos, watermark.
 - **Suggested aspect ratio:** 5:3.
 - **Suggested output size:** 1200x720 PNG/WebP plus SVG source if needed.
@@ -448,8 +450,8 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Social preview for home and demo.
 - **Visual description:** Code-generated text card with white typography on dark blue to blue to green linear gradient background.
 - **Replacement recommendation:** Either update the generator background/copy or replace with a static image. Maintain metadata size and alt text.
-- **Suggested AI prompt:** Create a 1200x630 social preview image for `[PRODUCT_NAME]`, a screenshot-to-React workflow. Strong developer-tool composition with dark navy background, cyan/mint gradient accents, abstract screenshot upload panel, detection boxes, code export motif, large safe text area for title and subtitle, polished SaaS launch-card mood, high contrast, no trademarked logos.
-- **Negative prompt:** Illegible baked-in text, random code gibberish, people, stock photos, copied brand logos, watermark.
+- **Suggested AI prompt:** Create a 1200x630 social preview image for qwen-ui-lab, a screenshot-to-React workflow. Strong developer-tool composition with deep indigo background, final glossy purple `QUI` hex badge, violet/lavender rim lighting, abstract screenshot upload panel, detection boxes, code export motif, subtle cyan scan-line accents, large safe text area for title and subtitle, polished SaaS launch-card mood, high contrast.
+- **Negative prompt:** Illegible baked-in text, random code gibberish, people, stock photos, copied platform logos, unrelated Qwen logo variants, flat purple wash, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
@@ -463,10 +465,10 @@ Local file variants covered by grouped entries:
 - **File size:** Generated at request/build time.
 - **Usage locations:** `design-system-route.ts:30-33,66-75`, metadata tests.
 - **Usage purpose:** Social preview for design system playground.
-- **Visual description:** Generated text card on dark charcoal to purple to sky-blue gradient.
+- **Visual description:** Generated text card on dark charcoal to purple to sky-blue gradient; future direction should lean into the final purple `QUI` badge with cyan only as a secondary technical accent.
 - **Replacement recommendation:** Make it visually related to A021 but more component-library oriented.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a design system playground. Dark charcoal background with violet and cyan accents, organized grid of reusable UI component tiles, code snippet panels, small UX-law cards, premium developer-tool feel, large safe headline zone, no real brand logos, no people.
-- **Negative prompt:** Marketing stock imagery, overwhelming purple wash, illegible text, messy component grid, trademarked logos, watermark.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a design system playground. Deep indigo/charcoal background with the final glossy purple `QUI` badge, violet/lavender beveled-light accents, subtle cyan grid details, organized grid of reusable UI component tiles, code snippet panels, small UX-law cards, premium developer-tool feel, large safe headline zone, no real brand logos, no people.
+- **Negative prompt:** Marketing stock imagery, flat one-note purple wash, illegible text, messy component grid, trademarked logos, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
@@ -480,9 +482,9 @@ Local file variants covered by grouped entries:
 - **File size:** Generated at request/build time.
 - **Usage locations:** `src/app/design-system/laws-of-ux/opengraph-image.tsx`, `design-system-route.ts:85-88,120-132`.
 - **Usage purpose:** Social preview for Laws of UX slice.
-- **Visual description:** Generated text card on dark gray to indigo to cyan gradient.
+- **Visual description:** Generated text card on dark gray to indigo to cyan gradient; future direction should use violet/lavender as the primary brand light and cyan as a subtle analysis accent.
 - **Replacement recommendation:** Use UX principle cards, comparison panels, and subtle measurement grids.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a UX principles catalog inside a developer design system. Dark indigo/cyan technical background, floating cards representing usability laws, small interface examples, comparison arrows, calm authoritative mood, large safe headline area, clean vector-like UI elements, no brand imitation.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a UX principles catalog inside a developer design system. Deep indigo technical background, final purple `QUI` badge or small badge fragment, violet/lavender rim lighting, floating cards representing usability laws, small interface examples, comparison arrows, subtle cyan measurement-grid accents, calm authoritative mood, large safe headline area, clean vector-like UI elements, no brand imitation.
 - **Negative prompt:** Psychology stock photos, textbook cover style, illegible small text, celebrity/artist imitation, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
@@ -497,10 +499,10 @@ Local file variants covered by grouped entries:
 - **File size:** Generated at request/build time.
 - **Usage locations:** `src/app/design-system/uilaws/opengraph-image.tsx`, `design-system-route.ts:106-109,134-141`.
 - **Usage purpose:** Social preview for UILaws route.
-- **Visual description:** Generated text card on dark charcoal to magenta to orange gradient.
+- **Visual description:** Generated text card on dark charcoal to magenta to orange gradient; future direction should reduce orange and align with the final violet/lavender `QUI` badge system.
 - **Replacement recommendation:** Keep warmer accent but align with the shared social-preview system.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a UI-laws component library. Dark neutral background with controlled coral/orange and cyan accents, clean component cards, usability checklist motifs, code export panel, bold safe headline space, modern product-design tooling mood, original and brand-safe.
-- **Negative prompt:** Neon chaos, illegible text, copied website logos, photos of people, watermark.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a UI-laws component library. Dark indigo/charcoal background with final glossy purple `QUI` badge, violet/lavender highlights, clean component cards, usability checklist motifs, code export panel, subtle cyan scan accents, bold safe headline space, modern product-design tooling mood, original and brand-safe.
+- **Negative prompt:** Neon chaos, orange-heavy palette, illegible text, copied website logos, photos of people, flat purple wash, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
@@ -569,7 +571,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Data visualization in sample dashboard and component catalog.
 - **Visual description:** Recharts line/area chart with grid, tooltip, gradient fill, and primary-color line; Chart.js donut chart with legend and multiple series colors.
 - **Replacement recommendation:** Do not replace with static AI art unless intentionally freezing charts. If restyling, update chart theme tokens and maintain accessible `role="img"` labels.
-- **Suggested AI prompt:** Create a static preview graphic of a clean SaaS analytics chart module: line chart with subtle area fill, clear grid, compact axis labels, plus companion donut chart with three to four segments and legend. Neutral white card, cyan/mint/blue series colors, crisp vector-like UI, no real data labels, no brand logos.
+- **Suggested AI prompt:** Create a static preview graphic of a clean SaaS analytics chart module: line chart with subtle area fill, clear grid, compact axis labels, plus companion donut chart with three to four segments and legend. Neutral white card, violet/lavender primary series, mint success details, optional cyan analysis line, crisp vector-like UI, no real data labels, no brand logos.
 - **Negative prompt:** Financial candlestick chart, unreadable tiny text, neon glow, 3D pie chart, cluttered legend, watermark.
 - **Suggested aspect ratio:** Use target component crop.
 - **Suggested output size:** 1200x720 for marketing/sample image or component-specific exported SVG.
@@ -603,7 +605,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Decorative atmosphere, contrast overlays, and social-preview backgrounds.
 - **Visual description:** Subtle radial top glows, linear overlays, and generated social gradients.
 - **Replacement recommendation:** Usually keep CSS gradients. If replacing with AI-generated bitmap backgrounds, export lightweight, non-distracting textures and verify text contrast.
-- **Suggested AI prompt:** Create a subtle abstract background texture for a developer SaaS interface. Dark-to-light neutral base with soft cyan/mint accent glow, faint UI grid or pixel structure, very low contrast, no distinct objects, no text, designed to sit behind real UI without distracting from content.
+- **Suggested AI prompt:** Create a subtle abstract background texture for a developer SaaS interface. Dark-to-light neutral base with soft violet/lavender brand glow, faint technical grid or pixel structure, tiny optional cyan scan-line accents, very low contrast, no distinct objects, no text, designed to sit behind real UI without distracting from content.
 - **Negative prompt:** Orb decorations, bokeh blobs, loud gradients, photos, complex illustrations, text, watermark.
 - **Suggested aspect ratio:** 16:9 or wide responsive crop.
 - **Suggested output size:** 2400x1350 or CSS-only token replacement.
@@ -650,20 +652,15 @@ Local file variants covered by grouped entries:
 
 Assets: A001-A005, A006, A021-A024.
 
-Generate these as a matching brand system. The current icon family is inconsistent:
+Generate these as a matching brand system using the final logo reference: a glossy purple 3D `QUI` hexagonal badge with a dark indigo core, beveled violet/lavender frame, neon rim highlights, and orbital analysis swooshes.
 
-- `favicon.ico` shows a black circle with a white triangle.
-- `icon.svg`, `icon-maskable.svg`, and `apple-touch-icon.svg` show a black square with three white bars.
-- `icon-192.png`, `icon-512.png`, and `apple-touch-icon.png` show a dark Q/cyan-grid card.
-- `icon-maskable-512.png` returns to the three-bar mark.
-
-Recommended action: create one master logo concept, then export favicon, app icon, maskable icon, Apple touch icon, social-card emblem, and social preview motif from that same system.
+Recommended action: use that single master badge concept for favicon, app icon, maskable icon, Apple touch icon, social-card emblem, and social preview motif. Use simplified variants for small icons and richer beveled variants for social/hero graphics.
 
 ### Favicons and App Icons
 
 Assets: A001-A005.
 
-Generate as a coherent set with strict PWA requirements. Keep maskable safe area, opaque Apple icon background, and high contrast at 16 px. Update `public/manifest.json`, `src/lib/seo.ts`, `public/sw.js`, and `public/offline.html` together.
+Generate as a coherent purple `QUI` badge set with strict PWA requirements. Keep maskable safe area, opaque Apple icon background, and high contrast at 16 px. Update `public/manifest.json`, `src/lib/seo.ts`, `public/sw.js`, and `public/offline.html` together.
 
 ### Hero and Sample Reference Images
 
@@ -673,6 +670,7 @@ Generate the eight reference samples as a matching UI screenshot suite. They sho
 
 - Neutral UI foundations.
 - Consistent corner radii, spacing, typography scale, and card treatment.
+- Violet/lavender brand accents echoing the final `QUI` badge, with cyan used only as a secondary analysis/scan accent.
 - Distinct screen archetypes: dashboard, auth, mobile, landing, settings, ecommerce, dense dashboard, repeated list.
 - Same product world but no real private data or real brand logos.
 
@@ -682,7 +680,7 @@ The dashboard reference A007 is especially important because it is also the home
 
 Assets: A006, A021-A024.
 
-Prefer one social-preview art direction with route-specific color accents. If keeping generated `ImageResponse` routes, update the generator and gradients rather than importing static images. If switching to static images, add metadata wiring intentionally.
+Prefer one social-preview art direction built around the final purple `QUI` badge, with route-specific UI motifs and restrained accent variation. If keeping generated `ImageResponse` routes, update the generator and gradients rather than importing static images. If switching to static images, add metadata wiring intentionally.
 
 ### Icons
 
@@ -706,16 +704,18 @@ Regenerate docs graphics manually or with AI as documentation artwork. Regenerat
 
 Overall style:
 
-- Premium developer-tool SaaS, clean and utilitarian rather than decorative.
+- Premium developer-tool SaaS, clean and utilitarian with a luminous purple 3D brand anchor.
 - UI-first visuals that look like real product screenshots and app assets.
-- Clear geometry, restrained accents, strong spacing, and high information clarity.
+- Clear geometry, restrained accents, strong spacing, high information clarity, and selective beveled depth for brand assets.
 
 Recommended color palette:
 
 - Base light: near-white `#FAFAFA`, white cards, zinc/neutral text.
-- Base dark: near-black navy/charcoal `#0B1020` or `#111827`.
-- Primary accent: cyan `#22D3EE` or mint `#10B981`.
-- Secondary accent: soft violet `#A78BFA`.
+- Base dark: deep indigo/near-black `#08061F`, navy/charcoal `#0B1020` or `#111827`.
+- Primary brand accent: violet `#7C3AED` and electric violet `#8B5CF6`.
+- Highlight accent: lavender `#C4B5FD`.
+- Secondary technical accent: cyan `#22D3EE`.
+- Success/progress accent: mint `#10B981`.
 - Status accents: green for positive, red for negative, amber for warning, but used sparingly.
 
 Composition rules:
@@ -724,12 +724,12 @@ Composition rules:
 - Keep UI elements aligned to a grid.
 - Leave clear safe areas for social-preview text and icon crops.
 - Avoid decorative background objects that compete with UI.
-- For PWA icons, keep the mark legible at small sizes.
+- For PWA icons, keep the `QUI` badge legible at small sizes by simplifying bevels and preserving the hex silhouette.
 
 Lighting and mood:
 
-- Clean product-lighting feel, not photorealistic studio lighting.
-- Subtle depth through shadows, borders, and soft gradients.
+- Clean product-lighting feel with controlled glossy bevels for logo/social assets, not photorealistic studio scenes.
+- Subtle depth through shadows, borders, soft gradients, and violet rim lighting.
 - Calm, reliable, engineer-friendly tone.
 
 Texture and detail:
@@ -741,7 +741,7 @@ Texture and detail:
 Icon style:
 
 - Single system, 24x24 SVG-ready, 2 px stroke, rounded caps.
-- Use filled app-logo mark only for brand assets; use outline icons in UI.
+- Use the filled/beveled `QUI` badge only for brand assets; use simpler outline icons in UI.
 
 Illustration style:
 
@@ -750,13 +750,13 @@ Illustration style:
 
 Background style:
 
-- Use subtle technical grids, UI frames, and gradients.
+- Use subtle technical grids, UI frames, violet/lavender rim light, and tiny cyan scan accents.
 - Avoid orbs, blobs, bokeh, and purely atmospheric backgrounds.
 
 Brand consistency guidance:
 
-- Pick one central metaphor: screenshot frame + analysis lens + code/export bars.
-- Use it across app icon, social cards, and any hero/marketing assets.
+- Use one central brand anchor: glossy purple `QUI` hex badge + dark technical core + orbital analysis swooshes.
+- Echo it across app icon, social cards, and any hero/marketing assets without forcing the logo into every UI screenshot.
 - Keep `qwen-ui-lab` text as editable UI or code text where possible; review third-party brand/legal implications before baking it into images.
 
 Assets to generate as matching sets:
@@ -777,10 +777,10 @@ Subject:
 [SUBJECT]
 
 Style:
-Premium developer-tool SaaS, clean UI-first composition, crisp vector-like detail, restrained modern product design, no stock imagery.
+Premium developer-tool SaaS, clean UI-first composition, crisp vector-like detail, restrained modern product design, no stock imagery. For brand assets, echo the final glossy purple 3D `QUI` hex badge with dark indigo core, violet/lavender bevels, neon rim highlights, and orbital analysis swooshes.
 
 Color palette:
-[COLOR_PALETTE], with neutral white/zinc surfaces, dark navy or charcoal contrast, cyan/mint primary accent, optional soft violet secondary accent.
+[COLOR_PALETTE], with neutral white/zinc surfaces, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final `QUI` badge, cyan as a secondary technical/analysis accent, and mint only for success/progress states.
 
 Composition:
 [COMPOSITION_RULES]. Preserve the original layout function and safe areas. The asset must remain compatible with [LAYOUT_CONSTRAINTS].
@@ -789,7 +789,7 @@ Background:
 [BACKGROUND_REQUIREMENT].
 
 Brand and legal constraints:
-Original design only. Do not imitate copyrighted characters, living artists, or trademarked brand marks. Avoid Qwen, Next.js, Vercel, GitHub, LinkedIn, Google, or other brand logos unless separately approved. Use generic placeholders where needed.
+Original design only. Do not imitate copyrighted characters, living artists, or trademarked brand marks. Use the provided final `QUI` badge direction as the qwen-ui-lab brand anchor, but avoid unrelated Qwen logo variants, Next.js, Vercel, GitHub, LinkedIn, Google, or other brand logos unless separately approved. Use generic placeholders where needed.
 
 Text handling:
 [TEXT_REQUIREMENT]. Prefer editable text areas or simple legible placeholder labels. Do not generate garbled microcopy.
@@ -804,7 +804,7 @@ Transparency: [TRANSPARENCY_REQUIREMENT]
 File type target: [PNG/SVG/WEBP/ICO]
 
 Negative prompt:
-Watermark, illegible text, copied logos, low contrast, distorted UI, broken alignment, random photos, people unless explicitly needed, excessive gradients, noisy texture, busy composition.
+Watermark, illegible text, copied logos, unrelated Qwen logo variants, low contrast, distorted UI, broken alignment, random photos, people unless explicitly needed, flat one-note purple wash, noisy texture, busy composition.
 ```
 
 ## 8. QA Checklist
@@ -844,7 +844,7 @@ Recommended verification after actual replacement:
 
 ## 9. Open Questions or Risks
 
-- The app-icon family is visually inconsistent today. Replace A001-A005 together, not one file at a time.
+- Replace/refine A001-A005 together from the final purple `QUI` badge master; do not update one icon size or format in isolation.
 - `public/manifest.json` and `src/lib/seo.ts` both define PWA icon/screenshot metadata. They can drift if only one is updated.
 - `public/sw.js` precaches icons, manifests, and social routes. Bump `CACHE_NAME` when replacing cached assets.
 - Reference samples are filename-coupled. `reference-samples.data.mjs`, `offline-analyze.mjs`, tests, docs, and raster generation all expect known stems like `dashboard-reference`.
