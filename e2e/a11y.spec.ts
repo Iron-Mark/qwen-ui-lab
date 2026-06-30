@@ -60,7 +60,7 @@ test("demo has no serious a11y violations", async ({ page }) => {
   await page.goto("/demo");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    /preloaded dashboard/i,
+    /dashboard screen analysis/i,
   );
   await expect(page.getByTestId("scaffold-export-panel")).toBeVisible({
     timeout: 20_000,
@@ -120,7 +120,7 @@ test("post-analyze state has no serious a11y violations", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
+  await expect(page.getByTestId("scaffold-export-panel")).toBeVisible({
     timeout: 15_000,
   });
 

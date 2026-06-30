@@ -161,7 +161,7 @@ export async function expectDemoSnackbarInViewport(
 export function demoModeSnackbar(page: Page): Locator {
   return page
     .getByRole("status")
-    .filter({ hasText: /local analysis available/i })
+    .filter({ hasText: /analyzer ready/i })
     .first();
 }
 
