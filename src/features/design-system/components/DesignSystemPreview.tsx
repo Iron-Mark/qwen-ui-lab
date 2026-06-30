@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
-import { CollectionPill, ComponentLevelPill } from "./DesignSystemMetaPills";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
 import { Search } from "lucide-react";
 import {
@@ -515,24 +514,44 @@ export function DesignSystemPreview() {
                   key={entry.id}
                   type="button"
                   className={cn(
-                    "w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
-                    "hover:border-foreground/40 hover:bg-muted/50",
+                    "relative w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
+                    "hover:border-foreground/30 hover:bg-muted/40",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     selectedEntry?.id === entry.id
-                      ? "border-foreground/50 bg-muted/60"
-                      : "border-transparent bg-background/40",
+                      ? "border-primary/45 bg-primary/[0.055] shadow-[inset_3px_0_0_color-mix(in_oklch,var(--primary)_88%,transparent)]"
+                      : "border-transparent bg-transparent",
                   )}
+                  aria-current={selectedEntry?.id === entry.id ? "true" : undefined}
                   onClick={() => setSelectedId(entry.id)}
                 >
-                  <p className="text-sm font-medium text-foreground">{entry.name}</p>
-                  <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        {entry.name}
+                      </p>
+                      <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
+                        {entry.description}
+                      </p>
+                    </div>
+                    {selectedEntry?.id === entry.id ? (
+                      <span className="mt-0.5 shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        Open
+                      </span>
+                    ) : null}
+                  </div>
                   <div
                     data-testid="component-list-metadata"
-                    className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
+                    className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <ComponentLevelPill label={tierMeta.label} Icon={TierIcon} compact />
-                    <CollectionPill label={domainLabel} compact />
+                    <span className="inline-flex items-center gap-1">
+                      <TierIcon className="size-3.5 text-primary" aria-hidden="true" />
+                      <span>{tierMeta.label}</span>
+                    </span>
+                    <span className="text-muted-foreground/50" aria-hidden="true">
+                      /
+                    </span>
+                    <span>{domainLabel}</span>
                   </div>
                 </button>
               );
