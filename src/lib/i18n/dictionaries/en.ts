@@ -267,7 +267,7 @@ export const en = {
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
-    exportPackageCopyTab: "Package copy",
+    exportPackageCopyTab: "Summary",
     exportPackageFilesIntro:
       "Package export downloads these files as a reviewable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
@@ -288,7 +288,7 @@ export const en = {
     exportChangeCorrections:
       "{edited} manual edits and {excluded} excluded boxes are captured in the recipe.",
     exportChangePackage:
-      "The export now includes {count} files: component, recipe, manifest, tokens, and detection notes.",
+      "The export now includes {count} files: design handoff, component, recipe, manifest, tokens, and detection notes.",
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",

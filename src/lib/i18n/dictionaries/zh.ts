@@ -258,7 +258,7 @@ export const zh = {
     exportPackageFilesLabel: "个文件",
     exportPackageFilesTab: "文件",
     exportPackageChangesTab: "变更",
-    exportPackageCopyTab: "包说明",
+    exportPackageCopyTab: "说明",
     exportPackageFilesIntro:
       "包导出会下载这些文件组成的 zip。直接组件下载仅导出 TSX 文件。",
     exportPackageChangesIntro: "相比上传截图，已完成：",
@@ -279,7 +279,7 @@ export const zh = {
     exportChangeCorrections:
       "{edited} 个手动修改和 {excluded} 个排除框已记入配方。",
     exportChangePackage:
-      "导出现在包含 {count} 个文件：组件、配方、manifest、tokens 和检测记录。",
+      "导出现在包含 {count} 个文件：设计交接、组件、配方、manifest、tokens 和检测记录。",
     exportReadmeIntent: "界面意图",
     exportReadmeComponent: "入口组件",
     exportReadmeResponsive: "响应式模式",

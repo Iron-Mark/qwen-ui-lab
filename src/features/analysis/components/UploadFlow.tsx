@@ -1314,6 +1314,11 @@ function buildExportPackagePreview(
       description: "Plain-language install notes and review checklist.",
     },
     {
+      path: "DESIGN.md",
+      label: "Design handoff",
+      description: "Layout decisions, responsive assumptions, primitive mapping, and review notes.",
+    },
+    {
       path: `src/components/generated/${stem}.tsx`,
       label: "Component",
       description: `${componentName} with React, Tailwind, and shadcn-style primitives.`,
@@ -1627,18 +1632,18 @@ function ExportPackageReviewDialog({
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0">
-          <div className="px-5 pb-2 pt-4">
-            <TabsList className="h-auto w-full flex-wrap overflow-visible rounded-xl border-border/70 bg-muted/45 p-1 shadow-inner group-data-horizontal/tabs:h-auto sm:w-fit">
-              <TabsTrigger value="files" className="h-9 min-h-9 gap-2 px-3">
+        <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden">
+          <div className="shrink-0 px-4 pb-2 pt-4 sm:px-5">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/45 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent)] group-data-horizontal/tabs:h-auto sm:inline-grid sm:w-auto">
+              <TabsTrigger value="files" className="h-10 min-h-10 gap-2 px-3">
                 <FileCode2 className="size-4" aria-hidden />
                 {copy.exportPackageFilesTab}
               </TabsTrigger>
-              <TabsTrigger value="changes" className="h-9 min-h-9 gap-2 px-3">
+              <TabsTrigger value="changes" className="h-10 min-h-10 gap-2 px-3">
                 <ListChecks className="size-4" aria-hidden />
                 {copy.exportPackageChangesTab}
               </TabsTrigger>
-              <TabsTrigger value="copy" className="h-9 min-h-9 gap-2 px-3">
+              <TabsTrigger value="copy" className="h-10 min-h-10 gap-2 px-3">
                 <FileText className="size-4" aria-hidden />
                 {copy.exportPackageCopyTab}
               </TabsTrigger>
@@ -1646,8 +1651,8 @@ function ExportPackageReviewDialog({
           </div>
 
           <TabsContent value="files" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(56dvh,28rem)]">
-              <div className="grid gap-3 p-5">
+            <ScrollArea className="h-[min(58dvh,30rem)]">
+              <div className="grid gap-3 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageFilesIntro}
                 </p>
@@ -1674,8 +1679,8 @@ function ExportPackageReviewDialog({
           </TabsContent>
 
           <TabsContent value="changes" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(56dvh,28rem)]">
-              <div className="grid gap-4 p-5">
+            <ScrollArea className="h-[min(58dvh,30rem)]">
+              <div className="grid gap-4 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageChangesIntro}
                 </p>
@@ -1699,8 +1704,8 @@ function ExportPackageReviewDialog({
           </TabsContent>
 
           <TabsContent value="copy" className="min-h-0 flex-1">
-            <ScrollArea className="h-[min(56dvh,28rem)]">
-              <div className="grid gap-4 p-5">
+            <ScrollArea className="h-[min(58dvh,30rem)]">
+              <div className="grid gap-4 px-4 pb-5 pt-3 sm:px-5">
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageCopyIntro}
                 </p>
@@ -1715,52 +1720,59 @@ function ExportPackageReviewDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mx-0 mb-0 items-stretch gap-2.5 px-5 pb-5 pt-4 sm:flex-wrap sm:items-center sm:gap-3 sm:px-5 sm:py-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 gap-2"
-            onClick={onExportDesignMarkdown}
-          >
-            <FileText className="size-4" aria-hidden />
-            {copy.exportDesignDoc}
-          </Button>
-          <RepoExportButton
-            text={artifact.generatedCode}
-            filename={exportFilename}
-            description="qwen-ui-lab starter package"
-            label={copy.exportHandoffBundle}
-            exportMode="zip"
-            testId="export-handoff-bundle"
-            analyticsSource="upload_flow"
-            analyticsFeature="generated_scaffold"
-            onExported={() => onExported(copy.toastHandoffBundleExported)}
-          />
-          <ExportButton
-            text={preview.codePreview}
-            variant="copy"
-            label={copy.exportCopyAll}
-            analyticsSource="upload_flow"
-            analyticsFeature="generated_scaffold"
-            onCopied={() => onExported(copy.toastScaffoldCopied)}
-          />
-          <ExportButton
-            text={preview.codePreview}
-            variant="export"
-            label={copy.exportDownload}
-            filename={exportFilename}
-            analyticsSource="upload_flow"
-            analyticsFeature="generated_scaffold"
-            onCopied={() => onExported(copy.toastScaffoldExported)}
-          />
-          <RepoExportButton
-            text={artifact.generatedCode}
-            filename={exportFilename}
-            description="qwen-ui-lab starter package"
-            label={copy.exportRepoInstructions}
-            analyticsSource="upload_flow"
-            analyticsFeature="generated_scaffold"
-          />
+        <DialogFooter className="mx-0 mb-0 grid gap-3 border-t border-border/70 bg-background/95 px-4 pb-4 pt-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5 sm:py-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-11 gap-2"
+              onClick={onExportDesignMarkdown}
+            >
+              <FileText className="size-4" aria-hidden />
+              {copy.exportDesignDoc}
+            </Button>
+            <ExportButton
+              text={preview.codePreview}
+              variant="copy"
+              label={copy.exportCopyAll}
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldCopied)}
+            />
+            <ExportButton
+              text={preview.codePreview}
+              variant="export"
+              label={copy.exportDownload}
+              filename={exportFilename}
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldExported)}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <RepoExportButton
+              text={artifact.generatedCode}
+              filename={exportFilename}
+              description="qwen-ui-lab starter package"
+              label={copy.exportRepoInstructions}
+              className="min-h-11"
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+            />
+            <RepoExportButton
+              text={artifact.generatedCode}
+              filename={exportFilename}
+              description="qwen-ui-lab starter package"
+              label={copy.exportHandoffBundle}
+              exportMode="zip"
+              testId="export-handoff-bundle"
+              className="min-h-11 border-primary/70 bg-primary text-primary-foreground hover:bg-primary/90"
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onExported={() => onExported(copy.toastHandoffBundleExported)}
+            />
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
