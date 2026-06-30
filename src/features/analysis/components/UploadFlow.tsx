@@ -1795,18 +1795,18 @@ function ExportPackageReviewDialog({
               text={preview.codePreview}
               variant="copy"
               label={copy.exportCopyAll}
+              showToast={false}
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
-              onCopied={() => onExported(copy.toastScaffoldCopied)}
             />
             <ExportButton
               text={preview.codePreview}
               variant="export"
               label={copy.exportDownload}
               filename={exportFilename}
+              showToast={false}
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
-              onCopied={() => onExported(copy.toastScaffoldExported)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">

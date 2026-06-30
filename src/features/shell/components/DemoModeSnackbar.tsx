@@ -17,6 +17,7 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
   const t = dict.demoBanner;
   const { mode } = useProviderMode();
   const shownRef = useRef(false);
+  const dialogObserverRef = useRef<MutationObserver | null>(null);
 
   useEffect(() => {
     if (shownRef.current) return;
@@ -57,6 +58,10 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
 
       markShownForSession();
 
+      if (document.querySelector('[data-slot="dialog-content"]')) {
+        return;
+      }
+
       toast.custom(
         (toastId) => (
           <div
@@ -64,7 +69,7 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
             aria-live="polite"
             className={cn(
               "relative w-[calc(100vw-2rem)] max-w-[460px] overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-sm",
-              "px-4 py-3.5 pb-4",
+              "px-5 py-4 pb-5",
             )}
           >
             <div className="flex items-start gap-3 pr-10">
@@ -119,9 +124,24 @@ export function DemoModeSnackbar({ durationMs = DEFAULT_DURATION_MS }: { duratio
         ),
         { id: TOAST_ID, duration: durationMs, position: "bottom-left" },
       );
+
+      dialogObserverRef.current?.disconnect();
+      const dialogObserver = new MutationObserver(() => {
+        if (document.querySelector('[data-slot="dialog-content"]')) {
+          toast.dismiss(TOAST_ID);
+          dialogObserver.disconnect();
+        }
+      });
+      dialogObserver.observe(document.body, { childList: true, subtree: true });
+      dialogObserverRef.current = dialogObserver;
     };
 
     requestAnimationFrame(showWhenToasterReady);
+
+    return () => {
+      dialogObserverRef.current?.disconnect();
+      dialogObserverRef.current = null;
+    };
   }, [durationMs, mode, t.body, t.dismissAria, t.dismissTitle, t.title]);
 
   return null;
