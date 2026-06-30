@@ -70,6 +70,65 @@ test("header account control opens and closes the modal on the current page", as
   );
 });
 
+test("account modal stays contained and scrollable on small screens", async ({
+  page,
+}) => {
+  await page.goto("/?account=1");
+  await page.getByTestId("account-display-name-input").fill("Mobile Tester");
+  await page.getByTestId("account-save-display-name").click();
+  await page
+    .getByTestId("account-modal")
+    .getByRole("button", { name: "Close" })
+    .click();
+
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.getByTestId("header-account-link").click();
+
+  const modal = page.getByTestId("account-modal");
+  await expect(modal).toBeVisible();
+  await expect(modal.getByRole("button", { name: "Close" })).toBeVisible();
+  await expect(page.getByTestId("account-display-name-input")).toBeVisible();
+  await expect(page.getByRole("button", { name: /clear profile/i })).toBeVisible();
+
+  await expect
+    .poll(() =>
+      modal.evaluate((node) => {
+        const modalBox = node.getBoundingClientRect();
+        const scrollRegion = node.querySelector<HTMLElement>(".themed-scrollbar");
+        const closeButton = node.querySelector<HTMLElement>(
+          '[data-slot="dialog-close"]',
+        );
+        const scrollStyle = scrollRegion ? getComputedStyle(scrollRegion) : null;
+        const closeBox = closeButton?.getBoundingClientRect();
+
+        return {
+          pageHasHorizontalOverflow:
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth + 1,
+          modalInsideViewport:
+            modalBox.left >= -1 &&
+            modalBox.right <= window.innerWidth + 1 &&
+            modalBox.top >= -1 &&
+            modalBox.bottom <= window.innerHeight + 1,
+          closeInsideModal:
+            !!closeBox &&
+            closeBox.right <= modalBox.right + 1 &&
+            closeBox.top >= modalBox.top - 1,
+          scrollRegionCanScroll:
+            !!scrollRegion &&
+            scrollStyle?.overflowY === "auto" &&
+            scrollRegion.scrollHeight > scrollRegion.clientHeight + 1,
+        };
+      }),
+    )
+    .toEqual({
+      pageHasHorizontalOverflow: false,
+      modalInsideViewport: true,
+      closeInsideModal: true,
+      scrollRegionCanScroll: true,
+    });
+});
+
 test("display name persists in sessionStorage and header", async ({ page }) => {
   await page.goto("/account");
   await expect(page.getByTestId("account-modal")).toBeVisible();
