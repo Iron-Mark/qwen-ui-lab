@@ -41,7 +41,7 @@ export default function GeneratedComponent() {
     "src/components/generated/generated.tsx",
   ]);
   assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /starter package/);
-  assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design handoff/);
+  assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")
       ?.content ?? "",
@@ -49,7 +49,7 @@ export default function GeneratedComponent() {
   );
 });
 
-test("buildScaffoldZipEntries includes design handoff for rich generated packages", () => {
+test("buildScaffoldZipEntries includes design notes for rich generated packages", () => {
   const entries = buildScaffoldZipEntries({
     filename: "dashboard.tsx",
     description: "Dashboard export",

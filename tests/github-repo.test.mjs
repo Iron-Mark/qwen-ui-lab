@@ -114,7 +114,7 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "docs/detected-dashboard.detection.md",
   ]);
   assert.match(entries[0].content, /starter package/i);
-  assert.match(entries[1].content, /Design handoff/);
+  assert.match(entries[1].content, /Design notes/);
   assert.match(entries[2].content, /GeneratedComponent/);
   assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);
   assert.match(entries[6].content, /Dashboard workspace/);

@@ -112,7 +112,7 @@ This export is a reviewable starter package. Import it into source control, conn
 ## Files
 
 - \`README.md\` - package overview and import checklist
-- \`DESIGN.md\` - design handoff, review notes, and responsive assumptions
+- \`DESIGN.md\` - design notes, review items, and responsive assumptions
 - \`${safeFilename}\` - generated React + Tailwind component
 
 ## Next steps
@@ -120,7 +120,7 @@ This export is a reviewable starter package. Import it into source control, conn
 1. Unzip this starter package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
-4. Review the design handoff and detection notes before treating the component as final.
+4. Review the design notes and detection notes before treating the component as final.
 
 Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
 `;
@@ -308,7 +308,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
       importPath: `@/components/generated/${stem}`,
       dependencies,
       nextSteps: [
-        "Replace placeholder copy with product content.",
+        "Replace sample copy with product content.",
         "Wire cards, tables, charts, and forms to real data.",
         "Review the detection summary before deleting unused regions.",
       ],
@@ -378,7 +378,7 @@ This starter package was generated from a screenshot analysis. It is meant to be
 
 ## Files
 
-- \`${files.designDoc}\` - design handoff, layout notes, and review checklist
+- \`${files.designDoc}\` - design notes, layout decisions, and review checklist
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - deterministic detection recipe, primitive map, and regeneration context
 - \`${files.manifest}\` - package identity, dependency hints, and quality gates for review
@@ -393,7 +393,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 1. Copy \`src/components/generated/\` into your app.
 2. Add the exported component to the route or page where it belongs.
-3. Replace placeholder content with real product data.
+3. Replace sample content with real product data.
 4. Keep the recipe JSON during review so edits can be compared against the screenshot-derived source.
 5. Run lint/build and verify mobile, tablet, and desktop widths before merging.
 
@@ -416,7 +416,7 @@ This export is a reviewable starter package. Import it into source control, conn
 ## Files
 
 - \`README.md\` - package overview and import checklist
-- \`${files.designDoc}\` - design handoff, review notes, and responsive assumptions
+- \`${files.designDoc}\` - design notes, review items, and responsive assumptions
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - regeneration recipe and package context
 - \`${files.manifest}\` - package manifest and quality gates
@@ -534,7 +534,7 @@ function buildPackageDesignMarkdown({
     ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
     : "- Review the generated component against the source screenshot.";
 
-  return `# Design handoff
+  return `# Design notes
 
 ${description}
 
@@ -597,7 +597,7 @@ function buildProductionManifest({ blueprint, dependencies, files, stem }) {
     },
     qualityGates: [
       "Review detection summary before merging.",
-      "Replace placeholder data and copy.",
+      "Replace sample data and copy.",
       "Run app lint/build after importing.",
       "Verify responsive layout at mobile, tablet, and desktop widths.",
     ],
