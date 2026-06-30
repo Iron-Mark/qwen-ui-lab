@@ -209,7 +209,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           href="/design-system?domain=uilaws"
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          UILaws manual checklist →
+          UI Laws manual checklist →
         </Link>
       </p>
     </section>

@@ -11,7 +11,7 @@ export const designSystemRouteSocialPreviewImageAlt =
 
 const designSystemDomainRouteSocialPreviewImageAlt: Record<DesignSystemDomain, string> = {
   "laws-of-ux": "qwen-ui-lab Laws of UX route preview",
-  uilaws: "qwen-ui-lab UILaws route preview",
+  uilaws: "qwen-ui-lab UI Laws route preview",
 };
 
 export function createDesignSystemRouteMetadata(): Metadata {
@@ -100,16 +100,16 @@ export function createLawsOfUxRouteMetadata(): Metadata {
 export function createUiLawsRouteMetadata(): Metadata {
   return {
     ...createRouteMetadata({
-      title: "UILaws Component Library",
+      title: "UI Laws Component Library",
       description:
-        "Open the UILaws domain view in qwen-ui-lab to discover high-clarity UI patterns with copy-ready snippets.",
+        "Open the UI Laws collection in qwen-ui-lab to discover high-clarity interface patterns with copy-ready snippets.",
       path: "/design-system/uilaws",
       ogImage: "/design-system/uilaws/opengraph-image",
-      ogImageAlt: "UILaws route preview in qwen-ui-lab",
+      ogImageAlt: "UI Laws route preview in qwen-ui-lab",
       twitterImage: "/design-system/uilaws/twitter-image",
-      twitterImageAlt: "UILaws snippets in qwen-ui-lab",
+      twitterImageAlt: "UI Laws snippets in qwen-ui-lab",
       shareSnippet:
-        "Browse UILaws-inspired components and export snippets your team can ship immediately.",
+        "Browse UI Laws-inspired components and export snippets your team can ship immediately.",
     }),
     robots: {
       index: false,

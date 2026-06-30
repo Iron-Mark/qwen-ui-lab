@@ -312,7 +312,7 @@ test("design system reference source follows the active domain tab", async ({
   await expect(refs).not.toContainText("uilaws.com");
   await expect(refs).not.toContainText("lawsofux.com");
 
-  await page.getByRole("tab", { name: "UILaws", exact: true }).click();
+  await page.getByRole("tab", { name: "UI Laws", exact: true }).click();
   await expect(refs).toContainText("uilaws.com");
   await expect(refs).not.toContainText("Product catalog");
   await expect(refs).not.toContainText("lawsofux.com");

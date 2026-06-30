@@ -114,7 +114,7 @@ export const en = {
     tierAll: "all",
     domainAll: "All",
     domainProduct: "Product",
-    domainUiLaws: "UILaws",
+    domainUiLaws: "UI Laws",
     domainLawsOfUx: "Laws of UX",
     keyboardHelp:
       "Press / to search, j and k to move through the list. Alt+1–4 changes collection; Alt+Shift+1–3 changes level.",
@@ -195,35 +195,35 @@ export const en = {
     samples: {
       dashboard: {
         label: "Dashboard",
-        hint: "Tests cards, charts, activity feeds, and quick actions.",
+        hint: "Cards, charts, activity feeds, and quick actions.",
       },
       auth: {
         label: "Sign in",
-        hint: "Tests auth cards, form fields, and recovery links.",
+        hint: "Auth cards, form fields, and recovery links.",
       },
       mobile: {
         label: "Mobile app",
-        hint: "Tests phone layouts, bottom navigation, and compact content.",
+        hint: "Phone layouts, bottom navigation, and compact content.",
       },
       landing: {
         label: "Landing page",
-        hint: "Tests hero sections, pricing, and marketing CTAs.",
+        hint: "Hero sections, pricing, and marketing CTAs.",
       },
       settings: {
         label: "Settings",
-        hint: "Tests profile forms, toggles, and preference panels.",
+        hint: "Profile forms, toggles, and preference panels.",
       },
       ecommerce: {
         label: "Shop catalog",
-        hint: "Tests filters, product grids, and catalog actions.",
+        hint: "Filters, product grids, and catalog actions.",
       },
       "stress-dashboard": {
         label: "Dense dashboard",
-        hint: "Tests dense metrics, tables, and admin tools.",
+        hint: "Dense metrics, tables, and admin tools.",
       },
       "stress-list": {
         label: "Repeated list",
-        hint: "Tests repeated rows, item actions, and list rhythm.",
+        hint: "Repeated rows, item actions, and list rhythm.",
       },
     },
     ctaRegenerate: "Regenerate preview",
@@ -320,7 +320,7 @@ export const en = {
     toastInstantDemo: "Analysis ready",
     toastQwenComplete: "Analysis ready",
     toastFallback: "Analysis ready",
-    toastAnalyzeFailed: "Analysis ready",
+    toastAnalyzeFailed: "Preview prepared",
     toastPreviewGenerated: "Preview generated",
     toastPreviewRegenerated: "Preview regenerated",
     toastRestoredQwen: "Restored analysis session",
