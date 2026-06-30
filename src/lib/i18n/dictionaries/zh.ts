@@ -99,12 +99,6 @@ export const zh = {
     toastMagicLinkConfirmed: "本地资料已保存为 {name}",
     errorInvalidEmail: "请输入有效邮箱地址",
   },
-  demoBanner: {
-    title: "分析器已就绪",
-    body: "上传截图或加载样例，检查生成的组件。",
-    dismissTitle: "关闭",
-    dismissAria: "关闭本地分析提示",
-  },
   designSystem: {
     eyebrow: "设计系统",
     title: "组件库",

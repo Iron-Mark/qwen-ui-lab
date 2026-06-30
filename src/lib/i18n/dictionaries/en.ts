@@ -101,12 +101,6 @@ export const en = {
     toastMagicLinkConfirmed: "Local profile saved as {name}",
     errorInvalidEmail: "Enter a valid email address",
   },
-  demoBanner: {
-    title: "Analyzer ready",
-    body: "Upload a screenshot or load a sample to inspect the generated component.",
-    dismissTitle: "Dismiss",
-    dismissAria: "Dismiss local analysis notice",
-  },
   designSystem: {
     eyebrow: "Design system",
     title: "Component library",
@@ -362,10 +356,6 @@ export type AccountDictionary = {
   [K in keyof (typeof en)["account"]]: string;
 };
 
-export type DemoBannerDictionary = {
-  [K in keyof (typeof en)["demoBanner"]]: string;
-};
-
 export type DesignSystemDictionary = {
   [K in keyof (typeof en)["designSystem"]]: string;
 };
@@ -376,7 +366,6 @@ export type Dictionary = {
   notFound: NotFoundDictionary;
   share: ShareDictionary;
   account: AccountDictionary;
-  demoBanner: DemoBannerDictionary;
   designSystem: DesignSystemDictionary;
   uploadFlow: UploadFlowDictionary;
 };

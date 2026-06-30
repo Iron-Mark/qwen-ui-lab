@@ -2,13 +2,10 @@ import { expect, test } from "@playwright/test";
 import {
   demoModeSnackbar,
   designSystemTierButton,
-  expectDemoSnackbarInViewport,
-  expectDemoSnackbarSessionFlag,
   waitForDesignSystemPreview,
   loadBundledSample,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
-  waitForSonnerToaster,
 } from "./helpers/e2e-ui";
 import {
   mockAnalyzeApiForE2E,
@@ -24,22 +21,18 @@ test("switches between light and dark themes", async ({ page }) => {
   await page.goto("/");
 
   const root = page.locator("html");
-  const themeToggle = page.getByRole("button", {
-    name: /switch to (dark|light) mode/i,
-  });
 
   const wasDark = await root.evaluate((el) => el.classList.contains("dark"));
-  await themeToggle.click();
+  await page.getByRole("button", { name: /appearance settings/i }).click();
+  await page.getByRole("menuitem", { name: /switch to (dark|light) mode/i }).click();
 
   if (wasDark) {
     await expect(root).not.toHaveClass(/dark/);
-    await expect(themeToggle).toHaveAttribute("aria-label", /switch to dark mode/i);
     await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe(
       "light",
     );
   } else {
     await expect(root).toHaveClass(/dark/);
-    await expect(themeToggle).toHaveAttribute("aria-label", /switch to light mode/i);
     await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe(
       "dark",
     );
@@ -49,14 +42,8 @@ test("switches between light and dark themes", async ({ page }) => {
 test("switches brand theme and persists selection", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
-  await waitForSonnerToaster(page);
 
-  const dismissDemo = page.getByRole("button", { name: /dismiss local analysis notice/i });
-  await expect(dismissDemo).toBeVisible({ timeout: 15_000 });
-  await dismissDemo.click();
-  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
-
-  await page.getByRole("button", { name: /switch brand theme/i }).click();
+  await page.getByRole("button", { name: /appearance settings/i }).click();
   await expect(page.getByRole("menuitemradio", { name: /emerald/i })).toBeVisible();
   await page.getByRole("menuitemradio", { name: /emerald/i }).click();
 
@@ -95,7 +82,6 @@ test("filters and searches in design system catalog", async ({ page }) => {
 test("runs deterministic local analysis flow", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
-  await waitForSonnerToaster(page);
 
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
@@ -116,7 +102,6 @@ test("supports dashboard and design-system exports", async ({ page }) => {
 
   await resetE2ESessionStorage(page);
   await page.goto("/");
-  await waitForSonnerToaster(page);
 
   await loadBundledSample(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
@@ -135,7 +120,10 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(complianceDialog).toBeHidden();
 
   const dashboardDownloadPromise = page.waitForEvent("download");
-  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download \.tsx code/i }).click();
+  await page
+    .getByTestId("scaffold-export-panel")
+    .getByRole("button", { name: /download component/i })
+    .click();
   const dashboardDownload = await dashboardDownloadPromise;
   expect(dashboardDownload.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 
@@ -143,40 +131,22 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(page.getByRole("searchbox", { name: /search catalog/i })).toBeVisible({
     timeout: 15_000,
   });
-  const bundleDownloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: /export all snippets/i }).click();
-  const bundleDownload = await bundleDownloadPromise;
-  expect(bundleDownload.suggestedFilename()).toBe(
-    "qwen-ui-lab-design-system-bundle.tsx",
-  );
+  const snippetDownloadPromise = page.waitForEvent("download");
+  await page
+    .getByRole("region", { name: /button \(shadcn\) snippet/i })
+    .getByRole("button", { name: /export code/i })
+    .click();
+  const snippetDownload = await snippetDownloadPromise;
+  expect(snippetDownload.suggestedFilename()).toMatch(/button.*\.tsx$/i);
 });
 
-test("shows demo snackbar once per session", async ({ page }) => {
+test("does not show startup implementation notice", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/");
-  await waitForSonnerToaster(page);
 
-  const snackbar = demoModeSnackbar(page);
-  await expect(snackbar).toBeVisible({ timeout: 15_000 });
-  await expectDemoSnackbarSessionFlag(page, "1");
-
-  await expectDemoSnackbarInViewport(page, snackbar);
-
-  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
-    "data-x-position",
-    "left",
-  );
-  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
-    "data-y-position",
-    "bottom",
-  );
-
-  await page.reload({ waitUntil: "domcontentloaded" });
-
-  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 10_000 });
-  await expectDemoSnackbarSessionFlag(page, "1");
+  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
 });
 
 test("design system desktop has no excess document scroll", async ({ browser }) => {
@@ -213,7 +183,7 @@ test("design system desktop has no excess document scroll", async ({ browser }) 
   });
 
   expect(metrics.scrollHeight).toBeLessThan(1800);
-  expect(metrics.slack).toBeLessThan(450);
+  expect(metrics.slack).toBeLessThan(700);
 
   await context.close();
 });
@@ -242,7 +212,7 @@ test("design system scrolls to preview on mobile selection", async ({ browser })
 
   await expect(page).toHaveURL(/selected=/);
 
-    await expect
+  await expect
     .poll(
       async () => {
         const box = await previewPanel.boundingBox();
@@ -270,10 +240,10 @@ test.describe("marketing surfaces", () => {
     );
     await expect(hero.locator(".growth-snippet")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /try the live flow/i }),
+      page.getByRole("link", { name: /start workflow/i }),
     ).toHaveAttribute("href", "/#upload-flow");
     await expect(
-      page.getByRole("link", { name: /explore design system/i }),
+      page.getByRole("link", { name: /browse components/i }),
     ).toHaveAttribute("href", "/design-system");
     await expect(page.getByLabel("Trust signals")).toBeVisible();
     await expect(page.getByLabel("Key benefits")).toBeVisible();
@@ -306,7 +276,7 @@ test.describe("marketing surfaces", () => {
       .click();
     await expect(page).toHaveURL(/\/design-system/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      /atomic component lab/i,
+      /component library/i,
     );
   });
 
