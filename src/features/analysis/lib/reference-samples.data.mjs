@@ -1,4 +1,4 @@
-/** Bundled reference screenshots for sample references and E2E (client-safe). */
+/** Sample screenshots for the compatibility sample route and E2E (client-safe). */
 export const BUNDLED_REFERENCE_SAMPLES = [
   {
     id: "dashboard",
@@ -156,7 +156,7 @@ export function getReferenceSampleById(id) {
 }
 
 /**
- * Suggested export filename for a bundled reference sample id.
+ * Suggested export filename for a sample screenshot id.
  * @param {string} sampleId
  */
 export function referenceSampleExportFilename(sampleId) {

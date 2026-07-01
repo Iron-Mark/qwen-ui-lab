@@ -29,7 +29,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "dashboard-reference.svg is the sample reference (SVG, landscape admin dashboard).",
+        body: "dashboard-reference.svg is the sample screenshot (SVG, landscape admin dashboard).",
       },
       {
         title: "Layout Read",
@@ -82,7 +82,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "auth-reference.svg is the sample reference (SVG, centered authentication card on a neutral canvas).",
+        body: "auth-reference.svg is the sample screenshot (SVG, centered authentication card on a neutral canvas).",
       },
       {
         title: "Layout Read",
@@ -140,7 +140,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "mobile-reference.svg is the sample reference (SVG, portrait phone frame ~390×844).",
+        body: "mobile-reference.svg is the sample screenshot (SVG, portrait phone frame ~390×844).",
       },
       {
         title: "Layout Read",
@@ -195,7 +195,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "landing-reference.svg is the sample reference (SVG, wide marketing landing ~1440×900).",
+        body: "landing-reference.svg is the sample screenshot (SVG, wide marketing landing ~1440×900).",
       },
       {
         title: "Layout Read",
@@ -250,7 +250,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "settings-reference.svg is the sample reference (SVG, desktop settings layout with left rail).",
+        body: "settings-reference.svg is the sample screenshot (SVG, desktop settings layout with left rail).",
       },
       {
         title: "Layout Read",
@@ -311,7 +311,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "ecommerce-reference.svg is the sample reference (SVG, desktop catalog with left filter rail).",
+        body: "ecommerce-reference.svg is the sample screenshot (SVG, desktop catalog with left filter rail).",
       },
       {
         title: "Layout Read",

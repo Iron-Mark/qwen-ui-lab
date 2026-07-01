@@ -28,7 +28,7 @@ Recording and slide assets for qwen-ui-lab meetups. Pair with **[DEMO.md](../DEM
 
 - [ ] Prefer **`/demo`** for the hero beat — zero-click export panel.
 - [ ] Move the cursor deliberately; pause voiceover during navigation.
-- [ ] Show export panel: **Copy all code**, **Download .tsx code**, and at least one UX law deep link.
+- [ ] Show export panel: **Copy all**, **Download component**, **Download package**, and at least one UX law deep link.
 - [ ] Hit one archetype swap (`/demo?archetype=auth` or `shop`) to show variety.
 - [ ] Optional B-roll: `/design-system` search + **Export all snippets**.
 - [ ] Do **not** enable live Qwen on the public host for meetup footage unless rehearsed.
@@ -48,7 +48,7 @@ Follow the timed beats in **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)**. For
 
 ## Slides (Marp)
 
-Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)** — eight slides derived from the current [sample reference guide](../DEMO.md). One slide ≈ 45–60 seconds on stage.
+Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)** — eight slides derived from the current [sample screenshot guide](../DEMO.md). One slide ≈ 45–60 seconds on stage.
 
 ### Install Marp
 

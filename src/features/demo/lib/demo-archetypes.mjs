@@ -27,7 +27,7 @@ const SAMPLE_LABELS = {
 };
 
 /**
- * Normalize `/demo?archetype=` to a bundled reference sample id.
+ * Normalize `/demo?archetype=` to a sample screenshot id.
  * @param {string | null | undefined} value
  * @returns {string}
  */
@@ -39,7 +39,7 @@ export function resolveSampleReferenceId(value) {
 }
 
 /**
- * Human label for sample reference chip / hero copy.
+ * Human label for sample screenshot chip / hero copy.
  * @param {string} sampleId
  */
 export function sampleReferenceLabel(sampleId) {

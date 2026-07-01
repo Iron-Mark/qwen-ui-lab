@@ -27,7 +27,7 @@ Never expose provider secrets through `NEXT_PUBLIC_*` variables.
 | Route | Purpose |
 | --- | --- |
 | `/` | Upload, detect, refine, preview, share, and export workflow. |
-| `/demo` | Compatibility route for a preloaded sample reference. |
+| `/demo` | Compatibility route for a preloaded sample screenshot. |
 | `/design-system` | Component catalog with product and UX-law references. |
 | `/account` | Redirects to the browser-local profile modal. |
 | `/share/[id]` | Read-only analysis summary. |

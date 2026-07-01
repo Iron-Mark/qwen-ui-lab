@@ -1,6 +1,6 @@
-# Sample Reference Guide
+# Sample Screenshot Guide
 
-Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample reference**: load a bundled reference, inspect the detected UI, review the generated component, and export a starter package.
+Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample screenshot**: load a prepared screenshot, inspect the detected UI, review the generated component, and export a starter package.
 
 ```bash
 cd qwen-ui-lab
@@ -8,7 +8,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000/demo](http://localhost:3000/demo) for the preloaded sample reference, or [http://localhost:3000](http://localhost:3000) for the normal upload workflow.
+Open [http://localhost:3000/demo](http://localhost:3000/demo) for the preloaded sample screenshot, or [http://localhost:3000](http://localhost:3000) for the normal upload workflow.
 
 Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYSIS=true` only when you intentionally want upstream vision calls.
 
@@ -24,7 +24,7 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 
 ## Sample Routes
 
-| URL | Bundled sample | Export filename |
+| URL | Sample screenshot | Export filename |
 | --- | --- | --- |
 | `/demo` | Dashboard analytics shell | `generated-dashboard.tsx` |
 | `/demo?archetype=auth` | Sign-in card | `generated-auth.tsx` |
