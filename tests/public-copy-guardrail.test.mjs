@@ -30,6 +30,8 @@ const BANNED_PUBLIC_PHRASES = [
   "Gist export unavailable",
   "GitHub Gist export is not configured",
   "Set GITHUB_TOKEN",
+  "Bundled screenshot references",
+  "Try a bundled reference",
   "Fallback content with recovery action",
   "Sparse fallback content",
   "Chart card with text fallback",

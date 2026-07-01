@@ -187,7 +187,7 @@ export const en = {
     loadingTitle: "Generating preview",
     loadingBody:
       "Reading the screenshot, mapping layout, and preparing the generated component.",
-    tryBundledReference: "Try a bundled reference",
+    tryBundledReference: "Try a sample screenshot",
     loadSampleAria: "Load {label} sample",
     loadSampleButton: "Load reference",
     loading: "Loading…",

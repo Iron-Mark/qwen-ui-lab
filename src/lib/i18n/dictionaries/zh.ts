@@ -181,7 +181,7 @@ export const zh = {
     failureTitle: "无法继续",
     loadingTitle: "正在生成预览",
     loadingBody: "正在读取截图、映射布局，并准备生成组件。",
-    tryBundledReference: "试用内置参考图",
+    tryBundledReference: "试用样例截图",
     loadSampleAria: "加载 {label} 样例",
     loadSampleButton: "加载参考图",
     loading: "加载中…",
