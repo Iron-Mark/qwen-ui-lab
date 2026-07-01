@@ -64,7 +64,7 @@ This export package turns the screenshot review into files you can import, compa
 ## What this package is not
 
 - It does not include the original screenshot, user data, secrets, or production data wiring.
-- It should not be merged until visual parity, accessibility, responsive layout, and real data states have been reviewed.
+- It should not be imported or shipped until visual parity, accessibility, responsive layout, and real data states have been reviewed.
 
 ${buildReviewContractMarkdown({ files })}
 
@@ -586,10 +586,10 @@ function summarizeUnresolvedReviewNotes(blueprint) {
     : 0;
 
   if (!lowConfidence) {
-    return `${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before merge.`;
+    return `${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before import.`;
   }
 
-  return `${lowConfidence} low-confidence element${lowConfidence === 1 ? "" : "s"} plus ${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before merge.`;
+  return `${lowConfidence} low-confidence element${lowConfidence === 1 ? "" : "s"} plus ${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before import.`;
 }
 
 function summarizeConfidenceBands(items) {
