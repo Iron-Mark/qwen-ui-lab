@@ -64,10 +64,22 @@ export default function GeneratedComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /Keep `src\/components\/generated\/generated\.recipe\.json`, `src\/components\/generated\/generated\.manifest\.json`, and `docs\/generated\.detection\.md`/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /before using the component in an app/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
     /return <GeneratedComponent \/>;/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "docs/generated.detection.md")?.content ?? "",
+    /No element-level confidence reasons were available; compare the component with the screenshot before import\./,
+  );
+  assert.doesNotMatch(
+    entries.find((entry) => entry.name === "docs/generated.detection.md")?.content ?? "",
+    /manual review|No element-level confidence reasons were exported/,
   );
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")
