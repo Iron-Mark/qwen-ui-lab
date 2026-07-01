@@ -23,6 +23,7 @@ const PUBLIC_COPY_FILES = [
   "src/features/analysis/lib/offline-image-inspection.mjs",
   "src/features/analysis/lib/ui-flow.mjs",
   "src/features/export/components/GistExportButton.tsx",
+  "src/features/export/lib/scaffold-package-docs.mjs",
   "src/features/export/lib/github-gist.mjs",
   "src/features/export/lib/github-repo.mjs",
 ];
@@ -55,6 +56,8 @@ const BANNED_PUBLIC_PHRASES = [
   "Production bundle",
   "production-ready bundle",
   "Handoff bundle",
+  "before merge",
+  "not be merged",
   "Meetup-ready",
   "local account (demo stub)",
   "optional email demo",
