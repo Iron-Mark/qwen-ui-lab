@@ -147,6 +147,10 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     /Review notes: 1 low-confidence element plus \d+ checklist items before merge\./,
   );
   assert.match(entries[1].content, /Design notes/);
+  assert.match(entries[1].content, /## Correction summary/);
+  assert.match(entries[1].content, /Applied edits: 1/);
+  assert.match(entries[1].content, /Excluded boxes: 1/);
+  assert.match(entries[1].content, /Source of truth: Manual corrections/);
   assert.match(entries[2].content, /GeneratedComponent/);
   assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);
   assert.match(entries[6].content, /Dashboard workspace/);
