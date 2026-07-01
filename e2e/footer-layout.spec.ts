@@ -14,7 +14,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await expect(footer).toBeVisible();
 
   await expect(footer.locator('img[src="/icons/icon.svg"]')).toHaveCount(1);
-  await expect(footer.getByText("Screenshot to React lab")).toBeVisible();
+  await expect(footer.getByText("React + Tailwind package")).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
   const githubIconLink = footer.locator('a[aria-label="GitHub"]');
@@ -37,7 +37,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
 
   await footer.getByRole("link", { name: "Dashboard" }).hover();
   await expect(
-    page.getByText("Return to the screenshot workflow and sample dashboard."),
+    page.getByText("Return to your workspace and continue building from the uploaded screenshots."),
   ).toBeVisible();
 
   await githubIconLink.focus();
