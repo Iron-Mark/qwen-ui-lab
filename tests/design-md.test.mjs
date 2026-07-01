@@ -168,3 +168,49 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
   assert.match(markdown, /No design tokens were detected/);
   assert.match(markdown, /Run a manual visual review because no detection boxes were available/);
 });
+
+test("buildDesignMarkdown synthesizes fallback review evidence for detections without reasons", () => {
+  const markdown = buildDesignMarkdown({
+    artifact: {
+      file: {
+        name: "settings-modal.png",
+        type: "image/png",
+        readableSize: "90 KB",
+        width: 960,
+        height: 720,
+      },
+      generatedCode: "export default function GeneratedSettingsModal() { return null; }",
+      detections: {
+        source: { width: 960, height: 720 },
+        elements: [
+          {
+            id: "modal-card",
+            kind: "dialog-or-modal",
+            primitive: "Dialog",
+            confidence: 0.7,
+            included: true,
+            userEdited: true,
+            box: { x: 180, y: 80, width: 600, height: 520 },
+          },
+          {
+            id: "close-button",
+            kind: "button-or-input",
+            primitive: "Button",
+            confidence: 0.88,
+            included: false,
+            box: { x: 720, y: 96, width: 44, height: 44 },
+          },
+        ],
+      },
+    },
+    componentFilename: "generated-settings-modal.tsx",
+    exportedAt: "2026-06-22T00:00:00.000Z",
+  });
+
+  assert.doesNotMatch(markdown, /No confidence reasons were attached/);
+  assert.match(markdown, /Fallback medium confidence/);
+  assert.match(markdown, /Centered overlay geometry suggests dialog content/);
+  assert.match(markdown, /Reviewer correction kept as source of truth/);
+  assert.match(markdown, /Reviewer excluded from generated scaffold/);
+  assert.match(markdown, /Geometry evidence 600x520/);
+});

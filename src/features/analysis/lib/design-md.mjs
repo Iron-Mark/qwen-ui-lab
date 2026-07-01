@@ -38,6 +38,73 @@ function confidenceBand(value) {
   return "review";
 }
 
+function confidenceWeight(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) return 0.05;
+  if (value >= 0.82) return 0.18;
+  if (value >= 0.66) return 0.12;
+  return 0.08;
+}
+
+function primitiveReviewSignal(primitive, kind) {
+  const role = text(primitive || kind, "component").toLowerCase();
+  if (/header|nav/.test(role)) return "Position suggests navigation or header structure";
+  if (/card|panel/.test(role)) return "Container geometry suggests a card or panel";
+  if (/button|action|input|field|select|form/.test(role)) return "Control sizing suggests an interactive primitive";
+  if (/table|row|list/.test(role)) return "Repeated alignment suggests list or table structure";
+  if (/chart|graph/.test(role)) return "Large visual region suggests chart content";
+  if (/dialog|modal/.test(role)) return "Centered overlay geometry suggests dialog content";
+  return "Primitive mapping needs visual review";
+}
+
+function elementFallbackSignals(element) {
+  const box = element?.box ?? {};
+  const width = Math.round(Number(box.width) || 0);
+  const height = Math.round(Number(box.height) || 0);
+  const signals = [];
+
+  signals.push({
+    label: `Fallback ${confidenceBand(element?.confidence)} confidence`,
+    weight: confidenceWeight(element?.confidence),
+  });
+
+  if (width && height) {
+    signals.push({
+      label: `Geometry evidence ${width}x${height}`,
+      weight: 0.08,
+    });
+  }
+
+  signals.push({
+    label: primitiveReviewSignal(element?.primitive, element?.kind),
+    weight: 0.1,
+  });
+
+  if (element?.userEdited) {
+    signals.push({
+      label: "Reviewer correction kept as source of truth",
+      weight: 0.2,
+    });
+  }
+
+  if (element?.included === false) {
+    signals.push({
+      label: "Reviewer excluded from generated scaffold",
+      weight: 0.18,
+    });
+  }
+
+  return signals;
+}
+
+function elementReasonSignals(element) {
+  const explicitReasons = Array.isArray(element?.reasons)
+    ? element.reasons.filter((reason) => text(reason?.label || reason?.code))
+    : [];
+
+  if (explicitReasons.length) return explicitReasons;
+  return elementFallbackSignals(element);
+}
+
 function sourceDimensions(artifact) {
   const source = artifact?.detections?.source ?? {};
   const file = artifact?.file ?? {};
@@ -110,7 +177,7 @@ function summarizeReasons(elements) {
   const counts = new Map();
   const weights = new Map();
   for (const element of elements) {
-    for (const reason of element.reasons ?? []) {
+    for (const reason of elementReasonSignals(element)) {
       const label = text(reason.label || reason.code, "Detector signal");
       counts.set(label, (counts.get(label) ?? 0) + 1);
       weights.set(label, (weights.get(label) ?? 0) + (Number(reason.weight) || 0));
@@ -215,7 +282,7 @@ function renderComponentInventory(components) {
 
 function renderReasonSummary(reasons) {
   if (!reasons.length) {
-    return "No confidence reasons were attached to detected elements.";
+    return "No detected elements were available for confidence review.";
   }
 
   return [
@@ -236,7 +303,7 @@ function renderDetectedElements(elements) {
     "| ---: | --- | --- | ---: | --- | --- |",
     ...elements.slice(0, MAX_DETECTED_ELEMENT_ROWS).map((element, index) => {
       const box = element.box ?? {};
-      const reasons = (element.reasons ?? [])
+      const reasons = elementReasonSignals(element)
         .slice(0, 2)
         .map((reason) => text(reason.label || reason.code))
         .filter(Boolean)
