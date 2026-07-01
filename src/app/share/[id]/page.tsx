@@ -25,5 +25,9 @@ export default async function SharePage({ params }: ShareRouteProps) {
     return <ShareHashFallbackContent />;
   }
 
+  if (!model.summary) {
+    notFound();
+  }
+
   return <SharePageContent id={model.id} summary={model.summary} />;
 }
