@@ -68,12 +68,12 @@ export function ShareNotFoundContent() {
           </div>
         </div>
 
-        <aside className="rounded-2xl border border-border/70 bg-background/65 p-4 shadow-sm">
+        <aside className="border-t border-border/70 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t.notFoundRecoveryTitle}
           </p>
-          <div className="mt-4 grid gap-3">
-            <div className="rounded-xl border border-border/70 bg-card/60 p-3">
+          <div className="mt-4 divide-y divide-border/70">
+            <div className="pb-4">
               <div className="flex gap-3">
                 <Home className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                 <div className="min-w-0">
@@ -86,7 +86,7 @@ export function ShareNotFoundContent() {
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border border-border/70 bg-card/60 p-3">
+            <div className="pt-4">
               <div className="flex gap-3">
                 <ImageIcon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                 <div className="min-w-0">
