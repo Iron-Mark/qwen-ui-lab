@@ -118,6 +118,46 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
-    /Required UI imports: No shadcn component imports were inferred/,
+    /Required UI imports: `@\/components\/ui\/button`/,
+  );
+  const recipe = JSON.parse(
+    entries.find((entry) => entry.name === "src/components/generated/dashboard.recipe.json")
+      ?.content ?? "{}",
+  );
+  assert.deepEqual(recipe.integration.dependencies, ["@/components/ui/button"]);
+});
+
+test("buildScaffoldZipEntries infers dependencies from known JSX primitives", () => {
+  const entries = buildScaffoldZipEntries({
+    filename: "settings.tsx",
+    description: "Settings export",
+    content: `export default function SettingsPanel() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Settings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Input aria-label="Workspace name" />
+        <Button>Save</Button>
+      </CardContent>
+    </Card>
+  );
+}
+`,
+  });
+
+  const recipe = JSON.parse(
+    entries.find((entry) => entry.name === "src/components/generated/settings.recipe.json")
+      ?.content ?? "{}",
+  );
+  assert.deepEqual(recipe.integration.dependencies, [
+    "@/components/ui/button",
+    "@/components/ui/card",
+    "@/components/ui/input",
+  ]);
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Required UI imports: `@\/components\/ui\/button`, `@\/components\/ui\/card`, `@\/components\/ui\/input`/,
   );
 });
