@@ -73,6 +73,12 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     detectedElements: [],
     layoutRegions: [],
     shadcnPrimitiveMap: inferPrimitiveMapFromImports(content),
+    correctionSummary: {
+      activeElements: 0,
+      appliedEdits: 0,
+      excludedBoxes: 0,
+      sourceOfTruth: "Manual scaffold exports do not include detection-box corrections.",
+    },
     primitiveSummary: [],
     reviewChecklist: [
       "Review spacing, typography, and responsive behavior against the source screenshot.",

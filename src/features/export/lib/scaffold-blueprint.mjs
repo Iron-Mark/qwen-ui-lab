@@ -14,6 +14,7 @@ export function extractProductionScaffoldBlueprint(content) {
   const screenIntent = readJsonConst(source, "screenIntent");
   const layoutRegions = readJsonConst(source, "layoutRegions");
   const shadcnPrimitiveMap = readJsonConst(source, "shadcnPrimitiveMap");
+  const correctionSummary = readJsonConst(source, "correctionSummary");
 
   if (
     !designTokens &&
@@ -43,6 +44,7 @@ export function extractProductionScaffoldBlueprint(content) {
     detectedElements: Array.isArray(detectedElements) ? detectedElements : [],
     layoutRegions: Array.isArray(layoutRegions) ? layoutRegions : [],
     shadcnPrimitiveMap: shadcnPrimitiveMap ?? {},
+    correctionSummary: normalizeCorrectionSummary(correctionSummary, detectedElements),
     primitiveSummary,
     reviewChecklist: buildReviewChecklist({
       detectedElements,
@@ -50,6 +52,40 @@ export function extractProductionScaffoldBlueprint(content) {
       layoutRegions,
       primitiveSummary,
     }),
+  };
+}
+
+function normalizeCorrectionSummary(correctionSummary, detectedElements) {
+  const elements = Array.isArray(detectedElements) ? detectedElements : [];
+  const fallback = {
+    activeElements: elements.filter((element) => element.included !== false).length,
+    appliedEdits: elements.filter((element) => element.userEdited === true).length,
+    excludedBoxes: elements.filter((element) => element.included === false).length,
+    sourceOfTruth: "Detection boxes are the source of truth for this regenerated scaffold.",
+  };
+
+  if (!correctionSummary || typeof correctionSummary !== "object") {
+    return fallback;
+  }
+
+  return {
+    activeElements:
+      typeof correctionSummary.activeElements === "number"
+        ? correctionSummary.activeElements
+        : fallback.activeElements,
+    appliedEdits:
+      typeof correctionSummary.appliedEdits === "number"
+        ? correctionSummary.appliedEdits
+        : fallback.appliedEdits,
+    excludedBoxes:
+      typeof correctionSummary.excludedBoxes === "number"
+        ? correctionSummary.excludedBoxes
+        : fallback.excludedBoxes,
+    sourceOfTruth:
+      typeof correctionSummary.sourceOfTruth === "string" &&
+      correctionSummary.sourceOfTruth.trim()
+        ? correctionSummary.sourceOfTruth
+        : fallback.sourceOfTruth,
   };
 }
 

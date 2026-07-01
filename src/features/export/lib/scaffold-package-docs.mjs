@@ -197,6 +197,7 @@ export function buildDetectionSummaryMarkdown(blueprint) {
     .join("\n");
   const confidenceSummary = summarizeConfidenceBands([...regions, ...elements]);
   const manualCorrectionNotes = buildManualCorrectionNotes(elements);
+  const correctionMetadata = blueprint.correctionSummary;
 
   return `# Detection summary
 
@@ -225,6 +226,11 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 - Unknown confidence: ${confidenceSummary.unknown}
 
 ## Manual corrections
+
+- Active elements: ${correctionMetadata?.activeElements ?? elements.filter((element) => element.included !== false).length}
+- Applied edits: ${correctionMetadata?.appliedEdits ?? elements.filter((element) => element.userEdited === true).length}
+- Excluded boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
+- Source of truth: ${correctionMetadata?.sourceOfTruth ?? "Detection boxes are the source of truth for this regenerated scaffold."}
 
 ${manualCorrectionNotes}
 
@@ -342,6 +348,14 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
       includesSecrets: false,
       includesOfflineDetectionMetadata: true,
     },
+    corrections: {
+      activeElements: blueprint.correctionSummary?.activeElements ?? 0,
+      appliedEdits: blueprint.correctionSummary?.appliedEdits ?? 0,
+      excludedBoxes: blueprint.correctionSummary?.excludedBoxes ?? 0,
+      sourceOfTruth:
+        blueprint.correctionSummary?.sourceOfTruth ??
+        "Detection boxes are the source of truth for this regenerated scaffold.",
+    },
     qualityGates: [
       "Compare the imported component against the source screenshot before merging.",
       "Review detection summary, low-confidence regions, and manual corrections.",
@@ -427,6 +441,24 @@ export function buildTokenCss(tokens) {
 }
 
 function summarizeManualCorrections(blueprint) {
+  const summary = blueprint?.correctionSummary;
+  if (summary && typeof summary === "object") {
+    const edited = Number(summary.appliedEdits) || 0;
+    const excluded = Number(summary.excludedBoxes) || 0;
+    if (!edited && !excluded) {
+      return "none captured in this export.";
+    }
+
+    const parts = [];
+    if (edited) {
+      parts.push(`${edited} edited detection box${edited === 1 ? "" : "es"}`);
+    }
+    if (excluded) {
+      parts.push(`${excluded} excluded element${excluded === 1 ? "" : "s"}`);
+    }
+    return `${parts.join(", ")} captured in the recipe JSON. ${summary.sourceOfTruth}`;
+  }
+
   const elements = Array.isArray(blueprint?.detectedElements)
     ? blueprint.detectedElements
     : [];
