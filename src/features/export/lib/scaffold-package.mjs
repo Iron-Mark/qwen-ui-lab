@@ -96,6 +96,17 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     files,
     stem,
   });
+  const designDoc = buildPackageDesignMarkdown({
+    description,
+    files,
+    componentName: fallbackBlueprint.componentName,
+    blueprint: fallbackBlueprint,
+    dependencies,
+  });
+  const recipeJson = `${JSON.stringify(recipe, null, 2)}\n`;
+  const manifestJson = `${JSON.stringify(manifest, null, 2)}\n`;
+  const tokensCss = buildTokenCss(fallbackBlueprint.designTokens);
+  const detectionSummary = buildDetectionSummaryMarkdown(fallbackBlueprint);
 
   return [
     {
@@ -105,23 +116,22 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
         files,
         componentName: fallbackBlueprint.componentName,
         dependencies,
+        inventory: buildPackageInventory([
+          { name: files.designDoc, content: designDoc },
+          { name: files.component, content },
+          { name: files.recipe, content: recipeJson },
+          { name: files.manifest, content: manifestJson },
+          { name: files.tokens, content: tokensCss },
+          { name: files.detectionSummary, content: detectionSummary },
+        ]),
       }),
     },
-    {
-      name: files.designDoc,
-      content: buildPackageDesignMarkdown({
-        description,
-        files,
-        componentName: fallbackBlueprint.componentName,
-        blueprint: fallbackBlueprint,
-        dependencies,
-      }),
-    },
+    { name: files.designDoc, content: designDoc },
     { name: files.component, content },
-    { name: files.recipe, content: `${JSON.stringify(recipe, null, 2)}\n` },
-    { name: files.manifest, content: `${JSON.stringify(manifest, null, 2)}\n` },
-    { name: files.tokens, content: buildTokenCss(fallbackBlueprint.designTokens) },
-    { name: files.detectionSummary, content: buildDetectionSummaryMarkdown(fallbackBlueprint) },
+    { name: files.recipe, content: recipeJson },
+    { name: files.manifest, content: manifestJson },
+    { name: files.tokens, content: tokensCss },
+    { name: files.detectionSummary, content: detectionSummary },
   ];
 }
 
@@ -148,6 +158,17 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
     files,
     stem,
   });
+  const designDoc = buildPackageDesignMarkdown({
+    description,
+    files,
+    componentName: blueprint.componentName,
+    blueprint,
+    dependencies,
+  });
+  const recipeJson = `${JSON.stringify(recipe, null, 2)}\n`;
+  const manifestJson = `${JSON.stringify(manifest, null, 2)}\n`;
+  const tokensCss = buildTokenCss(blueprint.designTokens);
+  const detectionSummary = buildDetectionSummaryMarkdown(blueprint);
 
   return [
     {
@@ -158,23 +179,22 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
         componentName: blueprint.componentName,
         blueprint,
         dependencies,
+        inventory: buildPackageInventory([
+          { name: files.designDoc, content: designDoc },
+          { name: files.component, content },
+          { name: files.recipe, content: recipeJson },
+          { name: files.manifest, content: manifestJson },
+          { name: files.tokens, content: tokensCss },
+          { name: files.detectionSummary, content: detectionSummary },
+        ]),
       }),
     },
-    {
-      name: files.designDoc,
-      content: buildPackageDesignMarkdown({
-        description,
-        files,
-        componentName: blueprint.componentName,
-        blueprint,
-        dependencies,
-      }),
-    },
+    { name: files.designDoc, content: designDoc },
     { name: files.component, content },
-    { name: files.recipe, content: `${JSON.stringify(recipe, null, 2)}\n` },
-    { name: files.manifest, content: `${JSON.stringify(manifest, null, 2)}\n` },
-    { name: files.tokens, content: buildTokenCss(blueprint.designTokens) },
-    { name: files.detectionSummary, content: buildDetectionSummaryMarkdown(blueprint) },
+    { name: files.recipe, content: recipeJson },
+    { name: files.manifest, content: manifestJson },
+    { name: files.tokens, content: tokensCss },
+    { name: files.detectionSummary, content: detectionSummary },
   ];
 }
 
@@ -218,6 +238,14 @@ function componentNamesFromText(value) {
       new RegExp(`\\b${componentName}\\b`, "i").test(String(value || "")),
     )
     .map(([, dependencyName]) => dependencyName);
+}
+
+function buildPackageInventory(entries) {
+  return entries.map((entry) => ({
+    path: entry.name,
+    bytes: new TextEncoder().encode(entry.content).length,
+    lines: String(entry.content || "").split(/\r?\n/).filter(Boolean).length,
+  }));
 }
 
 function toExportStem(filename) {

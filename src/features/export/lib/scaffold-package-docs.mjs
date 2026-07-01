@@ -36,12 +36,15 @@ export function buildProductionScaffoldReadme({
   componentName,
   blueprint,
   dependencies = [],
+  inventory = [],
   sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
 }) {
   const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
+  const primitiveMappingNoun = `shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"}`;
+  const primitiveMappingVerb = primitiveCount === 1 ? "was" : "were";
   const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
   const correctionSummary = summarizeManualCorrections(blueprint);
   const reviewSummary = summarizeUnresolvedReviewNotes(blueprint);
@@ -67,7 +70,7 @@ This export package turns the screenshot review into files you can import, compa
 
 - Screen intent: ${screenIntent}
 - ${regionCount} layout region${regionCount === 1 ? "" : "s"} and ${elementCount} detected element${elementCount === 1 ? "" : "s"} were converted into React sections.
-- ${primitiveCount} shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"} were included for review.
+- ${primitiveCount} ${primitiveMappingNoun} ${primitiveMappingVerb} included for review.
 - Responsive mode: ${responsiveMode}
 - Manual corrections: ${correctionSummary}
 - Review notes: ${reviewSummary}
@@ -80,6 +83,10 @@ This export package turns the screenshot review into files you can import, compa
 - \`${files.manifest}\` - package identity, dependency hints, and quality gates for review
 - \`${files.tokens}\` - CSS variables derived from the screenshot palette
 - \`${files.detectionSummary}\` - human-readable detection notes, confidence summary, and integration checklist
+
+## Package inventory
+
+${formatPackageInventory(inventory)}
 
 ## Expected dependencies
 
@@ -103,6 +110,7 @@ export function buildFallbackPackageReadme({
   files,
   componentName,
   dependencies = [],
+  inventory = [],
   sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
 }) {
   return `# Screenshot UI starter package
@@ -131,6 +139,10 @@ This export is a reviewable starter package. Import it into source control, conn
 - \`${files.manifest}\` - package manifest and quality gates
 - \`${files.tokens}\` - theme token file
 - \`${files.detectionSummary}\` - detection and review notes
+
+## Package inventory
+
+${formatPackageInventory(inventory)}
 
 ## Expected dependencies
 
@@ -333,6 +345,30 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
       "Verify responsive layout at mobile, tablet, and desktop widths.",
     ],
   };
+}
+
+function formatPackageInventory(inventory) {
+  if (!Array.isArray(inventory) || inventory.length === 0) {
+    return "- Inventory unavailable. Inspect the zip entries before import.";
+  }
+
+  return [
+    "| File | Size | Lines |",
+    "| --- | ---: | ---: |",
+    ...inventory.map(
+      (item) =>
+        `| \`${item.path}\` | ${formatBytes(item.bytes)} | ${Number(item.lines) || 0} |`,
+    ),
+  ].join("\n");
+}
+
+function formatBytes(bytes) {
+  const value = Number(bytes) || 0;
+  if (value < 1024) return `${value} B`;
+  const kilobytes = value / 1024;
+  if (kilobytes < 1024) return `${kilobytes.toFixed(kilobytes >= 10 ? 0 : 1)} KB`;
+  const megabytes = kilobytes / 1024;
+  return `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB`;
 }
 
 export function buildTokenCss(tokens) {

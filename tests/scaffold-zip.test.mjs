@@ -44,6 +44,14 @@ export default function GeneratedComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /Screenshot UI starter package/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /\| File \| Size \| Lines \|/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /\| `src\/components\/generated\/generated\.tsx` \| \d+ B \| \d+ \|/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")
@@ -75,5 +83,13 @@ export default function Dashboard() {
   assert.ok(names.includes("src/components/generated/dashboard.recipe.json"));
   assert.ok(names.includes("docs/dashboard.detection.md"));
   assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /DESIGN\.md/);
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /1 shadcn-style primitive mapping was included for review\./,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /\| `docs\/dashboard\.detection\.md` \| [\d.]+ KB \| \d+ \|/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
 });
