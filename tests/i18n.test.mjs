@@ -50,6 +50,12 @@ test("resolveLocale defaults to en and accepts zh", () => {
   assert.equal(resolveLocale("fr"), "en");
 });
 
+test("zh export package copy avoids merge-gate wording", () => {
+  assert.match(zhDictionarySource, /exportReadmeReviewSummary:\s*".*\u5bfc\u5165\u524d/);
+  assert.match(zhDictionarySource, /exportReadmeReviewClear:\s*".*\u5bfc\u5165\u524d/);
+  assert.doesNotMatch(zhDictionarySource, /\u5408\u5e76\u524d/);
+});
+
 test("interpolate replaces placeholders", () => {
   assert.equal(
     interpolate("Stored locally (last {count})", { count: 3 }),
