@@ -74,6 +74,11 @@ import { ResponsiveTabsList } from "@/components/ui/responsive-tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import {
+  detectionElementLabel,
+  detectionKindLabel,
+  primitiveForDetectionKind,
+} from "@/lib/detection-labels";
 import { cn } from "@/lib/utils";
 import { downloadTextFile } from "@/lib/clipboard.client";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
@@ -273,49 +278,6 @@ const DETECTION_KIND_OPTIONS = [
   "control",
   "content-block",
 ] as const;
-
-const DETECTION_KIND_LABELS: Record<string, string> = {
-  header: "Header",
-  "side-nav": "Sidebar navigation",
-  "bottom-nav": "Bottom navigation",
-  "button-or-input": "Button or field",
-  "input-or-button-row": "Form/action row",
-  "card-or-panel": "Card or panel",
-  "chart-or-media": "Chart or media",
-  "text-row": "Text row",
-  control: "Control",
-  "content-block": "Content section",
-};
-
-const DETECTION_PRIMITIVE_LABELS: Record<string, string> = {
-  "field-or-action": "Field or action",
-  media: "Media",
-  card: "Card",
-  text: "Text",
-  section: "Section",
-  "list-item": "List row",
-  header: "Header",
-  "side-nav": "Sidebar navigation",
-  "bottom-nav": "Bottom navigation",
-};
-
-function detectionKindLabel(kind: string) {
-  return DETECTION_KIND_LABELS[kind] ?? titleCaseDetectionLabel(kind);
-}
-
-function detectionPrimitiveLabel(primitive: string) {
-  return DETECTION_PRIMITIVE_LABELS[primitive] ?? titleCaseDetectionLabel(primitive);
-}
-
-function detectionElementLabel(element: Pick<DetectionElement, "kind" | "primitive">) {
-  return detectionPrimitiveLabel(element.primitive ?? primitiveForKind(element.kind));
-}
-
-function titleCaseDetectionLabel(value: string) {
-  return value
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
 
 function isEditablePasteTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -712,7 +674,7 @@ function DetectedReferencePreview({
                 data-testid="detection-box"
                 data-detection-id={element.id}
                 data-kind={element.kind}
-                data-primitive={element.primitive ?? primitiveForKind(element.kind)}
+                data-primitive={element.primitive ?? primitiveForDetectionKind(element.kind)}
                 data-confidence={element.confidence}
                 data-box={`${element.box.x},${element.box.y},${element.box.width},${element.box.height}`}
                 aria-label={`Select ${element.kind}`}
@@ -734,7 +696,7 @@ function DetectedReferencePreview({
                     className="pointer-events-none absolute bottom-0 left-0 max-w-[calc(100%-1rem)] truncate rounded-tr-[3px] bg-background/90 px-1 py-0.5 text-[9px] font-mono leading-none text-muted-foreground shadow-sm"
                     data-testid="detection-debug-label"
                   >
-                    {element.primitive ?? primitiveForKind(element.kind)}{" "}
+                    {element.primitive ?? primitiveForDetectionKind(element.kind)}{" "}
                     {Math.round(element.box.x)},{Math.round(element.box.y)}{" "}
                     {Math.round(element.box.width)}x{Math.round(element.box.height)}
                   </span>
@@ -902,7 +864,7 @@ function DetectedReferencePreview({
                 onChange={(event) =>
                   updateElement(selectedElement.id, {
                     kind: event.target.value,
-                    primitive: primitiveForKind(event.target.value),
+                    primitive: primitiveForDetectionKind(event.target.value),
                   })
                 }
                 className="min-h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground"
@@ -948,7 +910,7 @@ function DetectedReferencePreview({
                   <DebugField label="Element ID" value={selectedElement.id} />
                   <DebugField
                     label="Primitive"
-                    value={selectedElement.primitive ?? primitiveForKind(selectedElement.kind)}
+                    value={selectedElement.primitive ?? primitiveForDetectionKind(selectedElement.kind)}
                   />
                   <DebugField
                     label="Geometry"
@@ -1216,7 +1178,7 @@ function renderDetectionMockToCanvas(
     const y = (element.box.y / sourceHeight) * canvasHeight;
     const width = Math.max(1, (element.box.width / sourceWidth) * canvasWidth);
     const height = Math.max(1, (element.box.height / sourceHeight) * canvasHeight);
-    const primitive = element.primitive ?? primitiveForKind(element.kind);
+    const primitive = element.primitive ?? primitiveForDetectionKind(element.kind);
     const isAccent = /header|nav|button|action|control|field/i.test(primitive);
     const isMedia = /media|chart/i.test(primitive);
 
@@ -1322,7 +1284,7 @@ function buildEditedDetectionElement(
   const nextIncluded = patch.included ?? element.included ?? true;
   const primitive =
     patch.primitive ??
-    (patch.kind ? primitiveForKind(patch.kind) : element.primitive ?? primitiveForKind(element.kind));
+    (patch.kind ? primitiveForDetectionKind(patch.kind) : element.primitive ?? primitiveForDetectionKind(element.kind));
   const nextConfidence = correctedDetectionConfidence(
     patch.confidence ?? element.confidence,
     nextIncluded !== false,
@@ -1356,17 +1318,6 @@ function mergeEditedDetectionReasons(
     changes,
     source: "editor",
   }) as DetectionReason[];
-}
-
-function primitiveForKind(kind: string) {
-  if (kind === "button-or-input" || kind === "input-or-button-row") {
-    return "field-or-action";
-  }
-  if (kind === "chart-or-media") return "media";
-  if (kind === "card-or-panel") return "card";
-  if (kind === "text-row") return "text";
-  if (kind === "content-block") return "section";
-  return kind;
 }
 
 function detectionPreviewTokens(tokens?: DetectionDesignTokens | null) {
@@ -1426,7 +1377,7 @@ function buildExportPackagePreview(
   const regionCount = layoutRegions.length || artifact.plan.length;
   const primitiveCount =
     Object.keys(primitiveMap).length ||
-    new Set(activeDetections.map((element) => element.primitive ?? primitiveForKind(element.kind)))
+    new Set(activeDetections.map((element) => element.primitive ?? primitiveForDetectionKind(element.kind)))
       .size;
   const patternCount = countDetectedPatternGroups(detectedPatterns);
   const breakpoints = asStringArray(responsiveIntent.breakpoints);
@@ -2034,7 +1985,7 @@ function DetectionComparisonPreview({
                   data-testid="generated-mock-element"
                   data-detection-id={element.id}
                   data-kind={element.kind}
-                  data-primitive={element.primitive ?? primitiveForKind(element.kind)}
+                  data-primitive={element.primitive ?? primitiveForDetectionKind(element.kind)}
                 >
                   <GeneratedMockPrimitive element={element} tokens={tokens} />
                 </div>
@@ -2070,7 +2021,7 @@ function GeneratedMockPrimitive({
   element: DetectionElement;
   tokens: ReturnType<typeof detectionPreviewTokens>;
 }) {
-  const primitive = element.primitive ?? primitiveForKind(element.kind);
+  const primitive = element.primitive ?? primitiveForDetectionKind(element.kind);
   const label = primitive.replace(/-/g, " ");
 
   if (/header|nav/.test(primitive)) {
@@ -3346,3 +3297,4 @@ function cloneDetections(
 function currentTimestamp() {
   return Date.now();
 }
+
