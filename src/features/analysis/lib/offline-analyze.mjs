@@ -1923,69 +1923,81 @@ function ImplementationChecklist() {
 
 function UsableSection({ section }: { section: UsableSectionModel }) {
   if (section.primitive === "tab-set") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{section.title}</CardTitle>
-          <CardDescription>{section.guidance}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="tab-1">
-            <TabsList aria-label={section.title}>
-              {section.items.slice(0, 4).map((item, index) => (
-                <TabsTrigger key={item.id} value={"tab-" + (index + 1)}>
-                  {item.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {section.items.slice(0, 4).map((item, index) => (
-              <TabsContent key={item.id} value={"tab-" + (index + 1)}>
-                <PrimitiveBlock item={item} />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-      </Card>
-    );
+    return <TabSection section={section} />;
   }
 
   if (section.primitive === "form-group") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{section.title}</CardTitle>
-          <CardDescription>{section.guidance}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="grid gap-4">
-            {section.items.length ? (
-              section.items.map((item, index) =>
-                /action|button/.test(item.componentRole ?? "") ? (
-                  <Button key={item.id} type="button" className="w-fit">
-                    {item.label}
-                  </Button>
-                ) : (
-                  <div key={item.id} className="grid gap-2">
-                    <Label htmlFor={item.id}>Field {index + 1}</Label>
-                    <Input id={item.id} placeholder="Enter product data" />
-                  </div>
-                ),
-              )
-            ) : (
-              <>
-                <div className="grid gap-2">
-                  <Label htmlFor="generated-primary-field">Primary field</Label>
-                  <Input id="generated-primary-field" placeholder="Enter product data" />
-                </div>
-                <Button type="button" className="w-fit">Submit action</Button>
-              </>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-    );
+    return <FormSection section={section} />;
   }
 
+  return <GenericSection section={section} />;
+}
+
+function TabSection({ section }: { section: UsableSectionModel }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{section.title}</CardTitle>
+        <CardDescription>{section.guidance}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="tab-1">
+          <TabsList aria-label={section.title}>
+            {section.items.slice(0, 4).map((item, index) => (
+              <TabsTrigger key={item.id} value={"tab-" + (index + 1)}>
+                {item.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {section.items.slice(0, 4).map((item, index) => (
+            <TabsContent key={item.id} value={"tab-" + (index + 1)}>
+              <PrimitiveBlock item={item} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+}
+
+function FormSection({ section }: { section: UsableSectionModel }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{section.title}</CardTitle>
+        <CardDescription>{section.guidance}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form className="grid gap-4">
+          {section.items.length ? (
+            section.items.map((item, index) =>
+              /action|button/.test(item.componentRole ?? "") ? (
+                <Button key={item.id} type="button" className="w-fit">
+                  {item.label}
+                </Button>
+              ) : (
+                <div key={item.id} className="grid gap-2">
+                  <Label htmlFor={item.id}>Field {index + 1}</Label>
+                  <Input id={item.id} placeholder="Enter product data" />
+                </div>
+              ),
+            )
+          ) : (
+            <>
+              <div className="grid gap-2">
+                <Label htmlFor="generated-primary-field">Primary field</Label>
+                <Input id="generated-primary-field" placeholder="Enter product data" />
+              </div>
+              <Button type="button" className="w-fit">Submit action</Button>
+            </>
+          )}
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function GenericSection({ section }: { section: UsableSectionModel }) {
   return (
     <Card>
       <CardHeader>

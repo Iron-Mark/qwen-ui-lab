@@ -1199,6 +1199,9 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const sampleData/);
   assert.match(advanced.generatedCode, /const sampleCollections/);
   assert.match(advanced.generatedCode, /function GeneratedScreenHeader/);
+  assert.match(advanced.generatedCode, /function TabSection/);
+  assert.match(advanced.generatedCode, /function FormSection/);
+  assert.match(advanced.generatedCode, /function GenericSection/);
   assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
   assert.match(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Implementation checklist/);
@@ -1658,6 +1661,9 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
 
   assert.match(regenerated.generatedCode, /const correctedPatterns/);
   assert.match(regenerated.generatedCode, /const sampleSectionData/);
+  assert.match(regenerated.generatedCode, /function TabScaffoldSection/);
+  assert.match(regenerated.generatedCode, /function FormScaffoldSection/);
+  assert.match(regenerated.generatedCode, /function GenericScaffoldSection/);
   assert.match(regenerated.generatedCode, /const responsiveIntent/);
   assert.match(regenerated.generatedCode, /const correctedElementById/);
   assert.match(regenerated.generatedCode, /renderCorrectedPrimitive/);
