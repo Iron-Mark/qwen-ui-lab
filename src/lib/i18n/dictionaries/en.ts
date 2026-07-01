@@ -48,8 +48,8 @@ export const en = {
   share: {
     eyebrow: "Share link",
     title: "Read-only analysis summary",
-    descriptionLead: "Short link",
-    descriptionTrail: "- summary only, no private source files included.",
+    descriptionLead: "This link includes",
+    descriptionTrail: "- summary and detected layout only, no source files.",
     backToWorkflow: "Back to workflow",
     sampleReference: "Sample reference",
     metadataNotFoundTitle: "Share not found",
@@ -134,8 +134,8 @@ export const en = {
     renderError: "Could not render {name}.",
   },
   uploadFlow: {
-    sharedSummaryTitle: "Shared analysis summary",
-    sharedSummaryDescription: "Read-only link — no code or secrets included ({file})",
+    sharedSummaryTitle: "Shared result",
+    sharedSummaryDescription: "Read-only summary",
     ctaAnalyzing: "Analyzing…",
     analyzeStepReading: "Reading image…",
     analyzeStepPreprocessing: "Preprocessing image…",

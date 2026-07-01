@@ -1,6 +1,6 @@
 "use client";
 
-import { Link2 } from "lucide-react";
+import { CheckCircle2, FileText, Link2, ScanSearch, SlidersHorizontal } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,55 +27,104 @@ export function SharedSummaryCard({
   const t = dict.uploadFlow;
   const detections = summary.detections;
   const detectionCounts = detections ? detectionSummaryCounts(detections) : null;
+  const confidenceLabel =
+    detections && typeof detections.quality.confidence === "number"
+      ? `${Math.round(detections.quality.confidence * 100)}%`
+      : "Local";
+  const metrics =
+    detections && detectionCounts
+      ? [
+          {
+            label: "Included",
+            value: `${detectionCounts.active}/${detections.elements.length}`,
+            icon: CheckCircle2,
+          },
+          {
+            label: "Edited",
+            value: String(detectionCounts.edited),
+            icon: SlidersHorizontal,
+          },
+          {
+            label: "Confidence",
+            value: confidenceLabel,
+            icon: ScanSearch,
+          },
+        ]
+      : [];
 
   return (
-    <Card className="border-primary/30 bg-primary/5" data-testid={testId}>
-      <CardHeader className="pb-2">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Link2 className="size-4 text-primary" aria-hidden />
+    <Card
+      className="overflow-hidden border-border/80 bg-background shadow-sm"
+      data-testid={testId}
+    >
+      <CardHeader className="border-b border-border/70 bg-muted/25 pb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 space-y-2">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+                <Link2 className="size-4" aria-hidden />
+              </span>
               {t.sharedSummaryTitle}
             </CardTitle>
-            <CardDescription className="mt-1 text-xs">
+            <CardDescription className="text-sm">
               {interpolate(t.sharedSummaryDescription, { file: summary.file })}
             </CardDescription>
           </div>
-          <Badge variant="outline">{summary.mode}</Badge>
+          <Badge
+            variant="secondary"
+            className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium"
+          >
+            {summary.mode}
+          </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 pt-0">
-        <p className="text-sm text-muted-foreground">{summary.summary}</p>
+      <CardContent className="space-y-5 p-4 sm:p-5">
+        <div className="space-y-2">
+          <p className="text-sm leading-6 text-foreground">{summary.summary}</p>
+          <div className="flex min-h-8 flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <FileText className="size-3.5" aria-hidden />
+            <span className="break-all font-medium text-foreground">{summary.file}</span>
+          </div>
+        </div>
         {summary.stats.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {summary.stats.map((stat) => (
-              <Badge key={`${stat.l}-${stat.v}`} variant="secondary">
-                {stat.l}: {stat.v}
-              </Badge>
+              <div
+                key={`${stat.l}-${stat.v}`}
+                className="rounded-lg border border-border/80 bg-muted/25 px-3 py-2"
+              >
+                <p className="text-[11px] font-medium uppercase text-muted-foreground">
+                  {stat.l}
+                </p>
+                <p className="mt-1 text-base font-semibold text-foreground">{stat.v}</p>
+              </div>
             ))}
           </div>
         ) : null}
         {detections && detectionCounts ? (
-          <div className="rounded-md border border-border bg-background/80 p-3 text-xs">
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">
-                Detections: {detectionCounts.active}/{detections.elements.length}
-              </Badge>
-              <Badge variant="outline">
-                Edited: {detectionCounts.edited}
-              </Badge>
-              <Badge variant="outline">
-                Confidence:{" "}
-                {typeof detections.quality.confidence === "number"
-                  ? `${Math.round(detections.quality.confidence * 100)}%`
-                  : "local"}
-              </Badge>
-              <Badge variant="outline">
-                Ambiguity: {detections.quality.ambiguity}
-              </Badge>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.8fr)]">
+            <div className="grid gap-2 sm:grid-cols-3">
+              {metrics.map(({ label, value, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="flex min-h-16 items-center gap-3 rounded-lg border border-border/80 bg-background px-3 py-2"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground">
+                    <Icon className="size-4" aria-hidden />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-medium uppercase text-muted-foreground">
+                      {label}
+                    </span>
+                    <span className="block truncate text-sm font-semibold text-foreground">
+                      {value}
+                    </span>
+                  </span>
+                </div>
+              ))}
             </div>
             <div
-              className="relative mt-3 h-56 overflow-hidden rounded-md border border-border"
+              className="relative h-52 overflow-hidden rounded-lg border border-border bg-muted/20"
               data-testid="shared-detection-preview"
               style={{
                 backgroundColor: detections.designTokens.surface ?? undefined,
@@ -113,6 +162,10 @@ export function SharedSummaryCard({
                     <span className="block truncate opacity-75">{element.kind}</span>
                   </div>
                 ))}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between bg-gradient-to-t from-background/85 to-transparent px-3 pb-2 pt-8 text-[11px] text-muted-foreground">
+                <span>Detected layout</span>
+                <span>Ambiguity: {detections.quality.ambiguity}</span>
+              </div>
             </div>
           </div>
         ) : null}
