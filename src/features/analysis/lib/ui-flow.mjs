@@ -470,7 +470,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
-  "chart-series": "Chart card with text fallback",
+  "chart-series": "Chart card with accessible text summary",
   "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
@@ -679,7 +679,7 @@ function buildGeneratedSections(
   const groups = [
     ...patterns.appShells.map((pattern) => sectionFromPattern(pattern, byId, "app-shell", "Application shell", "Navigation and page regions grouped as landmarks.", "grid gap-3")),
     ...patterns.dialogPanels.map((pattern) => sectionFromPattern(pattern, byId, "dialog-panel", "Dialog surface", "Modal-ready content with close and action affordances.", "grid gap-3")),
-    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse fallback content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
+    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse empty-state content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
     ...patterns.repeatedLists.map((pattern) => sectionFromPattern(pattern, byId, "repeated-list", "Repeated list", "Rows share rhythm, spacing, and action placement.", "grid gap-2")),
     ...patterns.repeatedGrids.map((pattern) => sectionFromPattern(pattern, byId, "repeated-grid", "Card grid", "Repeated cards snapped into a responsive grid.", "grid gap-3 sm:grid-cols-2")),
     ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
@@ -846,7 +846,7 @@ export function CorrectionGridReference() {
               <div className="grid max-w-sm gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase">Empty state</p>
-                  <p className="text-sm font-medium">Fallback content with recovery action</p>
+                  <p className="text-sm font-medium">Empty-state content with recovery action</p>
                 </div>
                 <div className="grid gap-2 rounded border p-3" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
                   {pattern.children.map((childId) => {
