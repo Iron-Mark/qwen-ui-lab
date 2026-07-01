@@ -50,6 +50,7 @@ Generated packages are intended as reviewable starter code, not a finished produ
 npm run lint
 npm test
 npm run build
+npm run validate:docs
 npm run validate:assets
 npm run validate:prod:preview
 ```

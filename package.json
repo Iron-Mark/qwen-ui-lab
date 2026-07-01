@@ -13,6 +13,7 @@
     "test:e2e:pwa": "playwright test --config=playwright.pwa.config.ts",
     "start:prod:e2e": "node scripts/start-prod-e2e.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "validate:docs": "node scripts/validate-doc-links.mjs",
     "validate:assets": "node scripts/validate-public-assets.mjs",
     "generate:app-icons": "node scripts/generate-app-icons.mjs",
     "deploy:env:demo": "node scripts/validate-deploy-env.mjs --target=demo",

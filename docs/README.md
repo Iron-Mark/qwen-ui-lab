@@ -60,6 +60,7 @@ See [Architecture](./ARCHITECTURE.md) for the folder rules and feature ownership
 | `npm run lint` | Run ESLint. |
 | `npx tsc --noEmit` | Run TypeScript without writing build output. |
 | `npm run build` | Production build. |
+| `npm run validate:docs` | Check local Markdown links in README.md and docs/. |
 | `npm run check` | Lint plus unit tests. |
 | `npm run check:full` | Lint, unit tests, and production build. |
 | `npm run test:e2e` | Playwright smoke tests with offline mocks. |
