@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ShareHashFallbackContent } from "@/features/share/components/ShareHashFallbackContent";
 import { SharePageContent } from "@/features/share/components/SharePageContent";
 import {
   createShareRouteMetadataFromParams,
@@ -14,6 +15,11 @@ export async function generateMetadata(props: ShareRouteProps) {
 }
 
 export default async function SharePage({ params }: ShareRouteProps) {
+  const { id } = await params;
+  if (id === "local") {
+    return <ShareHashFallbackContent />;
+  }
+
   const model = await resolveSharePageModel({ params });
 
   if (!model) {
