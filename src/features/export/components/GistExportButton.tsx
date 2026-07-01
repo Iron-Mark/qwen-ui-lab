@@ -73,15 +73,15 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
+        "Open gist.github.com, paste the copied component into a new secret gist, and save.";
 
       const copyResult = await copy(text, "Code copied for manual gist paste");
       const copied = copyResult.ok;
 
       toast(
         copied
-          ? `Gist export unavailable — code copied. ${instructions} (${gistUrl})`
-          : `Gist export unavailable. ${instructions} (${gistUrl})`,
+          ? `Component copied. GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`
+          : `GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`,
         copied ? "warning" : "error",
       );
 

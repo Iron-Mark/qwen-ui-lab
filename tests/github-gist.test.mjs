@@ -19,16 +19,16 @@ test("canUseGithubGist is true with trimmed token", () => {
   assert.equal(getGithubGistToken({ GITHUB_TOKEN: " ghp_test " }), "ghp_test");
 });
 
-test("buildGithubGistUnavailablePayload returns fallback instructions", () => {
+test("buildGithubGistUnavailablePayload returns product-facing setup instructions", () => {
   assert.deepEqual(buildGithubGistUnavailablePayload(), {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export is not configured. Set GITHUB_TOKEN on the server.",
+      "GitHub Gist export needs setup before it can create links automatically.",
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.",
+        "Open gist.github.com, paste the copied component into a new secret gist, and save.",
     },
   });
 });

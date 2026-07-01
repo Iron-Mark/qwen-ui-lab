@@ -253,12 +253,12 @@ export const zh = {
     exportPackageFilesLabel: "个文件",
     exportPackageFilesTab: "文件",
     exportPackageChangesTab: "变更",
-    exportPackageCopyTab: "包说明",
+    exportPackageCopyTab: "包备注",
     exportPackageFilesIntro:
       "包导出会下载这些文件组成的 zip。直接组件下载仅导出 TSX 文件。",
     exportPackageChangesIntro: "相比上传截图，已完成：",
     exportPackageCopyIntro:
-      "这是团队成员在导入生成组件前查看的包说明。",
+      "在将生成包导入项目之前，可用这些备注完成复核。",
     exportMetricFiles: "文件",
     exportMetricRegions: "区域",
     exportMetricPrimitives: "原语",

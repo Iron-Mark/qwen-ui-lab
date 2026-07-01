@@ -222,7 +222,7 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /bundle copy/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /package notes/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /download package/i })).toBeVisible();
 
   const layout = await dialog.evaluate((node) => {
@@ -411,7 +411,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
 
   await page.getByTestId("gist-export-button").click();
-  await expect(page.getByText(/Gist export unavailable/i)).toBeVisible({
+  await expect(page.getByText(/GitHub Gist needs setup/i)).toBeVisible({
     timeout: 5_000,
   });
 
@@ -480,7 +480,7 @@ test("export package dialog keeps tabs and actions visible on mobile widths", as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /bundle copy/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /package notes/i })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: /download package/i }),
   ).toBeVisible();

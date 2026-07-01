@@ -19,7 +19,7 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 | 0:00-1:00 | `/demo` | The dashboard sample loads automatically and runs the same analysis pipeline as uploaded screenshots. |
 | 1:00-2:00 | Analysis result | Show the screenshot, detected regions, plan cards, confidence reasons, and editable detection boxes. |
 | 2:00-3:00 | Generated preview | Regenerate after edits, compare the screenshot with the generated component, and point out responsive assumptions. |
-| 3:00-4:00 | Export package | Open the export dialog. Review `Files`, `Changes`, and `Bundle copy`; use **Download component** or package export actions. |
+| 3:00-4:00 | Export package | Open the export dialog. Review `Files`, `Changes`, and `Package notes`; use **Download component** or package export actions. |
 | 4:00-5:00 | `/design-system` | Browse reusable components, Laws of UX references, preview modes, and snippet export. |
 
 ## Sample Routes

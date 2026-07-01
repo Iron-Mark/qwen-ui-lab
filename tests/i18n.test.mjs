@@ -120,8 +120,8 @@ test("en public copy avoids test-runner wording in sample picker labels", () => 
   assert.doesNotMatch(enDictionarySource, /domainUiLaws:\s*"UILaws"/);
 });
 
-test("export package tabs keep explicit bundle-copy language", () => {
-  assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Bundle copy"/);
-  assert.match(enDictionarySource, /This is the bundle copy a teammate sees/);
-  assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"包说明"/);
+test("export package tabs use product-facing package notes language", () => {
+  assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Package notes"/);
+  assert.match(enDictionarySource, /Use these notes to review the generated package/);
+  assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"包备注"/);
 });

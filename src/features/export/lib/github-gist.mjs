@@ -5,14 +5,14 @@
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
+  "Open gist.github.com, paste the copied component into a new secret gist, and save.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export is not configured. Set GITHUB_TOKEN on the server.",
+      "GitHub Gist export needs setup before it can create links automatically.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,
