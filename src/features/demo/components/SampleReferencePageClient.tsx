@@ -42,7 +42,7 @@ export function SampleReferencePageClient({
                 {label} sample analysis
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Inspect the detected UI and export package using a bundled
+                Inspect the detected UI and export package using a sample
                 screenshot.
               </p>
             </div>

@@ -13,22 +13,22 @@ export type DemoRoutePageProps = {
 
 export function createDemoRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Sample reference",
+    title: "Sample screenshot",
     description:
       "Sample screenshots for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React package.",
     path: "/demo",
     keywords: [
       "Qwen UI sample",
-      "sample reference",
+      "sample screenshot",
       "UI archetype export",
       "React package export",
     ],
     ogImage: "/opengraph-image",
-    ogImageAlt: "qwen-ui-lab sample reference workflow",
+    ogImageAlt: "qwen-ui-lab sample screenshot workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "Screenshot-to-React sample reference",
+    twitterImageAlt: "Screenshot-to-React sample screenshot",
     shareSnippet:
-      "Open a sample reference, inspect the detected UI, and review the export package.",
+      "Open a sample screenshot, inspect the detected UI, and review the export package.",
   });
 }
 
@@ -50,11 +50,11 @@ export function getSampleReferenceRouteLabel(value: string) {
 
 export function getDemoRouteStructuredDataInput() {
   return {
-    title: "Sample reference",
+    title: "Sample screenshot",
     description:
       "Sample screenshots with generated output for common UI archetypes.",
     path: "/demo",
-    breadcrumbLabel: "Sample reference",
+    breadcrumbLabel: "Sample screenshot",
     about: ["Screenshot sample", "UI archetype analysis", "React export"],
     callToAction:
       "Run a sample layout and review the export package.",

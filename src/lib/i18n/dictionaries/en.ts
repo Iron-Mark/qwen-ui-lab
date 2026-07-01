@@ -7,7 +7,7 @@ export const en = {
       "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
-    sampleReference: "Sample reference",
+    sampleReference: "Sample screenshot",
     trustBrowserSafe: "Browser-safe by default",
     trustOffline: "Runs locally",
     benefitUploadLabel: "Plan",
@@ -51,7 +51,7 @@ export const en = {
     descriptionLead: "This link includes",
     descriptionTrail: "- summary and detected layout only, no source files.",
     backToWorkflow: "Back to workflow",
-    sampleReference: "Sample reference",
+    sampleReference: "Sample screenshot",
     metadataNotFoundTitle: "Share not found",
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
