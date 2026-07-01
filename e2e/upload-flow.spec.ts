@@ -386,6 +386,8 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.getByTestId("export-package-review").click();
   const exportDialog = page.getByRole("dialog", { name: /review export package/i });
   await expect(exportDialog).toBeVisible();
+  await expect(exportDialog.getByText(/more export options/i)).toBeVisible();
+  await exportDialog.getByText(/more export options/i).click();
 
   await exportDialog.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Component copied/i)).toBeVisible({

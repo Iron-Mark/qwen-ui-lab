@@ -288,6 +288,7 @@ export const zh = {
     exportCopyAll: "复制全部",
     exportDownload: "下载组件",
     exportDesignDoc: "Design.md",
+    exportMoreOptions: "\u66f4\u591a\u5bfc\u51fa\u9009\u9879",
     exportDownloadPackage: "下载包",
     exportRepoInstructions: "打开 PR 指引",
     toastScaffoldCopied: "组件已复制",

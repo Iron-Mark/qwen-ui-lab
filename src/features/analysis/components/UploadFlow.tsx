@@ -13,6 +13,7 @@ import {
   Archive,
   Bug,
   Check,
+  ChevronDown,
   CircleAlert,
   Download,
   Eye,
@@ -1820,59 +1821,65 @@ function ExportPackageReviewDialog({
           </TabsContent>
         </Tabs>
 
-        <DialogActionFooter
-          data-testid="export-package-actions"
-          align="between"
-        >
-          <DialogActionGroup>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="min-h-11 gap-2"
-              onClick={onExportDesignMarkdown}
-              data-testid="export-design-md"
-            >
-              <FileText className="size-4" aria-hidden />
-              {copy.exportDesignDoc}
-            </Button>
-            <ExportButton
-              text={preview.codePreview}
-              variant="copy"
-              label={copy.exportCopyAll}
-              showToast={false}
-              analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
-              onCopied={() => onExported(copy.toastScaffoldCopied)}
-            />
-            <ExportButton
-              text={preview.codePreview}
-              variant="export"
-              label={copy.exportDownload}
-              filename={exportFilename}
-              showToast={false}
-              analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
-              onCopied={() => onExported(copy.toastScaffoldExported)}
-            />
-            <GistExportButton
-              text={artifact.generatedCode}
-              filename={exportFilename}
-              description="qwen-ui-lab export package"
-              analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
-            />
-          </DialogActionGroup>
+        <DialogActionFooter data-testid="export-package-actions" align="between">
+          <details className="group min-w-0 rounded-xl border border-border/70 bg-muted/25 p-1">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-3 text-sm font-medium text-foreground transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
+              <span>{copy.exportMoreOptions}</span>
+              <ChevronDown
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                aria-hidden
+              />
+            </summary>
+            <DialogActionGroup className="border-t border-border/70 px-2 py-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="min-h-11 gap-2"
+                onClick={onExportDesignMarkdown}
+                data-testid="export-design-md"
+              >
+                <FileText className="size-4" aria-hidden />
+                {copy.exportDesignDoc}
+              </Button>
+              <ExportButton
+                text={preview.codePreview}
+                variant="copy"
+                label={copy.exportCopyAll}
+                showToast={false}
+                analyticsSource="upload_flow"
+                analyticsFeature="generated_scaffold"
+                onCopied={() => onExported(copy.toastScaffoldCopied)}
+              />
+              <ExportButton
+                text={preview.codePreview}
+                variant="export"
+                label={copy.exportDownload}
+                filename={exportFilename}
+                showToast={false}
+                analyticsSource="upload_flow"
+                analyticsFeature="generated_scaffold"
+                onCopied={() => onExported(copy.toastScaffoldExported)}
+              />
+              <GistExportButton
+                text={artifact.generatedCode}
+                filename={exportFilename}
+                description="qwen-ui-lab export package"
+                analyticsSource="upload_flow"
+                analyticsFeature="generated_scaffold"
+              />
+              <RepoExportButton
+                text={artifact.generatedCode}
+                filename={exportFilename}
+                description="qwen-ui-lab export package"
+                label={copy.exportRepoInstructions}
+                className="min-h-11"
+                analyticsSource="upload_flow"
+                analyticsFeature="generated_scaffold"
+              />
+            </DialogActionGroup>
+          </details>
           <DialogActionGroup className="sm:justify-end">
-            <RepoExportButton
-              text={artifact.generatedCode}
-              filename={exportFilename}
-              description="qwen-ui-lab export package"
-              label={copy.exportRepoInstructions}
-              className="min-h-11"
-              analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
-            />
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}

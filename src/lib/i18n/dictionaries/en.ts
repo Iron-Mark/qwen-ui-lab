@@ -298,6 +298,7 @@ export const en = {
     exportCopyAll: "Copy all",
     exportDownload: "Download component",
     exportDesignDoc: "Design.md",
+    exportMoreOptions: "More export options",
     exportDownloadPackage: "Download package",
     exportRepoInstructions: "Open PR instructions",
     toastScaffoldCopied: "Component copied",
