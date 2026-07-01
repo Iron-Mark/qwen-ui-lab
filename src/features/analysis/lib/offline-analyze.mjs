@@ -15,7 +15,7 @@ import {
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Bundled reference samples — exact filename match (normalized). */
+/** Sample screenshots — exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
@@ -958,7 +958,7 @@ function inferKnownSampleArchetypeId(sampleKey) {
 
 function buildKnownSampleElements(archetypeId) {
   const commonReason =
-    "Bundled reference metadata identifies this region; exported as an editable primitive.";
+    "Sample screenshot metadata identifies this region; exported as an editable primitive.";
   const templates = {
     dashboard: [
       ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],

@@ -2079,7 +2079,7 @@ function GeneratedMockPrimitive({
 }
 
 export interface UploadFlowProps {
-  /** Bundled reference sample id (dashboard, auth, mobile, …) for /demo */
+  /** Sample screenshot id (dashboard, auth, mobile, …) for /demo */
   sampleReferenceId?: string;
   /** Load sample + run analyze on mount (sample route) */
   autoRunSample?: boolean;
