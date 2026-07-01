@@ -203,22 +203,26 @@ export function buildScaffoldZipEntries({ content, filename, description }) {
   return buildFallbackScaffoldZipEntries({ content, filename: safeFilename, description });
 }
 
-function buildFallbackScaffoldZipEntries({ content, filename, description }) {
+export function buildScaffoldPackageFileMap(filename) {
   const stem = toExportStem(filename);
   const componentPath = `src/components/generated/${stem}.tsx`;
-  const recipePath = `src/components/generated/${stem}.recipe.json`;
-  const manifestPath = `src/components/generated/${stem}.manifest.json`;
-  const tokensPath = `src/components/generated/${stem}.tokens.css`;
-  const detectionPath = `docs/${stem}.detection.md`;
-  const dependencies = inferShadcnDependencies(content, inferPrimitiveMapFromImports(content));
-  const files = {
-    designDoc: "DESIGN.md",
-    component: componentPath,
-    recipe: recipePath,
-    manifest: manifestPath,
-    tokens: tokensPath,
-    detectionSummary: detectionPath,
+
+  return {
+    stem,
+    files: {
+      designDoc: "DESIGN.md",
+      component: componentPath,
+      recipe: `src/components/generated/${stem}.recipe.json`,
+      manifest: `src/components/generated/${stem}.manifest.json`,
+      tokens: `src/components/generated/${stem}.tokens.css`,
+      detectionSummary: `docs/${stem}.detection.md`,
+    },
   };
+}
+
+function buildFallbackScaffoldZipEntries({ content, filename, description }) {
+  const { stem, files } = buildScaffoldPackageFileMap(filename);
+  const dependencies = inferShadcnDependencies(content, inferPrimitiveMapFromImports(content));
   const fallbackBlueprint = {
     schema: SCAFFOLD_RECIPE_SCHEMA,
     generator: "manual-scaffold-export",
@@ -279,34 +283,20 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
         dependencies,
       }),
     },
-    { name: componentPath, content },
-    { name: recipePath, content: `${JSON.stringify(recipe, null, 2)}\n` },
-    { name: manifestPath, content: `${JSON.stringify(manifest, null, 2)}\n` },
-    { name: tokensPath, content: buildTokenCss(fallbackBlueprint.designTokens) },
-    { name: detectionPath, content: buildDetectionSummaryMarkdown(fallbackBlueprint) },
+    { name: files.component, content },
+    { name: files.recipe, content: `${JSON.stringify(recipe, null, 2)}\n` },
+    { name: files.manifest, content: `${JSON.stringify(manifest, null, 2)}\n` },
+    { name: files.tokens, content: buildTokenCss(fallbackBlueprint.designTokens) },
+    { name: files.detectionSummary, content: buildDetectionSummaryMarkdown(fallbackBlueprint) },
   ];
 }
 
 function buildProductionScaffoldZipEntries({ content, filename, description, blueprint }) {
-  const stem = toExportStem(filename);
-  const designPath = "DESIGN.md";
-  const componentPath = `src/components/generated/${stem}.tsx`;
-  const recipePath = `src/components/generated/${stem}.recipe.json`;
-  const manifestPath = `src/components/generated/${stem}.manifest.json`;
-  const tokensPath = `src/components/generated/${stem}.tokens.css`;
-  const detectionPath = `docs/${stem}.detection.md`;
+  const { stem, files } = buildScaffoldPackageFileMap(filename);
   const dependencies = inferShadcnDependencies(content, blueprint.shadcnPrimitiveMap);
-  const fileMap = {
-    designDoc: designPath,
-    component: componentPath,
-    recipe: recipePath,
-    manifest: manifestPath,
-    tokens: tokensPath,
-    detectionSummary: detectionPath,
-  };
   const recipe = {
     ...blueprint,
-    files: fileMap,
+    files,
     integration: {
       entryComponent: blueprint.componentName,
       importPath: `@/components/generated/${stem}`,
@@ -321,7 +311,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
   const manifest = buildProductionManifest({
     blueprint,
     dependencies,
-    files: fileMap,
+    files,
     stem,
   });
 
@@ -330,27 +320,27 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
       name: "README.md",
       content: buildProductionScaffoldReadme({
         description,
-        files: fileMap,
+        files,
         componentName: blueprint.componentName,
         blueprint,
         dependencies,
       }),
     },
     {
-      name: designPath,
+      name: files.designDoc,
       content: buildPackageDesignMarkdown({
         description,
-        files: fileMap,
+        files,
         componentName: blueprint.componentName,
         blueprint,
         dependencies,
       }),
     },
-    { name: componentPath, content },
-    { name: recipePath, content: `${JSON.stringify(recipe, null, 2)}\n` },
-    { name: manifestPath, content: `${JSON.stringify(manifest, null, 2)}\n` },
-    { name: tokensPath, content: buildTokenCss(blueprint.designTokens) },
-    { name: detectionPath, content: buildDetectionSummaryMarkdown(blueprint) },
+    { name: files.component, content },
+    { name: files.recipe, content: `${JSON.stringify(recipe, null, 2)}\n` },
+    { name: files.manifest, content: `${JSON.stringify(manifest, null, 2)}\n` },
+    { name: files.tokens, content: buildTokenCss(blueprint.designTokens) },
+    { name: files.detectionSummary, content: buildDetectionSummaryMarkdown(blueprint) },
   ];
 }
 

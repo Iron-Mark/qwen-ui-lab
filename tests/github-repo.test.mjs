@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildRepoCompareExport,
+  buildScaffoldPackageFileMap,
   buildScaffoldReadme,
   buildScaffoldZipEntries,
   canUseGithubRepoExport,
@@ -94,6 +95,20 @@ test("extractProductionScaffoldBlueprint handles CRLF generated scaffolds", () =
   assert.ok(blueprint);
   assert.equal(blueprint.screenIntent.label, "Dashboard workspace");
   assert.equal(blueprint.shadcnPrimitiveMap["primary-action"], "Button");
+});
+
+test("buildScaffoldPackageFileMap keeps export package paths consistent", () => {
+  assert.deepEqual(buildScaffoldPackageFileMap("detected dashboard!.tsx"), {
+    stem: "detected-dashboard",
+    files: {
+      designDoc: "DESIGN.md",
+      component: "src/components/generated/detected-dashboard.tsx",
+      recipe: "src/components/generated/detected-dashboard.recipe.json",
+      manifest: "src/components/generated/detected-dashboard.manifest.json",
+      tokens: "src/components/generated/detected-dashboard.tokens.css",
+      detectionSummary: "docs/detected-dashboard.detection.md",
+    },
+  });
 });
 
 test("buildScaffoldZipEntries creates export package for offline scaffolds", () => {
