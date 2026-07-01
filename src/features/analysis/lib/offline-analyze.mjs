@@ -29,7 +29,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "dashboard-reference.svg is the sample screenshot (SVG, landscape admin dashboard).",
+        body: "Dashboard sample screenshot: landscape admin dashboard layout.",
       },
       {
         title: "Layout Read",
@@ -45,7 +45,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the SVG reference, wire real API data, and swap chart libraries if product standards require it.",
+        body: "Verify spacing against the source screenshot, wire real API data, and swap chart libraries if product standards require it.",
       },
     ],
     generatedCode: `import { StatCard } from "@/features/home/components/StatCard";
@@ -55,7 +55,7 @@ import { ActivityList } from "@/features/home/components/ActivityList";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Dashboard export based on dashboard-reference.svg">
+    <section aria-label="Dashboard export">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -82,7 +82,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "auth-reference.svg is the sample screenshot (SVG, centered authentication card on a neutral canvas).",
+        body: "Sign-in sample screenshot: centered authentication card on a neutral canvas.",
       },
       {
         title: "Layout Read",
@@ -98,7 +98,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the SVG reference, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
+        body: "Verify spacing against the source screenshot, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
       },
     ],
     generatedCode: `import { Button } from "@/components/ui/button";
@@ -109,7 +109,7 @@ import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
 export function GeneratedAuthScreen() {
   return (
-    <main aria-label="Auth export based on auth-reference.svg" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth export" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -140,7 +140,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "mobile-reference.svg is the sample screenshot (SVG, portrait phone frame ~390×844).",
+        body: "Mobile app sample screenshot: portrait phone frame around 390×844.",
       },
       {
         title: "Layout Read",
@@ -166,7 +166,7 @@ import { BottomNav } from "@/features/mobile/components/BottomNav";
 
 export function GeneratedMobileShell() {
   return (
-    <div aria-label="Mobile export based on mobile-reference.svg" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile export" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -195,7 +195,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "landing-reference.svg is the sample screenshot (SVG, wide marketing landing ~1440×900).",
+        body: "Landing page sample screenshot: wide marketing page around 1440×900.",
       },
       {
         title: "Layout Read",
@@ -211,7 +211,7 @@ export function GeneratedMobileShell() {
       },
       {
         title: "Human Review",
-        body: "Verify hero copy hierarchy against the SVG reference, wire analytics on primary CTA, and validate responsive stacking at md/lg breakpoints.",
+        body: "Verify hero copy hierarchy against the source screenshot, wire analytics on primary CTA, and validate responsive stacking at md/lg breakpoints.",
       },
     ],
     generatedCode: `import { HeroSection } from "@/features/landing/components/HeroSection";
@@ -225,7 +225,7 @@ export function GeneratedLanding() {
     <>
       <SiteNav logo="qwen-ui-lab" links={["Features", "Pricing", "Docs"]} />
       <HeroSection
-        aria-label="Hero from landing-reference.svg"
+        aria-label="Landing hero"
         headline="Ship UI faster with AI-assisted scaffolding"
         primaryCta="Start free"
         secondaryCta="View sample"
@@ -250,7 +250,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "settings-reference.svg is the sample screenshot (SVG, desktop settings layout with left rail).",
+        body: "Settings sample screenshot: desktop layout with left rail.",
       },
       {
         title: "Layout Read",
@@ -266,7 +266,7 @@ export function GeneratedLanding() {
       },
       {
         title: "Human Review",
-        body: "Verify toggle defaults against the SVG reference, wire optimistic save feedback, and confirm mobile nav collapses to a sheet drawer.",
+        body: "Verify toggle defaults against the source screenshot, wire optimistic save feedback, and confirm mobile nav collapses to a sheet drawer.",
       },
     ],
     generatedCode: `import { SettingsNav } from "@/features/settings/components/SettingsNav";
@@ -276,7 +276,7 @@ import { SaveBar } from "@/features/settings/components/SaveBar";
 
 export function GeneratedSettings() {
   return (
-    <section aria-label="Settings export based on settings-reference.svg" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings export" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -311,7 +311,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "ecommerce-reference.svg is the sample screenshot (SVG, desktop catalog with left filter rail).",
+        body: "Shop catalog sample screenshot: desktop catalog with left filter rail.",
       },
       {
         title: "Layout Read",
@@ -327,7 +327,7 @@ export function GeneratedSettings() {
       },
       {
         title: "Human Review",
-        body: "Verify filter state against the SVG reference, wire cart persistence, and validate grid reflow at sm/md/lg breakpoints.",
+        body: "Verify filter state against the source screenshot, wire cart persistence, and validate grid reflow at sm/md/lg breakpoints.",
       },
     ],
     generatedCode: `import { ShopHeader } from "@/features/catalog/components/ShopHeader";
@@ -338,7 +338,7 @@ import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
 export function GeneratedCatalog() {
   return (
-    <div aria-label="Catalog export based on ecommerce-reference.svg" className="min-h-dvh bg-background">
+    <div aria-label="Catalog export" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -1343,7 +1343,7 @@ export function GeneratedAuthScreen() {
     case "modal":
       return `export function GeneratedDialogOverlay() {
   return (
-    <div aria-label="Dialog export based on ${safeName}" className="fixed inset-0 grid place-items-center p-4">
+    <div aria-label="Generated dialog" className="fixed inset-0 grid place-items-center p-4">
       <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border p-6 shadow-xl">
         <button type="button" aria-label="Close dialog">Close</button>
         <h1 className="mt-3 text-xl font-semibold">Dialog title</h1>
@@ -1359,7 +1359,7 @@ import { Card } from "@/components/ui/card";
 
 export function GeneratedEmptyState() {
   return (
-    <main aria-label="Empty state export based on ${safeName}" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Generated empty state" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
         <p className="text-sm text-muted-foreground">Connect real data, upload a source, or create the first item.</p>
@@ -1372,7 +1372,7 @@ export function GeneratedEmptyState() {
       return `export function GeneratedLanding() {
   return (
     <>
-      <section aria-label="Hero from ${safeName}" className="py-16 text-center">{/* hero */}</section>
+      <section aria-label="Generated hero" className="py-16 text-center">{/* hero */}</section>
       <section aria-label="Features" className="grid gap-6 md:grid-cols-3">{/* features */}</section>
     </>
   );
@@ -1380,7 +1380,7 @@ export function GeneratedEmptyState() {
     case "ecommerce":
       return `export function GeneratedCatalog() {
   return (
-    <div aria-label="Catalog export based on ${safeName}" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Generated catalog" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -3044,7 +3044,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     {
       title: "Visual Input",
       body: [
-        `${fileName} is treated as the UI reference (${context.readableSize}, ${file.type || "unknown type"}).`,
+        `${fileName} is treated as the source screenshot (${context.readableSize}, ${file.type || "unknown type"}).`,
         context.dimensionLine,
         formFactor.id !== "unknown"
           ? `Form factor signal: ${formFactor.label}.`

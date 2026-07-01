@@ -1,6 +1,6 @@
 # qwen-ui-lab
 
-Screenshot-to-React workflow for turning UI references into reviewable React + Tailwind starter packages.
+Screenshot-to-React workflow for turning UI screenshots into reviewable React + Tailwind starter packages.
 
 The app lets you upload a screenshot, inspect detected UI structure, refine detection boxes, generate a component preview, and export a package with code, design notes, tokens, recipe metadata, and detection notes.
 

@@ -430,7 +430,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Screenshot-to-React tool for converting UI references into reviewable React/Tailwind export packages.",
+            "Screenshot-to-React tool for converting UI screenshots into reviewable React/Tailwind export packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,
