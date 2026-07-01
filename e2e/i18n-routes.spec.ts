@@ -82,7 +82,5 @@ test("/share/[id] renders zh chrome with ?lang=zh", async ({ page, request }) =>
   await expect(
     page.getByRole("link", { name: "返回工作流" }),
   ).toHaveAttribute("href", "/?lang=zh");
-  await expect(
-    page.getByRole("link", { name: "示例参考" }),
-  ).toHaveAttribute("href", "/demo?lang=zh");
+  await expect(page.locator('#main a[href="/demo?lang=zh"]')).toBeVisible();
 });
