@@ -212,6 +212,7 @@ function recomputeCorrectedDetections(detections) {
       activeElements.length
     : 0;
   const editedCount = elements.filter((element) => element.userEdited).length;
+  const excludedCount = elements.filter((element) => element.included === false).length;
   const correctionPenalty = Math.min(0.1, editedCount * 0.015);
 
   return {
@@ -222,6 +223,7 @@ function recomputeCorrectedDetections(detections) {
       confidence: clampConfidence(averageConfidence - correctionPenalty),
       elementCount: activeElements.length,
       correctedElementCount: editedCount,
+      excludedElementCount: excludedCount,
       strategy: editedCount
         ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
         : detections.quality?.strategy,
@@ -342,6 +344,14 @@ function createGeneratedCodeFromDetections(fileName, detections) {
   const responsiveIntent = buildCorrectedResponsiveBlueprint(detections);
   const screenIntent = buildCorrectedScreenIntentBlueprint(detections);
   const layoutRegions = buildCorrectedLayoutRegionBlueprint(patterns, elements);
+  const correctionSummary = {
+    activeElements: elements.length,
+    appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
+    excludedBoxes: detections.quality?.excludedElementCount ?? 0,
+    sourceOfTruth: detections.quality?.correctedElementCount
+      ? "Manual corrections are the source of truth for this regenerated scaffold."
+      : "Detection boxes are the source of truth for this regenerated scaffold.",
+  };
 
   return `import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -451,6 +461,8 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions: LayoutRegion[] = ${JSON.stringify(layoutRegions, null, 2)};
 
+const correctionSummary = ${JSON.stringify(correctionSummary, null, 2)};
+
 const groupedElementIds = new Set(
   [
     ...correctedPatterns.appShells,
@@ -521,8 +533,8 @@ export default function ReviewedScreenshotStarter() {
               Screenshot starter component
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Built from {correctedElements.length} reviewed UI regions with shadcn-style primitives,
-              responsive sections, and semantic landmarks ready for real data wiring.
+              Built from {correctionSummary.activeElements} active UI regions with shadcn-style
+              primitives, responsive sections, and semantic landmarks ready for real data wiring.
             </p>
           </div>
         </header>
@@ -564,10 +576,10 @@ function ImplementationChecklist() {
           Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
         <p>
           <span className="block font-medium text-foreground">Active elements</span>
-          {correctedElements.length} reviewed primitives
+          {correctionSummary.activeElements} reviewed primitives
         </p>
         <p>
           <span className="block font-medium text-foreground">Layout regions</span>
@@ -575,8 +587,15 @@ function ImplementationChecklist() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
-          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+          {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
+        <p>
+          <span className="block font-medium text-foreground">Applied edits</span>
+          {correctionSummary.appliedEdits} manual edits, {correctionSummary.excludedBoxes} excluded boxes
+        </p>
+      </CardContent>
+      <CardContent className="border-t pt-4 text-sm text-muted-foreground">
+        {correctionSummary.sourceOfTruth}
       </CardContent>
     </Card>
   );

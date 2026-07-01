@@ -1860,6 +1860,9 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
   assert.match(regenerated.generatedCode, /CorrectionGridReference/);
+  assert.match(regenerated.generatedCode, /const correctionSummary/);
+  assert.match(regenerated.generatedCode, /Applied edits/);
+  assert.match(regenerated.generatedCode, /Manual corrections are the source of truth/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
@@ -1900,6 +1903,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
     ),
   );
   assert.equal(regenerated.detections.quality.correctedElementCount, 2);
+  assert.equal(regenerated.detections.quality.excludedElementCount, 1);
   assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
 
   const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
