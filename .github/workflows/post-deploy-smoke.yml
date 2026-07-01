@@ -20,9 +20,9 @@ permissions:
 
 jobs:
   smoke:
-    name: Smoke deployed routes
+    name: Smoke deployed app
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       DEPLOY_URL: ${{ github.event.inputs.deploy_url || github.event.client_payload.deploy_url || vars.PRODUCTION_DEPLOY_URL }}
       EXPECT_LIVE_ANALYSIS: ${{ github.event.inputs.expect_live_analysis || github.event.client_payload.expect_live_analysis || 'false' }}
@@ -49,3 +49,9 @@ jobs:
 
       - name: Run post-deploy smoke checks
         run: npm run smoke:deploy
+
+      - name: Install Chromium for browser smoke
+        run: npx playwright install --with-deps chromium
+
+      - name: Run share/export browser smoke
+        run: npm run smoke:share-live

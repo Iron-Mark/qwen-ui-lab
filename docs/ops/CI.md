@@ -12,7 +12,7 @@ Branch policy: normal work starts on `dev`; production promotion is a protected 
 | [pr-e2e-smoke.yml](../../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract + upload-flow (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
 | [ci.yml](../../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
-| [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route smoke against a deployed URL |
+| [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route/API smoke plus browser share/export smoke against a deployed URL |
 
 PR checks stay fast on purpose. Heavier browser work runs on main or on the nightly schedule.
 
@@ -137,6 +137,7 @@ To make production LCP breaches block CI without changing workflow YAML, set rep
 | `npm run test:e2e` | Full Playwright suite |
 | `npm run test:e2e:pr-smoke` | PR smoke subset (mobile + a11y + live-qwen-contract + upload-flow) |
 | `npm run test:e2e:visual` | Visual regression spec only |
+| `npm run smoke:share-live` | Browser smoke for deployed share/export behavior |
 | `npm run perf:lcp-budget` | Production LCP check |
 | `npm run perf:lighthouse` | Local build + Lighthouse (see [POST_LAUNCH.md](./POST_LAUNCH.md)) |
 
