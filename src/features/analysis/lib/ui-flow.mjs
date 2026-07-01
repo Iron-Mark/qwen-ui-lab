@@ -1040,31 +1040,27 @@ export function CorrectionGridReference() {
             <section
               key={pattern.id}
               aria-label="Detected data table"
-              className="space-y-2 overflow-x-auto border p-3"
+              className="space-y-2 border p-3"
               style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
             >
               <p className="text-xs font-semibold uppercase">Data table</p>
-              <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
-                <tbody>
+              <Table className="min-w-[28rem]">
+                <TableBody>
                   {Array.from({ length: Math.max(1, pattern.rows ?? 3) }).map((_, rowIndex) => (
-                    <tr key={rowIndex}>
+                    <TableRow key={rowIndex}>
                       {Array.from({ length: Math.max(1, pattern.columns ?? 3) }).map((_, columnIndex) => {
                         const childId = pattern.children[rowIndex * Math.max(1, pattern.columns ?? 3) + columnIndex];
                         const child = childId ? correctedElementById.get(childId) : null;
                         return (
-                          <td
-                            key={columnIndex}
-                            className="border-b px-3 py-2 align-top"
-                            style={{ borderColor: designTokens.border }}
-                          >
+                          <TableCell key={columnIndex}>
                             {child ? renderCorrectedPrimitive(child, designTokens) : "Cell"}
-                          </td>
+                          </TableCell>
                         );
                       })}
-                    </tr>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </section>
           ))}
         </div>

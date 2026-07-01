@@ -2310,38 +2310,26 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
     return (
-      <div className="mt-3 overflow-x-auto" aria-label={region.label}>
-        <table className="w-full min-w-[28rem] border-collapse text-left text-xs">
-          <thead>
-            <tr>
-              {Array.from({ length: columns }).map((_, columnIndex) => (
-                <th
-                  key={columnIndex}
-                  className="border-b px-2 py-1.5 font-semibold"
-                  style={{ borderColor: tokens.border }}
-                >
-                  Column {columnIndex + 1}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: rows }).map((_, rowIndex) => (
-              <tr key={rowIndex}>
-                {Array.from({ length: columns }).map((_, columnIndex) => (
-                  <td
-                    key={columnIndex}
-                    className="border-b px-2 py-1.5"
-                    style={{ borderColor: tokens.border }}
-                  >
-                    Cell {rowIndex + 1}.{columnIndex + 1}
-                  </td>
-                ))}
-              </tr>
+      <Table className="mt-3 min-w-[28rem] text-xs" aria-label={region.label}>
+        <TableHeader>
+          <TableRow>
+            {Array.from({ length: columns }).map((_, columnIndex) => (
+              <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: rows }).map((_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {Array.from({ length: columns }).map((_, columnIndex) => (
+                <TableCell key={columnIndex}>
+                  Cell {rowIndex + 1}.{columnIndex + 1}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     );
   }
 
