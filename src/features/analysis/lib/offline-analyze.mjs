@@ -1742,6 +1742,32 @@ const sampleData = {
   secondaryAction: "Open design notes",
 };
 
+const sampleCollections = {
+  rows: [
+    { title: "Queued review", detail: "Replace with a real list item" },
+    { title: "Ready for handoff", detail: "Connect this row to product data" },
+    { title: "Needs QA", detail: "Use loading, empty, and error states here" },
+  ],
+  cards: [
+    { title: "Overview", detail: "Card content placeholder" },
+    { title: "Activity", detail: "Swap for real entity data" },
+    { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
+    { title: "Review", detail: "Keep hierarchy from the screenshot" },
+  ],
+  metrics: [
+    { label: "Revenue", value: "$45.2K", trend: "+12% vs last period" },
+    { label: "Users", value: "12,340", trend: "+8% active" },
+    { label: "Conversion", value: "18.4%", trend: "-2% needs review" },
+    { label: "Tickets", value: "573", trend: "24 open" },
+  ],
+  tableRows: [
+    ["Acme Co", "Active", "$12.4K"],
+    ["Northstar", "Review", "$8.1K"],
+    ["Summit Labs", "Paused", "$4.8K"],
+  ],
+  chartValues: [42, 74, 55, 88, 63, 78, 48, 92],
+};
+
 const shadcnPrimitiveMap: Record<string, string> = {
   "app-shell": "App shell with semantic landmarks",
   "top-navigation": "semantic nav + Button ghost controls",
@@ -2260,16 +2286,24 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   }
 
   if (region.kind === "repeated-list" || primitive === "list-item") {
+    const rows = Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map(
+      (_, index) =>
+        sampleCollections.rows[index] ?? {
+          title: "Row " + (index + 1),
+          detail: "Replace with a real list item",
+        },
+    );
     return (
       <div className="mt-3 grid gap-2">
         <ul className="space-y-2" aria-label={region.label}>
-          {Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map((_, itemIndex) => (
+          {rows.map((item, itemIndex) => (
             <li
-              key={itemIndex}
+              key={item.title}
               className="rounded border px-2 py-1 text-xs"
               style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
             >
-              Row {itemIndex + 1} - repeated item
+              <span className="font-medium">{item.title}</span>
+              <span className="block opacity-70">{item.detail}</span>
             </li>
           ))}
         </ul>
@@ -2281,6 +2315,13 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   }
 
   if (region.kind === "repeated-grid" || primitive === "card-grid") {
+    const cards = Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map(
+      (_, index) =>
+        sampleCollections.cards[index] ?? {
+          title: "Card " + (index + 1),
+          detail: "Swap for real entity data",
+        },
+    );
     return (
       <div className="mt-3 grid gap-2">
         <div
@@ -2290,13 +2331,14 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           }}
           aria-label={region.label}
         >
-          {Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map((_, itemIndex) => (
+          {cards.map((item) => (
             <article
-              key={itemIndex}
+              key={item.title}
               className="rounded border p-2 text-xs"
               style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
             >
-              <p className="font-medium">Card {itemIndex + 1}</p>
+              <p className="font-medium">{item.title}</p>
+              <p className="mt-1 opacity-70">{item.detail}</p>
               <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
             </article>
           ))}
@@ -2310,6 +2352,14 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (region.kind === "stat-row" || primitive === "stat-row") {
     const cards = Math.max(2, region.cardCount ?? region.itemCount ?? 3);
+    const metrics = Array.from({ length: cards }).map(
+      (_, index) =>
+        sampleCollections.metrics[index] ?? {
+          label: "Metric " + (index + 1),
+          value: "0",
+          trend: "Connect to product data",
+        },
+    );
     return (
       <div
         className="mt-3 grid gap-2"
@@ -2318,15 +2368,15 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         }}
         aria-label={region.label + " KPI cards"}
       >
-        {Array.from({ length: cards }).map((_, itemIndex) => (
+        {metrics.map((metric) => (
           <article
-            key={itemIndex}
+            key={metric.label}
             className="rounded border p-3 text-xs"
             style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
           >
-            <p className="text-[11px] uppercase opacity-70">Metric {itemIndex + 1}</p>
-            <p className="mt-1 text-xl font-semibold">{["12,340", "$45.2K", "+18%", "573"][itemIndex % 4]}</p>
-            <p className="mt-1 text-[11px] opacity-70">Trend context</p>
+            <p className="text-[11px] uppercase opacity-70">{metric.label}</p>
+            <p className="mt-1 text-xl font-semibold">{metric.value}</p>
+            <p className="mt-1 text-[11px] opacity-70">{metric.trend}</p>
           </article>
         ))}
       </div>
@@ -2365,6 +2415,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "data-table" || primitive === "data-table") {
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
+    const tableRows = Array.from({ length: rows }).map(
+      (_, index) => sampleCollections.tableRows[index] ?? [],
+    );
     return (
       <div className="mt-3 grid gap-2 overflow-x-auto">
         <Table className="min-w-[28rem] text-xs" aria-label={region.label}>
@@ -2376,11 +2429,11 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.from({ length: rows }).map((_, rowIndex) => (
-              <TableRow key={rowIndex}>
+            {tableRows.map((row, rowIndex) => (
+              <TableRow key={row.join("-")}>
                 {Array.from({ length: columns }).map((_, columnIndex) => (
                   <TableCell key={columnIndex}>
-                    Cell {rowIndex + 1}.{columnIndex + 1}
+                    {row[columnIndex] ?? "Cell " + (rowIndex + 1) + "." + (columnIndex + 1)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -2396,7 +2449,6 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (region.kind === "chart-series" || primitive === "chart-series") {
     const bars = Math.max(3, region.seriesCount ?? region.itemCount ?? 5);
-    const heights = [42, 74, 55, 88, 63, 78, 48, 92];
     return (
       <div className="mt-3 grid gap-2">
         <div
@@ -2412,7 +2464,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               key={index}
               className="rounded-t"
               style={{
-                height: heights[index % heights.length] + "%",
+                height: sampleCollections.chartValues[index % sampleCollections.chartValues.length] + "%",
                 backgroundColor: tokens.accent,
               }}
             />

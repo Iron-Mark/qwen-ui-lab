@@ -515,6 +515,19 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "empty-state": "Card with centered recovery action",
 };
 
+const sampleSectionData = {
+  rows: ["Queued review", "Ready for handoff", "Needs QA"],
+  cards: ["Overview", "Activity", "Follow-up", "Review"],
+  metrics: ["$45.2K", "12,340", "18.4%", "573"],
+  tableColumns: ["Name", "Status", "Value"],
+  tableRows: [
+    ["Acme Co", "Active", "$12.4K"],
+    ["Northstar", "Review", "$8.1K"],
+    ["Summit Labs", "Paused", "$4.8K"],
+  ],
+  chartValues: [42, 74, 55, 88, 63, 78],
+};
+
 const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
 
 export default function ReviewedScreenshotStarter() {
@@ -673,10 +686,27 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
         {section.items.map((item) => (
           <PrimitivePreview key={item.id} element={item} />
         ))}
+        <SectionSampleDataHint kind={section.kind} />
         <SectionStateHint kind={section.kind} />
       </CardContent>
     </Card>
   );
+}
+
+function SectionSampleDataHint({ kind }: { kind: string }) {
+  const copy: Record<string, string> = {
+    "repeated-list": "Sample rows: " + sampleSectionData.rows.join(", "),
+    "repeated-grid": "Sample cards: " + sampleSectionData.cards.join(", "),
+    "stat-row": "Sample metrics: " + sampleSectionData.metrics.join(", "),
+    "data-table": "Sample table columns: " + sampleSectionData.tableColumns.join(", "),
+    "chart-panel": "Sample chart values: " + sampleSectionData.chartValues.join(", "),
+  };
+  const message = copy[kind];
+  return message ? (
+    <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
+      {message}. Replace this sample data before shipping.
+    </p>
+  ) : null;
 }
 
 function SectionStateHint({ kind }: { kind: string }) {
