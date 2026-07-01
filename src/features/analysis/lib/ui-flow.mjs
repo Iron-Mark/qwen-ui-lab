@@ -516,7 +516,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
 };
 
 const sampleSectionData = {
-  rows: ["Queued review", "Ready for handoff", "Needs QA"],
+  rows: ["Queued review", "Ready for import review", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
   tableColumns: ["Name", "Status", "Value"],

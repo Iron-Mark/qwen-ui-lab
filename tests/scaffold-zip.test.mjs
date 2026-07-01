@@ -134,7 +134,7 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
-    /## Reviewer handoff/,
+    /## Review notes/,
   );
   assert.match(
     entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",

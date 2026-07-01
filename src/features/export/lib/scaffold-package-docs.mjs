@@ -252,10 +252,10 @@ ${confidenceReasonSummary}
 
 ${manualCorrectionNotes}
 
-## Reviewer handoff
+## Review notes
 
 - Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the regeneration source until visual review is complete.
-- Keep this detection note with the pull request when any low-confidence or manually edited boxes remain.
+- Keep this detection note with the package review when any low-confidence or manually edited boxes remain.
 - Do not delete omitted boxes from the recipe unless the reviewer confirms they are decorative or intentionally out of scope.
 
 ## Responsive intent

@@ -1745,7 +1745,7 @@ const sampleData = {
 const sampleCollections = {
   rows: [
     { title: "Queued review", detail: "Replace with a real list item" },
-    { title: "Ready for handoff", detail: "Connect this row to product data" },
+    { title: "Ready for import review", detail: "Connect this row to product data" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
