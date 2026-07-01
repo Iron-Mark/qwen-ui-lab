@@ -810,14 +810,42 @@ export function CorrectionGridReference() {
                 </aside>
                 <div className="grid gap-2">
                   {pattern.regions?.topNavigation ? (
-                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                      Top navigation
+                    <nav
+                      className="flex flex-wrap items-center gap-2 rounded border px-3 py-2"
+                      aria-label="Top navigation"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {["Overview", "Reports", "Settings"].map((item, index) => (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={index === 0 ? "secondary" : "ghost"}
+                          className="h-7 rounded-full px-2.5 text-[11px]"
+                          aria-current={index === 0 ? "page" : undefined}
+                        >
+                          {item}
+                        </Button>
+                      ))}
                     </nav>
                   ) : null}
                   <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
                     {pattern.regions?.sideNavigation ? (
-                      <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                        Side navigation
+                      <nav
+                        className="grid content-start gap-1 rounded border px-2 py-2"
+                        aria-label="Side navigation"
+                        style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                      >
+                        {["Home", "Team", "Billing"].map((item, index) => (
+                          <Button
+                            key={item}
+                            type="button"
+                            variant={index === 0 ? "secondary" : "ghost"}
+                            className="h-8 justify-start rounded px-2 text-[11px]"
+                            aria-current={index === 0 ? "page" : undefined}
+                          >
+                            {item}
+                          </Button>
+                        ))}
                       </nav>
                     ) : null}
                     <section className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
@@ -825,8 +853,22 @@ export function CorrectionGridReference() {
                     </section>
                   </main>
                   {pattern.regions?.bottomNavigation ? (
-                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                      Bottom navigation
+                    <nav
+                      className="grid grid-cols-3 gap-1 rounded border px-2 py-2"
+                      aria-label="Bottom navigation"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {["Home", "Search", "Profile"].map((item, index) => (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={index === 0 ? "secondary" : "ghost"}
+                          className="h-8 rounded px-2 text-[11px]"
+                          aria-current={index === 0 ? "page" : undefined}
+                        >
+                          {item}
+                        </Button>
+                      ))}
                     </nav>
                   ) : null}
                 </div>
@@ -1213,10 +1255,18 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       <div className="grid gap-2" aria-label={label + " primitive preview"}>
         <p className="font-semibold">{label}</p>
         <div className="flex flex-wrap gap-1">
-          {["Main", "Reports", "Settings"].map((item) => (
-            <span key={item} className="rounded-full border px-2 py-0.5 text-[10px]" style={{ borderColor: tokens.border }}>
+          {["Main", "Reports", "Settings"].map((item, index) => (
+            <Button
+              key={item}
+              type="button"
+              size="xs"
+              variant={index === 0 ? "secondary" : "ghost"}
+              className="rounded-full px-2 py-0.5 text-[10px]"
+              aria-current={index === 0 ? "page" : undefined}
+              style={{ borderColor: tokens.border, color: tokens.foreground }}
+            >
               {item}
-            </span>
+            </Button>
           ))}
         </div>
         <p className="opacity-70">{element.kind} - {confidence}%</p>

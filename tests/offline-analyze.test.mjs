@@ -1212,6 +1212,9 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /app-shell/);
   assert.match(advanced.generatedCode, /Detected app shell/);
   assert.match(advanced.generatedCode, /desktop-sidebar-shell/);
+  assert.match(advanced.generatedCode, /aria-label="Top navigation"/);
+  assert.match(advanced.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
+  assert.match(advanced.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
   assert.match(advanced.generatedCode, /renderPrimitiveBody/);
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
@@ -1609,6 +1612,9 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
   assert.match(regenerated.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(regenerated.generatedCode, /aria-label="Top navigation"/);
+  assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
+  assert.match(regenerated.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
   assert.match(regenerated.generatedCode, /appShells/);
   assert.match(regenerated.generatedCode, /Detected app shell/);
   assert.match(regenerated.generatedCode, /App shell/);
