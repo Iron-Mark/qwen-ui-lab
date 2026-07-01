@@ -597,7 +597,7 @@ function summarizeDetectedElements(inspection) {
 function summarizeResponsiveIntent(inspection) {
   const responsive = inspection.layoutTree?.responsive;
   if (!responsive) {
-    return "No responsive intent was inferred; validate breakpoints manually.";
+    return "No responsive intent was inferred; verify mobile, tablet, and desktop breakpoints before generation.";
   }
 
   return [
@@ -619,7 +619,7 @@ function summarizeResponsiveIntent(inspection) {
 function summarizeScreenIntent(inspection) {
   const intent = inspection.layoutTree?.screenIntent ?? inspection.quality?.screenIntent;
   if (!intent) {
-    return "No screen-level intent was inferred; classify the page type manually before scaffold generation.";
+    return "No screen-level intent was inferred; choose the closest page type before scaffold generation.";
   }
 
   const confidence =
@@ -675,7 +675,7 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
     );
   } else if (!layout.topBand && !layout.bottomBand && !layout.leftRail) {
     recommendations.push(
-      "Confirm navigation landmarks manually; the local scan did not find a strong header, rail, or bottom navigation band.",
+      "Confirm navigation landmarks before generation; the local scan did not find a strong header, rail, or bottom navigation band.",
     );
   } else {
     recommendations.push(
