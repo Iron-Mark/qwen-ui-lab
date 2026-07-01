@@ -50,6 +50,10 @@ test("header account control opens and closes the modal on the current page", as
   });
   await expect(page.getByTestId("account-modal")).toBeVisible();
   await expect(page.getByTestId("header-account-link")).toHaveAttribute(
+    "aria-haspopup",
+    "dialog",
+  );
+  await expect(page.getByTestId("header-account-link")).toHaveAttribute(
     "aria-expanded",
     "true",
   );
