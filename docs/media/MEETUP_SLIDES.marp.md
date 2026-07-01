@@ -75,6 +75,6 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
 
 # Takeaway
 
-- The app does not promise final production UI
+- The app does not promise final shipped UI
 - It creates an inspectable starter package from a screenshot
 - Faster scaffolding is useful when every generated decision stays reviewable

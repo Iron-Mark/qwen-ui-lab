@@ -1,6 +1,6 @@
 # LinkedIn content series - qwen-ui-lab
 
-Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates a reviewable starter package from a screenshot. It is not a final production UI generator.
+Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates a reviewable starter package from a screenshot. It is not a final shipped UI generator.
 
 ---
 
@@ -113,7 +113,7 @@ Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind s
 ```text
 What qwen-ui-lab now supports:
 
-- upload, paste, or load a bundled screenshot
+- upload, paste, or load a sample screenshot
 - offline-safe detection for common UI structures
 - confidence reasons per detected element
 - editable detection boxes before regeneration
