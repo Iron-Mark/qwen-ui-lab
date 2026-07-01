@@ -162,7 +162,7 @@ function FooterNavSection({
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-card-foreground/80">
         {label}
       </p>
-      <ul className="mt-3 space-y-1.5">
+      <ul className="mt-2 space-y-0.5">
         {links.map((link) => (
           <li key={link.href}>
             <FooterLink {...link} external={external} />
@@ -176,8 +176,8 @@ function FooterNavSection({
 export function Footer() {
   return (
     <footer className="border-t border-border/70 bg-card/95 backdrop-blur-sm">
-      <PageContainer className="py-5 sm:py-6">
-        <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] sm:items-start lg:grid-cols-[minmax(0,1fr)_auto]">
+      <PageContainer className="py-4 sm:py-6">
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] sm:items-start sm:gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
           <div className="max-w-xl sm:max-w-md">
             <FooterTooltip content="Return to the main screenshot-to-React workspace.">
               <Link
@@ -202,11 +202,11 @@ export function Footer() {
                 </span>
               </Link>
             </FooterTooltip>
-            <p className="mt-3 max-w-sm text-sm leading-5 text-muted-foreground">
+            <p className="mt-2 hidden max-w-sm text-sm leading-5 text-muted-foreground sm:block">
               Create reviewable React + Tailwind export packages from
               screenshot analysis.
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               {SOCIAL_LINKS.map(({ href, label, tooltip, icon: Icon }) => (
                 <FooterTooltip key={href} content={tooltip}>
                   <a
@@ -223,7 +223,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid gap-8 min-[420px]:grid-cols-2 lg:min-w-[24rem]">
+          <div className="grid gap-5 min-[420px]:grid-cols-2 lg:min-w-[24rem]">
             <FooterNavSection label="Product" links={PRODUCT_LINKS} />
             <FooterNavSection
               external
@@ -233,8 +233,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
-          <p>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs text-muted-foreground sm:mt-4 sm:gap-3 sm:pt-3">
+          <p className="max-[420px]:sr-only">
             &copy; 2026 {SITE_NAME}. Built for practical React+Tailwind
             export packages.
           </p>
