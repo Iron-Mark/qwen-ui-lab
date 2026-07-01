@@ -76,5 +76,49 @@ test("dashboard example keeps the heavy preview behind a mobile dialog", async (
   await expect(page.getByTestId("dashboard-sample-dialog")).toHaveCount(0);
 
   await launcher.getByRole("button", { name: /preview/i }).click();
-  await expect(page.getByTestId("dashboard-sample-dialog")).toBeVisible();
+  const dialog = page.getByTestId("dashboard-sample-dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
+  await expect(
+    dialog.getByRole("link", { name: /load into workflow/i }),
+  ).toBeVisible();
+
+  const layout = await dialog.evaluate((node) => {
+    const dialogRect = node.getBoundingClientRect();
+    const tablist = node.querySelector('[role="tablist"]');
+    const footer = node.querySelector('a[href="/demo#upload-flow"]')?.parentElement;
+    const tablistRect = tablist?.getBoundingClientRect();
+    const footerRect = footer?.getBoundingClientRect();
+
+    return {
+      pageHasHorizontalOverflow:
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth + 1,
+      dialogInsideViewport:
+        dialogRect.left >= -1 &&
+        dialogRect.right <= window.innerWidth + 1 &&
+        dialogRect.top >= -1 &&
+        dialogRect.bottom <= window.innerHeight + 1,
+      tablistInside:
+        !!tablistRect &&
+        tablistRect.left >= dialogRect.left - 1 &&
+        tablistRect.right <= dialogRect.right + 1 &&
+        tablistRect.top >= dialogRect.top - 1,
+      footerInside:
+        !!footerRect &&
+        footerRect.left >= dialogRect.left - 1 &&
+        footerRect.right <= dialogRect.right + 1 &&
+        footerRect.bottom <= dialogRect.bottom + 1,
+    };
+  });
+
+  expect(layout).toEqual({
+    pageHasHorizontalOverflow: false,
+    dialogInsideViewport: true,
+    tablistInside: true,
+    footerInside: true,
+  });
 });
