@@ -12,6 +12,7 @@ test("normalizeGeneratedShadcnImports adds imports for known JSX primitives", ()
         <CardTitle>Settings</CardTitle>
       </CardHeader>
       <CardContent>
+        <Label htmlFor="name">Name</Label>
         <Input aria-label="Name" />
         <Button>Save</Button>
       </CardContent>
@@ -29,6 +30,7 @@ test("normalizeGeneratedShadcnImports adds imports for known JSX primitives", ()
     /import \{\n  Card,\n  CardContent,\n  CardHeader,\n  CardTitle,\n\} from "@\/components\/ui\/card";/,
   );
   assert.match(normalized, /import \{ Input \} from "@\/components\/ui\/input";/);
+  assert.match(normalized, /import \{ Label \} from "@\/components\/ui\/label";/);
 });
 
 test("normalizeGeneratedShadcnImports only fills missing specifiers", () => {

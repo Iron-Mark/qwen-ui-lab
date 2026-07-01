@@ -645,10 +645,10 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
                   {item.label}
                 </Button>
               ) : (
-                <label key={item.id} className="grid gap-2 text-sm font-medium">
-                  Field {index + 1}
-                  <Input placeholder={item.label} />
-                </label>
+                <div key={item.id} className="grid gap-2">
+                  <Label htmlFor={item.id}>Field {index + 1}</Label>
+                  <Input id={item.id} placeholder={item.label} />
+                </div>
               ),
             )}
           </form>
@@ -692,10 +692,10 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
 
   if (/search-field|form-field/.test(role)) {
     return (
-      <label className="grid gap-2 text-sm font-medium">
-        {label}
-        <Input placeholder="Enter product data" />
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor={element.id}>{label}</Label>
+        <Input id={element.id} placeholder="Enter product data" />
+      </div>
     );
   }
 
@@ -1252,11 +1252,14 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
     return (
       <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
         <p className="font-semibold">{roleLabel}</p>
-        <div className="flex min-h-8 items-center justify-between rounded border px-2" style={{ borderColor: tokens.border }}>
-          <span className="opacity-65">Label or value</span>
+        <div className="grid gap-1.5">
+          <Label htmlFor={element.id + "-value"}>Label or value</Label>
+          <div className="flex items-center gap-2">
+            <Input id={element.id + "-value"} placeholder="Enter product data" />
           <button type="button" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Action
           </button>
+          </div>
         </div>
         <p className="opacity-70">{element.kind} - {confidence}%</p>
       </div>
