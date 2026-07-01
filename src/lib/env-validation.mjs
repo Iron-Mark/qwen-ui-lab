@@ -2,7 +2,7 @@ import {
   canUseLiveQwen,
   getQwenConfig,
   isLiveQwenAnalysisEnabled,
-} from "../features/analysis/lib/qwen-analyze.mjs";
+} from "./qwen-config.mjs";
 
 const WARN_PREFIX = "[qwen-ui-lab env]";
 

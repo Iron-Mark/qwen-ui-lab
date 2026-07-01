@@ -1220,6 +1220,41 @@ test("shared modules do not import feature modules", async () => {
   assert.deepEqual(violations, []);
 });
 
+test("shared lib modules do not import UI, provider, app, or feature modules", async () => {
+  const libFiles = (await collectSourceFiles(["src/lib"])).filter((file) =>
+    sourceModuleExtensions.includes(path.extname(file)),
+  );
+  const blockedImportPrefixes = [
+    "@/app/",
+    "@/components/",
+    "@/features/",
+  ];
+  const blockedRelativeSegments = [
+    "/app/",
+    "/components/",
+    "/features/",
+  ];
+
+  const violations = [];
+  for (const file of libFiles) {
+    const source = await readFile(file, "utf8");
+    for (const specifier of collectModuleSpecifiers(file, source)) {
+      if (blockedImportPrefixes.some((prefix) => specifier.startsWith(prefix))) {
+        violations.push(`${toRepoPath(file)} imports ${specifier}`);
+        continue;
+      }
+
+      if (!specifier.startsWith(".")) continue;
+      const resolvedPath = toRepoPath(path.resolve(path.dirname(file), specifier));
+      if (blockedRelativeSegments.some((segment) => resolvedPath.includes(segment))) {
+        violations.push(`${toRepoPath(file)} imports ${specifier}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("ui primitives do not import provider or feature modules", async () => {
   const uiFiles = (await collectSourceFiles(["src/components/ui"])).filter((file) =>
     sourceModuleExtensions.includes(path.extname(file)),
