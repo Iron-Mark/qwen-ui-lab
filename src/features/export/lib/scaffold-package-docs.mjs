@@ -278,6 +278,7 @@ export function buildPackageDesignMarkdown({
   const reviewChecklist = blueprint?.reviewChecklist?.length
     ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
     : "- Review the generated component against the source screenshot.";
+  const correctionSummary = formatCorrectionSummarySection(blueprint);
 
   return `# Design notes
 
@@ -300,6 +301,10 @@ ${description}
 - Mode: ${responsiveIntent?.mode ?? "responsive export"}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Verify the layout manually at mobile, tablet, and desktop widths."}
+
+## Correction summary
+
+${correctionSummary}
 
 ## Primitive mapping
 
@@ -477,6 +482,28 @@ function summarizeManualCorrections(blueprint) {
     parts.push(`${excluded} excluded element${excluded === 1 ? "" : "s"}`);
   }
   return `${parts.join(", ")} captured in the recipe JSON.`;
+}
+
+function formatCorrectionSummarySection(blueprint) {
+  const summary = blueprint?.correctionSummary;
+  if (!summary || typeof summary !== "object") {
+    return [
+      "- Active elements: unknown",
+      "- Applied edits: 0",
+      "- Excluded boxes: 0",
+      "- Source of truth: Detection boxes are the source of truth for this regenerated scaffold.",
+    ].join("\n");
+  }
+
+  return [
+    `- Active elements: ${Number(summary.activeElements) || 0}`,
+    `- Applied edits: ${Number(summary.appliedEdits) || 0}`,
+    `- Excluded boxes: ${Number(summary.excludedBoxes) || 0}`,
+    `- Source of truth: ${
+      summary.sourceOfTruth ||
+      "Detection boxes are the source of truth for this regenerated scaffold."
+    }`,
+  ].join("\n");
 }
 
 function summarizeUnresolvedReviewNotes(blueprint) {

@@ -106,6 +106,10 @@ export default function Dashboard() {
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /## Correction summary/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
     /Keep `src\/components\/generated\/dashboard\.recipe\.json`/,
   );
 });
