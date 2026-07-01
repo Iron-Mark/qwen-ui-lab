@@ -275,6 +275,8 @@ export const en = {
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
+    exportMetricEdits: "Edits",
+    exportMetricExcluded: "Excluded",
     exportMetricTokens: "Tokens",
     exportChangeRegions:
       "{count} screenshot regions were converted into a {intent} component structure.",

@@ -1471,6 +1471,12 @@ function buildExportPackagePreview(
     { label: copy.exportMetricFiles, value: String(files.length) },
     { label: copy.exportMetricRegions, value: String(regionCount) },
     { label: copy.exportMetricPrimitives, value: String(primitiveCount) },
+    ...(editedCount || excludedCount
+      ? [
+          { label: copy.exportMetricEdits, value: String(editedCount) },
+          { label: copy.exportMetricExcluded, value: String(excludedCount) },
+        ]
+      : []),
     { label: copy.exportMetricTokens, value: String(tokenCount || 0) },
   ];
 
