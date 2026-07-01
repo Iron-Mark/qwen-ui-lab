@@ -88,6 +88,8 @@ This export package turns the screenshot review into files you can import, compa
 
 ${formatPackageInventory(inventory)}
 
+${buildQuickImportMarkdown({ files, componentName })}
+
 ## Expected dependencies
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
@@ -143,6 +145,8 @@ This export is a reviewable starter package. Import it into source control, conn
 ## Package inventory
 
 ${formatPackageInventory(inventory)}
+
+${buildQuickImportMarkdown({ files, componentName })}
 
 ## Expected dependencies
 
@@ -303,6 +307,8 @@ ${primitiveMap || "- No shadcn-style primitive map was inferred. Review the JSX 
 - \`${files.tokens}\` - token CSS
 - \`${files.detectionSummary}\` - detection notes
 
+${buildQuickImportMarkdown({ files, componentName })}
+
 ## Dependencies
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
@@ -360,6 +366,25 @@ function formatPackageInventory(inventory) {
         `| \`${item.path}\` | ${formatBytes(item.bytes)} | ${Number(item.lines) || 0} |`,
     ),
   ].join("\n");
+}
+
+function buildQuickImportMarkdown({ files, componentName }) {
+  const importPath = `@/${String(files.component || "")
+    .replace(/^src\//, "")
+    .replace(/\.tsx$/, "")}`;
+  const safeComponentName = componentName || "GeneratedComponent";
+
+  return `## Quick import
+
+\`\`\`tsx
+import ${safeComponentName} from "${importPath}";
+
+export default function Screen() {
+  return <${safeComponentName} />;
+}
+\`\`\`
+
+Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the pull request until visual review is complete.`;
 }
 
 function formatBytes(bytes) {
