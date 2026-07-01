@@ -9,6 +9,7 @@ type DesignSystemRoutePreviewImageProps = {
   description: string;
   workflow: string;
   background: string;
+  accent?: string;
 };
 
 export const designSystemRoutePreviewImageSize = socialPreviewImageSize;
@@ -19,6 +20,7 @@ export function DesignSystemRoutePreviewImage({
   description,
   workflow,
   background,
+  accent,
 }: DesignSystemRoutePreviewImageProps) {
   return (
     <SocialPreviewImage
@@ -27,6 +29,7 @@ export function DesignSystemRoutePreviewImage({
       description={description}
       workflow={workflow}
       background={background}
+      accent={accent}
     />
   );
 }

@@ -11,6 +11,7 @@ import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
+const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 type RepoExportStatus = "idle" | "exporting" | "success" | "error";
 
@@ -20,6 +21,8 @@ interface RepoExportButtonProps {
   description?: string;
   label?: string;
   className?: string;
+  exportMode?: "auto" | "zip";
+  testId?: string;
   analyticsSource?: string;
   analyticsFeature?: string;
   onExported?: (result: { mode: "zip" | "compare"; url?: string }) => void;
@@ -32,8 +35,8 @@ interface RepoCompareResponse {
 }
 
 const STATUS_LABELS: Record<RepoExportStatus, string> = {
-  idle: "Export to repo",
-  exporting: "Preparing export…",
+  idle: "Open PR instructions",
+  exporting: "Preparing export...",
   success: "Export ready",
   error: "Export failed",
 };
@@ -53,9 +56,11 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 export function RepoExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab component export",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
+  exportMode = "auto",
+  testId = "repo-export-button",
   analyticsSource = "snippet_preview",
   analyticsFeature = "code_export",
   onExported,
@@ -88,6 +93,7 @@ export function RepoExportButton({
           content: text,
           filename,
           description,
+          mode: exportMode,
         }),
       });
 
@@ -135,7 +141,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened — add your generated component and open a PR.",
+            "Compare view opened. Add your generated component and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -174,6 +180,7 @@ export function RepoExportButton({
     analyticsFeature,
     analyticsSource,
     description,
+    exportMode,
     filename,
     onExported,
     resetStatus,
@@ -201,7 +208,7 @@ export function RepoExportButton({
       disabled={!text?.trim() || status === "exporting"}
       aria-label={`${visibleLabel} code`}
       aria-busy={status === "exporting"}
-      data-testid="repo-export-button"
+      data-testid={testId}
       className={cn(
         "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
         status === "success" &&
@@ -215,7 +222,7 @@ export function RepoExportButton({
         className={cn("size-4", status === "exporting" && "animate-spin")}
         aria-hidden
       />
-      <span className="sr-only sm:not-sr-only sm:inline">{visibleLabel}</span>
+      <span className="inline">{visibleLabel}</span>
     </Button>
   );
 }

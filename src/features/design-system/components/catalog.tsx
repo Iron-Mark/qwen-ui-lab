@@ -383,8 +383,8 @@ export function ExampleChannelDonut() {
     level: "organism",
     domain: "product",
     name: "App header",
-    description: "Global nav with logo, routes, live/demo badge, and theme toggle.",
-    usage: "Rendered once in root layout; badge reflects /api/health provider state.",
+    description: "Global navigation with logo, route links, profile access, and theme controls.",
+    usage: "Rendered once in the app shell; status details stay in the footer developer dialog.",
     sourcePath: "features/shell/components/Header.tsx",
     preview: (
       <div className="overflow-hidden rounded-lg border border-border">
@@ -404,7 +404,7 @@ export function ExampleHeader() {
     domain: "product",
     name: "Workflow banner",
     description: "Session status strip for the upload-to-export pipeline.",
-    usage: "Shown on dashboard below UploadFlow during live demos.",
+    usage: "Shown near the workflow when a sample or uploaded screenshot is ready to review.",
     sourcePath: "features/home/components/WorkflowBanner.tsx",
     preview: <WorkflowBanner />,
     code: `import { WorkflowBanner } from "@/features/home/components/WorkflowBanner";
@@ -492,7 +492,7 @@ const uilawsCatalog: AtomicCatalogEntry[] = [
     level: "molecule",
     domain: "uilaws",
     name: "Law information card",
-    description: "UILaws-style information card with principle badges.",
+    description: "UI Laws-style information card with principle badges.",
     usage: "Surface feature summaries; pass `principles` for law badges.",
     sourcePath: "features/design-system/components/LawInformationCard.tsx",
     principles: ["proximity", "white-space", "typography-hierarchy"],
@@ -515,7 +515,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React starter with reviewable detection notes."
+      description="Screenshot to React export with reviewable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />
@@ -545,7 +545,7 @@ export function ExampleComplianceChecklist() {
     level: "organism",
     domain: "uilaws",
     name: "Law reference panel",
-    description: "Maps UILaws principles to qwen-ui-lab routes.",
+    description: "Maps UI Laws principles to qwen-ui-lab routes.",
     usage: "Embed in catalog; set `productOnly` to filter laws with in-app links.",
     sourcePath: "features/design-system/components/LawReferencePanel.tsx",
     principles: ["fitts", "hick", "jakob", "consistency", "contrast", "white-space"],

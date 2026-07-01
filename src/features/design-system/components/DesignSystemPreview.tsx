@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
-import { CollectionPill, ComponentLevelPill } from "./DesignSystemMetaPills";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
 import { Search } from "lucide-react";
 import {
@@ -48,6 +47,10 @@ import {
   EXTERNAL_REF_LINK_CLASS,
   getCatalogReferences,
 } from "../lib/design-system-references";
+import {
+  CollectionPill,
+  ComponentLevelPill,
+} from "./DesignSystemMetaPills";
 
 /** Desktop keeps the catalog picker fixed-height while preview content scrolls with the page. */
 const DESKTOP_CATALOG_GRID_CLASS =
@@ -389,12 +392,12 @@ export function DesignSystemPreview() {
               value={domainFilter}
               onValueChange={(value) => setDomain(value as CatalogDomain | "all")}
             >
-              <TabsList className="mt-1 grid w-full grid-cols-2 gap-1.5 rounded-xl border border-border/70 bg-muted/35 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto min-[560px]:grid-cols-4">
+              <TabsList className="mt-1 grid h-auto w-full grid-cols-4 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto">
                 {domains.map(({ id, label }) => (
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="h-10 min-h-10 min-w-0 flex-none overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-2 text-xs font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:text-sm"
+                    className="h-10 min-h-10 min-w-0 overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-1.5 text-[11px] font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:px-2 sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -409,7 +412,7 @@ export function DesignSystemPreview() {
             </p>
             <div
               data-testid="tier-filter-controls"
-              className="mt-1 flex flex-wrap gap-2 rounded-lg bg-background/70 p-1.5"
+              className="mt-1 grid grid-cols-3 gap-1.5 rounded-xl border border-border/60 bg-background/70 p-1.5"
             >
               {TIER_OPTIONS.map(({ level, label, Icon }) => {
                 const isAvailable = tierAvailability[level] > 0;
@@ -442,7 +445,7 @@ export function DesignSystemPreview() {
                       });
                     }}
                     className={cn(
-                      "min-h-10 gap-1.5 rounded-md px-3 text-xs font-medium sm:text-sm",
+                      "min-h-10 min-w-0 gap-1.5 rounded-md px-2 text-xs font-medium sm:px-3 sm:text-sm",
                       !isAvailable &&
                         "border-border/40 bg-background/20 text-muted-foreground/45 opacity-60",
                     )}
@@ -515,23 +518,41 @@ export function DesignSystemPreview() {
                   key={entry.id}
                   type="button"
                   className={cn(
-                    "w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
-                    "hover:border-foreground/40 hover:bg-muted/50",
+                    "relative w-full min-h-11 cursor-pointer rounded-lg border px-3 py-2.5 text-left transition-colors",
+                    "hover:border-foreground/30 hover:bg-muted/40",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     selectedEntry?.id === entry.id
-                      ? "border-foreground/50 bg-muted/60"
-                      : "border-transparent bg-background/40",
+                      ? "border-primary/45 bg-primary/[0.055] shadow-[inset_3px_0_0_color-mix(in_oklch,var(--primary)_88%,transparent)]"
+                      : "border-transparent bg-transparent",
                   )}
+                  aria-current={selectedEntry?.id === entry.id ? "true" : undefined}
                   onClick={() => setSelectedId(entry.id)}
                 >
-                  <p className="text-sm font-medium text-foreground">{entry.name}</p>
-                  <p className="line-clamp-2 text-xs text-muted-foreground">{entry.description}</p>
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        {entry.name}
+                      </p>
+                      <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
+                        {entry.description}
+                      </p>
+                    </div>
+                    {selectedEntry?.id === entry.id ? (
+                      <span className="mt-0.5 shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        Open
+                      </span>
+                    ) : null}
+                  </div>
                   <div
                     data-testid="component-list-metadata"
-                    className="mt-2 flex flex-wrap items-center gap-2 text-[11px]"
+                    className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground"
                     aria-label={`${t.tierSrOnly} ${tierMeta.label}. ${t.domainSrOnly} ${domainLabel}.`}
                   >
-                    <ComponentLevelPill label={tierMeta.label} Icon={TierIcon} compact />
+                    <ComponentLevelPill
+                      label={tierMeta.label}
+                      Icon={TierIcon}
+                      compact
+                    />
                     <CollectionPill label={domainLabel} compact />
                   </div>
                 </button>

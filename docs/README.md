@@ -27,7 +27,7 @@ An API key alone does not enable upstream calls.
 | Route | Purpose |
 | --- | --- |
 | `/` | Home dashboard plus screenshot upload, analyze, generate, share, and export flow. |
-| `/demo` | Sample run with bundled references and `?archetype=auth|mobile|landing|settings|shop`. |
+| `/demo` | Sample screenshot flow with `?archetype=auth|mobile|landing|settings|shop`. |
 | `/design-system` | Component catalog, UX-law domains, snippet previews, and export bundle. |
 | `/account` | Compatibility redirect to the browser-local profile modal. |
 | `/share/[id]` | Read-only shared summary route. |
@@ -60,8 +60,9 @@ See [Architecture](./ARCHITECTURE.md) for the folder rules and feature ownership
 | `npm run lint` | Run ESLint. |
 | `npx tsc --noEmit` | Run TypeScript without writing build output. |
 | `npm run build` | Production build. |
+| `npm run validate:docs` | Check local Markdown links in README.md and docs/. |
 | `npm run check` | Lint plus unit tests. |
-| `npm run check:full` | Lint, unit tests, and production build. |
+| `npm run check:full` | Lint, unit tests, docs link validation, and production build. |
 | `npm run test:e2e` | Playwright smoke tests with offline mocks. |
 | `npm run export:demo-fixtures` | Regenerate E2E demo fixtures from analysis libs. |
 | `npm run doctor` | Local environment and optional provider diagnostics. |
@@ -89,15 +90,15 @@ Core docs:
 | --- | --- |
 | [Architecture](./ARCHITECTURE.md) | Feature colocation and component boundaries. |
 | [Contributing](./CONTRIBUTING.md) | Workflow, checks, and PR expectations. |
-| [Sample run](./DEMO.md) | Sample flow and troubleshooting table. |
+| [Sample screenshot](./DEMO.md) | Sample flow and troubleshooting table. |
 | [Agent notes](./AGENTS.md) | Repository-specific agent guidance. |
 
 Media docs:
 
 | Doc | Topic |
 | --- | --- |
-| [Media kit](./media/MEETUP_MEDIA.md) | Recording and slide export checklist. |
-| [Demo script](./media/DEMO_SCRIPT.md) | Short video script and backup screenshot order. |
+| [Presentation media kit](./media/MEETUP_MEDIA.md) | Recording and slide export checklist. |
+| [Sample script](./media/DEMO_SCRIPT.md) | Short video script and backup screenshot order. |
 | [LinkedIn posts](./media/LINKEDIN_POSTS.md) | Social copy drafts. |
 | [Slide source](./media/MEETUP_SLIDES.marp.md) | Marp slide source. |
 

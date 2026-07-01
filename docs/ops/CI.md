@@ -8,11 +8,12 @@ Branch policy: normal work starts on `dev`; production promotion is a protected 
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| [pr-checks.yml](../../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, build (no E2E) |
+| [pr-checks.yml](../../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, docs link validation, build (no E2E) |
 | [pr-e2e-smoke.yml](../../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract + upload-flow (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
 | [ci.yml](../../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
-| [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route smoke against a deployed URL |
+| [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route/API smoke plus browser share/export smoke against a deployed URL |
+| [production-reliability.yml](../../.github/workflows/production-reliability.yml) | Daily schedule (07:30 UTC), `workflow_dispatch` | Production health probe plus share/export browser smoke; opens or comments on a failure issue |
 
 PR checks stay fast on purpose. Heavier browser work runs on main or on the nightly schedule.
 
@@ -38,7 +39,7 @@ Runs a **fast subset** of Playwright specs on every pull request:
 - `e2e/live-qwen-contract.spec.ts` — live-path contract (mocked JSON, no API key)
 - `e2e/upload-flow.spec.ts` — upload size guard and sample-picker flow
 
-**Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, build).
+**Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, docs links, build).
 
 **Strict on PRs:** set repository variable **`PR_E2E_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables** to fail the job on test errors and block merge (same pattern as `PERF_LCP_STRICT` for the LCP budget).
 
@@ -137,6 +138,8 @@ To make production LCP breaches block CI without changing workflow YAML, set rep
 | `npm run test:e2e` | Full Playwright suite |
 | `npm run test:e2e:pr-smoke` | PR smoke subset (mobile + a11y + live-qwen-contract + upload-flow) |
 | `npm run test:e2e:visual` | Visual regression spec only |
+| `npm run smoke:share-live` | Browser smoke for deployed share/export behavior |
+| `npm run synthetic:health` | Synthetic `/api/health` probe |
 | `npm run perf:lcp-budget` | Production LCP check |
 | `npm run perf:lighthouse` | Local build + Lighthouse (see [POST_LAUNCH.md](./POST_LAUNCH.md)) |
 

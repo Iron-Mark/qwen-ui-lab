@@ -15,10 +15,10 @@ export const ANALYTICS_FUNNEL_SLICES = [
   },
   {
     id: "reliability",
-    title: "Fallback and reliability",
+    title: "Analyzer reliability",
     events: ["analysis.failed", "analysis.completed"],
     breakdown: ["status", "providerState"],
-    purpose: "Monitor fallback rate and instant-demo usage.",
+    purpose: "Monitor local analysis usage and completion quality.",
   },
   {
     id: "export-intent",

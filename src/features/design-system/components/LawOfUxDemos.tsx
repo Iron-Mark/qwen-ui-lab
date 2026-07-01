@@ -297,7 +297,7 @@ function JakobDemo() {
 function ParkinsonDemo() {
   return (
     <ul className="space-y-1 text-xs text-muted-foreground">
-      {["Reading image…", "Preprocessing…", "Building artifact…"].map((step) => (
+      {["Reading image…", "Preparing analysis…", "Generating preview…"].map((step) => (
         <li key={step} className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           {step}

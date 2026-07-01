@@ -36,7 +36,6 @@ export { localizedHref } from "./localized-href";
 export type {
   Dictionary,
   AccountDictionary,
-  DemoBannerDictionary,
   DesignSystemDictionary,
   HeaderDictionary,
   HeroDictionary,

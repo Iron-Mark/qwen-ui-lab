@@ -1,9 +1,9 @@
 import {
   buildRepoCompareExport,
-  buildScaffoldZipEntries,
   canUseGithubRepoExport,
   getGithubRepoExportConfig,
 } from "./github-repo.mjs";
+import { buildScaffoldZipEntries } from "./scaffold-package.mjs";
 import { normalizeScaffoldExportRequestBody } from "./scaffold-export-request.mjs";
 import {
   createStoredZip,
@@ -30,7 +30,7 @@ export async function handleRepoExportPost(request) {
     return Response.json(payload, { status: 400 });
   }
 
-  if (canUseGithubRepoExport()) {
+  if (payload.mode !== "zip" && canUseGithubRepoExport()) {
     const config = getGithubRepoExportConfig();
     if (!config) {
       return Response.json(

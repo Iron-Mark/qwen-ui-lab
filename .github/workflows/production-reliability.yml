@@ -1,0 +1,143 @@
+name: Production Reliability Monitor
+
+on:
+  schedule:
+    # 07:30 UTC daily, after nightly E2E and main CI windows.
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+    inputs:
+      deploy_url:
+        description: "Production URL to monitor (defaults to PRODUCTION_DEPLOY_URL or public demo host)"
+        required: false
+        type: string
+      expect_live_analysis:
+        description: "Expect live Qwen analysis to be enabled"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-reliability-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    name: Health and share/export smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DEPLOY_URL: ${{ github.event.inputs.deploy_url || vars.PRODUCTION_DEPLOY_URL || 'https://qwen-ui-lab.vercel.app' }}
+      EXPECT_LIVE_ANALYSIS: ${{ github.event.inputs.expect_live_analysis || 'false' }}
+      SYNTHETIC_ATTEMPTS: "5"
+      SYNTHETIC_MAX_LATENCY_MS: "5000"
+      SYNTHETIC_WARN_LATENCY_MS: "2500"
+      SYNTHETIC_TIMEOUT_MS: "10000"
+      MONITOR_ISSUE_TITLE: "Production reliability monitor failure"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium for browser smoke
+        run: npx playwright install --with-deps chromium
+
+      - name: Run synthetic health monitor
+        id: health
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/synthetic-health-check.mjs \
+            --base-url "${DEPLOY_URL}" \
+            --attempts "${SYNTHETIC_ATTEMPTS}" \
+            --expect-live "${EXPECT_LIVE_ANALYSIS}" \
+            --timeout-ms "${SYNTHETIC_TIMEOUT_MS}" \
+            --max-latency-ms "${SYNTHETIC_MAX_LATENCY_MS}" \
+            --warn-latency-ms "${SYNTHETIC_WARN_LATENCY_MS}" \
+            2>&1 | tee synthetic-health.log
+
+      - name: Run share/export browser smoke
+        id: share_smoke
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run smoke:share-live 2>&1 | tee share-export-smoke.log
+
+      - name: Build sanitized reliability summary
+        if: always()
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+          SHARE_SMOKE_OUTCOME: ${{ steps.share_smoke.outcome }}
+        run: |
+          node scripts/build-reliability-summary.mjs \
+            --target "${DEPLOY_URL}" \
+            --expected-live "${EXPECT_LIVE_ANALYSIS}" \
+            --health-outcome "${HEALTH_OUTCOME}" \
+            --share-outcome "${SHARE_SMOKE_OUTCOME}" \
+            --run-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --commit "${GITHUB_SHA}"
+
+      - name: Fail monitor on smoke errors
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+          SHARE_SMOKE_OUTCOME: ${{ steps.share_smoke.outcome }}
+        run: |
+          echo "Health outcome: ${HEALTH_OUTCOME}"
+          echo "Share/export outcome: ${SHARE_SMOKE_OUTCOME}"
+          if [ "${HEALTH_OUTCOME}" != "success" ] || [ "${SHARE_SMOKE_OUTCOME}" != "success" ]; then
+            exit 1
+          fi
+
+      - name: Upload reliability logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-reliability-${{ github.run_id }}
+          path: |
+            reliability-summary.md
+            synthetic-health.log
+            share-export-smoke.log
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Open or update failure issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          issue_number="$(gh issue list --state open --search "${MONITOR_ISSUE_TITLE} in:title" --json number --jq '.[0].number // empty')"
+          body_file="$(mktemp)"
+          if [ -f reliability-summary.md ]; then
+            cp reliability-summary.md "${body_file}"
+          else
+            {
+              echo "## Production reliability monitor failed"
+              echo
+              echo "- Target: ${DEPLOY_URL}"
+              echo "- Expected live analysis: ${EXPECT_LIVE_ANALYSIS}"
+              echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              echo "- Commit: ${GITHUB_SHA}"
+              echo
+              echo "Summary generation did not complete; inspect the workflow logs."
+              echo "No secrets, API keys, or local file paths are intentionally included in this issue body."
+            } > "${body_file}"
+          fi
+
+          if [ -n "${issue_number}" ]; then
+            gh issue comment "${issue_number}" --body-file "${body_file}"
+          else
+            gh issue create --title "${MONITOR_ISSUE_TITLE}" --body-file "${body_file}"
+          fi

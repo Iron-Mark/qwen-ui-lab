@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { ArrowRight, Compass, Home, LayoutGrid } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,6 +12,10 @@ import { cn } from "@/lib/utils";
 export function NotFoundClient() {
   const { locale, dict } = useLocale();
   const t = dict.notFound;
+
+  useEffect(() => {
+    document.title = `${t.title} | qwen-ui-lab`;
+  }, [t.title]);
 
   return (
     <PageContainer
@@ -66,7 +71,7 @@ export function NotFoundClient() {
         >
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <span className="size-2 rounded-full bg-primary" />
-            Route recovery
+            {t.suggestedPages}
           </div>
           <div className="mt-4 grid gap-2">
             {[t.backDashboard, t.designSystem].map((label) => (

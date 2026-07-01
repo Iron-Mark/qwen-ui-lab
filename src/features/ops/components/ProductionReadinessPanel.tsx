@@ -34,7 +34,7 @@ type ReadinessPayload = {
 const statusLabels: Record<ReadinessCheck["status"], string> = {
   ready: "Ready",
   optional: "Optional",
-  fallback: "Fallback",
+  fallback: "Local",
   missing: "Missing",
 };
 
@@ -91,8 +91,8 @@ export function ProductionReadinessPanel({
   const missingCount = payload?.summary?.missing ?? 0;
   const statusSummary =
     missingCount > 0
-      ? `${readyCount} ready, ${fallbackCount} fallback, ${missingCount} missing`
-      : `${readyCount} ready, ${fallbackCount} in fallback`;
+      ? `${readyCount} ready, ${fallbackCount} local, ${missingCount} missing`
+      : `${readyCount} ready, ${fallbackCount} local`;
 
   const card = (
     <Card
@@ -103,11 +103,11 @@ export function ProductionReadinessPanel({
         <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-2">
             <ServerCog className="size-4 text-muted-foreground" aria-hidden />
-            <CardTitle className="text-sm">Production readiness</CardTitle>
+            <CardTitle className="text-sm">Runtime configuration</CardTitle>
           </div>
           <p className="text-xs text-muted-foreground">
             {payload
-              ? `${statusSummary}. Provider: ${payload.provider}. Share store: ${payload.shareStorage}.`
+              ? `${statusSummary}. Analysis: ${payload.provider}. Sharing: ${payload.shareStorage}.`
               : loading
                 ? "Checking runtime feature status."
                 : "Could not load runtime feature status."}

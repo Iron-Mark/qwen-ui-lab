@@ -11,7 +11,7 @@ export const designSystemRouteSocialPreviewImageAlt =
 
 const designSystemDomainRouteSocialPreviewImageAlt: Record<DesignSystemDomain, string> = {
   "laws-of-ux": "qwen-ui-lab Laws of UX route preview",
-  uilaws: "qwen-ui-lab UILaws route preview",
+  uilaws: "qwen-ui-lab UI Laws route preview",
 };
 
 export function createDesignSystemRouteMetadata(): Metadata {
@@ -65,13 +65,14 @@ export function createDesignSystemRouteStructuredData() {
 
 export function getDesignSystemRouteSocialPreviewImage() {
   return {
-    eyebrow: "qwen-ui-lab / design-system",
-    badge: "Reusable snippets",
-    title: "Design faster with proven patterns",
-    description: "Atomic catalog + UX references + export-ready code",
-    workflow: "Filter -> Preview -> Copy -> Ship consistent UI",
+    eyebrow: "qwen-ui-lab / design system",
+    badge: "Component catalog",
+    title: "Reusable UI patterns for shipping",
+    description: "Browse primitives, UX references, and export-ready snippets in one workspace.",
+    workflow: "Filter catalog -> Preview component -> Copy code",
     background:
-      "linear-gradient(135deg, rgb(24, 24, 27) 0%, rgb(76, 29, 149) 50%, rgb(14, 165, 233) 100%)",
+      "linear-gradient(135deg, #08061f 0%, #24144f 48%, #0f172a 100%)",
+    accent: "#7c3aed",
   };
 }
 
@@ -99,16 +100,16 @@ export function createLawsOfUxRouteMetadata(): Metadata {
 export function createUiLawsRouteMetadata(): Metadata {
   return {
     ...createRouteMetadata({
-      title: "UILaws Component Library",
+      title: "UI Laws Component Library",
       description:
-        "Open the UILaws domain view in qwen-ui-lab to discover high-clarity UI patterns with copy-ready snippets.",
+        "Open the UI Laws collection in qwen-ui-lab to discover high-clarity interface patterns with copy-ready snippets.",
       path: "/design-system/uilaws",
       ogImage: "/design-system/uilaws/opengraph-image",
-      ogImageAlt: "UILaws route preview in qwen-ui-lab",
+      ogImageAlt: "UI Laws route preview in qwen-ui-lab",
       twitterImage: "/design-system/uilaws/twitter-image",
-      twitterImageAlt: "UILaws snippets in qwen-ui-lab",
+      twitterImageAlt: "UI Laws snippets in qwen-ui-lab",
       shareSnippet:
-        "Browse UILaws-inspired components and export snippets your team can ship immediately.",
+        "Browse UI Laws-inspired components and export snippets your team can ship immediately.",
     }),
     robots: {
       index: false,
@@ -123,21 +124,23 @@ export function getDesignSystemDomainRouteSocialPreviewImage(
   if (domain === "laws-of-ux") {
     return {
       routeLabel: "laws-of-ux",
-      title: "Apply UX laws with less guesswork",
-      description: "Browse principles, inspect patterns, copy implementation snippets",
+      title: "Apply UX laws with clearer patterns",
+      description: "Compare practical principles, inspect examples, and copy implementation snippets.",
       workflow: "Open collection -> Compare patterns -> Export code",
       background:
-        "linear-gradient(135deg, rgb(17, 24, 39) 0%, rgb(67, 56, 202) 45%, rgb(6, 182, 212) 100%)",
+        "linear-gradient(135deg, #08061f 0%, #312e81 48%, #083344 100%)",
+      accent: "#22d3ee",
     };
   }
 
   return {
     routeLabel: "uilaws",
     title: "Build clearer interfaces faster",
-    description: "Explore UILaws-driven components with copy and export in one flow",
-    workflow: "Filter UILaws -> Preview UI -> Ship ready snippets",
+    description: "Explore component examples with stronger hierarchy, affordance, and export flow.",
+    workflow: "Filter UI laws -> Preview component -> Export snippet",
     background:
-      "linear-gradient(135deg, rgb(24, 24, 27) 0%, rgb(190, 24, 93) 45%, rgb(249, 115, 22) 100%)",
+      "linear-gradient(135deg, #08061f 0%, #581c87 48%, #111827 100%)",
+    accent: "#c4b5fd",
   };
 }
 

@@ -28,7 +28,7 @@ Recording and slide assets for qwen-ui-lab meetups. Pair with **[DEMO.md](../DEM
 
 - [ ] Prefer **`/demo`** for the hero beat — zero-click export panel.
 - [ ] Move the cursor deliberately; pause voiceover during navigation.
-- [ ] Show export panel: **Copy all code**, **Download .tsx code**, and at least one UX law deep link.
+- [ ] Show export panel: **Copy all**, **Download component**, **Download package**, and at least one UX law deep link.
 - [ ] Hit one archetype swap (`/demo?archetype=auth` or `shop`) to show variety.
 - [ ] Optional B-roll: `/design-system` search + **Export all snippets**.
 - [ ] Do **not** enable live Qwen on the public host for meetup footage unless rehearsed.
@@ -42,13 +42,13 @@ Recording and slide assets for qwen-ui-lab meetups. Pair with **[DEMO.md](../DEM
 
 ### Short promo (30–60 s)
 
-Follow the timed beats in **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)**. For a meetup-length cut, use the table in **[DEMO.md](../DEMO.md#10-minute-meetup-script)**.
+Follow the timed beats in **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)**. For a longer walkthrough, use the table in **[DEMO.md](../DEMO.md#five-minute-walkthrough)**.
 
 ---
 
 ## Slides (Marp)
 
-Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)** — eight slides derived from the outline in [DEMO.md](../DEMO.md#optional-slides-outline-markdown). One slide ≈ 45–60 seconds on stage.
+Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)** — eight slides derived from the current [sample screenshot guide](../DEMO.md). One slide ≈ 45–60 seconds on stage.
 
 ### Install Marp
 
@@ -88,7 +88,7 @@ npx @marp-team/marp-cli docs/media/MEETUP_SLIDES.marp.md --html -o docs/media/ME
 
 ### Other slide tools
 
-The same outline in [DEMO.md](../DEMO.md#optional-slides-outline-markdown) can be pasted into **Slidev** or **Google Slides** speaker notes. Marp is the maintained export path in this repo.
+The same outline in [DEMO.md](../DEMO.md) can be pasted into **Slidev** or **Google Slides** speaker notes. Marp is the maintained export path in this repo.
 
 ---
 

@@ -64,7 +64,7 @@ test("buildUiFlowArtifact uses filename and dimensions in fallback plan", () => 
   });
 
   assert.match(artifact.plan[0].body, /mobile-login\.png/);
-  assert.match(artifact.plan[0].body, /390×844px/);
+  assert.match(artifact.plan[0].body, /390x844px/);
   assert.match(artifact.plan[1].body, /Mobile app shell|Authentication/i);
 });
 
@@ -185,7 +185,7 @@ test("filterCatalogEntries searches by name, level, and domain", () => {
     },
     {
       name: "Law information card",
-      description: "UILaws",
+      description: "UI Laws",
       usage: "Docs",
       level: "molecule",
       domain: "uilaws",

@@ -6,6 +6,7 @@ import {
   buildSvgInspectionPlanSections,
   buildSvgInspectionPreviewStats,
 } from "./offline-svg-inspection.mjs";
+import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 
 /**
  * Advanced deterministic offline analysis — no AI, no network.
@@ -15,7 +16,7 @@ import {
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Bundled reference samples — exact filename match (normalized). */
+/** Sample screenshots — exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
@@ -29,7 +30,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "dashboard-reference.svg is the sample reference (SVG, landscape admin dashboard).",
+        body: "Dashboard sample screenshot: landscape admin dashboard layout.",
       },
       {
         title: "Layout Read",
@@ -45,7 +46,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the SVG reference, wire real API data, and swap chart libraries if product standards require it.",
+        body: "Verify spacing against the source screenshot, wire real API data, and swap chart libraries if product standards require it.",
       },
     ],
     generatedCode: `import { StatCard } from "@/features/home/components/StatCard";
@@ -55,7 +56,7 @@ import { ActivityList } from "@/features/home/components/ActivityList";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Generated dashboard from dashboard-reference.svg">
+    <section aria-label="Dashboard export">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -82,7 +83,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "auth-reference.svg is the sample reference (SVG, centered authentication card on a neutral canvas).",
+        body: "Sign-in sample screenshot: centered authentication card on a neutral canvas.",
       },
       {
         title: "Layout Read",
@@ -98,7 +99,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the SVG reference, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
+        body: "Verify spacing against the source screenshot, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
       },
     ],
     generatedCode: `import { Button } from "@/components/ui/button";
@@ -109,7 +110,7 @@ import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
 export function GeneratedAuthScreen() {
   return (
-    <main aria-label="Generated auth from auth-reference.svg" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth export" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -140,7 +141,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "mobile-reference.svg is the sample reference (SVG, portrait phone frame ~390×844).",
+        body: "Mobile app sample screenshot: portrait phone frame around 390×844.",
       },
       {
         title: "Layout Read",
@@ -166,7 +167,7 @@ import { BottomNav } from "@/features/mobile/components/BottomNav";
 
 export function GeneratedMobileShell() {
   return (
-    <div aria-label="Generated mobile shell from mobile-reference.svg" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile export" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -195,7 +196,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "landing-reference.svg is the sample reference (SVG, wide marketing landing ~1440×900).",
+        body: "Landing page sample screenshot: wide marketing page around 1440×900.",
       },
       {
         title: "Layout Read",
@@ -211,7 +212,7 @@ export function GeneratedMobileShell() {
       },
       {
         title: "Human Review",
-        body: "Verify hero copy hierarchy against the SVG reference, wire analytics on primary CTA, and validate responsive stacking at md/lg breakpoints.",
+        body: "Verify hero copy hierarchy against the source screenshot, wire analytics on primary CTA, and validate responsive stacking at md/lg breakpoints.",
       },
     ],
     generatedCode: `import { HeroSection } from "@/features/landing/components/HeroSection";
@@ -225,7 +226,7 @@ export function GeneratedLanding() {
     <>
       <SiteNav logo="qwen-ui-lab" links={["Features", "Pricing", "Docs"]} />
       <HeroSection
-        aria-label="Hero from landing-reference.svg"
+        aria-label="Landing hero"
         headline="Ship UI faster with AI-assisted scaffolding"
         primaryCta="Start free"
         secondaryCta="View sample"
@@ -250,7 +251,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "settings-reference.svg is the sample reference (SVG, desktop settings layout with left rail).",
+        body: "Settings sample screenshot: desktop layout with left rail.",
       },
       {
         title: "Layout Read",
@@ -266,7 +267,7 @@ export function GeneratedLanding() {
       },
       {
         title: "Human Review",
-        body: "Verify toggle defaults against the SVG reference, wire optimistic save feedback, and confirm mobile nav collapses to a sheet drawer.",
+        body: "Verify toggle defaults against the source screenshot, wire optimistic save feedback, and confirm mobile nav collapses to a sheet drawer.",
       },
     ],
     generatedCode: `import { SettingsNav } from "@/features/settings/components/SettingsNav";
@@ -276,7 +277,7 @@ import { SaveBar } from "@/features/settings/components/SaveBar";
 
 export function GeneratedSettings() {
   return (
-    <section aria-label="Generated settings from settings-reference.svg" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings export" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -311,7 +312,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "ecommerce-reference.svg is the sample reference (SVG, desktop catalog with left filter rail).",
+        body: "Shop catalog sample screenshot: desktop catalog with left filter rail.",
       },
       {
         title: "Layout Read",
@@ -327,7 +328,7 @@ export function GeneratedSettings() {
       },
       {
         title: "Human Review",
-        body: "Verify filter state against the SVG reference, wire cart persistence, and validate grid reflow at sm/md/lg breakpoints.",
+        body: "Verify filter state against the source screenshot, wire cart persistence, and validate grid reflow at sm/md/lg breakpoints.",
       },
     ],
     generatedCode: `import { ShopHeader } from "@/features/catalog/components/ShopHeader";
@@ -338,7 +339,7 @@ import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
 export function GeneratedCatalog() {
   return (
-    <div aria-label="Generated catalog from ecommerce-reference.svg" className="min-h-dvh bg-background">
+    <div aria-label="Catalog export" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -644,7 +645,7 @@ const GENERATED_REGION_GUIDANCE = {
   "content-block": "General content block inferred from local connected components.",
   "data-table": "Structured rows and columns; preserve headers, alignment, and horizontal scroll on small screens.",
   "dialog-panel": "Centered modal surface detected from a floating panel; preserve scrim, focus trap, title, and close affordance.",
-  "empty-state": "Centered fallback or onboarding state; preserve concise copy and one clear recovery action.",
+  "empty-state": "Centered empty or onboarding state; preserve concise copy and one clear recovery action.",
   "form-group": "Grouped form flow with fields and submit/action controls.",
   "control cluster": "Grouped actions with explicit labels and large targets.",
   control: "Small control, icon button, checkbox, or compact action.",
@@ -762,7 +763,7 @@ function buildProductionKnownSample(sampleKey) {
 function buildKnownSampleGeneratedCode(sampleKey, sample) {
   const profile = buildKnownSampleProfile(sampleKey, sample);
 
-  return `import type { AriaRole } from "react";
+  return normalizeGeneratedShadcnImports(`import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -813,20 +814,20 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="${profile.label} starter"
+      aria-label="${profile.label} export"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Starter</Badge>
+            <Badge variant="secondary">Export</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component generated from the detected screenshot structure. Replace sample copy,
-              connect data, then keep the recipe JSON beside this component during review.
+              Starter component translated from the screenshot structure. Replace sample copy,
+              connect real data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -911,7 +912,7 @@ function ElementPreview({ element }: { element: DetectionElement }) {
     </article>
   );
 }
-`;
+`);
 }
 
 function buildKnownSampleProfile(sampleKey, sample) {
@@ -958,7 +959,7 @@ function inferKnownSampleArchetypeId(sampleKey) {
 
 function buildKnownSampleElements(archetypeId) {
   const commonReason =
-    "Bundled reference metadata identifies this region; exported as an editable primitive.";
+    "Sample screenshot metadata identifies this region; exported as an editable primitive.";
   const templates = {
     dashboard: [
       ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],
@@ -1312,7 +1313,7 @@ import { Card } from "@/components/ui/card";
 
 export function GeneratedAuthScreen() {
   return (
-    <main aria-label="Generated auth from ${safeName}">
+    <main aria-label="Auth export based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
         <h1 className="text-xl font-semibold">Sign in</h1>
         {/* Email + password fields */}
@@ -1324,7 +1325,7 @@ export function GeneratedAuthScreen() {
     case "mobile":
       return `export function GeneratedMobileShell() {
   return (
-    <div aria-label="Generated mobile shell from ${safeName}" className="flex min-h-dvh flex-col">
+    <div aria-label="Mobile export based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
       <main className="flex-1 space-y-3 p-4">{/* stacked cards */}</main>
       <nav aria-label="Primary" className="border-t p-2">{/* bottom nav */}</nav>
@@ -1334,7 +1335,7 @@ export function GeneratedAuthScreen() {
     case "settings":
       return `export function GeneratedSettings() {
   return (
-    <section aria-label="Generated settings from ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <section aria-label="Settings export based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
@@ -1343,14 +1344,17 @@ export function GeneratedAuthScreen() {
     case "modal":
       return `export function GeneratedDialogOverlay() {
   return (
-    <div aria-label="Generated modal dialog from ${safeName}" className="fixed inset-0 grid place-items-center p-4">
-      <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border p-6 shadow-xl">
-        <button type="button" aria-label="Close dialog">Close</button>
-        <h1 className="mt-3 text-xl font-semibold">Dialog title</h1>
-        <p className="mt-2 text-sm opacity-75">Detected modal body content.</p>
-        <div className="mt-5 flex justify-end gap-2">{/* dialog actions */}</div>
-      </section>
-    </div>
+    <Dialog defaultOpen>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Dialog title</DialogTitle>
+          <DialogDescription>Detected modal body content.</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button type="button">Primary action</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }`;
     case "empty":
@@ -1359,7 +1363,7 @@ import { Card } from "@/components/ui/card";
 
 export function GeneratedEmptyState() {
   return (
-    <main aria-label="Generated empty state from ${safeName}" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Generated empty state" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
         <p className="text-sm text-muted-foreground">Connect real data, upload a source, or create the first item.</p>
@@ -1372,7 +1376,7 @@ export function GeneratedEmptyState() {
       return `export function GeneratedLanding() {
   return (
     <>
-      <section aria-label="Hero from ${safeName}" className="py-16 text-center">{/* hero */}</section>
+      <section aria-label="Generated hero" className="py-16 text-center">{/* hero */}</section>
       <section aria-label="Features" className="grid gap-6 md:grid-cols-3">{/* features */}</section>
     </>
   );
@@ -1380,7 +1384,7 @@ export function GeneratedEmptyState() {
     case "ecommerce":
       return `export function GeneratedCatalog() {
   return (
-    <div aria-label="Generated catalog from ${safeName}" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Generated catalog" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -1392,7 +1396,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Generated dashboard from ${safeName}">
+    <section aria-label="Dashboard export based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -1481,13 +1485,13 @@ const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap
 export default function ${componentName}() {
   return (
     <main
-      aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
+      aria-label="${archetype.label} export based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">SVG starter</Badge>
+            <Badge variant="secondary">SVG export</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1623,7 +1627,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} starter.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} export.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1730,6 +1734,40 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
+const sampleData = {
+  screenTitle: "${archetype.label} workspace",
+  screenDescription:
+    "Use this generated starter as a production-facing layout, then replace sample copy and values with product data.",
+  primaryAction: "Review export",
+  secondaryAction: "Open design notes",
+};
+
+const sampleCollections = {
+  rows: [
+    { title: "Queued review", detail: "Replace with a real list item" },
+    { title: "Ready for handoff", detail: "Connect this row to product data" },
+    { title: "Needs QA", detail: "Use loading, empty, and error states here" },
+  ],
+  cards: [
+    { title: "Overview", detail: "Card content placeholder" },
+    { title: "Activity", detail: "Swap for real entity data" },
+    { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
+    { title: "Review", detail: "Keep hierarchy from the screenshot" },
+  ],
+  metrics: [
+    { label: "Revenue", value: "$45.2K", trend: "+12% vs last period" },
+    { label: "Users", value: "12,340", trend: "+8% active" },
+    { label: "Conversion", value: "18.4%", trend: "-2% needs review" },
+    { label: "Tickets", value: "573", trend: "24 open" },
+  ],
+  tableRows: [
+    ["Acme Co", "Active", "$12.4K"],
+    ["Northstar", "Review", "$8.1K"],
+    ["Summit Labs", "Paused", "$4.8K"],
+  ],
+  chartValues: [42, 74, 55, 88, 63, 78, 48, 92],
+};
+
 const shadcnPrimitiveMap: Record<string, string> = {
   "app-shell": "App shell with semantic landmarks",
   "top-navigation": "semantic nav + Button ghost controls",
@@ -1752,7 +1790,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
-  "chart-series": "Chart card with text fallback",
+  "chart-series": "Chart card with accessible text summary",
   "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
@@ -1811,27 +1849,13 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="${archetype.label} starter from ${safeName}"
+      aria-label="${archetype.label} export from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
-        <header className="grid gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Screenshot starter</Badge>
-            <Badge variant="secondary">{screenIntent.label}</Badge>
-          </div>
-          <div className="grid gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              ${archetype.label} interface shell
-            </h1>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Generated from reviewed detection signals with shadcn-style primitives, semantic sections,
-              and responsive layout defaults ready for real copy and data.
-            </p>
-          </div>
-        </header>
+        <GeneratedScreenHeader />
 
-        <ScaffoldSummary />
+        <ImplementationChecklist />
 
         <div className="grid gap-4 lg:grid-cols-2">
           {sections.map((section) => (
@@ -1843,14 +1867,39 @@ export default function ${componentName}() {
   );
 }
 
-function ScaffoldSummary() {
+function GeneratedScreenHeader() {
+  return (
+    <header className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div className="grid gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">{screenIntent.label}</Badge>
+          <Badge variant="outline">{responsiveIntent.mode}</Badge>
+        </div>
+        <div className="grid gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">{sampleData.screenTitle}</h1>
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+            {sampleData.screenDescription}
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 sm:justify-end">
+        <Button type="button">{sampleData.primaryAction}</Button>
+        <Button type="button" variant="outline">
+          {sampleData.secondaryAction}
+        </Button>
+      </div>
+    </header>
+  );
+}
+
+function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Detection recipe</CardTitle>
+        <CardTitle>Implementation checklist</CardTitle>
         <CardDescription>
-          {detectedElements.length} elements, {layoutRegions.length} regions, and a {generatedLayoutGrid.columns}
-          -column layout blueprint are ready for review.
+          {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
+          {generatedLayoutGrid.columns}-column starter layout for implementation review.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -1860,7 +1909,7 @@ function ScaffoldSummary() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
-          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+          {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
         <p>
           <span className="block font-medium text-foreground">Grouped patterns</span>
@@ -1916,18 +1965,18 @@ function UsableSection({ section }: { section: UsableSectionModel }) {
                     {item.label}
                   </Button>
                 ) : (
-                  <label key={item.id} className="grid gap-2 text-sm font-medium">
-                    Field {index + 1}
-                    <Input placeholder={item.label} />
-                  </label>
+                  <div key={item.id} className="grid gap-2">
+                    <Label htmlFor={item.id}>Field {index + 1}</Label>
+                    <Input id={item.id} placeholder="Enter product data" />
+                  </div>
                 ),
               )
             ) : (
               <>
-                <label className="grid gap-2 text-sm font-medium">
-                  Primary field
-                  <Input placeholder="Connect real value" />
-                </label>
+                <div className="grid gap-2">
+                  <Label htmlFor="generated-primary-field">Primary field</Label>
+                  <Input id="generated-primary-field" placeholder="Enter product data" />
+                </div>
                 <Button type="button" className="w-fit">Submit action</Button>
               </>
             )}
@@ -1968,10 +2017,10 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
 
   if (/search-field|form-field/.test(role)) {
     return (
-      <label className="grid gap-2 text-sm font-medium">
-        {label}
-        <Input placeholder="Connect real value" />
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor={item.id}>{label}</Label>
+        <Input id={item.id} placeholder="Enter product data" />
+      </div>
     );
   }
 
@@ -2006,7 +2055,7 @@ function buildUsableSections(
       }));
 
   return elementSections.map((region, index) => {
-    const primitive = region.componentRole || region.primitive || region.kind;
+    const primitive = region.componentRole || region.primitive || region.kind || "section";
     return {
       ...region,
       id: region.id || "section-" + (index + 1),
@@ -2032,17 +2081,17 @@ function buildUsableSections(
 export function DetectionGridReference() {
   return (
     <section
-      aria-label="Generated ${archetype.label.toLowerCase()} from ${safeName}"
+      aria-label="${archetype.label} export based on ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Screenshot starter</p>
+        <p className="text-xs font-medium uppercase">Screenshot export</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
           {detectedElements.length} UI elements were detected before component generation.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the starter.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the export.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
@@ -2074,14 +2123,42 @@ export function DetectionGridReference() {
               </aside>
               <div className="grid gap-2">
                 {shell.regions.topNavigation ? (
-                  <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                    Top navigation
+                  <nav
+                    className="flex flex-wrap items-center gap-2 rounded border px-3 py-2"
+                    aria-label="Top navigation"
+                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                  >
+                    {["Overview", "Reports", "Settings"].map((item, index) => (
+                      <Button
+                        key={item}
+                        type="button"
+                        variant={index === 0 ? "secondary" : "ghost"}
+                        className="h-7 rounded-full px-2.5 text-[11px]"
+                        aria-current={index === 0 ? "page" : undefined}
+                      >
+                        {item}
+                      </Button>
+                    ))}
                   </nav>
                 ) : null}
                 <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
                   {shell.regions.sideNavigation ? (
-                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                      Side navigation
+                    <nav
+                      className="grid content-start gap-1 rounded border px-2 py-2"
+                      aria-label="Side navigation"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {["Home", "Team", "Billing"].map((item, index) => (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={index === 0 ? "secondary" : "ghost"}
+                          className="h-8 justify-start rounded px-2 text-[11px]"
+                          aria-current={index === 0 ? "page" : undefined}
+                        >
+                          {item}
+                        </Button>
+                      ))}
                     </nav>
                   ) : null}
                   <section className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
@@ -2089,8 +2166,22 @@ export function DetectionGridReference() {
                   </section>
                 </main>
                 {shell.regions.bottomNavigation ? (
-                  <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                    Bottom navigation
+                  <nav
+                    className="grid grid-cols-3 gap-1 rounded border px-2 py-2"
+                    aria-label="Bottom navigation"
+                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                  >
+                    {["Home", "Search", "Profile"].map((item, index) => (
+                      <Button
+                        key={item}
+                        type="button"
+                        variant={index === 0 ? "secondary" : "ghost"}
+                        className="h-8 rounded px-2 text-[11px]"
+                        aria-current={index === 0 ? "page" : undefined}
+                      >
+                        {item}
+                      </Button>
+                    ))}
                   </nav>
                 ) : null}
               </div>
@@ -2150,43 +2241,23 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (region.kind === "dialog-panel" || primitive === "dialog-panel") {
     return (
-      <div
-        className="mt-3 rounded border p-3 shadow-lg"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={region.id + "-title"}
-        style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p id={region.id + "-title"} className="text-sm font-semibold">
-              {formatPrimitiveLabel(region.modalType || "dialog")}
-            </p>
-            <p className="mt-1 text-[11px] opacity-70">
+      <Dialog defaultOpen>
+        <DialogContent className="max-w-md" showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{formatPrimitiveLabel(region.modalType || "dialog")}</DialogTitle>
+            <DialogDescription>
               Floating modal surface with grouped content and focus management.
-            </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2">
+            <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+            <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
           </div>
-          <button
-            type="button"
-            aria-label="Close dialog"
-            className="rounded border px-2 py-1 text-[11px]"
-            style={{ borderColor: tokens.border }}
-          >
-            Close
-          </button>
-        </div>
-        <div className="mt-3 grid gap-2">
-          <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          <button
-            type="button"
-            className="mt-2 w-fit rounded px-3 py-2 text-xs font-medium"
-            style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
-          >
-            Primary action
-          </button>
-        </div>
-      </div>
+          <DialogFooter>
+            <Button type="button">Primary action</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -2202,59 +2273,93 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           <p className="text-[11px] opacity-70">
             Empty state with short explanation and one recovery action.
           </p>
-          <button
+          <Button
             type="button"
             className="mx-auto mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
             style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
           >
             Add item
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   if (region.kind === "repeated-list" || primitive === "list-item") {
+    const rows = Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map(
+      (_, index) =>
+        sampleCollections.rows[index] ?? {
+          title: "Row " + (index + 1),
+          detail: "Replace with a real list item",
+        },
+    );
     return (
-      <ul className="mt-3 space-y-2" aria-label={region.label}>
-        {Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map((_, itemIndex) => (
-          <li
-            key={itemIndex}
-            className="rounded border px-2 py-1 text-xs"
-            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-          >
-            Row {itemIndex + 1} - repeated item
-          </li>
-        ))}
-      </ul>
+      <div className="mt-3 grid gap-2">
+        <ul className="space-y-2" aria-label={region.label}>
+          {rows.map((item, itemIndex) => (
+            <li
+              key={item.title}
+              className="rounded border px-2 py-1 text-xs"
+              style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+            >
+              <span className="font-medium">{item.title}</span>
+              <span className="block opacity-70">{item.detail}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-[11px] opacity-70">
+          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.
+        </p>
+      </div>
     );
   }
 
   if (region.kind === "repeated-grid" || primitive === "card-grid") {
+    const cards = Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map(
+      (_, index) =>
+        sampleCollections.cards[index] ?? {
+          title: "Card " + (index + 1),
+          detail: "Swap for real entity data",
+        },
+    );
     return (
-      <div
-        className="mt-3 grid gap-2"
-        style={{
-          gridTemplateColumns: "repeat(" + Math.max(1, region.columns ?? 2) + ", minmax(0, 1fr))",
-        }}
-        aria-label={region.label}
-      >
-        {Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map((_, itemIndex) => (
-          <article
-            key={itemIndex}
-            className="rounded border p-2 text-xs"
-            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-          >
-            <p className="font-medium">Card {itemIndex + 1}</p>
-            <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          </article>
-        ))}
+      <div className="mt-3 grid gap-2">
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: "repeat(" + Math.max(1, region.columns ?? 2) + ", minmax(0, 1fr))",
+          }}
+          aria-label={region.label}
+        >
+          {cards.map((item) => (
+            <article
+              key={item.title}
+              className="rounded border p-2 text-xs"
+              style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+            >
+              <p className="font-medium">{item.title}</p>
+              <p className="mt-1 opacity-70">{item.detail}</p>
+              <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+            </article>
+          ))}
+        </div>
+        <p className="text-[11px] opacity-70">
+          State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.
+        </p>
       </div>
     );
   }
 
   if (region.kind === "stat-row" || primitive === "stat-row") {
     const cards = Math.max(2, region.cardCount ?? region.itemCount ?? 3);
+    const metrics = Array.from({ length: cards }).map(
+      (_, index) =>
+        sampleCollections.metrics[index] ?? {
+          label: "Metric " + (index + 1),
+          value: "0",
+          trend: "Connect to product data",
+        },
+    );
     return (
       <div
         className="mt-3 grid gap-2"
@@ -2263,15 +2368,15 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         }}
         aria-label={region.label + " KPI cards"}
       >
-        {Array.from({ length: cards }).map((_, itemIndex) => (
+        {metrics.map((metric) => (
           <article
-            key={itemIndex}
+            key={metric.label}
             className="rounded border p-3 text-xs"
             style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
           >
-            <p className="text-[11px] uppercase opacity-70">Metric {itemIndex + 1}</p>
-            <p className="mt-1 text-xl font-semibold">{["12,340", "$45.2K", "+18%", "573"][itemIndex % 4]}</p>
-            <p className="mt-1 text-[11px] opacity-70">Trend context</p>
+            <p className="text-[11px] uppercase opacity-70">{metric.label}</p>
+            <p className="mt-1 text-xl font-semibold">{metric.value}</p>
+            <p className="mt-1 text-[11px] opacity-70">{metric.trend}</p>
           </article>
         ))}
       </div>
@@ -2282,23 +2387,27 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     return (
       <form className="mt-3 grid gap-2" aria-label={region.label}>
         {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => (
-          <label key={itemIndex} className="grid gap-1 text-[11px] font-medium">
-            Field {itemIndex + 1}
-            <span
-              className="flex min-h-9 items-center rounded border px-3 font-normal opacity-75"
-              style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-            >
-              Value or input
-            </span>
-          </label>
+          <div key={itemIndex} className="grid gap-1.5">
+            <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
+              Field {itemIndex + 1}
+            </Label>
+            <Input
+              id={region.id + "-field-" + (itemIndex + 1)}
+              placeholder="Value or input"
+              style={{ backgroundColor: tokens.surface }}
+            />
+          </div>
         ))}
-        <button
+        <Button
           type="button"
           className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
           style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
         >
           Submit action
-        </button>
+        </Button>
+        <p className="text-[11px] opacity-70">
+          State coverage: wire validation errors, pending submit state, and success feedback.
+        </p>
       </form>
     );
   }
@@ -2306,64 +2415,64 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "data-table" || primitive === "data-table") {
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
+    const tableRows = Array.from({ length: rows }).map(
+      (_, index) => sampleCollections.tableRows[index] ?? [],
+    );
     return (
-      <div className="mt-3 overflow-x-auto" aria-label={region.label}>
-        <table className="w-full min-w-[28rem] border-collapse text-left text-xs">
-          <thead>
-            <tr>
+      <div className="mt-3 grid gap-2 overflow-x-auto">
+        <Table className="min-w-[28rem] text-xs" aria-label={region.label}>
+          <TableHeader>
+            <TableRow>
               {Array.from({ length: columns }).map((_, columnIndex) => (
-                <th
-                  key={columnIndex}
-                  className="border-b px-2 py-1.5 font-semibold"
-                  style={{ borderColor: tokens.border }}
-                >
-                  Column {columnIndex + 1}
-                </th>
+                <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: rows }).map((_, rowIndex) => (
-              <tr key={rowIndex}>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tableRows.map((row, rowIndex) => (
+              <TableRow key={row.join("-")}>
                 {Array.from({ length: columns }).map((_, columnIndex) => (
-                  <td
-                    key={columnIndex}
-                    className="border-b px-2 py-1.5"
-                    style={{ borderColor: tokens.border }}
-                  >
-                    Cell {rowIndex + 1}.{columnIndex + 1}
-                  </td>
+                  <TableCell key={columnIndex}>
+                    {row[columnIndex] ?? "Cell " + (rowIndex + 1) + "." + (columnIndex + 1)}
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
+        <p className="text-[11px] opacity-70">
+          State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.
+        </p>
       </div>
     );
   }
 
   if (region.kind === "chart-series" || primitive === "chart-series") {
     const bars = Math.max(3, region.seriesCount ?? region.itemCount ?? 5);
-    const heights = [42, 74, 55, 88, 63, 78, 48, 92];
     return (
-      <div
-        className="mt-3 grid min-h-32 items-end gap-2 rounded border p-3"
-        style={{
-          borderColor: tokens.border,
-          gridTemplateColumns: "repeat(" + bars + ", minmax(0, 1fr))",
-        }}
-        aria-label={region.label + " bar chart preview"}
-      >
-        {Array.from({ length: bars }).map((_, index) => (
-          <span
-            key={index}
-            className="rounded-t"
-            style={{
-              height: heights[index % heights.length] + "%",
-              backgroundColor: tokens.accent,
-            }}
-          />
-        ))}
+      <div className="mt-3 grid gap-2">
+        <div
+          className="grid min-h-32 items-end gap-2 rounded border p-3"
+          style={{
+            borderColor: tokens.border,
+            gridTemplateColumns: "repeat(" + bars + ", minmax(0, 1fr))",
+          }}
+          aria-label={region.label + " bar chart preview"}
+        >
+          {Array.from({ length: bars }).map((_, index) => (
+            <span
+              key={index}
+              className="rounded-t"
+              style={{
+                height: sampleCollections.chartValues[index % sampleCollections.chartValues.length] + "%",
+                backgroundColor: tokens.accent,
+              }}
+            />
+          ))}
+        </div>
+        <p className="text-[11px] opacity-70">
+          State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.
+        </p>
       </div>
     );
   }
@@ -2372,40 +2481,25 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const tabs = Math.max(2, region.tabCount ?? region.itemCount ?? 3);
     const selectedIndex = Math.min(tabs - 1, Math.max(0, region.selectedIndex ?? 0));
     return (
-      <div className="mt-3 grid gap-2" aria-label={region.label + " tabs"}>
-        <div
-          role="tablist"
-          aria-label={region.label}
-          className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
-          style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-        >
-          {Array.from({ length: tabs }).map((_, index) => {
-            const selected = index === selectedIndex;
-            return (
-              <button
-                key={index}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                className="rounded-full px-3 py-1.5 text-xs font-medium"
-                style={{
-                  backgroundColor: selected ? tokens.accent : tokens.surface,
-                  color: selected ? tokens.accentForeground : tokens.foreground,
-                }}
-              >
-                Tab {index + 1}
-              </button>
-            );
-          })}
-        </div>
-        <section
-          role="tabpanel"
-          className="rounded border p-3 text-xs"
-          style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-        >
-          {formatPrimitiveLabel(region.tabKind || "tabs")} panel {selectedIndex + 1}
-        </section>
-      </div>
+      <Tabs defaultValue={"tab-" + (selectedIndex + 1)} className="mt-3">
+        <TabsList aria-label={region.label}>
+          {Array.from({ length: tabs }).map((_, index) => (
+            <TabsTrigger key={index} value={"tab-" + (index + 1)}>
+              Tab {index + 1}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {Array.from({ length: tabs }).map((_, index) => (
+          <TabsContent
+            key={index}
+            value={"tab-" + (index + 1)}
+            className="rounded border p-3 text-xs"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+          >
+            {formatPrimitiveLabel(region.tabKind || "tabs")} panel {index + 1}
+          </TabsContent>
+        ))}
+      </Tabs>
     );
   }
 
@@ -2415,9 +2509,10 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " controls"}>
         {Array.from({ length: controls }).map((_, index) => (
-          <button
+          <Button
             key={index}
             type="button"
+            variant={index === 0 ? "default" : "outline"}
             className={clusterType === "segmented-control" ? "rounded-full border px-3 py-1.5 text-xs" : "rounded px-3 py-2 text-xs font-medium"}
             style={{
               borderColor: tokens.border,
@@ -2426,7 +2521,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             }}
           >
             Action {index + 1}
-          </button>
+          </Button>
         ))}
       </div>
     );
@@ -2434,15 +2529,22 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (/header|nav/.test(primitive)) {
     return (
-      <nav className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label}>
-        {["Overview", "Workflows", "Settings"].map((item) => (
-          <span
+      <nav className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " navigation"}>
+        {["Overview", "Workflows", "Settings"].map((item, index) => (
+          <Button
             key={item}
-            className="rounded-full border px-2 py-1 text-[11px]"
-            style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+            type="button"
+            variant={index === 0 ? "secondary" : "ghost"}
+            className="rounded-full px-2.5 py-1 text-[11px]"
+            aria-current={index === 0 ? "page" : undefined}
+            style={{
+              borderColor: tokens.border,
+              backgroundColor: index === 0 ? tokens.muted : tokens.surface,
+              color: tokens.foreground,
+            }}
           >
             {item}
-          </span>
+          </Button>
         ))}
       </nav>
     );
@@ -2460,20 +2562,20 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
     if (componentRole === "primary-action" || componentRole === "icon-action") {
       return (
-        <button type="button" className="mt-3 rounded px-3 py-2 text-xs font-medium" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+        <Button type="button" className="mt-3 w-fit rounded px-3 py-2 text-xs font-medium" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
           {roleLabel}
-        </button>
+        </Button>
       );
     }
 
     return (
       <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
-        <label className="text-[11px] font-medium opacity-75">{roleLabel}</label>
-        <div className="flex min-h-9 items-center justify-between rounded border px-3 text-xs" style={{ borderColor: tokens.border }}>
-          <span className="opacity-70">User input or action</span>
-          <button type="button" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+        <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
+        <div className="flex items-center gap-2">
+          <Input id={region.id + "-control"} placeholder="User input or action" />
+          <Button type="button" size="xs" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Apply
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -3044,7 +3146,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     {
       title: "Visual Input",
       body: [
-        `${fileName} is treated as the UI reference (${context.readableSize}, ${file.type || "unknown type"}).`,
+        `${fileName} is treated as the source screenshot (${context.readableSize}, ${file.type || "unknown type"}).`,
         context.dimensionLine,
         formFactor.id !== "unknown"
           ? `Form factor signal: ${formFactor.label}.`
@@ -3088,11 +3190,8 @@ export function buildAdvancedOfflineOverrides(file, context) {
   return {
     plan,
     previewStats,
-    generatedCode: buildGeneratedCode(
-      fileName,
-      archetype,
-      file.offlineInspection,
-      svgInspection,
+    generatedCode: normalizeGeneratedShadcnImports(
+      buildGeneratedCode(fileName, archetype, file.offlineInspection, svgInspection),
     ),
     summary: buildOfflineSummary({
       archetype,

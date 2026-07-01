@@ -53,11 +53,16 @@ export async function resolveSharePageModel({
   params,
 }: Pick<ShareRouteProps, "params">) {
   const { id } = await params;
+
+  if (id === "local") {
+    return { id, summary: null, hashFallback: true };
+  }
+
   const summary = await resolveShareRouteSummary(id);
 
   if (!summary) {
     return null;
   }
 
-  return { id, summary };
+  return { id, summary, hashFallback: false };
 }

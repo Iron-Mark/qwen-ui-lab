@@ -63,7 +63,7 @@ export function buildReportOnlyStandardContentSecurityPolicy({
     "manifest-src 'self'",
     "worker-src 'self' blob:",
     "style-src 'self' https: 'report-sample'",
-    "script-src 'self' https: 'report-sample'",
+    "script-src 'self' 'unsafe-inline' https:",
     "connect-src 'self' https:",
     "object-src 'none'",
     `report-uri ${reportUri}`,

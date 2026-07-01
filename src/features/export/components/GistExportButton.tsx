@@ -12,6 +12,7 @@ import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 type GistExportStatus = "idle" | "exporting" | "success" | "error";
+const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 interface GistExportButtonProps {
   text: string;
@@ -45,7 +46,7 @@ const STATUS_LABELS: Record<GistExportStatus, string> = {
 export function GistExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab component export",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
   analyticsSource = "snippet_preview",
@@ -73,15 +74,15 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
+        "Open gist.github.com, paste the copied component into a new secret gist, and save.";
 
       const copyResult = await copy(text, "Code copied for manual gist paste");
       const copied = copyResult.ok;
 
       toast(
         copied
-          ? `Gist export unavailable — code copied. ${instructions} (${gistUrl})`
-          : `Gist export unavailable. ${instructions} (${gistUrl})`,
+          ? `Component copied. GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`
+          : `GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`,
         copied ? "warning" : "error",
       );
 
@@ -214,7 +215,7 @@ export function GistExportButton({
         className={cn("size-4", status === "exporting" && "animate-spin")}
         aria-hidden
       />
-      <span className="sr-only sm:not-sr-only sm:inline">{visibleLabel}</span>
+      <span className="inline">{visibleLabel}</span>
     </Button>
   );
 }

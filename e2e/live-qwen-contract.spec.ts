@@ -42,9 +42,7 @@ test("live mode POSTs /api/analyze-ui and renders mocked Qwen artifact", async (
 
   expect(analyzePosts.length).toBeGreaterThan(0);
   await expect(
-    page.getByText(E2E_LIVE_ARTIFACT.modeLabel, { exact: true }),
-  ).toBeVisible();
-  await expect(
     page.getByText(E2E_LIVE_ARTIFACT.previewStats[0].value, { exact: true }).first(),
   ).toBeVisible();
+  await expect(page.getByTestId("scaffold-export-panel")).toBeVisible();
 });
