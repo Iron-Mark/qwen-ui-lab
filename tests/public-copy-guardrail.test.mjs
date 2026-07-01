@@ -6,6 +6,8 @@ import path from "node:path";
 const PUBLIC_COPY_FILES = [
   "README.md",
   "docs/DEMO.md",
+  "public/manifest.json",
+  "public/offline.html",
   "src/lib/seo.ts",
   "src/lib/i18n/dictionaries/en.ts",
   "src/lib/i18n/dictionaries/zh.ts",
@@ -34,6 +36,8 @@ const BANNED_PUBLIC_PHRASES = [
   "Meetup-ready",
   "local account (demo stub)",
   "optional email demo",
+  "Cached app shell",
+  "cached screenshot workflow",
 ];
 
 test("public and generated copy avoid stale demo/internal phrasing", async () => {

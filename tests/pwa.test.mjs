@@ -129,7 +129,7 @@ describe("service worker shell", () => {
   it("offline page exists", () => {
     const offline = readFileSync(join(PUBLIC, "offline.html"), "utf8");
     assert.match(offline, /Offline - qwen-ui-lab/);
-    assert.match(offline, /Cached app shell/);
+    assert.match(offline, /Saved workspace/);
     assert.match(offline, /Open dashboard/);
     assert.match(offline, /Open sample reference/);
     assert.doesNotMatch(offline, /\u00e2/);
