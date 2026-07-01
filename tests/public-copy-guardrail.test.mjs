@@ -73,6 +73,8 @@ const BANNED_PUBLIC_PHRASES = [
   "validate breakpoints manually",
   "classify the page type manually",
   "Confirm navigation landmarks manually",
+  "Verify the layout manually",
+  "Inspect the zip entries before import",
   "before shipping",
   "Review layout against the original screenshot before shipping",
   "not be merged",

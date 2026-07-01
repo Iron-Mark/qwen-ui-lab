@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {
+  buildFallbackPackageReadme,
+  buildPackageDesignMarkdown,
+} from "../src/features/export/lib/scaffold-package-docs.mjs";
 import { buildScaffoldZipEntries } from "../src/features/export/lib/scaffold-package.mjs";
 import { createStoredZip } from "../src/features/export/lib/scaffold-zip.mjs";
 
@@ -189,6 +193,48 @@ export default function Dashboard() {
       ?.content ?? "{}",
   );
   assert.deepEqual(recipe.integration.dependencies, ["@/components/ui/button"]);
+});
+
+test("export package docs use concrete fallback review guidance", () => {
+  const readme = buildFallbackPackageReadme({
+    filename: "generated.tsx",
+    description: "Fallback export",
+    componentName: "GeneratedComponent",
+    files: {
+      component: "src/components/generated/generated.tsx",
+      recipe: "src/components/generated/generated.recipe.json",
+      manifest: "src/components/generated/generated.manifest.json",
+      tokens: "src/components/generated/generated.tokens.css",
+      detectionSummary: "docs/generated.detection.md",
+    },
+    inventory: [],
+    dependencies: [],
+  });
+
+  assert.match(
+    readme,
+    /Verify README\.md, DESIGN\.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes before import/,
+  );
+  assert.doesNotMatch(readme, /Inspect the zip entries before import/);
+
+  const design = buildPackageDesignMarkdown({
+    description: "Fallback export",
+    componentName: "GeneratedComponent",
+    files: {
+      component: "src/components/generated/generated.tsx",
+      recipe: "src/components/generated/generated.recipe.json",
+      manifest: "src/components/generated/generated.manifest.json",
+      tokens: "src/components/generated/generated.tokens.css",
+      detectionSummary: "docs/generated.detection.md",
+    },
+    blueprint: {},
+  });
+
+  assert.match(
+    design,
+    /Compare mobile, tablet, and desktop layouts against the source screenshot/,
+  );
+  assert.doesNotMatch(design, /Verify the layout manually/);
 });
 
 test("buildScaffoldZipEntries infers dependencies from known JSX primitives", () => {

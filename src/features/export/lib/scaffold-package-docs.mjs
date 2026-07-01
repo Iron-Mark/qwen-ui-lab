@@ -324,7 +324,7 @@ ${description}
 
 - Mode: ${responsiveIntent?.mode ?? "responsive export"}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
-- Primary flow: ${responsiveIntent?.primaryFlow ?? "Verify the layout manually at mobile, tablet, and desktop widths."}
+- Primary flow: ${responsiveIntent?.primaryFlow ?? "Compare mobile, tablet, and desktop layouts against the source screenshot."}
 
 ## Correction summary
 
@@ -419,7 +419,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
 
 function formatPackageInventory(inventory) {
   if (!Array.isArray(inventory) || inventory.length === 0) {
-    return "- Inventory unavailable. Inspect the zip entries before import.";
+    return "- Inventory unavailable. Verify README.md, DESIGN.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes before import.";
   }
 
   return [
