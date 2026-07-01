@@ -43,6 +43,7 @@ export const zh = {
     navAria: "返回已知页面",
     backDashboard: "返回工作台",
     designSystem: "设计系统",
+    suggestedPages: "\u5efa\u8bae\u9875\u9762",
   },
   share: {
     eyebrow: "分享链接",
@@ -59,6 +60,9 @@ export const zh = {
       "没有找到该只读分析摘要。链接可能已过期，或已不再可用。",
     notFoundStorageHint:
       "需要新的摘要时，请从工作流重新创建分享链接。",
+    notFoundRecoveryTitle: "\u4e0b\u4e00\u6b65\u53ef\u4ee5",
+    notFoundRecoveryWorkflow: "\u56de\u5230\u5de5\u4f5c\u6d41\u521b\u5efa\u65b0\u7684\u6458\u8981\u3002",
+    notFoundRecoverySample: "\u6253\u5f00\u6837\u4f8b\u622a\u56fe\u67e5\u770b\u5bfc\u51fa\u6d41\u7a0b\u3002",
   },
   account: {
     eyebrow: "资料",
