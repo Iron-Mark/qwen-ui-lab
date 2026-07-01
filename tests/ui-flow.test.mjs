@@ -185,7 +185,7 @@ test("filterCatalogEntries searches by name, level, and domain", () => {
     },
     {
       name: "Law information card",
-      description: "UILaws",
+      description: "UI Laws",
       usage: "Docs",
       level: "molecule",
       domain: "uilaws",

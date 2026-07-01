@@ -113,3 +113,9 @@ test("zh dictionaries cover remaining route strings", () => {
   assert.match(enDictionarySource, /title:\s*"Page not found"/);
   assert.match(enDictionarySource, /tryLiveDemo:\s*"Back to workflow"/);
 });
+
+test("en public copy avoids test-runner wording in sample picker labels", () => {
+  assert.match(enDictionarySource, /domainUiLaws:\s*"UI Laws"/);
+  assert.doesNotMatch(enDictionarySource, /hint:\s*"Tests\b/);
+  assert.doesNotMatch(enDictionarySource, /domainUiLaws:\s*"UILaws"/);
+});
