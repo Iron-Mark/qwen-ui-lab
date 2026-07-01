@@ -215,7 +215,7 @@ export function GistExportButton({
         className={cn("size-4", status === "exporting" && "animate-spin")}
         aria-hidden
       />
-      <span className="sr-only sm:not-sr-only sm:inline">{visibleLabel}</span>
+      <span className="inline">{visibleLabel}</span>
     </Button>
   );
 }

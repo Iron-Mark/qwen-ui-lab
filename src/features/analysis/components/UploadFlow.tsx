@@ -1823,7 +1823,7 @@ function ExportPackageReviewDialog({
         </Tabs>
 
         <DialogActionFooter data-testid="export-package-actions" align="between">
-          <details className="group min-w-0 rounded-xl border border-border/70 bg-muted/25 p-1">
+          <details className="group order-2 min-w-0 rounded-xl border border-border/70 bg-muted/25 p-1 sm:order-none sm:w-auto">
             <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-3 text-sm font-medium text-foreground transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
               <span>{copy.exportMoreOptions}</span>
               <ChevronDown
@@ -1831,12 +1831,12 @@ function ExportPackageReviewDialog({
                 aria-hidden
               />
             </summary>
-            <DialogActionGroup className="border-t border-border/70 px-2 py-2">
+            <DialogActionGroup className="flex-col items-stretch border-t border-border/70 px-2 py-2 sm:flex-row sm:items-center">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="min-h-11 gap-2"
+                className="min-h-11 gap-2 sm:w-auto"
                 onClick={onExportDesignMarkdown}
                 data-testid="export-design-md"
               >
@@ -1849,23 +1849,37 @@ function ExportPackageReviewDialog({
                 description="Screenshot UI starter package"
                 analyticsSource="upload_flow"
                 analyticsFeature="generated_scaffold"
+                className="sm:w-auto"
               />
               <RepoExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
                 description="Screenshot UI starter package"
                 label={copy.exportRepoInstructions}
-                className="min-h-11"
+                className="min-h-11 sm:w-auto"
                 analyticsSource="upload_flow"
                 analyticsFeature="generated_scaffold"
               />
             </DialogActionGroup>
           </details>
-          <DialogActionGroup className="sm:justify-end">
+          <DialogActionGroup className="order-1 grid w-full grid-cols-2 gap-2 sm:order-none sm:flex sm:w-auto sm:justify-end">
+            <RepoExportButton
+              text={artifact.generatedCode}
+              filename={exportFilename}
+              description="Screenshot UI starter package"
+              label={copy.exportDownloadPackage}
+              exportMode="zip"
+              testId="export-package-download"
+              className="order-first col-span-2 min-h-11 w-full border-primary/70 bg-primary text-primary-foreground hover:bg-primary/90 sm:order-none sm:w-auto"
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onExported={() => onExported(copy.toastPackageDownloaded)}
+            />
             <ExportButton
               text={preview.codePreview}
               variant="copy"
               label={copy.exportCopyAll}
+              className="w-full sm:w-auto"
               showToast={false}
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
@@ -1876,22 +1890,11 @@ function ExportPackageReviewDialog({
               variant="export"
               label={copy.exportDownload}
               filename={exportFilename}
+              className="w-full sm:w-auto"
               showToast={false}
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
               onCopied={() => onExported(copy.toastScaffoldExported)}
-            />
-            <RepoExportButton
-              text={artifact.generatedCode}
-              filename={exportFilename}
-              description="Screenshot UI starter package"
-              label={copy.exportDownloadPackage}
-              exportMode="zip"
-              testId="export-package-download"
-              className="min-h-11 border-primary/70 bg-primary text-primary-foreground hover:bg-primary/90"
-              analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
-              onExported={() => onExported(copy.toastPackageDownloaded)}
             />
           </DialogActionGroup>
         </DialogActionFooter>
