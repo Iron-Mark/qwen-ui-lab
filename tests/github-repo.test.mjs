@@ -52,8 +52,10 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
   assert.match(result.url, /generated-auth\.tsx/);
+  assert.match(decodeURIComponent(result.url), /add the package files from the export panel/);
+  assert.doesNotMatch(decodeURIComponent(result.url), /paste package contents manually/);
   assert.match(result.branch, /^qwen-ui-lab-export-/);
-  assert.ok(result.instructions.length > 10);
+  assert.match(result.instructions, /add the package files from the export panel/);
 });
 
 test("buildScaffoldZipEntries includes readme and sanitized filename", () => {

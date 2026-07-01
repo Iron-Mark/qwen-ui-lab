@@ -75,6 +75,8 @@ const BANNED_PUBLIC_PHRASES = [
   "Confirm navigation landmarks manually",
   "Verify the layout manually",
   "Inspect the zip entries before import",
+  "manual gist paste",
+  "paste package contents manually",
   "before shipping",
   "Review layout against the original screenshot before shipping",
   "not be merged",
