@@ -2042,14 +2042,14 @@ function GeneratedMockPrimitive({
 
 export interface UploadFlowProps {
   /** Bundled reference sample id (dashboard, auth, mobile, …) for /demo */
-  demoArchetype?: string;
+  sampleReferenceId?: string;
   /** Load sample + run analyze on mount (sample route) */
-  autoRunDemo?: boolean;
+  autoRunSample?: boolean;
 }
 
 export function UploadFlow({
-  demoArchetype,
-  autoRunDemo = false,
+  sampleReferenceId,
+  autoRunSample = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
@@ -2063,7 +2063,7 @@ export function UploadFlow({
   const originalDetectionsRef = useRef<UiFlowArtifact["detections"] | null>(null);
   const detectionHistoryRef = useRef<NonNullable<UiFlowArtifact["detections"]>[]>([]);
   const detectionHistoryIndexRef = useRef(-1);
-  const demoBootstrappedRef = useRef<string | null>(null);
+  const sampleBootstrappedRef = useRef<string | null>(null);
   const loadBundledSampleRef = useRef<(sampleId: string) => Promise<void>>(
     async () => {},
   );
@@ -2261,11 +2261,11 @@ export function UploadFlow({
       const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
       return `generated-${base || "component"}.tsx`;
     }
-    if (demoArchetype) {
-      return referenceSampleExportFilename(demoArchetype);
+    if (sampleReferenceId) {
+      return referenceSampleExportFilename(sampleReferenceId);
     }
     return "generated-component.tsx";
-  }, [demoArchetype, file]);
+  }, [sampleReferenceId, file]);
 
   const exportPackagePreview = useMemo(
     () =>
@@ -2789,23 +2789,23 @@ export function UploadFlow({
   });
 
   useEffect(() => {
-    if (!autoRunDemo) return;
+    if (!autoRunSample) return;
 
-    const sampleId = demoArchetype ?? "dashboard";
-    if (demoBootstrappedRef.current === sampleId) return;
-    demoBootstrappedRef.current = sampleId;
+    const sampleId = sampleReferenceId ?? "dashboard";
+    if (sampleBootstrappedRef.current === sampleId) return;
+    sampleBootstrappedRef.current = sampleId;
 
     void (async () => {
       await loadBundledSampleRef.current(sampleId);
     })();
-  }, [autoRunDemo, demoArchetype]);
+  }, [autoRunSample, sampleReferenceId]);
 
   useEffect(() => {
-    if (!autoRunDemo || !file || stage !== "uploaded" || providerState === "loading") {
+    if (!autoRunSample || !file || stage !== "uploaded" || providerState === "loading") {
       return;
     }
     void runPrimaryActionRef.current();
-  }, [autoRunDemo, file, providerState, stage]);
+  }, [autoRunSample, file, providerState, stage]);
 
   return (
     <PageContainer

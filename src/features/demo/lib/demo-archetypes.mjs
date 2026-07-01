@@ -1,5 +1,5 @@
 /** Query param values accepted by `/demo?archetype=`. */
-export const DEMO_ARCHETYPE_QUERY_VALUES = [
+export const SAMPLE_REFERENCE_QUERY_VALUES = [
   "dashboard",
   "auth",
   "mobile",
@@ -31,7 +31,7 @@ const SAMPLE_LABELS = {
  * @param {string | null | undefined} value
  * @returns {string}
  */
-export function resolveDemoArchetype(value) {
+export function resolveSampleReferenceId(value) {
   const key = String(value ?? "dashboard")
     .trim()
     .toLowerCase();
@@ -39,9 +39,9 @@ export function resolveDemoArchetype(value) {
 }
 
 /**
- * Human label for demo archetype chip / hero copy.
+ * Human label for sample reference chip / hero copy.
  * @param {string} sampleId
  */
-export function demoArchetypeLabel(sampleId) {
+export function sampleReferenceLabel(sampleId) {
   return SAMPLE_LABELS[sampleId] ?? SAMPLE_LABELS.dashboard;
 }

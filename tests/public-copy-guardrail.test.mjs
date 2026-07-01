@@ -11,6 +11,9 @@ const PUBLIC_COPY_FILES = [
   "src/lib/seo.ts",
   "src/lib/i18n/dictionaries/en.ts",
   "src/lib/i18n/dictionaries/zh.ts",
+  "src/features/demo/components/SampleReferencePageClient.tsx",
+  "src/features/demo/lib/demo-archetypes.mjs",
+  "src/features/demo/lib/demo-route.ts",
   "src/features/analysis/lib/offline-analyze.mjs",
   "src/features/analysis/lib/offline-image-inspection.mjs",
   "src/features/analysis/lib/ui-flow.mjs",
@@ -47,6 +50,12 @@ const BANNED_PUBLIC_PHRASES = [
   "statusDemoComplete",
   "toastInstantDemo",
   "toastRestoredDemo",
+  "DemoPageClient",
+  "demoArchetype",
+  "demoArchetypeLabel",
+  "resolveDemoArchetype",
+  "DEMO_ARCHETYPE_QUERY_VALUES",
+  "autoRunDemo",
 ];
 
 test("public and generated copy avoid stale demo/internal phrasing", async () => {

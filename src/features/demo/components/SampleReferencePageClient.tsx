@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Sparkles } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/badge";
-import { demoArchetypeLabel } from "../lib/demo-archetypes.mjs";
+import { sampleReferenceLabel } from "../lib/demo-archetypes.mjs";
 
 const UploadFlow = dynamic(
   () => import("@/features/analysis/components/UploadFlow").then((mod) => mod.UploadFlow),
@@ -18,12 +18,14 @@ const UploadFlow = dynamic(
   },
 );
 
-export interface DemoPageClientProps {
-  demoArchetype: string;
+export interface SampleReferencePageClientProps {
+  sampleReferenceId: string;
 }
 
-export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
-  const label = demoArchetypeLabel(demoArchetype);
+export function SampleReferencePageClient({
+  sampleReferenceId,
+}: SampleReferencePageClientProps) {
+  const label = sampleReferenceLabel(sampleReferenceId);
 
   return (
     <main className="relative">
@@ -56,9 +58,9 @@ export function DemoPageClient({ demoArchetype }: DemoPageClientProps) {
         </PageContainer>
       </div>
       <UploadFlow
-        key={demoArchetype}
-        demoArchetype={demoArchetype}
-        autoRunDemo
+        key={sampleReferenceId}
+        sampleReferenceId={sampleReferenceId}
+        autoRunSample
       />
     </main>
   );

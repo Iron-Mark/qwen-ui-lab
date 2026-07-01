@@ -2,20 +2,20 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  DEMO_ARCHETYPE_QUERY_VALUES,
-  demoArchetypeLabel,
-  resolveDemoArchetype,
+  SAMPLE_REFERENCE_QUERY_VALUES,
+  sampleReferenceLabel,
+  resolveSampleReferenceId,
 } from "../src/features/demo/lib/demo-archetypes.mjs";
 import {
   getReferenceSampleById,
   referenceSampleExportFilename,
 } from "../src/features/analysis/lib/reference-samples.mjs";
 
-test("resolveDemoArchetype maps shop to ecommerce sample", () => {
-  assert.equal(resolveDemoArchetype("shop"), "ecommerce");
-  assert.equal(resolveDemoArchetype(null), "dashboard");
-  assert.equal(resolveDemoArchetype("AUTH"), "auth");
-  assert.equal(resolveDemoArchetype("unknown"), "dashboard");
+test("resolveSampleReferenceId maps shop to ecommerce sample", () => {
+  assert.equal(resolveSampleReferenceId("shop"), "ecommerce");
+  assert.equal(resolveSampleReferenceId(null), "dashboard");
+  assert.equal(resolveSampleReferenceId("AUTH"), "auth");
+  assert.equal(resolveSampleReferenceId("unknown"), "dashboard");
 });
 
 test("referenceSampleExportFilename uses readable slug", () => {
@@ -24,15 +24,15 @@ test("referenceSampleExportFilename uses readable slug", () => {
   assert.equal(referenceSampleExportFilename("auth"), "generated-auth.tsx");
 });
 
-test("demo archetype labels match bundled reference metadata", () => {
+test("sample reference labels match bundled reference metadata", () => {
   const sample = getReferenceSampleById("mobile");
   assert.equal(sample.id, "mobile");
   assert.equal(sample.fileName, "mobile-reference.png");
-  assert.ok(demoArchetypeLabel("landing").toLowerCase().includes("landing"));
+  assert.ok(sampleReferenceLabel("landing").toLowerCase().includes("landing"));
 });
 
-test("DEMO_ARCHETYPE_QUERY_VALUES lists public query keys", () => {
-  assert.deepEqual(DEMO_ARCHETYPE_QUERY_VALUES, [
+test("SAMPLE_REFERENCE_QUERY_VALUES lists public query keys", () => {
+  assert.deepEqual(SAMPLE_REFERENCE_QUERY_VALUES, [
     "dashboard",
     "auth",
     "mobile",

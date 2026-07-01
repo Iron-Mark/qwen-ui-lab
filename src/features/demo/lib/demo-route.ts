@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  demoArchetypeLabel,
-  resolveDemoArchetype,
+  sampleReferenceLabel,
+  resolveSampleReferenceId,
 } from "./demo-archetypes.mjs";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
@@ -32,20 +32,20 @@ export function createDemoRouteMetadata(): Metadata {
   });
 }
 
-export function resolveDemoRouteArchetype(value: string | null | undefined) {
-  return resolveDemoArchetype(value);
+export function resolveSampleReferenceRouteId(value: string | null | undefined) {
+  return resolveSampleReferenceId(value);
 }
 
 export async function resolveDemoPageModel({ searchParams }: DemoRoutePageProps) {
   const params = await searchParams;
 
   return {
-    demoArchetype: resolveDemoRouteArchetype(params.archetype),
+    sampleReferenceId: resolveSampleReferenceRouteId(params.archetype),
   };
 }
 
-export function getDemoRouteArchetypeLabel(value: string) {
-  return demoArchetypeLabel(value);
+export function getSampleReferenceRouteLabel(value: string) {
+  return sampleReferenceLabel(value);
 }
 
 export function getDemoRouteStructuredDataInput() {

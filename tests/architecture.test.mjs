@@ -881,7 +881,7 @@ test("demo route delegates search-param parsing to feature helpers", async () =>
   const specifiers = collectModuleSpecifiers(file, source);
   const bannedMarkers = [
     "const params = await searchParams",
-    "resolveDemoRouteArchetype(",
+    "resolveSampleReferenceRouteId(",
     "Promise<{ archetype?: string }>",
   ];
 
@@ -1358,7 +1358,7 @@ test("share result core remains server-safe", async () => {
   assert.deepEqual(violations, []);
 });
 
-test("demo feature components delegate archetype helpers through demo lib", async () => {
+test("sample reference components delegate sample helpers through demo lib", async () => {
   const demoComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
     (file) => sourceModuleExtensions.includes(path.extname(file)),
   );
