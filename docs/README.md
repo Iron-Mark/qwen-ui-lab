@@ -96,8 +96,8 @@ Media docs:
 
 | Doc | Topic |
 | --- | --- |
-| [Media kit](./media/MEETUP_MEDIA.md) | Recording and slide export checklist. |
-| [Demo script](./media/DEMO_SCRIPT.md) | Short video script and backup screenshot order. |
+| [Presentation media kit](./media/MEETUP_MEDIA.md) | Recording and slide export checklist. |
+| [Sample script](./media/DEMO_SCRIPT.md) | Short video script and backup screenshot order. |
 | [LinkedIn posts](./media/LINKEDIN_POSTS.md) | Social copy drafts. |
 | [Slide source](./media/MEETUP_SLIDES.marp.md) | Marp slide source. |
 

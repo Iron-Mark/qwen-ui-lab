@@ -115,17 +115,17 @@ AUTH_ENABLED=true       # proposed gate — see migration
 
 | Priority | Choice | Rationale |
 |----------|--------|-----------|
-| **Default path** | **Auth.js v5** | Matches Next.js 16 stack, self-hosted, Google/GitHub/Email providers, no new SaaS bill for meetup demos |
+| **Default path** | **Auth.js v5** | Matches Next.js 16 stack, self-hosted, Google/GitHub/Email providers, no new SaaS bill for optional profile features |
 | **Fast alternative** | **Clerk** | If timeline &lt; 1 sprint and vendor OK |
 | **Defer** | Lucia-only, magic-link-only | More code for same user-visible outcome |
 
-Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only — not on production demo lane until migration steps below are done.
+Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only — not on the production lane until migration steps below are done.
 
 ---
 
 ## Demo-safe migration strategy
 
-Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — demo-safe by default, live auth opt-in.
+Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — browser-local by default, live auth opt-in.
 
 ### 1. Feature gate (proposed)
 
@@ -215,7 +215,7 @@ Store client IDs as env vars; never `NEXT_PUBLIC_*` for secrets.
 
 ## Email magic link (ops notes)
 
-| Provider | Integration | Meetup demo |
+| Provider | Integration | Product fit |
 |----------|-------------|-------------|
 | Resend | Auth.js Email provider or custom | Free tier; domain verification required |
 | Postmark | SMTP `EMAIL_SERVER` | Transactional focus |

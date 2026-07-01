@@ -1,6 +1,6 @@
 # Progressive Web App (PWA)
 
-qwen-ui-lab ships as an installable PWA for meetup demos. The service worker is **production-only** — `npm run dev` does not register it, so local development stays predictable.
+qwen-ui-lab ships as an installable PWA. The service worker is **production-only** — `npm run dev` does not register it, so local development stays predictable.
 
 ## Install
 
@@ -18,7 +18,7 @@ The in-app [PwaInstallBanner](../../src/features/pwa/components/PwaInstallBanner
 
 ### Android (Play Store — Trusted Web Activity)
 
-For meetup chapters that want a **Play Store listing** instead of (or in addition to) Chrome install, wrap the production PWA in a **Trusted Web Activity (TWA)**. The Android shell is a thin APK; all UI loads from your HTTPS origin.
+For teams that want a **Play Store listing** instead of (or in addition to) Chrome install, wrap the production PWA in a **Trusted Web Activity (TWA)**. The Android shell is a thin APK; all UI loads from your HTTPS origin.
 
 | Step | Action |
 |------|--------|
@@ -27,7 +27,7 @@ For meetup chapters that want a **Play Store listing** instead of (or in additio
 | 3 | Note the **package name** (e.g. `com.yourorg.qwenuilab`) and the **SHA-256 signing certificate fingerprint** from your upload key or Play App Signing. |
 | 4 | Copy [docs/ops/assetlinks.template.json](./assetlinks.template.json), replace placeholders, and publish as **`/.well-known/assetlinks.json`** on the **same origin** as `start_url` in [manifest.json](../../public/manifest.json). |
 | 5 | Verify: [Google Digital Asset Links API](https://developers.google.com/digital-asset-links/v1/getting-started) or `curl https://YOUR_DOMAIN/.well-known/assetlinks.json`. |
-| 6 | Build, sign, and upload the APK/AAB to Play Console; set the default URL to `/` or `/demo` for meetup handouts. |
+| 6 | Build, sign, and upload the APK/AAB to Play Console; set the default URL to `/` for the main workflow or `/demo` for a sample run. |
 
 **Hosting `assetlinks.json` on Vercel**
 
@@ -37,14 +37,14 @@ For meetup chapters that want a **Play Store listing** instead of (or in additio
 
 **When to skip TWA**
 
-- Public meetup demos: Chrome **Install app** is enough — no Play review cycle.
+- Public web deployments: Chrome **Install app** is enough — no Play review cycle.
 - Forks on custom domains: update `assetlinks.json` with **your** package name and fingerprint; the template is not committed to production by default.
 
 **References**
 
 - [Trusted Web Activity overview](https://developer.chrome.com/docs/android/trusted-web-activity)
 - [Digital Asset Links](https://developers.google.com/digital-asset-links/v1/getting-started)
-- Meetup recording / slides: [docs/media/MEETUP_MEDIA.md](../media/MEETUP_MEDIA.md)
+- Presentation recording / slides: [docs/media/MEETUP_MEDIA.md](../media/MEETUP_MEDIA.md)
 
 ### iOS (Safari)
 
@@ -68,7 +68,7 @@ The banner is hidden when the app is already running standalone (`display-mode: 
 
 | Layer | What works offline |
 |-------|-------------------|
-| **Demo analysis** | Client-side offline algorithm (`src/features/analysis/lib/offline-analyze.mjs`) — no network needed after JS loads |
+| **Local analysis** | Client-side offline algorithm (`src/features/analysis/lib/offline-analyze.mjs`) — no network needed after JS loads |
 | **Cached shell** | `/`, `/design-system`, and static assets visited at least once |
 | **Health probe** | `GET /api/health` — network-first with cache fallback after at least one online visit |
 | **Navigation fallback** | Unknown routes → cached page → `/` shell → [offline.html](../../public/offline.html) |
