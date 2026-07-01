@@ -153,4 +153,4 @@ Use this path when alerts are raised by `/api/health` synthetic checks:
    - treat as **critical** and start mitigation immediately.
 4. If probes pass but latency warning threshold is exceeded:
    - treat as **warning**, open an incident ticket, and investigate the same day.
-5. Record findings and attach the synthetic output summary to handoff notes.
+5. Record findings and attach the synthetic output summary to the incident notes.

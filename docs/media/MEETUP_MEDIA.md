@@ -1,58 +1,59 @@
-# Meetup media kit
+# Product media kit
 
-Recording and slide assets for qwen-ui-lab meetups. Pair with **[DEMO.md](../DEMO.md)** for the live script and **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)** for a 30–60 s promo cut.
+Recording and slide assets for qwen-ui-lab walkthroughs, product demos, and short launch clips. Pair this with **[DEMO.md](../DEMO.md)** for the guided sample-run script and **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)** for a 30-60 second promo cut.
 
 ---
 
 ## Recording checklist
 
-### Pre-flight (day before)
+### Pre-flight
 
-- [ ] Rehearse **[DEMO.md](../DEMO.md)** 10-minute script once with venue Wi‑Fi **off** (`/demo` must complete instantly).
-- [ ] Confirm production URL: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo) — export panel visible within ~20 s.
-- [ ] Run `npm test` and `npm run build` if recording from a local clone.
-- [ ] Set display to **1920×1080**; hide bookmarks bar; use Chrome in a clean window (or incognito for snackbar reset).
-- [ ] Choose light or dark theme and stick to it for the whole take.
-- [ ] Disable notifications / Do Not Disturb on the recording machine.
-- [ ] Prepare backup: static screenshots listed in [docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md#backup-static-screenshot-sequence).
+- [ ] Rehearse **[DEMO.md](../DEMO.md)** once with network access disabled; `/demo` should still complete from the bundled sample.
+- [ ] Confirm the product URL: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo). The export package panel should be visible within about 20 seconds.
+- [ ] Run `npm test` and `npm run build` when recording from a local clone.
+- [ ] Set the display to 1920x1080, hide the bookmarks bar, and use a clean Chrome profile.
+- [ ] Choose light or dark theme and keep it consistent for the whole take.
+- [ ] Disable notifications and system sounds.
+- [ ] Prepare backup screenshots from [docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md#backup-static-screenshot-sequence).
 
-### Before rolling (5 minutes)
+### Before rolling
 
-- [ ] Close unrelated tabs and apps; mute system sounds.
-- [ ] Test mic levels (if voiceover); record audio separately if the room is noisy.
-- [ ] Open `/demo` and wait for auto-run to finish once (warm cache).
-- [ ] Clear site data or use incognito if you need the **Demo mode** snackbar on camera.
-- [ ] Queue slide deck (exported PDF/PPTX from Marp) as presenter backup.
+- [ ] Close unrelated tabs and apps.
+- [ ] Test microphone levels if recording voiceover.
+- [ ] Open `/demo` and let the sample run finish once to warm the cache.
+- [ ] Clear site data or use an incognito window if the recording needs a fresh first-run state.
+- [ ] Queue the slide deck as a presenter backup.
 
 ### During capture
 
-- [ ] Prefer **`/demo`** for the hero beat — zero-click export panel.
-- [ ] Move the cursor deliberately; pause voiceover during navigation.
-- [ ] Show export panel: **Copy all**, **Download component**, **Download package**, and at least one UX law deep link.
-- [ ] Hit one archetype swap (`/demo?archetype=auth` or `shop`) to show variety.
-- [ ] Optional B-roll: `/design-system` search + **Export all snippets**.
-- [ ] Do **not** enable live Qwen on the public host for meetup footage unless rehearsed.
+- [ ] Start on `/demo` for a zero-click sample result.
+- [ ] Move the cursor deliberately and pause during transitions.
+- [ ] Show the export package tabs: files, changes, and package copy.
+- [ ] Trigger one archetype swap, such as `/demo?archetype=auth` or `/demo?archetype=shop`, to show variety.
+- [ ] Optional B-roll: `/design-system` search plus snippet export.
+- [ ] Keep live-provider mode disabled unless the recording specifically covers provider setup.
 
 ### Post-production
 
-- [ ] Export at **1080p, 30 fps** minimum (H.264 or VP9).
-- [ ] Trim dead air at start/end; add lower-third with demo URL if publishing.
-- [ ] Verify on mobile preview (text readable at 390 px width).
-- [ ] Upload to your channel / meetup repo; link README and DEMO.md in the description.
+- [ ] Export at 1080p, 30 fps minimum.
+- [ ] Trim dead air at the start and end.
+- [ ] Add a lower-third with the product URL if publishing publicly.
+- [ ] Verify the video on a mobile preview; text should still be readable around 390 px width.
+- [ ] Link README and DEMO.md in the description.
 
-### Short promo (30–60 s)
+### Short promo
 
-Follow the timed beats in **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)**. For a longer walkthrough, use the table in **[DEMO.md](../DEMO.md#five-minute-walkthrough)**.
+Follow the timed beats in **[docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md)**. For a longer walkthrough, use **[DEMO.md](../DEMO.md#five-minute-walkthrough)**.
 
 ---
 
-## Slides (Marp)
+## Slides
 
-Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)** — eight slides derived from the current [sample screenshot guide](../DEMO.md). One slide ≈ 45–60 seconds on stage.
+Slide content lives in **[docs/media/MEETUP_SLIDES.marp.md](./MEETUP_SLIDES.marp.md)**. The deck is kept as a reusable walkthrough deck even though the app is now framed as a product-first screenshot-to-React tool.
 
 ### Install Marp
 
-**CLI (export in CI or terminal):**
+**CLI:**
 
 ```bash
 npm install -g @marp-team/marp-cli
@@ -65,13 +66,8 @@ npm install -g @marp-team/marp-cli
 From the repo root:
 
 ```bash
-# PDF (recommended for venue projectors)
 npx @marp-team/marp-cli docs/media/MEETUP_SLIDES.marp.md --pdf -o docs/media/MEETUP_SLIDES.pdf
-
-# PowerPoint (editable in Google Slides / Keynote import)
 npx @marp-team/marp-cli docs/media/MEETUP_SLIDES.marp.md --pptx -o docs/media/MEETUP_SLIDES.pptx
-
-# HTML (self-contained deck)
 npx @marp-team/marp-cli docs/media/MEETUP_SLIDES.marp.md --html -o docs/media/MEETUP_SLIDES.html
 ```
 
@@ -79,16 +75,12 @@ npx @marp-team/marp-cli docs/media/MEETUP_SLIDES.marp.md --html -o docs/media/ME
 
 | Topic | Guidance |
 |-------|----------|
-| **Theme** | Default theme in front matter; switch to `theme: gaia` for higher contrast in bright rooms. |
-| **Aspect ratio** | `size: 16:9` is set; use `4:3` only if the venue projector requires it. |
-| **Speaker notes** | Add `<!-- _class: lead -->` or per-slide `notes:` in Marp v3+ if you want presenter-only text. |
-| **Branding** | Footer is preset; replace with your meetup name for local chapters. |
-| **Live demo** | Slides 4–6 align with `/demo` beats — advance slides while the app runs in a second window. |
-| **Git ignore** | Exported `.pdf` / `.pptx` / `.html` are optional artifacts; commit only if your chapter shares them. |
-
-### Other slide tools
-
-The same outline in [DEMO.md](../DEMO.md) can be pasted into **Slidev** or **Google Slides** speaker notes. Marp is the maintained export path in this repo.
+| Theme | Default theme in front matter; switch to `theme: gaia` for higher contrast in bright rooms. |
+| Aspect ratio | `size: 16:9` is set; use `4:3` only when the projector requires it. |
+| Speaker notes | Add presenter-only notes in Marp when needed. |
+| Branding | Footer is preset; replace it only for event-specific exports. |
+| Product walkthrough | Slides 4-6 align with `/demo` beats. |
+| Git ignore | Exported `.pdf`, `.pptx`, and `.html` files are optional artifacts. |
 
 ---
 
@@ -96,6 +88,6 @@ The same outline in [DEMO.md](../DEMO.md) can be pasted into **Slidev** or **Goo
 
 | Doc | Use |
 |-----|-----|
-| [DEMO.md](../DEMO.md) | Stage script, `/demo` tour, troubleshooting |
-| [docs/ops/PWA.md](../ops/PWA.md) | Install on Android (Chrome + optional Play Store TWA) |
-| [docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md) | 30–60 s voiceover script |
+| [DEMO.md](../DEMO.md) | Sample-run tour and troubleshooting |
+| [docs/ops/PWA.md](../ops/PWA.md) | Install and PWA notes |
+| [docs/media/DEMO_SCRIPT.md](./DEMO_SCRIPT.md) | 30-60 second voiceover script |

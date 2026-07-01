@@ -3,68 +3,78 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-footer: "qwen-ui-lab · qwen-ui-lab.vercel.app/demo"
+footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
 ---
 
 # qwen-ui-lab
-## Screenshot → React + Tailwind scaffold
+## Screenshot to React + Tailwind starter package
 
-- Offline-safe demo: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo)
+- Sample run: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo)
 - Repo: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
 
 ---
 
 # Problem
 
-- Design reviews stall on "how do we build this?"
-- Screenshots are easy; structured component plans are hard
-- Goal: compress screenshot → scaffold loop to **minutes**
+- UI screenshots are easy to collect
+- Component structure, states, and export-ready files take longer
+- Goal: compress screenshot-to-starter-package review into minutes
 
 ---
 
-# Demo mode (default)
+# Local preview
 
-- No API key on public host
-- Instant offline analyze + generate
-- Header badge: **Demo mode**
-- `/demo` = one-click meetup route
-
----
-
-# Live demo beat 1
-
-- Open `/demo` → dashboard auto-runs
-- Split view: reference vs plan cards
-- Export panel: copy / download `.tsx`
+- Public host runs without a provider key
+- Bundled samples analyze and generate instantly
+- `/demo` opens a sample result for walkthroughs
+- Real screenshots still go through the same review flow
 
 ---
 
-# Archetypes
+# Walkthrough beat 1
 
-- `?archetype=auth|mobile|landing|settings|shop`
-- Same offline pipeline, different sample screenshots
-- UX compliance links per layout (Laws of UX)
-
----
-
-# Design system lab
-
-- `/design-system` — atoms → organisms
-- Search, filters, variant toggles
-- Export all snippets for your stack
+- Open `/demo`; the dashboard sample auto-runs
+- Review detected sections, controls, and repeated groups
+- Compare screenshot structure against the generated preview
 
 ---
 
-# Live Qwen (opt-in)
+# Walkthrough beat 2
 
-- `DASHSCOPE_API_KEY` + `QWEN_LIVE_ANALYSIS=true`
-- Key alone does **not** enable live calls
-- Keep meetups on demo mode unless rehearsed
+- Inspect confidence reasons
+- Correct detection boxes when needed
+- Regenerate from corrected boxes as the source of truth
+
+---
+
+# Export package
+
+- Component TSX
+- DESIGN.md
+- Recipe JSON and manifest JSON
+- Tokens CSS
+- Detection notes for review
+
+---
+
+# Design system
+
+- `/design-system` catalogs reusable primitives
+- Search, filters, variant toggles, and preview modes
+- Export snippets for product UI and Laws of UX examples
+
+---
+
+# Live provider mode
+
+- `DASHSCOPE_API_KEY` plus `QWEN_LIVE_ANALYSIS=true`
+- API key alone does not enable live calls
+- Use local preview for recordings unless provider behavior is the topic
 
 ---
 
 # Takeaway
 
-- AI assists decomposition; humans ship polish
-- "Turn screenshots into starting points — offline today, live when ready."
-- Questions → `/demo`, README, DEMO.md
+- The app does not promise final production UI
+- It creates an inspectable starter package from a screenshot
+- Faster scaffolding is useful when every generated decision stays reviewable

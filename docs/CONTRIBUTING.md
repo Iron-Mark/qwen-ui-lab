@@ -1,6 +1,6 @@
 # Contributing to qwen-ui-lab
 
-Thanks for contributing. This guide is for fast onboarding and low-risk handoff.
+Thanks for contributing. This guide is for fast onboarding and low-risk review.
 
 ## Quick Start
 

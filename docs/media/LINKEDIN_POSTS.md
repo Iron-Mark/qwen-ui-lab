@@ -1,174 +1,148 @@
-# LinkedIn Content Series — qwen-ui-lab
+# LinkedIn content series - qwen-ui-lab
 
-4 posts to publish over 1–2 weeks after the meetup.
+Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates a reviewable starter package from a screenshot. It is not a final production UI generator.
 
 ---
 
-## Post 1 — The Experiment
+## Post 1 - The Problem
 
 **Hook:**
 
-I tested whether Qwen could turn a UI screenshot into a React/Tailwind component scaffold.
+Turning a UI screenshot into usable React code should not start from a blank file.
 
 **Body:**
 
-```
-Input: SaaS dashboard screenshot
-Tools: Qwen3-VL (visual analysis) + Qwen Code (scaffolding)
-Output: first-pass React/Tailwind component scaffold
+```text
+I built qwen-ui-lab to test a focused workflow:
+
+Input: UI screenshot
+Output: React + Tailwind starter package for review
 
 The workflow:
-1. Upload screenshot to Qwen3-VL
-2. Extract layout, hierarchy, components, accessibility risks
-3. Generate component plan
-4. Use Qwen Code Plan Mode to review before editing
-5. Scaffold first-pass code
-6. Manually refactor for quality
+1. Upload a screenshot
+2. Inspect detected sections, controls, and repeated groups
+3. Correct detection boxes when needed
+4. Generate a React/Tailwind scaffold
+5. Review files, design notes, and detection notes
+6. Export a starter package for source control
 
-Result: useful, but not production-ready.
+The goal is not magic final code.
+The goal is a faster, inspectable starting point.
 ```
 
 **Closing:**
 
-> Biggest lesson: AI is better at decomposition than final UI quality.
+> The useful part is not replacing review. It is making review start from structure instead of a blank page.
 
-**Hashtags:** `#Qwen #AI #ReactJS #TailwindCSS #Frontend #BuildInPublic`
-
-**Image:** Dashboard reference screenshot
+**Image:** Upload workflow or sample launcher
 
 ---
 
-## Post 2 — What Worked
+## Post 2 - What The Detector Gets Right
 
 **Hook:**
 
-Qwen was surprisingly useful at breaking down UI structure.
+A screenshot has more structure than it first appears to have.
 
 **Body:**
 
-```
-I fed a dashboard screenshot to Qwen3-VL and asked it to analyze
-the layout as a front-end engineer.
+```text
+The local detector in qwen-ui-lab looks for practical UI signals:
 
-Here's what it got right:
+- navbars and app shells
+- cards and repeated grids
+- forms and field groups
+- tables and list rows
+- charts and stat rows
+- tabs, dialogs, and empty states
+- mobile shell patterns
 
-✓ Identified the 5 major layout sections
-✓ Suggested practical component groupings (stat cards, activity feed)
-✓ Recognized repeated UI patterns
-✓ Created a usable component hierarchy
-✓ Generated working Tailwind class patterns
-✓ Reduced blank-page friction significantly
+The app then explains why it detected each element:
+geometry, spacing, alignment, repetition, visual weight, and affordance.
 
-The visual decomposition was the strongest part.
-It understood grids, spacing patterns, and card structures.
+That matters because generated UI should be reviewable, not mysterious.
 ```
 
 **Closing:**
 
-> The AI didn't write perfect code — but it gave me a strong starting point in minutes instead of hours.
+> Good scaffolding starts with explainable structure.
 
-**Hashtags:** `#Qwen3VL #UIDesign #ComponentDesign #AI`
-
-**Image:** Component hierarchy diagram or Qwen3-VL breakdown output
+**Image:** Detected UI boxes with confidence reasons
 
 ---
 
-## Post 3 — What Failed
+## Post 3 - What Still Needs Human Judgment
 
 **Hook:**
 
-The generated UI looked decent at first glance — then the front-end problems showed up.
+Screenshot-to-code still needs a designer-engineer in the loop.
 
 **Body:**
 
-```
-After scaffolding a dashboard with Qwen Code, I reviewed the output
-as a senior front-end engineer.
+```text
+Even with better detection, review still matters:
 
-Here's what needed fixing:
+- screenshots hide interaction states
+- real data can break ideal layouts
+- charts and tables need domain semantics
+- accessibility depends on intent, not just pixels
+- generated copy should be replaced with product language
+- responsive assumptions need device testing
 
-✗ Inline styles everywhere (no Tailwind classes)
-✗ Generic naming ("Card" instead of "StatCard")
-✗ No accessibility attributes (missing ARIA, no focus rings)
-✗ Emoji icons instead of SVGs
-✗ No responsive breakpoints
-✗ No dark mode support
-✗ No semantic HTML (divs instead of ul/li/time)
-✗ No empty state handling
-✗ Color-only trend indicators (no arrows)
-✗ Division by zero not guarded
-
-The AI got the structure right.
-But production quality requires human judgment.
+qwen-ui-lab treats generated output as a starter package for review.
+The export includes component code, DESIGN.md, recipe JSON, manifest JSON,
+tokens CSS, and detection notes so the next step is inspectable.
 ```
 
 **Closing:**
 
-> AI writes first drafts. Engineers write final code.
+> The product is not "done code." The product is a better first review.
 
-**Hashtags:** `#CodeReview #FrontendEngineering #Accessibility #AI`
-
-**Image:** Before/after code comparison or side-by-side screenshots
+**Image:** Export package dialog or file preview
 
 ---
 
-## Post 4 — Final Case Study
+## Post 4 - The Case Study
 
 **Hook:**
 
-Final result: screenshot → Qwen analysis → React/Tailwind scaffold → human-refactored component.
+Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind starter package.
 
 **Body:**
 
-```
-Here's the complete case study from my qwen-ui-lab experiment.
+```text
+What qwen-ui-lab now supports:
 
-What I built:
-• SaaS dashboard with stat cards, revenue chart, activity feed, quick actions
-• Full dark mode with smooth transitions
-• Responsive from mobile to desktop
-• Accessible (ARIA labels, semantic HTML, focus management)
-• Type-safe with TypeScript interfaces
+- upload, paste, or load a bundled screenshot
+- offline-safe detection for common UI structures
+- confidence reasons per detected element
+- editable detection boxes before regeneration
+- side-by-side screenshot and generated preview
+- export package with files and review notes
+- design system catalog with reusable snippets
+- PWA, metadata, 404, and production-readiness checks
 
-What the AI contributed:
-• Visual decomposition (Qwen3-VL)
-• Component planning (Plan Mode)
-• First-pass scaffold (Qwen Code)
-
-What I contributed:
-• Design token system
-• Accessibility patterns
-• Responsive strategy
-• Component API design
-• Production quality decisions
-
-The final codebase:
-8 focused components · 4 TypeScript interfaces · 0 lint errors
+The strongest version of this workflow is not a black box.
+It is a transparent pipeline where every generated decision can be reviewed.
 ```
 
 **Closing:**
 
-> AI helped me move faster, but human front-end judgment made it usable.
+> Faster scaffolding is useful when it keeps the human in control.
 
-🔗 GitHub: [link]
-🎥 Demo: [link]
-📊 Slides: [link]
-
-**Hashtags:** `#Qwen #ReactJS #TailwindCSS #CaseStudy #BuildInPublic #AI`
-
-**Image:** Final dashboard screenshot or before/after comparison
+**Image:** Side-by-side screenshot versus generated preview
 
 ---
 
-## Publishing Schedule
+## Publishing schedule
 
-| Post | Timing | Best Day |
-|------|--------|----------|
-| Post 1: The Experiment | Day 1 (meetup day or day after) | Tuesday/Wednesday |
-| Post 2: What Worked | 2–3 days later | Thursday/Friday |
-| Post 3: What Failed | 4–5 days later | Tuesday |
-| Post 4: Final Case Study | 7–10 days later | Wednesday |
+| Post | Timing | Suggested day |
+|------|--------|---------------|
+| Post 1: The Problem | Day 1 | Tuesday or Wednesday |
+| Post 2: Detector Structure | 2-3 days later | Thursday or Friday |
+| Post 3: Human Judgment | 4-5 days later | Tuesday |
+| Post 4: Case Study | 7-10 days later | Wednesday |
 
-## Best Closing Line (use across posts)
+## Reusable closing line
 
-> AI helped me move faster, but front-end judgment made it usable.
+> Faster scaffolding is useful when every generated decision stays reviewable.
