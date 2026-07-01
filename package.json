@@ -23,6 +23,7 @@
     "validate:prod:preview": "node scripts/validate-prod-env.mjs --target=preview",
     "prod:readiness": "node scripts/validate-prod-env.mjs --target=production",
     "smoke:deploy": "node scripts/post-deploy-smoke.mjs",
+    "smoke:share-live": "node scripts/live-share-smoke.mjs",
     "smoke:live": "node scripts/staged-live-smoke.mjs",
     "smoke:staged": "node scripts/staged-live-smoke.mjs",
     "synthetic:health": "node scripts/synthetic-health-check.mjs",
