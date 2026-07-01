@@ -165,6 +165,10 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /Applied edits: 1/);
   assert.match(entries[6].content, /Excluded boxes: 1/);
   assert.match(entries[6].content, /Source of truth: Manual corrections/);
+  assert.match(entries[6].content, /## Low-confidence review queue/);
+  assert.match(entries[6].content, /element-2: 68% as primary-action/);
+  assert.match(entries[6].content, /## Why elements were detected/);
+  assert.match(entries[6].content, /primary-action: manual correction plus detector evidence; no detailed reason was exported\./);
   assert.match(entries[6].content, /## Reviewer handoff/);
   assert.match(entries[6].content, /Keep this detection note with the pull request/);
   assert.match(entries[6].content, /Edited element-2: kept as primary-action/);

@@ -206,6 +206,8 @@ export function buildDetectionSummaryMarkdown(blueprint) {
   const confidenceSummary = summarizeConfidenceBands([...regions, ...elements]);
   const manualCorrectionNotes = buildManualCorrectionNotes(elements);
   const correctionMetadata = blueprint.correctionSummary;
+  const lowConfidenceReviewQueue = buildLowConfidenceReviewQueue([...regions, ...elements]);
+  const confidenceReasonSummary = buildConfidenceReasonSummary(elements);
 
   return `# Detection summary
 
@@ -232,6 +234,14 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 - Medium confidence: ${confidenceSummary.medium}
 - Low confidence: ${confidenceSummary.low}
 - Unknown confidence: ${confidenceSummary.unknown}
+
+## Low-confidence review queue
+
+${lowConfidenceReviewQueue}
+
+## Why elements were detected
+
+${confidenceReasonSummary}
 
 ## Manual corrections
 
@@ -618,4 +628,77 @@ function buildManualCorrectionNotes(elements) {
       return `- Excluded ${element.id ?? role}: ${role}; confirm it is decorative or intentionally omitted.`;
     }),
   ].join("\n");
+}
+
+function buildLowConfidenceReviewQueue(items) {
+  const lowConfidenceItems = items
+    .map((item, index) => ({
+      item,
+      index,
+      confidence: item?.confidence ?? item?.patternConfidence,
+    }))
+    .filter(({ confidence }) => typeof confidence === "number" && confidence < 0.75)
+    .sort((first, second) => first.confidence - second.confidence)
+    .slice(0, 8);
+
+  if (!lowConfidenceItems.length) {
+    return "- No low-confidence regions or elements were exported.";
+  }
+
+  return lowConfidenceItems
+    .map(({ item, index, confidence }) => {
+      const label =
+        item.id ??
+        item.label ??
+        item.componentRole ??
+        item.primitive ??
+        item.kind ??
+        `item-${index + 1}`;
+      const role = item.componentRole ?? item.primitive ?? item.kind ?? "element";
+      const reason = firstDetectionReason(item);
+      return `- ${label}: ${Math.round(confidence * 100)}% as ${role}${reason ? ` - ${reason}` : ""}`;
+    })
+    .join("\n");
+}
+
+function buildConfidenceReasonSummary(elements) {
+  const reasonLines = elements
+    .slice(0, 12)
+    .map((element, index) => {
+      const role = element.componentRole ?? element.primitive ?? element.kind ?? `element-${index + 1}`;
+      const reasons = detectionReasons(element).slice(0, 3);
+      const prefix = element.userEdited
+        ? "manual correction plus detector evidence"
+        : element.included === false
+          ? "excluded from generated output"
+          : "detector evidence";
+      if (!reasons.length) {
+        return `- ${role}: ${prefix}; no detailed reason was exported.`;
+      }
+      return `- ${role}: ${prefix}; ${reasons.join("; ")}.`;
+    });
+
+  return reasonLines.length
+    ? reasonLines.join("\n")
+    : "- No element-level confidence reasons were exported.";
+}
+
+function detectionReasons(item) {
+  const rawReasons = Array.isArray(item?.reasons)
+    ? item.reasons
+    : [item?.reason, item?.explanation, item?.detectionReason];
+  return rawReasons
+    .map((reason) => {
+      if (!reason) return "";
+      if (typeof reason === "string") return reason.trim();
+      if (typeof reason === "object") {
+        return String(reason.evidence ?? reason.reason ?? reason.label ?? "").trim();
+      }
+      return String(reason).trim();
+    })
+    .filter(Boolean);
+}
+
+function firstDetectionReason(item) {
+  return detectionReasons(item)[0] ?? "";
 }
