@@ -109,18 +109,8 @@ jobs:
       - name: Wait for app
         run: npx --yes wait-on@7.2.0 --timeout 120000 http://127.0.0.1:${PORT}
 
-      - name: Use Node 22 for link checker
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
       - name: Check internal links
-        run: npx --yes linkinator@6.1.2 http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry --concurrency 3 --skip ".*_next.*" --skip ".*api/analyze-ui.*" --skip "https://ph.linkedin.com/.*"
-
-      - name: Restore Node for remaining audits
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
+        run: npx --yes -p node@22 -p linkinator@6.1.2 linkinator http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry --concurrency 3 --skip ".*_next.*" --skip ".*api/analyze-ui.*" --skip "https://ph.linkedin.com/.*"
 
       - name: Lighthouse performance budget
         run: |
