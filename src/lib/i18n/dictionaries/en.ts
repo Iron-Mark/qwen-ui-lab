@@ -44,6 +44,7 @@ export const en = {
     navAria: "Back to known pages",
     backDashboard: "Back to dashboard",
     designSystem: "Design system",
+    suggestedPages: "Suggested pages",
   },
   share: {
     eyebrow: "Share link",
@@ -61,6 +62,9 @@ export const en = {
       "This read-only analysis summary was not found. The link may have expired or may no longer be available.",
     notFoundStorageHint:
       "Create a new share link from the workflow when you need a fresh summary.",
+    notFoundRecoveryTitle: "What you can do next",
+    notFoundRecoveryWorkflow: "Create a new summary from the workflow.",
+    notFoundRecoverySample: "Open a sample screenshot to inspect the export flow.",
   },
   account: {
     eyebrow: "Profile",

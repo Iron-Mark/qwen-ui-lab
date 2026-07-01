@@ -71,7 +71,7 @@ export function NotFoundClient() {
         >
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <span className="size-2 rounded-full bg-primary" />
-            Suggested pages
+            {t.suggestedPages}
           </div>
           <div className="mt-4 grid gap-2">
             {[t.backDashboard, t.designSystem].map((label) => (
