@@ -166,6 +166,7 @@ type DetectionElement = {
   id: string;
   kind: string;
   primitive?: string;
+  componentRole?: string;
   confidence: number;
   included?: boolean;
   userEdited?: boolean;
