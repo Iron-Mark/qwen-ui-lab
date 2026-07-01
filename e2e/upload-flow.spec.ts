@@ -406,7 +406,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   expect(designMd).toContain("Download DESIGN.md");
 
   const packageDownloadPromise = page.waitForEvent("download");
-  await page.getByTestId("export-handoff-bundle").click();
+  await page.getByTestId("export-package-download").click();
   const packageDownload = await packageDownloadPromise;
   expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
 

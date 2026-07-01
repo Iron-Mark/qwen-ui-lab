@@ -1843,13 +1843,13 @@ function ExportPackageReviewDialog({
               text={artifact.generatedCode}
               filename={exportFilename}
               description="qwen-ui-lab export package"
-              label={copy.exportHandoffBundle}
+              label={copy.exportDownloadPackage}
               exportMode="zip"
-              testId="export-handoff-bundle"
+              testId="export-package-download"
               className="min-h-11 border-primary/70 bg-primary text-primary-foreground hover:bg-primary/90"
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
-              onExported={() => onExported(copy.toastHandoffBundleExported)}
+              onExported={() => onExported(copy.toastPackageDownloaded)}
             />
           </DialogActionGroup>
         </DialogActionFooter>
@@ -3216,12 +3216,12 @@ export function UploadFlow({
                             text={artifact.generatedCode}
                             filename={exportFilename}
                             description="qwen-ui-lab export package"
-                            label={t.exportHandoffBundle}
+                            label={t.exportDownloadPackage}
                             exportMode="zip"
-                            testId="export-handoff-bundle"
+                            testId="export-package-download"
                             analyticsSource="upload_flow"
                             analyticsFeature="generated_scaffold"
-                            onExported={() => toast(t.toastHandoffBundleExported, "success")}
+                            onExported={() => toast(t.toastPackageDownloaded, "success")}
                           />
                           <GistExportButton
                             text={artifact.generatedCode}
