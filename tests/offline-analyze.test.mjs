@@ -31,8 +31,8 @@ import {
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
 import {
   buildScaffoldZipEntries,
-  extractProductionScaffoldBlueprint,
-} from "../src/features/export/lib/github-repo.mjs";
+} from "../src/features/export/lib/scaffold-package.mjs";
+import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
 
 function assertGeneratedTsxSyntax(code, label) {
   const result = ts.transpileModule(code, {

@@ -1217,6 +1217,37 @@ test("export package helpers use neutral filename sanitizing", async () => {
   assert.deepEqual(violations, []);
 });
 
+test("export tests import package builders from focused modules", async () => {
+  const testFiles = [
+    path.join(process.cwd(), "tests", "github-repo.test.mjs"),
+    path.join(process.cwd(), "tests", "offline-analyze.test.mjs"),
+    path.join(process.cwd(), "tests", "scaffold-zip.test.mjs"),
+  ];
+  const bannedNames = [
+    "buildScaffoldZipEntries",
+    "buildScaffoldPackageFileMap",
+    "extractProductionScaffoldBlueprint",
+  ];
+  const violations = [];
+
+  for (const file of testFiles) {
+    const source = await readFile(file, "utf8");
+    const githubRepoImportMatch = /import\s*\{([\s\S]*?)\}\s*from\s*["']\.\.\/src\/features\/export\/lib\/github-repo\.mjs["']/.exec(source);
+    if (!githubRepoImportMatch) continue;
+    const importedNames = githubRepoImportMatch[1]
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+    for (const name of bannedNames) {
+      if (importedNames.includes(name)) {
+        violations.push(`${toRepoPath(file)} imports ${name} from github-repo.mjs`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("csp report api route delegates parsing and logging to shared csp helper", async () => {
   const file = path.join(
     process.cwd(),

@@ -2,14 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildRepoCompareExport,
-  buildScaffoldPackageFileMap,
-  buildScaffoldZipEntries,
   canUseGithubRepoExport,
-  extractProductionScaffoldBlueprint,
   getGithubRepoExportConfig,
   parseGithubRepoSlug,
 } from "../src/features/export/lib/github-repo.mjs";
+import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
 import { buildScaffoldReadme } from "../src/features/export/lib/scaffold-package-docs.mjs";
+import {
+  buildScaffoldPackageFileMap,
+  buildScaffoldZipEntries,
+} from "../src/features/export/lib/scaffold-package.mjs";
 
 test("canUseGithubRepoExport mirrors gist token detection", () => {
   assert.equal(canUseGithubRepoExport({}), false);
