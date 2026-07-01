@@ -90,6 +90,8 @@ ${formatPackageInventory(inventory)}
 
 ${buildQuickImportMarkdown({ files, componentName })}
 
+${buildImportReadinessMarkdown({ dependencies, files })}
+
 ## Expected dependencies
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
@@ -147,6 +149,8 @@ This export is a reviewable starter package. Import it into source control, conn
 ${formatPackageInventory(inventory)}
 
 ${buildQuickImportMarkdown({ files, componentName })}
+
+${buildImportReadinessMarkdown({ dependencies, files })}
 
 ## Expected dependencies
 
@@ -320,6 +324,8 @@ ${primitiveMap || "- No shadcn-style primitive map was inferred. Review the JSX 
 
 ${buildQuickImportMarkdown({ files, componentName })}
 
+${buildImportReadinessMarkdown({ dependencies, files })}
+
 ## Dependencies
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
@@ -404,6 +410,19 @@ export default function Screen() {
 \`\`\`
 
 Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the pull request until visual review is complete.`;
+}
+
+function buildImportReadinessMarkdown({ dependencies, files }) {
+  const dependencyLine = dependencies.length
+    ? dependencies.map((item) => `\`${item}\``).join(", ")
+    : "No shadcn component imports were inferred; review JSX imports manually.";
+
+  return `## Import readiness
+
+- Required UI imports: ${dependencyLine}
+- Copy \`${files.component}\`, \`${files.tokens}\`, and the supporting docs into the same pull request.
+- Keep \`${files.recipe}\` and \`${files.manifest}\` until screenshot parity, accessibility, and responsive checks pass.
+- Run lint/build after import and verify mobile, tablet, and desktop widths before merging.`;
 }
 
 function formatBytes(bytes) {

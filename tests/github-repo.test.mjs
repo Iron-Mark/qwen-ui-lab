@@ -146,8 +146,11 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     entries[0].content,
     /Review notes: 1 low-confidence element plus \d+ checklist items before merge\./,
   );
+  assert.match(entries[0].content, /## Import readiness/);
+  assert.match(entries[0].content, /Required UI imports: .*@\/components\/ui\/button/);
   assert.match(entries[1].content, /Design notes/);
   assert.match(entries[1].content, /## Correction summary/);
+  assert.match(entries[1].content, /## Import readiness/);
   assert.match(entries[1].content, /Applied edits: 1/);
   assert.match(entries[1].content, /Excluded boxes: 1/);
   assert.match(entries[1].content, /Source of truth: Manual corrections/);
