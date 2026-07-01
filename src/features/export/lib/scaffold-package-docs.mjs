@@ -53,7 +53,7 @@ export function buildProductionScaffoldReadme({
 
 ${description}
 
-This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter package for review, not a final production component.
+This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter package for review, not final shipped UI.
 
 ## What this package is
 
@@ -63,7 +63,7 @@ This export package turns the screenshot review into files you can import, compa
 
 ## What this package is not
 
-- It does not include the original screenshot, user data, secrets, or production data wiring.
+- It does not include the original screenshot, user data, secrets, or real data wiring.
 - It should not be imported or shipped until visual parity, accessibility, responsive layout, and real data states have been reviewed.
 
 ${buildReviewContractMarkdown({ files })}
@@ -133,8 +133,8 @@ This export is a reviewable starter package. Import it into source control, conn
 
 ## What this package is not
 
-- It is not a final production screen.
-- It does not include the original screenshot, user data, secrets, or production data wiring.
+- It is not final shipped UI.
+- It does not include the original screenshot, user data, secrets, or real data wiring.
 
 ${buildReviewContractMarkdown({ files })}
 
