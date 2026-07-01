@@ -891,13 +891,13 @@ export function CorrectionGridReference() {
                     ) : null;
                   })}
                 </div>
-                <button
+                <Button
                   type="button"
                   className="mx-auto w-fit rounded px-3 py-2 text-xs font-medium"
                   style={{ backgroundColor: designTokens.accent, color: designTokens.accentForeground }}
                 >
                   Recovery action
-                </button>
+                </Button>
               </div>
             </section>
           ))}
@@ -1110,9 +1110,10 @@ export function CorrectionGridReference() {
                 {pattern.children.map((childId, index) => {
                   const child = correctedElementById.get(childId);
                   return (
-                    <button
+                    <Button
                       key={childId}
                       type="button"
+                      variant={index === 0 ? "default" : "outline"}
                       className="rounded border px-3 py-2 text-xs font-medium"
                       style={{
                         borderColor: designTokens.border,
@@ -1121,7 +1122,7 @@ export function CorrectionGridReference() {
                       }}
                     >
                       {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Action"}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -1241,9 +1242,9 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       return (
         <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
           <p className="font-semibold">{roleLabel}</p>
-          <button type="button" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+          <Button type="button" size="xs" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Action
-          </button>
+          </Button>
           <p className="opacity-70">{element.kind} - {confidence}%</p>
         </div>
       );
@@ -1256,9 +1257,9 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
           <Label htmlFor={element.id + "-value"}>Label or value</Label>
           <div className="flex items-center gap-2">
             <Input id={element.id + "-value"} placeholder="Enter product data" />
-          <button type="button" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Action
-          </button>
+            <Button type="button" size="xs" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+              Action
+            </Button>
           </div>
         </div>
         <p className="opacity-70">{element.kind} - {confidence}%</p>

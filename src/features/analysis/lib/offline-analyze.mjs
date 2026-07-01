@@ -2205,13 +2205,13 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           <p className="text-[11px] opacity-70">
             Empty state with short explanation and one recovery action.
           </p>
-          <button
+          <Button
             type="button"
             className="mx-auto mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
             style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
           >
             Add item
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -2296,13 +2296,13 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             />
           </div>
         ))}
-        <button
+        <Button
           type="button"
           className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
           style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
         >
           Submit action
-        </button>
+        </Button>
       </form>
     );
   }
@@ -2392,9 +2392,10 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " controls"}>
         {Array.from({ length: controls }).map((_, index) => (
-          <button
+          <Button
             key={index}
             type="button"
+            variant={index === 0 ? "default" : "outline"}
             className={clusterType === "segmented-control" ? "rounded-full border px-3 py-1.5 text-xs" : "rounded px-3 py-2 text-xs font-medium"}
             style={{
               borderColor: tokens.border,
@@ -2403,7 +2404,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             }}
           >
             Action {index + 1}
-          </button>
+          </Button>
         ))}
       </div>
     );
@@ -2437,9 +2438,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
     if (componentRole === "primary-action" || componentRole === "icon-action") {
       return (
-        <button type="button" className="mt-3 rounded px-3 py-2 text-xs font-medium" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+        <Button type="button" className="mt-3 w-fit rounded px-3 py-2 text-xs font-medium" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
           {roleLabel}
-        </button>
+        </Button>
       );
     }
 
@@ -2448,9 +2449,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
         <div className="flex items-center gap-2">
           <Input id={region.id + "-control"} placeholder="User input or action" />
-          <button type="button" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+          <Button type="button" size="xs" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Apply
-          </button>
+          </Button>
         </div>
       </div>
     );
