@@ -1618,9 +1618,9 @@ function userFacingModeLabel(
   copy: UploadFlowDictionary,
 ) {
   const trimmed = modeLabel?.trim();
-  if (!trimmed) return copy.modeLocalDemo;
+  if (!trimmed) return copy.modeLocalReady;
   return /demo|fallback|api key|provider|qwen route/i.test(trimmed)
-    ? copy.modeLocalDemo
+    ? copy.modeLocalReady
     : trimmed;
 }
 
@@ -2447,7 +2447,7 @@ export function UploadFlow({
       }
 
       if (outcome.instantDemo) {
-        toast(t.toastInstantDemo, "success");
+        toast(t.toastAnalysisReady, "success");
       } else if (outcome.providerState === "qwen") {
         toast(t.toastQwenComplete, "success");
       } else {
@@ -3079,7 +3079,7 @@ export function UploadFlow({
                 <AlertDescription className="font-medium text-success">
                   {providerState === "qwen"
                     ? t.statusQwenComplete
-                    : t.statusDemoComplete}
+                    : t.statusAnalysisComplete}
                 </AlertDescription>
               </Alert>
             ) : null}

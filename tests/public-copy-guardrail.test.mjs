@@ -38,6 +38,15 @@ const BANNED_PUBLIC_PHRASES = [
   "optional email demo",
   "Cached app shell",
   "cached screenshot workflow",
+  "badgeDemo",
+  "oneClickDemo",
+  "trustDemo",
+  "tryLiveDemo",
+  "backToDemo",
+  "modeLocalDemo",
+  "statusDemoComplete",
+  "toastInstantDemo",
+  "toastRestoredDemo",
 ];
 
 test("public and generated copy avoid stale demo/internal phrasing", async () => {

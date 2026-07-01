@@ -68,7 +68,7 @@ export function HomeMarketingHero() {
   ] as const;
 
   const trustSignals = [
-    { icon: ShieldCheck, label: copy.trustDemo },
+    { icon: ShieldCheck, label: copy.trustBrowserSafe },
     { icon: Zap, label: copy.trustOffline },
   ] as const;
 
@@ -113,7 +113,7 @@ export function HomeMarketingHero() {
             >
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-1 font-semibold text-primary-foreground shadow-sm">
                 <Sparkles className="size-3.5" aria-hidden />
-                {copy.badgeDemo}
+                {copy.badgeProduct}
               </span>
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl px-2.5 py-1 font-medium text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-primary" aria-hidden />
@@ -148,7 +148,7 @@ export function HomeMarketingHero() {
                   "min-h-11 gap-2 px-5 py-2.5",
                 )}
               >
-                {copy.oneClickDemo}
+                {copy.sampleReference}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link

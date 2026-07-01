@@ -44,13 +44,13 @@ export function SharePageClient({ id, summary }: SharePageClientProps) {
             href={localizedHref("/", locale)}
             className={cn(buttonVariants({ variant: "outline" }), "min-h-11 px-4")}
           >
-            {t.tryLiveDemo}
+            {t.backToWorkflow}
           </Link>
           <Link
             href={localizedHref("/demo", locale)}
             className={cn(buttonVariants({ variant: "ghost" }), "min-h-11 px-4")}
           >
-            {t.oneClickDemo}
+            {t.sampleReference}
           </Link>
         </div>
       </div>

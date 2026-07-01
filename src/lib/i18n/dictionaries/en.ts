@@ -1,14 +1,14 @@
 export const en = {
   hero: {
-    badgeDemo: "Screenshot to React",
+    badgeProduct: "Screenshot to React",
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
       "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
-    oneClickDemo: "Sample reference",
-    trustDemo: "Browser-safe by default",
+    sampleReference: "Sample reference",
+    trustBrowserSafe: "Browser-safe by default",
     trustOffline: "Runs locally",
     benefitUploadLabel: "Plan",
     benefitUploadTitle: "Map the layout",
@@ -50,8 +50,8 @@ export const en = {
     title: "Read-only analysis summary",
     descriptionLead: "Short link",
     descriptionTrail: "- summary only, no private source files included.",
-    tryLiveDemo: "Back to workflow",
-    oneClickDemo: "Sample reference",
+    backToWorkflow: "Back to workflow",
+    sampleReference: "Sample reference",
     metadataNotFoundTitle: "Share not found",
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
@@ -85,7 +85,7 @@ export const en = {
     displayNamePlaceholder: "e.g. Alex",
     saveDisplayName: "Save changes",
     signOut: "Clear profile",
-    backToDemo: "Return to workflow",
+    backToWorkflow: "Return to workflow",
     magicLinkTitle: "Contact label",
     magicLinkDesc:
       "Optionally use an email-style label for this browser only.",
@@ -165,7 +165,7 @@ export const en = {
       "Ideal for rapid design reviews: analyze one screenshot, generate a component, then reuse exported snippets across your next sprint.",
     subtitleFaster:
       "A faster path to conversion: upload, analyze, and export reusable React/Tailwind components in minutes.",
-    modeLocalDemo: "Ready to analyze",
+    modeLocalReady: "Ready to analyze",
     modeQwenReady: "Ready to analyze",
     recentAnalyses: "Recent analyses",
     recentAnalysesStored: "Stored locally (last {count})",
@@ -233,7 +233,7 @@ export const en = {
     progressLabel: "{step} ({percent}%)",
     statusQwenComplete:
       "Analysis complete — open the preview to see the generated component.",
-    statusDemoComplete:
+    statusAnalysisComplete:
       "Analysis complete — open the preview to see the generated component.",
     statusPreviewReady:
       "Preview ready — copy or export the generated component from the panel on the right.",
@@ -317,14 +317,14 @@ export const en = {
     comparisonScreenshot: "Screenshot",
     comparisonGeneratedMock: "Generated mock",
     emptyState: "Upload a screenshot and run analysis to see the generated plan.",
-    toastInstantDemo: "Analysis ready",
+    toastAnalysisReady: "Analysis ready",
     toastQwenComplete: "Analysis ready",
     toastFallback: "Analysis ready",
     toastAnalyzeFailed: "Preview prepared",
     toastPreviewGenerated: "Preview generated",
     toastPreviewRegenerated: "Preview regenerated",
     toastRestoredQwen: "Restored analysis session",
-    toastRestoredDemo: "Restored analysis session",
+    toastRestoredAnalysis: "Restored analysis session",
     toastRestoredSession: "Restored session: {fileName}",
     toastSessionRemoved: "Session removed",
     toastSampleLoaded: "{label} sample loaded",
