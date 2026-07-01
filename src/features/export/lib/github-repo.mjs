@@ -18,7 +18,7 @@ export {
 } from "./scaffold-package.mjs";
 
 export const REPO_EXPORT_COMPARE_INSTRUCTIONS =
-  "Use the compare view: create the export branch, add the generated component, paste code from the panel, and open a pull request.";
+  "Use the compare view: create the export branch, add the package files from the export panel, and open a pull request.";
 
 /**
  * @param {Record<string, string | undefined>} [env]
@@ -88,7 +88,7 @@ export function buildRepoCompareExport({
       "3. Open a pull request.",
       "",
       "---",
-      "_Compare link helper - paste package contents manually._",
+      "_Compare link helper - add the package files from the export panel._",
     ].join("\n"),
   );
 

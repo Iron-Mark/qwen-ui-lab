@@ -28,7 +28,7 @@ test("buildGithubGistUnavailablePayload returns product-facing setup instruction
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "Open gist.github.com, paste the copied component into a new secret gist, and save.",
+        "Open gist.github.com, create a secret gist, paste the copied component, and save.",
     },
   });
 });

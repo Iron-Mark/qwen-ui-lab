@@ -8,7 +8,7 @@ import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Open gist.github.com, paste the copied component into a new secret gist, and save.";
+  "Open gist.github.com, create a secret gist, paste the copied component, and save.";
 
 export function buildGithubGistUnavailablePayload() {
   return {

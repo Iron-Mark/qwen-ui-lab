@@ -74,9 +74,9 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Open gist.github.com, paste the copied component into a new secret gist, and save.";
+        "Open gist.github.com, create a secret gist, paste the copied component, and save.";
 
-      const copyResult = await copy(text, "Code copied for manual gist paste");
+      const copyResult = await copy(text, "Code copied for Gist setup");
       const copied = copyResult.ok;
 
       toast(
