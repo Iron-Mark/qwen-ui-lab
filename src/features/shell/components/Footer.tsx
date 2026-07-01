@@ -122,7 +122,7 @@ function FooterLink({
   tooltip: string;
 }) {
   const className =
-    "inline-flex min-h-9 w-fit min-w-0 items-center rounded-md text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-card-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "inline-flex min-h-11 w-fit min-w-0 items-center rounded-md px-2 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:bg-muted/50 hover:text-card-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   if (external) {
     return (
@@ -182,7 +182,7 @@ export function Footer() {
             <FooterTooltip content="Return to the main screenshot-to-React workspace.">
               <Link
                 href="/"
-                className="inline-flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-11 min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Image
                   src="/icons/icon.svg"
@@ -244,7 +244,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="footer-portfolio-cta"
-              className="inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Globe2 className="size-3.5" aria-hidden />
               Check my portfolio
