@@ -203,11 +203,14 @@ function inferShadcnDependencies(content, primitiveMap) {
   const imports = [
     ...String(content || "").matchAll(/from\s+["'](@\/components\/ui\/[^"']+)["']/g),
   ].map((match) => match[1]);
-  const mappedDependencies = Object.values(primitiveMap ?? {}).flatMap((value) =>
-    componentNamesFromText(value).map((name) => `@/components/ui/${name}`),
+  const mappedDependencies = Object.entries(primitiveMap ?? {}).flatMap(([key, value]) =>
+    componentNamesFromText(`${key} ${value}`).map((name) => `@/components/ui/${name}`),
+  );
+  const jsxDependencies = componentNamesFromJsx(content).map(
+    (name) => `@/components/ui/${name}`,
   );
 
-  return [...new Set([...imports, ...mappedDependencies])].sort();
+  return [...new Set([...imports, ...mappedDependencies, ...jsxDependencies])].sort();
 }
 
 function inferPrimitiveMapFromImports(content) {
@@ -224,22 +227,56 @@ function inferPrimitiveMapFromImports(content) {
 }
 
 function componentNamesFromText(value) {
-  const known = {
-    Badge: "badge",
-    Button: "button",
-    Card: "card",
-    Dialog: "dialog",
-    Input: "input",
-    Select: "select",
-    Table: "table",
-    Tabs: "tabs",
-  };
-  return Object.entries(known)
+  return Object.entries(SHADCN_COMPONENT_DEPENDENCIES)
     .filter(([componentName]) =>
       new RegExp(`\\b${componentName}\\b`, "i").test(String(value || "")),
     )
     .map(([, dependencyName]) => dependencyName);
 }
+
+function componentNamesFromJsx(content) {
+  const tags = [...String(content || "").matchAll(/<([A-Z][A-Za-z0-9.]*)\b/g)].map((match) =>
+    match[1].split(".")[0],
+  );
+
+  return [...new Set(tags)]
+    .map((tag) => SHADCN_COMPONENT_DEPENDENCIES[tag])
+    .filter(Boolean);
+}
+
+const SHADCN_COMPONENT_DEPENDENCIES = {
+  Badge: "badge",
+  Button: "button",
+  Card: "card",
+  CardContent: "card",
+  CardDescription: "card",
+  CardFooter: "card",
+  CardHeader: "card",
+  CardTitle: "card",
+  Dialog: "dialog",
+  DialogContent: "dialog",
+  DialogDescription: "dialog",
+  DialogFooter: "dialog",
+  DialogHeader: "dialog",
+  DialogTitle: "dialog",
+  Input: "input",
+  Label: "label",
+  Select: "select",
+  SelectContent: "select",
+  SelectItem: "select",
+  SelectTrigger: "select",
+  SelectValue: "select",
+  Table: "table",
+  TableBody: "table",
+  TableCell: "table",
+  TableHead: "table",
+  TableHeader: "table",
+  TableRow: "table",
+  Tabs: "tabs",
+  TabsContent: "tabs",
+  TabsList: "tabs",
+  TabsTrigger: "tabs",
+};
 
 function buildPackageInventory(entries) {
   return entries.map((entry) => ({
