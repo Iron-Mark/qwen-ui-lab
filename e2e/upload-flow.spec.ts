@@ -222,7 +222,7 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /summary/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /bundle copy/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /download package/i })).toBeVisible();
 
   const layout = await dialog.evaluate((node) => {
@@ -447,6 +447,83 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
       `[data-testid="shared-detection-element"][data-detection-id="${editedDetectionId}"]`,
     ),
   ).toHaveCount(0);
+});
+
+test("export package dialog keeps tabs and actions visible on mobile widths", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await waitForUploadFlowReady(page);
+
+  const samplePath = path.join(
+    process.cwd(),
+    "public",
+    "references",
+    "dashboard-reference.png",
+  );
+
+  await page.locator('input[type="file"]').setInputFiles(samplePath);
+  await page
+    .getByRole("button", {
+      name: /analyze & generate preview|generate preview|regenerate preview/i,
+    })
+    .click();
+
+  await expect(page.getByText(/Generated component/i)).toBeVisible({
+    timeout: 10_000,
+  });
+
+  await page.getByTestId("export-package-review").click();
+
+  const dialog = page.getByRole("dialog", { name: /review export package/i });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /bundle copy/i })).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: /download package/i }),
+  ).toBeVisible();
+
+  const layout = await dialog.evaluate((node) => {
+    const dialogRect = node.getBoundingClientRect();
+    const tablist = node.querySelector('[role="tablist"]');
+    const footer = node.querySelector('[data-testid="export-package-actions"]');
+    const tablistRect = tablist?.getBoundingClientRect();
+    const footerRect = footer?.getBoundingClientRect();
+
+    return {
+      pageHasHorizontalOverflow:
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth + 1,
+      tablistInside:
+        !!tablistRect &&
+        tablistRect.left >= dialogRect.left - 1 &&
+        tablistRect.right <= dialogRect.right + 1 &&
+        tablistRect.top >= dialogRect.top - 1,
+      footerInside:
+        !!footerRect &&
+        footerRect.left >= dialogRect.left - 1 &&
+        footerRect.right <= dialogRect.right + 1 &&
+        footerRect.bottom <= dialogRect.bottom + 1,
+      touchTargets: Array.from(node.querySelectorAll("button, a"))
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0;
+        })
+        .every((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.height >= 34 || element.getAttribute("aria-label") === "Close";
+        }),
+    };
+  });
+
+  expect(layout).toEqual({
+    pageHasHorizontalOverflow: false,
+    tablistInside: true,
+    footerInside: true,
+    touchTargets: true,
+  });
 });
 
 test("oversized uploads are rejected before analysis", async ({ page }) => {
