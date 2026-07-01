@@ -5,7 +5,12 @@ import path from "node:path";
 
 const PUBLIC_COPY_FILES = [
   "README.md",
+  "docs/README.md",
+  "docs/ARCHITECTURE.md",
   "docs/DEMO.md",
+  "docs/media/MEETUP_MEDIA.md",
+  "docs/media/MEETUP_SLIDES.marp.md",
+  "docs/ops/OFFLINE_DEMO_E2E.md",
   "public/manifest.json",
   "public/offline.html",
   "src/lib/seo.ts",
@@ -30,6 +35,10 @@ const BANNED_PUBLIC_PHRASES = [
   "Gist export unavailable",
   "GitHub Gist export is not configured",
   "Set GITHUB_TOKEN",
+  "sample reference",
+  "Sample reference",
+  "bundled reference",
+  "Bundled reference",
   "bundled screenshot",
   "Bundled screenshot references",
   "Try a bundled reference",
