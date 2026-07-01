@@ -1344,14 +1344,17 @@ export function GeneratedAuthScreen() {
     case "modal":
       return `export function GeneratedDialogOverlay() {
   return (
-    <div aria-label="Generated dialog" className="fixed inset-0 grid place-items-center p-4">
-      <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border p-6 shadow-xl">
-        <button type="button" aria-label="Close dialog">Close</button>
-        <h1 className="mt-3 text-xl font-semibold">Dialog title</h1>
-        <p className="mt-2 text-sm opacity-75">Detected modal body content.</p>
-        <div className="mt-5 flex justify-end gap-2">{/* dialog actions */}</div>
-      </section>
-    </div>
+    <Dialog defaultOpen>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Dialog title</DialogTitle>
+          <DialogDescription>Detected modal body content.</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button type="button">Primary action</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }`;
     case "empty":
@@ -2170,43 +2173,23 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (region.kind === "dialog-panel" || primitive === "dialog-panel") {
     return (
-      <div
-        className="mt-3 rounded border p-3 shadow-lg"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={region.id + "-title"}
-        style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p id={region.id + "-title"} className="text-sm font-semibold">
-              {formatPrimitiveLabel(region.modalType || "dialog")}
-            </p>
-            <p className="mt-1 text-[11px] opacity-70">
+      <Dialog defaultOpen>
+        <DialogContent className="max-w-md" showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{formatPrimitiveLabel(region.modalType || "dialog")}</DialogTitle>
+            <DialogDescription>
               Floating modal surface with grouped content and focus management.
-            </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2">
+            <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+            <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
           </div>
-          <button
-            type="button"
-            aria-label="Close dialog"
-            className="rounded border px-2 py-1 text-[11px]"
-            style={{ borderColor: tokens.border }}
-          >
-            Close
-          </button>
-        </div>
-        <div className="mt-3 grid gap-2">
-          <span className="h-2 w-10/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          <span className="h-2 w-7/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          <button
-            type="button"
-            className="mt-2 w-fit rounded px-3 py-2 text-xs font-medium"
-            style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
-          >
-            Primary action
-          </button>
-        </div>
-      </div>
+          <DialogFooter>
+            <Button type="button">Primary action</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -2392,40 +2375,25 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const tabs = Math.max(2, region.tabCount ?? region.itemCount ?? 3);
     const selectedIndex = Math.min(tabs - 1, Math.max(0, region.selectedIndex ?? 0));
     return (
-      <div className="mt-3 grid gap-2" aria-label={region.label + " tabs"}>
-        <div
-          role="tablist"
-          aria-label={region.label}
-          className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
-          style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-        >
-          {Array.from({ length: tabs }).map((_, index) => {
-            const selected = index === selectedIndex;
-            return (
-              <button
-                key={index}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                className="rounded-full px-3 py-1.5 text-xs font-medium"
-                style={{
-                  backgroundColor: selected ? tokens.accent : tokens.surface,
-                  color: selected ? tokens.accentForeground : tokens.foreground,
-                }}
-              >
-                Tab {index + 1}
-              </button>
-            );
-          })}
-        </div>
-        <section
-          role="tabpanel"
-          className="rounded border p-3 text-xs"
-          style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-        >
-          {formatPrimitiveLabel(region.tabKind || "tabs")} panel {selectedIndex + 1}
-        </section>
-      </div>
+      <Tabs defaultValue={"tab-" + (selectedIndex + 1)} className="mt-3">
+        <TabsList aria-label={region.label}>
+          {Array.from({ length: tabs }).map((_, index) => (
+            <TabsTrigger key={index} value={"tab-" + (index + 1)}>
+              Tab {index + 1}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {Array.from({ length: tabs }).map((_, index) => (
+          <TabsContent
+            key={index}
+            value={"tab-" + (index + 1)}
+            className="rounded border p-3 text-xs"
+            style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
+          >
+            {formatPrimitiveLabel(region.tabKind || "tabs")} panel {index + 1}
+          </TabsContent>
+        ))}
+      </Tabs>
     );
   }
 
