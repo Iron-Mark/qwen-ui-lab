@@ -238,28 +238,28 @@ export function DashboardSampleDialog({
             >
               <TabsTrigger
                 value="preview"
-                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+                className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <Eye className="size-4" aria-hidden />
                 Preview
               </TabsTrigger>
               <TabsTrigger
                 value="plan"
-                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+                className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <ListChecks className="size-4" aria-hidden />
                 Plan
               </TabsTrigger>
               <TabsTrigger
                 value="detected"
-                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+                className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <ScanSearch className="size-4" aria-hidden />
                 Detected UI
               </TabsTrigger>
               <TabsTrigger
                 value="export"
-                className="h-10 min-h-10 rounded-xl px-3 text-xs sm:text-sm"
+                className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <Download className="size-4" aria-hidden />
                 Export

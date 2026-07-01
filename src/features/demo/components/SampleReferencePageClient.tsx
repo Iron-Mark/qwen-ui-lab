@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Sparkles } from "lucide-react";
+import { PlayCircle } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { sampleReferenceLabel } from "../lib/demo-archetypes.mjs";
@@ -34,24 +34,16 @@ export function SampleReferencePageClient({
         <PageContainer className="py-8 sm:py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="gap-1.5 text-xs font-medium">
-                  <Sparkles className="size-3.5" aria-hidden />
-                  Sample reference
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="border-amber-500/40 bg-amber-500/10 text-xs text-amber-900 dark:text-amber-100"
-                >
-                  Sample analysis
-                </Badge>
-              </div>
+              <Badge variant="secondary" className="w-fit gap-1.5 text-xs font-medium">
+                <PlayCircle className="size-3.5" aria-hidden />
+                Sample run
+              </Badge>
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                {label} screen analysis
+                {label} sample analysis
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Review a bundled reference, inspect detected UI, and export a
-                React + Tailwind package without uploading a new screenshot.
+                Inspect the detected UI and export package using a bundled
+                screenshot.
               </p>
             </div>
           </div>
