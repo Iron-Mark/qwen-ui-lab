@@ -1836,25 +1836,6 @@ function ExportPackageReviewDialog({
                 <FileText className="size-4" aria-hidden />
                 {copy.exportDesignDoc}
               </Button>
-              <ExportButton
-                text={preview.codePreview}
-                variant="copy"
-                label={copy.exportCopyAll}
-                showToast={false}
-                analyticsSource="upload_flow"
-                analyticsFeature="generated_scaffold"
-                onCopied={() => onExported(copy.toastScaffoldCopied)}
-              />
-              <ExportButton
-                text={preview.codePreview}
-                variant="export"
-                label={copy.exportDownload}
-                filename={exportFilename}
-                showToast={false}
-                analyticsSource="upload_flow"
-                analyticsFeature="generated_scaffold"
-                onCopied={() => onExported(copy.toastScaffoldExported)}
-              />
               <GistExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
@@ -1874,6 +1855,25 @@ function ExportPackageReviewDialog({
             </DialogActionGroup>
           </details>
           <DialogActionGroup className="sm:justify-end">
+            <ExportButton
+              text={preview.codePreview}
+              variant="copy"
+              label={copy.exportCopyAll}
+              showToast={false}
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldCopied)}
+            />
+            <ExportButton
+              text={preview.codePreview}
+              variant="export"
+              label={copy.exportDownload}
+              filename={exportFilename}
+              showToast={false}
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldExported)}
+            />
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}

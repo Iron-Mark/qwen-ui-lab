@@ -223,6 +223,8 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /package notes/i })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /^copy all code$/i })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /download component code/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /download package/i })).toBeVisible();
 
   const layout = await dialog.evaluate((node) => {
