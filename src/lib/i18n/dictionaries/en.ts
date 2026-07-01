@@ -297,8 +297,8 @@ export const en = {
     exportReadmeNoCorrections: "No manual corrections captured.",
     exportReadmeReviewNotes: "Review notes",
     exportReadmeReviewSummary:
-      "{count} low-confidence element(s) need review before merge.",
-    exportReadmeReviewClear: "Use the checklist before merge.",
+      "{count} low-confidence element(s) need review before import.",
+    exportReadmeReviewClear: "Use the checklist before import.",
     exportReadmeContains: "What this package contains",
     exportReadmeNext: "Next steps",
     exportCopyAll: "Copy all",
