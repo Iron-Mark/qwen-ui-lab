@@ -516,7 +516,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
 };
 
 const sampleSectionData = {
-  rows: ["Queued review", "Ready for handoff", "Needs QA"],
+  rows: ["Queued review", "Ready for import review", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
   tableColumns: ["Name", "Status", "Value"],
@@ -617,60 +617,72 @@ function ImplementationChecklist() {
 
 function ScaffoldSection({ section }: { section: GeneratedSection }) {
   if (section.kind === "tab-set") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{section.title}</CardTitle>
-          <CardDescription>{section.description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="tab-1">
-            <TabsList aria-label={section.title}>
-              {section.items.slice(0, 4).map((item, index) => (
-                <TabsTrigger key={item.id} value={"tab-" + (index + 1)}>
-                  {item.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {section.items.slice(0, 4).map((item, index) => (
-              <TabsContent key={item.id} value={"tab-" + (index + 1)}>
-                <PrimitivePreview element={item} />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-      </Card>
-    );
+    return <TabScaffoldSection section={section} />;
   }
 
   if (section.kind === "form-group") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{section.title}</CardTitle>
-          <CardDescription>{section.description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="grid gap-4">
-            {section.items.map((item, index) =>
-              /action|button/.test(item.componentRole ?? "") ? (
-                <Button key={item.id} type="button" className="w-fit">
-                  {item.label}
-                </Button>
-              ) : (
-                <div key={item.id} className="grid gap-2">
-                  <Label htmlFor={item.id}>Field {index + 1}</Label>
-                  <Input id={item.id} placeholder={item.label} />
-                </div>
-              ),
-            )}
-          </form>
-          <SectionStateHint kind={section.kind} />
-        </CardContent>
-      </Card>
-    );
+    return <FormScaffoldSection section={section} />;
   }
 
+  return <GenericScaffoldSection section={section} />;
+}
+
+function TabScaffoldSection({ section }: { section: GeneratedSection }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{section.title}</CardTitle>
+        <CardDescription>{section.description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="tab-1">
+          <TabsList aria-label={section.title}>
+            {section.items.slice(0, 4).map((item, index) => (
+              <TabsTrigger key={item.id} value={"tab-" + (index + 1)}>
+                {item.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {section.items.slice(0, 4).map((item, index) => (
+            <TabsContent key={item.id} value={"tab-" + (index + 1)}>
+              <PrimitivePreview element={item} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+}
+
+function FormScaffoldSection({ section }: { section: GeneratedSection }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{section.title}</CardTitle>
+        <CardDescription>{section.description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form className="grid gap-4">
+          {section.items.map((item, index) =>
+            /action|button/.test(item.componentRole ?? "") ? (
+              <Button key={item.id} type="button" className="w-fit">
+                {item.label}
+              </Button>
+            ) : (
+              <div key={item.id} className="grid gap-2">
+                <Label htmlFor={item.id}>Field {index + 1}</Label>
+                <Input id={item.id} placeholder={item.label} />
+              </div>
+            ),
+          )}
+        </form>
+        <SectionStateHint kind={section.kind} />
+      </CardContent>
+    </Card>
+  );
+}
+
+function GenericScaffoldSection({ section }: { section: GeneratedSection }) {
   return (
     <Card>
       <CardHeader>

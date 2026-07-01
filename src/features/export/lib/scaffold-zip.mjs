@@ -98,4 +98,4 @@ export function createStoredZip(files) {
   return archive;
 }
 
-export const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
+export { SCAFFOLD_ZIP_FILENAME } from "./export-package-constants.mjs";

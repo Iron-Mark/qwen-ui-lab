@@ -10,9 +10,9 @@ import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "../lib/export-package-constants.mjs";
 
 type GistExportStatus = "idle" | "exporting" | "success" | "error";
-const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 interface GistExportButtonProps {
   text: string;
