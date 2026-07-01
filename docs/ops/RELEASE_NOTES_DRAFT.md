@@ -35,11 +35,11 @@ Patch release for upload safety and CI runtime reliability. This release keeps t
   - `E2E smoke (mobile + a11y + live contract + upload)`
   - Vercel preview deployment and preview comments
 - Local verification before merge:
-  - `npm run check:full` - lint, 194 unit tests, and production build passed.
+  - `npm run check:full` - lint, unit tests, docs validation, and production build passed.
   - `npm run test:e2e:pr-smoke` - 11 Playwright smoke tests passed.
   - `git diff --check` - passed.
 - Release-prep verification on `0.4.1`:
-  - `npm run check:full` - lint, 194 unit tests, and production build passed.
+  - `npm run check:full` - lint, unit tests, docs validation, and production build passed.
   - `npm run test:e2e` - 55 Playwright tests passed.
   - `npm run doctor` - passed in offline demo mode.
   - `npm run deploy:env:demo` - passed.
@@ -69,7 +69,7 @@ Minor release for richer no-provider image understanding. Unknown screenshot upl
 ### Verification snapshot
 
 - `npm audit --omit=dev --audit-level=high` - passed.
-- `npm run check:full` - lint, 176 unit tests, and production build passed.
+- `npm run check:full` - lint, unit tests, docs validation, and production build passed.
 - `npm run test:e2e` - 54 Playwright tests passed.
 - `npm run doctor` - passed; live Qwen env vars are intentionally unset for offline demo mode.
 - `git diff --check` - passed.
@@ -116,7 +116,7 @@ Minor release for a stronger no-provider analysis path. The app still defaults t
 
 ### Verification snapshot
 
-- `npm run check:full` - lint, 176 unit tests, and production build passed.
+- `npm run check:full` - lint, unit tests, docs validation, and production build passed.
 - `npx tsc --noEmit` - passed.
 - `npm run export:demo-fixtures` - regenerated fixtures; no content changes required.
 - `npm run test:e2e:pr-smoke` - 9 Playwright smoke tests passed across mobile, a11y, and mocked live-provider flows.
