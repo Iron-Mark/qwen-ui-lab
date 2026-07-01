@@ -58,6 +58,12 @@ const BANNED_PUBLIC_PHRASES = [
   "autoRunDemo",
 ];
 
+const BANNED_MOJIBAKE_PATTERNS = [
+  { label: "latin-1 mojibake prefix", pattern: /[ÃÂ][\u0080-\uFFFF]/u },
+  { label: "windows-1252 mojibake prefix", pattern: /â[\u0080-\uFFFF]/u },
+  { label: "replacement character", pattern: /\uFFFD/u },
+];
+
 test("public and generated copy avoid stale demo/internal phrasing", async () => {
   const violations = [];
 
@@ -68,6 +74,24 @@ test("public and generated copy avoid stale demo/internal phrasing", async () =>
     for (const phrase of BANNED_PUBLIC_PHRASES) {
       if (source.includes(phrase)) {
         violations.push(`${file}: ${phrase}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("public and generated copy avoid mojibake artifacts", async () => {
+  const violations = [];
+
+  for (const file of PUBLIC_COPY_FILES) {
+    const absolutePath = path.join(process.cwd(), file);
+    const source = await fs.readFile(absolutePath, "utf8");
+
+    for (const { label, pattern } of BANNED_MOJIBAKE_PATTERNS) {
+      const match = source.match(pattern);
+      if (match) {
+        violations.push(`${file}: ${label}: ${match[0]}`);
       }
     }
   }
