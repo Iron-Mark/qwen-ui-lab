@@ -1334,8 +1334,10 @@ test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regi
 
   assert.match(advanced.summary, /Dashboard/i);
   assert.match(advanced.generatedCode, /data-table/);
-  assert.match(advanced.generatedCode, /<table/);
-  assert.match(advanced.generatedCode, /<thead>/);
+  assert.match(advanced.generatedCode, /from "@\/components\/ui\/table"/);
+  assert.match(advanced.generatedCode, /<Table className="mt-3 min-w-\[28rem\] text-xs"/);
+  assert.match(advanced.generatedCode, /<TableHeader>/);
+  assert.match(advanced.generatedCode, /<TableCell/);
   assert.match(advanced.generatedCode, /columnIndex \+ 1/);
   assert.match(advanced.generatedCode, /data tables/);
 });
@@ -1721,7 +1723,9 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
 
   assert.match(regenerated.generatedCode, /dataTables/);
   assert.match(regenerated.generatedCode, /Detected data table/);
-  assert.match(regenerated.generatedCode, /<table/);
+  assert.match(regenerated.generatedCode, /from "@\/components\/ui\/table"/);
+  assert.match(regenerated.generatedCode, /<Table className="min-w-\[28rem\]"/);
+  assert.match(regenerated.generatedCode, /<TableCell/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 

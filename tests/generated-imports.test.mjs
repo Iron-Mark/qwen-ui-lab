@@ -56,6 +56,31 @@ export default function GeneratedCard() {
   assert.equal([...normalized.matchAll(/\bCard \}/g)].length, 1);
 });
 
+test("normalizeGeneratedShadcnImports adds imports for table primitives", () => {
+  const normalized = normalizeGeneratedShadcnImports(`export default function GeneratedTable() {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell>Acme</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+}
+`);
+
+  assert.match(
+    normalized,
+    /import \{\n  Table,\n  TableBody,\n  TableCell,\n  TableHead,\n  TableHeader,\n  TableRow,\n\} from "@\/components\/ui\/table";/,
+  );
+});
+
 test("buildUiFlowArtifact normalizes override generated imports", () => {
   const artifact = buildUiFlowArtifact(
     { name: "manual.tsx", type: "image/png", size: 1024, width: 800, height: 600 },
