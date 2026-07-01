@@ -716,7 +716,7 @@ function SectionSampleDataHint({ kind }: { kind: string }) {
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this sample data before shipping.
+      {message}. Replace this sample data before using the component in an app.
     </p>
   ) : null;
 }

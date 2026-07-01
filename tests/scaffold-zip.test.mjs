@@ -68,6 +68,10 @@ export default function GeneratedComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /before using the component in an app/,
   );
+  assert.doesNotMatch(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /before shipping/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
@@ -138,6 +142,10 @@ export default function Dashboard() {
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /After approval, keep `DESIGN\.md` if it helps future maintenance/,
+  );
+  assert.doesNotMatch(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /before shipping/,
   );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
   assert.match(
