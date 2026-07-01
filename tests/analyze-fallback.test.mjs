@@ -123,7 +123,7 @@ test("fallbackReasonFromPayload maps known server codes", () => {
   );
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_request_failed" }),
-    /Qwen request failed/,
+    /Live analysis was unavailable/,
   );
 });
 

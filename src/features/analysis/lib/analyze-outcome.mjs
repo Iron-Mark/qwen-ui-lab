@@ -15,7 +15,7 @@ const FALLBACK_REASONS = {
   missing_qwen_api_key: "DASHSCOPE_API_KEY is not configured on the server.",
   live_analysis_disabled:
     "Live Qwen is disabled — set QWEN_LIVE_ANALYSIS=true to enable upstream vision calls.",
-  qwen_request_failed: "Qwen request failed (check API key, QWEN_BASE_URL, or account access).",
+  qwen_request_failed: "Live analysis was unavailable; local analysis generated the preview.",
   qwen_network_error: "Could not reach the Qwen API (network error or timeout).",
   invalid_qwen_json: "Qwen returned text that was not valid analysis JSON.",
   empty_qwen_response: "Qwen returned an empty analysis response.",
