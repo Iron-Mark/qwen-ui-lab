@@ -62,7 +62,7 @@ GitHub Actions runs [Production Reliability Monitor](../../.github/workflows/pro
 - `/api/health` with `scripts/synthetic-health-check.mjs`
 - Deployed share/export behavior with `npm run smoke:share-live`
 
-The workflow uses `vars.PRODUCTION_DEPLOY_URL` when present and otherwise falls back to `https://qwen-ui-lab.vercel.app`. On failure it uploads logs and opens or comments on a single GitHub issue titled `Production reliability monitor failure`. The issue body includes only the target URL, expected mode, workflow run URL, workflow name, and commit SHA.
+The workflow uses `vars.PRODUCTION_DEPLOY_URL` when present and otherwise falls back to `https://qwen-ui-lab.vercel.app`. On failure it uploads logs and opens or comments on a single GitHub issue titled `Production reliability monitor failure`. The issue body includes a sanitized triage summary with health success rate, latency, live-mode mismatch count, share/export smoke status, target URL, workflow run URL, and commit SHA. Raw logs stay in the workflow artifact; secrets, API keys, share payloads, and local file paths are not copied into the issue body.
 
 ## Incident Response Targets
 
