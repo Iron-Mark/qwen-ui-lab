@@ -26,7 +26,7 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await expect(exportPanel(page)).toBeVisible({
     timeout: 20_000,
   });
-  await expect(exportPanel(page).getByRole("button", { name: /copy all code/i })).toBeVisible();
+  await expect(page.getByTestId("export-package-review")).toBeVisible();
   await expect(page.getByTestId("ux-compliance-archetype-links")).toBeVisible();
   await expect(page.getByTestId("ux-law-link-jakob")).toBeVisible();
 });
@@ -48,7 +48,10 @@ test("/demo?archetype=auth loads sign-in component export", async ({ page }) => 
   await expect(page.getByTestId("ux-law-link-fitts")).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
-  await exportPanel(page).getByRole("button", { name: /download component/i }).click();
+  await page.getByTestId("export-package-review").click();
+  const dialog = page.getByRole("dialog", { name: /review export package/i });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("generated-auth.tsx");
 });

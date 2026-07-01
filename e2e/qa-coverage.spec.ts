@@ -119,11 +119,11 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(complianceDialog).toBeHidden();
 
+  await page.getByTestId("export-package-review").click();
+  const exportDialog = page.getByRole("dialog", { name: /review export package/i });
+  await expect(exportDialog).toBeVisible();
   const dashboardDownloadPromise = page.waitForEvent("download");
-  await page
-    .getByTestId("scaffold-export-panel")
-    .getByRole("button", { name: /download component/i })
-    .click();
+  await exportDialog.getByRole("button", { name: /download component/i }).click();
   const dashboardDownload = await dashboardDownloadPromise;
   expect(dashboardDownload.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 

@@ -1807,6 +1807,7 @@ function ExportPackageReviewDialog({
               size="sm"
               className="min-h-11 gap-2"
               onClick={onExportDesignMarkdown}
+              data-testid="export-design-md"
             >
               <FileText className="size-4" aria-hidden />
               {copy.exportDesignDoc}
@@ -1818,6 +1819,7 @@ function ExportPackageReviewDialog({
               showToast={false}
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldCopied)}
             />
             <ExportButton
               text={preview.codePreview}
@@ -1825,6 +1827,14 @@ function ExportPackageReviewDialog({
               label={copy.exportDownload}
               filename={exportFilename}
               showToast={false}
+              analyticsSource="upload_flow"
+              analyticsFeature="generated_scaffold"
+              onCopied={() => onExported(copy.toastScaffoldExported)}
+            />
+            <GistExportButton
+              text={artifact.generatedCode}
+              filename={exportFilename}
+              description="qwen-ui-lab export package"
               analyticsSource="upload_flow"
               analyticsFeature="generated_scaffold"
             />
@@ -3183,62 +3193,6 @@ export function UploadFlow({
                         {exportPackagePreview ? (
                           <ExportPackageSummary preview={exportPackagePreview} copy={t} />
                         ) : null}
-                        <div className="flex flex-wrap gap-2">
-                          <ExportButton
-                            text={artifact.generatedCode}
-                            variant="copy"
-                            label={t.exportCopyAll}
-                            analyticsSource="upload_flow"
-                            analyticsFeature="generated_scaffold"
-                            onCopied={() => toast(t.toastScaffoldCopied, "success")}
-                          />
-                          <ExportButton
-                            text={artifact.generatedCode}
-                            variant="export"
-                            label={t.exportDownload}
-                            filename={exportFilename}
-                            analyticsSource="upload_flow"
-                            analyticsFeature="generated_scaffold"
-                            onCopied={() => toast(t.toastScaffoldExported, "success")}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={exportDesignMarkdown}
-                            data-testid="export-design-md"
-                          >
-                            <FileText className="size-3.5" aria-hidden />
-                            {t.exportDesignDoc}
-                          </Button>
-                          <RepoExportButton
-                            text={artifact.generatedCode}
-                            filename={exportFilename}
-                            description="qwen-ui-lab export package"
-                            label={t.exportDownloadPackage}
-                            exportMode="zip"
-                            testId="export-package-download"
-                            analyticsSource="upload_flow"
-                            analyticsFeature="generated_scaffold"
-                            onExported={() => toast(t.toastPackageDownloaded, "success")}
-                          />
-                          <GistExportButton
-                            text={artifact.generatedCode}
-                            filename={exportFilename}
-                            description="qwen-ui-lab generated component"
-                            analyticsSource="upload_flow"
-                            analyticsFeature="generated_scaffold"
-                          />
-                          <RepoExportButton
-                            text={artifact.generatedCode}
-                            filename={exportFilename}
-                            description="qwen-ui-lab generated component"
-                            label={t.exportRepoInstructions}
-                            analyticsSource="upload_flow"
-                            analyticsFeature="generated_scaffold"
-                          />
-                        </div>
                         {stage === "generated" ? null : (
                           <p className="text-xs text-muted-foreground">
                             {t.exportGenerateHint}

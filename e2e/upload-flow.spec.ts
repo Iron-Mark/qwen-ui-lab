@@ -383,18 +383,22 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.getByTestId("toggle-detection-overlay").click();
   await expect(page.getByTestId("detection-box")).toHaveCount(0);
 
-  await page.getByRole("button", { name: /copy all code/i }).click();
+  await page.getByTestId("export-package-review").click();
+  const exportDialog = page.getByRole("dialog", { name: /review export package/i });
+  await expect(exportDialog).toBeVisible();
+
+  await exportDialog.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Component copied/i)).toBeVisible({
     timeout: 5_000,
   });
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByTestId("scaffold-export-panel").getByRole("button", { name: /download component/i }).click();
+  await exportDialog.getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
 
   const designMdDownloadPromise = page.waitForEvent("download");
-  await page.getByTestId("export-design-md").click();
+  await exportDialog.getByTestId("export-design-md").click();
   const designMdDownload = await designMdDownloadPromise;
   expect(designMdDownload.suggestedFilename()).toBe("DESIGN.md");
   const designMdPath = await designMdDownload.path();
@@ -422,6 +426,8 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(page.getByText(/Export package downloaded/i).first()).toBeVisible({
     timeout: 5_000,
   });
+  await page.keyboard.press("Escape");
+  await expect(exportDialog).toBeHidden();
 
   await page.evaluate(() => {
     (window as typeof window & { __copiedText?: string }).__copiedText = undefined;
