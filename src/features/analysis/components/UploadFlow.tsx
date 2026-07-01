@@ -1285,6 +1285,11 @@ function buildEditedDetectionElement(
   const primitive =
     patch.primitive ??
     (patch.kind ? primitiveForDetectionKind(patch.kind) : element.primitive ?? primitiveForDetectionKind(element.kind));
+  const componentRole =
+    patch.componentRole ??
+    (patch.primitive || patch.kind
+      ? primitive
+      : element.componentRole ?? primitive);
   const nextConfidence = correctedDetectionConfidence(
     patch.confidence ?? element.confidence,
     nextIncluded !== false,
@@ -1294,6 +1299,7 @@ function buildEditedDetectionElement(
     ...element,
     ...patch,
     primitive,
+    componentRole,
     confidence: nextConfidence,
     userEdited: true,
     reasons: mergeEditedDetectionReasons(

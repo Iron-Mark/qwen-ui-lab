@@ -1897,6 +1897,33 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.equal(regenerated.detections.quality.correctedElementCount, 2);
   assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
+
+  const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.detectedElements.length, detections.elements.length - 1);
+  assert.equal(blueprint.detectedElements[0].id, detections.elements[0].id);
+  assert.equal(blueprint.detectedElements[0].primitive, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].componentRole, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].userEdited, true);
+  assert.ok(blueprint.detectedElements[0].confidence >= 0.72);
+  assert.ok(
+    blueprint.detectedElements[0].reasons.some((reason) =>
+      /Manual correction/.test(reason),
+    ),
+  );
+  assert.ok(
+    blueprint.layoutRegions.some((region) =>
+      region.children.includes(detections.elements[0].id),
+    ),
+  );
+  assert.ok(
+    blueprint.reviewChecklist.some((item) =>
+      /deterministic source/.test(item),
+    ),
+  );
+  assert.ok(
+    blueprint.detectedElements.every((element) => element.id !== detections.elements[1].id),
+  );
 });
 
 test("buildDemoArtifactForFile matches export fixture shape", () => {

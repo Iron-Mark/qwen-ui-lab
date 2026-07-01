@@ -232,11 +232,34 @@ function recomputeCorrectedDetections(detections) {
 function recomputeCorrectedElement(element) {
   const included = element.included !== false;
   const confidence = correctedElementConfidence(element, included);
+  const primitive = element.primitive ?? element.kind ?? "section";
+  const componentRole =
+    element.userEdited && !correctedPrimitiveRoleCompatible(primitive, element.componentRole)
+      ? primitive
+      : element.componentRole ?? primitive;
   return {
     ...element,
+    primitive,
+    componentRole,
     confidence,
     reasons: mergeCorrectionReasons(element, included, confidence),
   };
+}
+
+function correctedPrimitiveRoleCompatible(primitive, componentRole) {
+  if (!componentRole) return false;
+  const primitiveText = String(primitive || "");
+  const roleText = String(componentRole || "");
+  if (primitiveText === roleText) return true;
+  if (/field-or-action|button|input|control/.test(primitiveText)) {
+    return /field|action|button|input|control|search/.test(roleText);
+  }
+  if (/card|panel/.test(primitiveText)) return /card|panel|metric|content/.test(roleText);
+  if (/nav|header/.test(primitiveText)) return /nav|header|shell/.test(roleText);
+  if (/media|chart/.test(primitiveText)) return /media|chart/.test(roleText);
+  if (/text|list/.test(primitiveText)) return /text|list|row/.test(roleText);
+  if (/section/.test(primitiveText)) return /section|content/.test(roleText);
+  return roleText.includes(primitiveText) || primitiveText.includes(roleText);
 }
 
 function correctedElementConfidence(element, included) {
