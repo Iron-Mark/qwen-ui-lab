@@ -52,7 +52,15 @@ export default function GeneratedComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /\| `src\/components\/generated\/generated\.tsx` \| \d+ B \| \d+ \|/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /import GeneratedComponent from "@\/components\/generated\/generated";/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
+  assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /return <GeneratedComponent \/>;/,
+  );
   assert.match(
     entries.find((entry) => entry.name === "src/components/generated/generated.manifest.json")
       ?.content ?? "",
@@ -91,5 +99,13 @@ export default function Dashboard() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /\| `docs\/dashboard\.detection\.md` \| [\d.]+ KB \| \d+ \|/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /import Dashboard from "@\/components\/generated\/dashboard";/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
+  assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /Keep `src\/components\/generated\/dashboard\.recipe\.json`/,
+  );
 });
