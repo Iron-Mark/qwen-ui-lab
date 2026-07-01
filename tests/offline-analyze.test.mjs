@@ -1073,6 +1073,8 @@ test("lookupKnownSampleByInspection resolves bundled references by perceptual si
 
   assert.ok(exact);
   assert.match(exact.summary, /Admin dashboard/i);
+  assert.match(exact.generatedCode, /Sample screenshot metadata identifies this region/);
+  assert.doesNotMatch(exact.generatedCode, /Bundled reference metadata/);
   assert.ok(nearWebp);
   assert.equal(nearWebp.generatedCode, exact.generatedCode);
   assert.equal(unrelated, null);
