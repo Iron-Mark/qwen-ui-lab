@@ -103,6 +103,10 @@ export default function Dashboard() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /import Dashboard from "@\/components\/generated\/dashboard";/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /## Import readiness/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
@@ -111,5 +115,9 @@ export default function Dashboard() {
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
     /Keep `src\/components\/generated\/dashboard\.recipe\.json`/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /Required UI imports: No shadcn component imports were inferred/,
   );
 });
