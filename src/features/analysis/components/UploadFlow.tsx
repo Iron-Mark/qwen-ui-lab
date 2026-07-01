@@ -1913,19 +1913,19 @@ function DetectionComparisonPreview({
 
   return (
     <Card className="min-w-0 bg-background" data-testid="generated-comparison-preview">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <CardTitle className="text-sm">{copy.livePreview}</CardTitle>
         <CardDescription className="text-xs">
           {copy.comparisonPreviewDesc}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="grid gap-4 pt-0">
         <div className="grid min-w-0 gap-3 lg:grid-cols-2">
           <div className="min-w-0">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {copy.comparisonScreenshot}
             </p>
-            <div className="relative h-72 overflow-hidden rounded-md border border-border">
+            <div className="relative h-56 overflow-hidden rounded-md border border-border sm:h-72">
               {previewUrl ? (
                 <Image
                   src={previewUrl}
@@ -1948,7 +1948,7 @@ function DetectionComparisonPreview({
               {copy.comparisonGeneratedMock}
             </p>
             <div
-              className="relative h-72 overflow-hidden rounded-md border"
+              className="relative h-56 overflow-hidden rounded-md border sm:h-72"
               data-testid="generated-mock-canvas"
               style={{
                 backgroundColor: tokens.surface,
@@ -1993,16 +1993,19 @@ function DetectionComparisonPreview({
           </div>
         </div>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-4">
           {artifact.previewStats.map((stat) => (
-            <Card key={stat.label}>
-              <CardContent className="p-4">
-                <div className="text-xs text-muted-foreground">{stat.label}</div>
-                <div className="mt-2 text-2xl font-bold text-card-foreground">
-                  {stat.value}
-                </div>
-              </CardContent>
-            </Card>
+            <div
+              key={stat.label}
+              className="min-w-0 rounded-lg border border-border/70 bg-muted/20 px-3 py-2"
+            >
+              <div className="truncate text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {stat.label}
+              </div>
+              <div className="mt-1 text-lg font-semibold text-card-foreground">
+                {stat.value}
+              </div>
+            </div>
           ))}
         </div>
       </CardContent>
