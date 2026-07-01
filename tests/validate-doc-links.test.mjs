@@ -15,7 +15,25 @@ test("validateDocLinks accepts local markdown links and title-decorated targets"
   writeFileSync(join(root, "README.md"), "[Docs](./docs/guide.md)\n");
   writeFileSync(
     join(root, "docs", "guide.md"),
-    '[Back](../README.md "Repository readme")\n[Self](#heading)\n[Web](https://example.com)\n',
+    '# Heading\n[Back](../README.md "Repository readme")\n[Self](#heading)\n[Web](https://example.com)\n',
+  );
+
+  const result = validateDocLinks({ repoRoot: root });
+
+  assert.equal(result.checkedFileCount, 2);
+  assert.deepEqual(result.issues, []);
+});
+
+test("validateDocLinks accepts same-file and cross-file heading anchors", () => {
+  const root = createFixture();
+  mkdirSync(join(root, "docs"));
+  writeFileSync(
+    join(root, "README.md"),
+    "# Home\n\n[Intro](#home)\n[Backup](./docs/guide.md#backup-static-screenshot-sequence)\n",
+  );
+  writeFileSync(
+    join(root, "docs", "guide.md"),
+    "# Guide\n\n## Backup: Static Screenshot Sequence\n",
   );
 
   const result = validateDocLinks({ repoRoot: root });
@@ -34,6 +52,19 @@ test("validateDocLinks reports missing local markdown targets", () => {
   assert.equal(result.checkedFileCount, 1);
   assert.equal(result.issues.length, 1);
   assert.match(result.issues[0], /missing link target/i);
+});
+
+test("validateDocLinks reports missing markdown anchors", () => {
+  const root = createFixture();
+  mkdirSync(join(root, "docs"));
+  writeFileSync(join(root, "README.md"), "[Missing](./docs/guide.md#missing-section)\n");
+  writeFileSync(join(root, "docs", "guide.md"), "# Guide\n");
+
+  const result = validateDocLinks({ repoRoot: root });
+
+  assert.equal(result.checkedFileCount, 2);
+  assert.equal(result.issues.length, 1);
+  assert.match(result.issues[0], /missing anchor/i);
 });
 
 test("validateDocLinks rejects sibling paths that only share a repo prefix", () => {
