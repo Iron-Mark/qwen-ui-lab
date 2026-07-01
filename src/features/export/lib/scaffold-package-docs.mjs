@@ -66,6 +66,8 @@ This export package turns the screenshot review into files you can import, compa
 - It does not include the original screenshot, user data, secrets, or production data wiring.
 - It should not be merged until visual parity, accessibility, responsive layout, and real data states have been reviewed.
 
+${buildReviewContractMarkdown({ files })}
+
 ## What changed from the screenshot
 
 - Screen intent: ${screenIntent}
@@ -133,6 +135,8 @@ This export is a reviewable starter package. Import it into source control, conn
 
 - It is not a final production screen.
 - It does not include the original screenshot, user data, secrets, or production data wiring.
+
+${buildReviewContractMarkdown({ files })}
 
 ## Files
 
@@ -238,6 +242,12 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 
 ${manualCorrectionNotes}
 
+## Reviewer handoff
+
+- Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the regeneration source until visual review is complete.
+- Keep this detection note with the pull request when any low-confidence or manually edited boxes remain.
+- Do not delete omitted boxes from the recipe unless the reviewer confirms they are decorative or intentionally out of scope.
+
 ## Responsive intent
 
 - Mode: ${blueprint.responsiveIntent?.mode ?? "unknown"}
@@ -310,6 +320,8 @@ ${description}
 
 ${correctionSummary}
 
+${buildReviewContractMarkdown({ files })}
+
 ## Primitive mapping
 
 ${primitiveMap || "- No shadcn-style primitive map was inferred. Review the JSX and map controls manually."}
@@ -367,6 +379,23 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
         blueprint.correctionSummary?.sourceOfTruth ??
         "Detection boxes are the source of truth for this regenerated scaffold.",
     },
+    reviewContract: {
+      keepFilesUntilReviewComplete: [
+        files.designDoc,
+        files.recipe,
+        files.manifest,
+        files.detectionSummary,
+      ],
+      requiredChecks: [
+        "visual parity",
+        "keyboard focus",
+        "responsive layout",
+        "real data states",
+        "lint/build",
+      ],
+      safeToRemoveSupportFilesAfter:
+        "Visual parity, accessibility, responsive layout, and data-state checks are approved.",
+    },
     qualityGates: [
       "Compare the imported component against the source screenshot before merging.",
       "Review detection summary, low-confidence regions, and manual corrections.",
@@ -423,6 +452,15 @@ function buildImportReadinessMarkdown({ dependencies, files }) {
 - Copy \`${files.component}\`, \`${files.tokens}\`, and the supporting docs into the same pull request.
 - Keep \`${files.recipe}\` and \`${files.manifest}\` until screenshot parity, accessibility, and responsive checks pass.
 - Run lint/build after import and verify mobile, tablet, and desktop widths before merging.`;
+}
+
+function buildReviewContractMarkdown({ files }) {
+  return `## Review contract
+
+- Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the pull request until review is complete.
+- Compare the imported component against the screenshot before merging.
+- Verify keyboard focus, labels, responsive layout, and real loading/empty/error states.
+- After approval, keep \`${files.designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
 }
 
 function formatBytes(bytes) {

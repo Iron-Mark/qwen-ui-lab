@@ -56,6 +56,14 @@ export default function GeneratedComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /import GeneratedComponent from "@\/components\/generated\/generated";/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /## Review contract/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Keep `src\/components\/generated\/generated\.recipe\.json`, `src\/components\/generated\/generated\.manifest\.json`, and `docs\/generated\.detection\.md`/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Design notes/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
@@ -107,6 +115,10 @@ export default function Dashboard() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /## Import readiness/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /After approval, keep `DESIGN\.md` if it helps future maintenance/,
+  );
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
@@ -114,7 +126,19 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /## Review contract/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
     /Keep `src\/components\/generated\/dashboard\.recipe\.json`/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
+    /## Reviewer handoff/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
+    /Treat `src\/components\/generated\/dashboard\.recipe\.json` as the regeneration source/,
   );
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
