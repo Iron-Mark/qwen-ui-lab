@@ -96,43 +96,16 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     files,
     stem,
   });
-  const designDoc = buildPackageDesignMarkdown({
+  return buildPackageEntries({
+    content,
     description,
     files,
-    componentName: fallbackBlueprint.componentName,
     blueprint: fallbackBlueprint,
     dependencies,
+    recipe,
+    manifest,
+    readmeBuilder: buildFallbackPackageReadme,
   });
-  const recipeJson = `${JSON.stringify(recipe, null, 2)}\n`;
-  const manifestJson = `${JSON.stringify(manifest, null, 2)}\n`;
-  const tokensCss = buildTokenCss(fallbackBlueprint.designTokens);
-  const detectionSummary = buildDetectionSummaryMarkdown(fallbackBlueprint);
-
-  return [
-    {
-      name: "README.md",
-      content: buildFallbackPackageReadme({
-        description,
-        files,
-        componentName: fallbackBlueprint.componentName,
-        dependencies,
-        inventory: buildPackageInventory([
-          { name: files.designDoc, content: designDoc },
-          { name: files.component, content },
-          { name: files.recipe, content: recipeJson },
-          { name: files.manifest, content: manifestJson },
-          { name: files.tokens, content: tokensCss },
-          { name: files.detectionSummary, content: detectionSummary },
-        ]),
-      }),
-    },
-    { name: files.designDoc, content: designDoc },
-    { name: files.component, content },
-    { name: files.recipe, content: recipeJson },
-    { name: files.manifest, content: manifestJson },
-    { name: files.tokens, content: tokensCss },
-    { name: files.detectionSummary, content: detectionSummary },
-  ];
 }
 
 function buildProductionScaffoldZipEntries({ content, filename, description, blueprint }) {
@@ -158,6 +131,28 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
     files,
     stem,
   });
+  return buildPackageEntries({
+    content,
+    description,
+    files,
+    blueprint,
+    dependencies,
+    recipe,
+    manifest,
+    readmeBuilder: buildProductionScaffoldReadme,
+  });
+}
+
+function buildPackageEntries({
+  content,
+  description,
+  files,
+  blueprint,
+  dependencies,
+  recipe,
+  manifest,
+  readmeBuilder,
+}) {
   const designDoc = buildPackageDesignMarkdown({
     description,
     files,
@@ -173,7 +168,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
   return [
     {
       name: "README.md",
-      content: buildProductionScaffoldReadme({
+      content: readmeBuilder({
         description,
         files,
         componentName: blueprint.componentName,
