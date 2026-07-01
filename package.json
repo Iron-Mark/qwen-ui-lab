@@ -2,6 +2,7 @@
   "name": "qwen-ui-lab",
   "version": "0.4.1",
   "private": true,
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
