@@ -158,13 +158,17 @@ export function SharedSummaryCard({
                         : detections.designTokens.foreground,
                     }}
                   >
-                    <span className="block truncate font-medium">{element.primitive}</span>
-                    <span className="block truncate opacity-75">{element.kind}</span>
+                    <span className="block truncate font-medium">
+                      {sharePrimitiveLabel(element.primitive)}
+                    </span>
+                    <span className="block truncate opacity-75">
+                      {shareKindLabel(element.kind)}
+                    </span>
                   </div>
                 ))}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between bg-gradient-to-t from-background/85 to-transparent px-3 pb-2 pt-8 text-[11px] text-muted-foreground">
                 <span>Detected layout</span>
-                <span>Ambiguity: {detections.quality.ambiguity}</span>
+                <span>{shareAmbiguityLabel(detections.quality.ambiguity)}</span>
               </div>
             </div>
           </div>
@@ -172,6 +176,50 @@ export function SharedSummaryCard({
       </CardContent>
     </Card>
   );
+}
+
+const SHARE_KIND_LABELS: Record<string, string> = {
+  header: "Header",
+  "side-nav": "Sidebar navigation",
+  "bottom-nav": "Bottom navigation",
+  "button-or-input": "Button or field",
+  "input-or-button-row": "Form/action row",
+  "card-or-panel": "Card or panel",
+  "chart-or-media": "Chart or media",
+  "text-row": "Text row",
+  control: "Control",
+  "content-block": "Content section",
+};
+
+const SHARE_PRIMITIVE_LABELS: Record<string, string> = {
+  "field-or-action": "Field or action",
+  media: "Media",
+  card: "Card",
+  text: "Text",
+  section: "Section",
+  "list-item": "List row",
+  header: "Header",
+};
+
+function shareKindLabel(kind: string) {
+  return SHARE_KIND_LABELS[kind] ?? titleCaseShareLabel(kind);
+}
+
+function sharePrimitiveLabel(primitive: string) {
+  return SHARE_PRIMITIVE_LABELS[primitive] ?? titleCaseShareLabel(primitive);
+}
+
+function shareAmbiguityLabel(value: string) {
+  if (value === "low") return "Review need: low";
+  if (value === "medium") return "Review need: medium";
+  if (value === "high") return "Review need: high";
+  return "Review need: local scan";
+}
+
+function titleCaseShareLabel(value: string) {
+  return value
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function detectionSummaryCounts(

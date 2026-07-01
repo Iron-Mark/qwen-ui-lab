@@ -274,6 +274,49 @@ const DETECTION_KIND_OPTIONS = [
   "content-block",
 ] as const;
 
+const DETECTION_KIND_LABELS: Record<string, string> = {
+  header: "Header",
+  "side-nav": "Sidebar navigation",
+  "bottom-nav": "Bottom navigation",
+  "button-or-input": "Button or field",
+  "input-or-button-row": "Form/action row",
+  "card-or-panel": "Card or panel",
+  "chart-or-media": "Chart or media",
+  "text-row": "Text row",
+  control: "Control",
+  "content-block": "Content section",
+};
+
+const DETECTION_PRIMITIVE_LABELS: Record<string, string> = {
+  "field-or-action": "Field or action",
+  media: "Media",
+  card: "Card",
+  text: "Text",
+  section: "Section",
+  "list-item": "List row",
+  header: "Header",
+  "side-nav": "Sidebar navigation",
+  "bottom-nav": "Bottom navigation",
+};
+
+function detectionKindLabel(kind: string) {
+  return DETECTION_KIND_LABELS[kind] ?? titleCaseDetectionLabel(kind);
+}
+
+function detectionPrimitiveLabel(primitive: string) {
+  return DETECTION_PRIMITIVE_LABELS[primitive] ?? titleCaseDetectionLabel(primitive);
+}
+
+function detectionElementLabel(element: Pick<DetectionElement, "kind" | "primitive">) {
+  return detectionPrimitiveLabel(element.primitive ?? primitiveForKind(element.kind));
+}
+
+function titleCaseDetectionLabel(value: string) {
+  return value
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function isEditablePasteTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
   return Boolean(
@@ -684,7 +727,7 @@ function DetectedReferencePreview({
                     selectedElement?.id === element.id ? "block" : "hidden sm:block",
                   )}
                 >
-                  {element.kind} - {Math.round(element.confidence * 100)}%
+                  {detectionKindLabel(element.kind)} - {Math.round(element.confidence * 100)}%
                 </span>
                 {debugEnabled ? (
                   <span
@@ -814,7 +857,7 @@ function DetectedReferencePreview({
                   Selected element
                 </p>
                 <p className="mt-1 text-sm font-medium text-card-foreground">
-                  {selectedElement.primitive ?? primitiveForKind(selectedElement.kind)} -{" "}
+                  {detectionElementLabel(selectedElement)} -{" "}
                   {Math.round(selectedElement.confidence * 100)}% confidence
                 </p>
               </div>
@@ -867,7 +910,7 @@ function DetectedReferencePreview({
               >
                 {DETECTION_KIND_OPTIONS.map((kind) => (
                   <option key={kind} value={kind}>
-                    {kind}
+                    {detectionKindLabel(kind)}
                   </option>
                 ))}
               </select>
