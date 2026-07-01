@@ -168,7 +168,11 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
   assert.match(markdown, /Exported components: GeneratedWireframe/);
   assert.match(markdown, /No active detection boxes were available/);
   assert.match(markdown, /No design tokens were detected/);
-  assert.match(markdown, /Run a manual visual review because no detection boxes were available/);
+  assert.match(
+    markdown,
+    /Compare the generated structure, key controls, and responsive assumptions against the screenshot/,
+  );
+  assert.doesNotMatch(markdown, /manual visual review/);
 });
 
 test("buildDesignMarkdown synthesizes fallback review evidence for detections without reasons", () => {

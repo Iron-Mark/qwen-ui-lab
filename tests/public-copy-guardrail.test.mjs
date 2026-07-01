@@ -68,6 +68,8 @@ const BANNED_PUBLIC_PHRASES = [
   "No element-level confidence reasons were exported",
   "exported for manual review",
   "inspect the generated component manually",
+  "manual visual review",
+  "Review the generated code directly",
   "validate breakpoints manually",
   "classify the page type manually",
   "Confirm navigation landmarks manually",
