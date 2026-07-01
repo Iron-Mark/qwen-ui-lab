@@ -1129,6 +1129,48 @@ test("export api routes delegate orchestration to export feature handlers", asyn
   assert.deepEqual(violations, []);
 });
 
+test("github repo export helper does not own scaffold package assembly", async () => {
+  const file = path.join(
+    process.cwd(),
+    "src",
+    "features",
+    "export",
+    "lib",
+    "github-repo.mjs",
+  );
+  const source = await readFile(file, "utf8");
+  const bannedImportSpecifiers = [
+    "./scaffold-blueprint.mjs",
+    "./scaffold-package.mjs",
+  ];
+  const bannedMarkers = [
+    "function buildScaffoldZipEntries",
+    "function buildScaffoldPackageFileMap",
+    "function buildFallbackScaffoldZipEntries",
+    "function buildProductionScaffoldZipEntries",
+    "function inferShadcnDependencies",
+    "function inferPrimitiveMapFromImports",
+    "function extractProductionScaffoldBlueprint",
+  ];
+
+  const violations = [];
+  const importLines = source
+    .split(/\r?\n/)
+    .filter((line) => line.trimStart().startsWith("import "));
+  for (const specifier of bannedImportSpecifiers) {
+    if (importLines.some((line) => line.includes(`from "${specifier}"`) || line.includes(`from '${specifier}'`))) {
+      violations.push(`${toRepoPath(file)} imports ${specifier}`);
+    }
+  }
+  for (const marker of bannedMarkers) {
+    if (source.includes(marker)) {
+      violations.push(`${toRepoPath(file)} contains ${marker}`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("csp report api route delegates parsing and logging to shared csp helper", async () => {
   const file = path.join(
     process.cwd(),

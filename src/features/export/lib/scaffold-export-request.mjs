@@ -1,5 +1,5 @@
 import { sanitizeGistFilename } from "./github-gist.mjs";
-import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./github-repo.mjs";
+import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
 
 export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
 
