@@ -105,6 +105,27 @@ test("extractProductionScaffoldBlueprint handles CRLF generated scaffolds", () =
   assert.equal(blueprint.shadcnPrimitiveMap["primary-action"], "Button");
 });
 
+test("extractProductionScaffoldBlueprint gives actionable guidance when primitive summary is empty", () => {
+  const blueprint = extractProductionScaffoldBlueprint(`const screenIntent = {"label":"Review screen"};
+
+export default function GeneratedReviewScreen() {
+  return <main>Review</main>;
+}
+`);
+
+  assert.ok(blueprint);
+  assert.ok(
+    blueprint.reviewChecklist.some((item) =>
+      /verify imports, controls, and semantic wrappers before import/.test(item),
+    ),
+  );
+  assert.ok(
+    !blueprint.reviewChecklist.some((item) =>
+      /inspect the generated component manually/.test(item),
+    ),
+  );
+});
+
 test("buildScaffoldPackageFileMap keeps export package paths consistent", () => {
   assert.deepEqual(buildScaffoldPackageFileMap("detected dashboard!.tsx"), {
     stem: "detected-dashboard",

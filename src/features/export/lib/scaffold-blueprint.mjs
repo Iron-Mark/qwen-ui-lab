@@ -226,7 +226,9 @@ function buildReviewChecklist({
     checklist.push("Replace chart placeholders with chart data, labels, and text summaries.");
   }
   if (Object.keys(primitiveSummary?.primitives ?? {}).length === 0) {
-    checklist.push("No primitive summary was available; inspect the generated component manually.");
+    checklist.push(
+      "No primitive summary was available; verify imports, controls, and semantic wrappers before import.",
+    );
   }
 
   return checklist;
