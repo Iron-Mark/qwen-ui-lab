@@ -390,6 +390,13 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await expect(exportDialog).toBeVisible();
   await expect(exportDialog.getByText(/more export options/i)).toBeVisible();
   await exportDialog.getByText(/more export options/i).click();
+  await expect(exportDialog.getByTestId("export-design-md")).toBeVisible();
+  await expect(
+    exportDialog.getByRole("button", { name: /export to github gist code/i }),
+  ).toBeVisible();
+  await expect(
+    exportDialog.getByRole("button", { name: /open pr instructions code/i }),
+  ).toBeVisible();
 
   await exportDialog.getByRole("button", { name: /copy all code/i }).click();
   await expect(page.getByText(/Component copied/i)).toBeVisible({
