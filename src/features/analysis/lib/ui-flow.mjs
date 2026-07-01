@@ -8,6 +8,7 @@ import {
   mergeManualCorrectionReasons,
   summarizeCorrectedElementChanges,
 } from "./detection-corrections.mjs";
+import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
@@ -112,10 +113,11 @@ export function buildUiFlowArtifact(file, overrides = {}) {
   const previewStats = normalizePreviewStats(
     overrides.previewStats || offline.previewStats || defaultPreviewStats,
   );
-  const generatedCode =
+  const generatedCode = normalizeGeneratedShadcnImports(
     overrides.generatedCode ||
-    offline.generatedCode ||
-    createGeneratedCode(fileName);
+      offline.generatedCode ||
+      createGeneratedCode(fileName),
+  );
 
   return {
     file: {
@@ -162,12 +164,11 @@ export function regenerateArtifactFromDetections(artifact, detections) {
   const existingSectionsStat = artifact.previewStats?.find(
     (stat) => stat.label === "Sections",
   );
-  const generatedCode = createGeneratedCodeFromDetections(
-    artifact.file?.name ?? "uploaded-reference",
-    {
+  const generatedCode = normalizeGeneratedShadcnImports(
+    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-reference", {
       ...correctedDetections,
       elements: activeElements,
-    },
+    }),
   );
   const previewStats = normalizePreviewStats([
     {

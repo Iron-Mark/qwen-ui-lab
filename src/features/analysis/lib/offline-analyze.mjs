@@ -6,6 +6,7 @@ import {
   buildSvgInspectionPlanSections,
   buildSvgInspectionPreviewStats,
 } from "./offline-svg-inspection.mjs";
+import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 
 /**
  * Advanced deterministic offline analysis — no AI, no network.
@@ -762,7 +763,7 @@ function buildProductionKnownSample(sampleKey) {
 function buildKnownSampleGeneratedCode(sampleKey, sample) {
   const profile = buildKnownSampleProfile(sampleKey, sample);
 
-  return `import type { AriaRole } from "react";
+  return normalizeGeneratedShadcnImports(`import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -911,7 +912,7 @@ function ElementPreview({ element }: { element: DetectionElement }) {
     </article>
   );
 }
-`;
+`);
 }
 
 function buildKnownSampleProfile(sampleKey, sample) {
@@ -3107,11 +3108,8 @@ export function buildAdvancedOfflineOverrides(file, context) {
   return {
     plan,
     previewStats,
-    generatedCode: buildGeneratedCode(
-      fileName,
-      archetype,
-      file.offlineInspection,
-      svgInspection,
+    generatedCode: normalizeGeneratedShadcnImports(
+      buildGeneratedCode(fileName, archetype, file.offlineInspection, svgInspection),
     ),
     summary: buildOfflineSummary({
       archetype,
