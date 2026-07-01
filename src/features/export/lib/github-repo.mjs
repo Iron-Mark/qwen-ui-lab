@@ -369,7 +369,7 @@ function buildProductionScaffoldReadme({
 
 ${description}
 
-This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter handoff, not a final production component.
+This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter package for review, not a final production component.
 
 ## What this package is
 
@@ -472,7 +472,7 @@ This export is a reviewable starter package. Import it into source control, conn
 ## What this package is
 
 - A generated component file plus supporting review documents.
-- A portable handoff for adapting screenshot-inspired UI inside your app.
+- A portable starter for adapting screenshot-inspired UI inside your app.
 - A source-control friendly export package with recipe, manifest, tokens, and detection notes.
 
 ## What this package is not

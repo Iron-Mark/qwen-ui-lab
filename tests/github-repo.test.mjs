@@ -114,7 +114,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     "docs/detected-dashboard.detection.md",
   ]);
   assert.match(entries[0].content, /Screenshot UI starter package/);
-  assert.match(entries[0].content, /It is a starter handoff, not a final production component/);
+  assert.match(entries[0].content, /It is a starter package for review, not a final production component/);
   assert.match(
     entries[0].content,
     /Manual corrections: 1 edited detection box, 1 excluded element captured in the recipe JSON\./,
