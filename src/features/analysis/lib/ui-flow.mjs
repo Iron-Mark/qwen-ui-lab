@@ -3,6 +3,11 @@ import {
   lookupKnownSample,
   lookupKnownSampleByInspection,
 } from "./offline-analyze.mjs";
+import {
+  correctedDetectionConfidence,
+  mergeManualCorrectionReasons,
+  summarizeCorrectedElementChanges,
+} from "./detection-corrections.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
@@ -42,11 +47,11 @@ function dimensionHint(width, height) {
   if (!width || !height) return null;
   const orientation = width >= height ? "landscape" : "portrait";
   const aspect = (width / height).toFixed(2);
-  return `${width}×${height}px ${orientation} frame (aspect ${aspect}).`;
+  return `${width}x${height}px ${orientation} frame (aspect ${aspect}).`;
 }
 
 /**
- * Resolve offline content: known sample registry → advanced classifier → caller overrides.
+ * Resolve offline content: known sample registry -> advanced classifier -> caller overrides.
  * @param {{
  *   name?: string;
  *   type?: string;
@@ -125,7 +130,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     plan,
     previewStats,
     generatedCode,
-    modeLabel: overrides.modeLabel || "Analyzer ready",
+    modeLabel: overrides.modeLabel || "Ready to analyze",
     summary: overrides.summary ?? offline.summary ?? "",
     ...(detections ? { detections } : {}),
   };
@@ -150,7 +155,8 @@ function buildDetections(file) {
 
 export function regenerateArtifactFromDetections(artifact, detections) {
   if (!artifact || !detections) return artifact;
-  const activeElements = (detections.elements ?? []).filter(
+  const correctedDetections = recomputeCorrectedDetections(detections);
+  const activeElements = (correctedDetections.elements ?? []).filter(
     (element) => element.included !== false,
   );
   const existingSectionsStat = artifact.previewStats?.find(
@@ -159,7 +165,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
   const generatedCode = createGeneratedCodeFromDetections(
     artifact.file?.name ?? "uploaded-reference",
     {
-      ...detections,
+      ...correctedDetections,
       elements: activeElements,
     },
   );
@@ -170,7 +176,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     },
     {
       label: "Edited",
-      value: String((detections.elements ?? []).filter((element) => element.userEdited).length),
+      value: String((correctedDetections.elements ?? []).filter((element) => element.userEdited).length),
     },
     {
       label: "Primitive Types",
@@ -179,8 +185,8 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     {
       label: "Confidence",
       value:
-        typeof detections.quality?.confidence === "number"
-          ? `${Math.round(detections.quality.confidence * 100)}%`
+        typeof correctedDetections.quality?.confidence === "number"
+          ? `${Math.round(correctedDetections.quality.confidence * 100)}%`
           : "local",
     },
   ]);
@@ -190,14 +196,104 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     generatedCode,
     previewStats,
     detections: {
-      ...detections,
-      elements: detections.elements ?? [],
-      quality: {
-        ...(detections.quality ?? {}),
-        elementCount: activeElements.length,
-      },
+      ...correctedDetections,
+      elements: correctedDetections.elements ?? [],
     },
   };
+}
+
+function recomputeCorrectedDetections(detections) {
+  const elements = (detections.elements ?? []).map((element) =>
+    recomputeCorrectedElement(element),
+  );
+  const activeElements = elements.filter((element) => element.included !== false);
+  const averageConfidence = activeElements.length
+    ? activeElements.reduce((sum, element) => sum + (element.confidence ?? 0.5), 0) /
+      activeElements.length
+    : 0;
+  const editedCount = elements.filter((element) => element.userEdited).length;
+  const correctionPenalty = Math.min(0.1, editedCount * 0.015);
+
+  return {
+    ...detections,
+    elements,
+    quality: {
+      ...(detections.quality ?? {}),
+      confidence: clampConfidence(averageConfidence - correctionPenalty),
+      elementCount: activeElements.length,
+      correctedElementCount: editedCount,
+      strategy: editedCount
+        ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
+        : detections.quality?.strategy,
+    },
+  };
+}
+
+function recomputeCorrectedElement(element) {
+  const included = element.included !== false;
+  const confidence = correctedElementConfidence(element, included);
+  const primitive = element.primitive ?? element.kind ?? "section";
+  const componentRole =
+    element.userEdited && !correctedPrimitiveRoleCompatible(primitive, element.componentRole)
+      ? primitive
+      : element.componentRole ?? primitive;
+  return {
+    ...element,
+    primitive,
+    componentRole,
+    confidence,
+    reasons: mergeCorrectionReasons(element, included, confidence),
+  };
+}
+
+function correctedPrimitiveRoleCompatible(primitive, componentRole) {
+  if (!componentRole) return false;
+  const primitiveText = String(primitive || "");
+  const roleText = String(componentRole || "");
+  if (primitiveText === roleText) return true;
+  if (/field-or-action|button|input|control/.test(primitiveText)) {
+    return /field|action|button|input|control|search/.test(roleText);
+  }
+  if (/card|panel/.test(primitiveText)) return /card|panel|metric|content/.test(roleText);
+  if (/nav|header/.test(primitiveText)) return /nav|header|shell/.test(roleText);
+  if (/media|chart/.test(primitiveText)) return /media|chart/.test(roleText);
+  if (/text|list/.test(primitiveText)) return /text|list|row/.test(roleText);
+  if (/section/.test(primitiveText)) return /section|content/.test(roleText);
+  return roleText.includes(primitiveText) || primitiveText.includes(roleText);
+}
+
+function correctedElementConfidence(element, included) {
+  if (!element.userEdited) return clampConfidence(element.confidence ?? 0.5);
+  return correctedDetectionConfidence(element.confidence, included);
+}
+
+function mergeCorrectionReasons(element, included, confidence) {
+  if (!element.userEdited) return Array.isArray(element.reasons) ? element.reasons : [];
+  return mergeManualCorrectionReasons({
+    reasons: element.reasons,
+    included,
+    confidence,
+    changes: summarizeCorrectedElementChanges(element),
+    source: "regeneration",
+  });
+}
+
+function summarizeElementReasons(reasons) {
+  if (!Array.isArray(reasons)) return [];
+  return reasons
+    .map((reason) => {
+      if (typeof reason === "string") return reason;
+      const label = reason?.label || reason?.code;
+      const evidence = reason?.evidence ? `: ${reason.evidence}` : "";
+      return label ? `${label}${evidence}` : "";
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function clampConfidence(value) {
+  if (!Number.isFinite(value)) return 0.5;
+  return Math.max(0, Math.min(0.99, value));
 }
 
 function normalizePreviewStats(stats) {
@@ -213,7 +309,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Generated dashboard from ${fileName}">
+    <section aria-label="Dashboard export based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -238,6 +334,8 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     primitive: element.primitive ?? element.kind ?? "section",
     componentRole: element.componentRole ?? element.primitive ?? element.kind ?? "section",
     confidence: element.confidence ?? 0.5,
+    userEdited: element.userEdited === true,
+    reasons: summarizeElementReasons(element.reasons),
     box: element.box ?? { x: 0, y: 0, width: source.width, height: Math.max(48, source.height / 12) },
   }));
   const patterns = buildCorrectedPatternBlueprint(detections, elements);
@@ -271,6 +369,8 @@ type CorrectedElement = {
   primitive: string;
   componentRole: string;
   confidence: number;
+  userEdited?: boolean;
+  reasons?: string[];
   label?: string;
   box: ElementBox;
 };
@@ -393,7 +493,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
-  "chart-series": "Chart card with text fallback",
+  "chart-series": "Chart card with accessible text summary",
   "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
@@ -407,7 +507,7 @@ const generatedSections = buildGeneratedSections(correctedPatterns, correctedEle
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Reviewed screenshot starter from ${safeName}"
+      aria-label="Screenshot export based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -418,16 +518,16 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Generated interface shell
+              Screenshot starter component
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Built from {correctedElements.length} reviewed detections with shadcn-style primitives,
+              Built from {correctedElements.length} reviewed UI regions with shadcn-style primitives,
               responsive sections, and semantic landmarks ready for real data wiring.
             </p>
           </div>
         </header>
 
-        <CorrectionRecipeSummary />
+        <ImplementationChecklist />
 
         {generatedSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -455,13 +555,13 @@ export default function ReviewedScreenshotStarter() {
   );
 }
 
-function CorrectionRecipeSummary() {
+function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Correction recipe</CardTitle>
+        <CardTitle>Implementation checklist</CardTitle>
         <CardDescription>
-          Manual edits are preserved as canonical detection metadata for deterministic export review.
+          Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -574,7 +674,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
     return (
       <label className="grid gap-2 text-sm font-medium">
         {label}
-        <Input placeholder="Connect real value" />
+        <Input placeholder="Enter product data" />
       </label>
     );
   }
@@ -602,7 +702,7 @@ function buildGeneratedSections(
   const groups = [
     ...patterns.appShells.map((pattern) => sectionFromPattern(pattern, byId, "app-shell", "Application shell", "Navigation and page regions grouped as landmarks.", "grid gap-3")),
     ...patterns.dialogPanels.map((pattern) => sectionFromPattern(pattern, byId, "dialog-panel", "Dialog surface", "Modal-ready content with close and action affordances.", "grid gap-3")),
-    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse fallback content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
+    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse empty-state content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
     ...patterns.repeatedLists.map((pattern) => sectionFromPattern(pattern, byId, "repeated-list", "Repeated list", "Rows share rhythm, spacing, and action placement.", "grid gap-2")),
     ...patterns.repeatedGrids.map((pattern) => sectionFromPattern(pattern, byId, "repeated-grid", "Card grid", "Repeated cards snapped into a responsive grid.", "grid gap-3 sm:grid-cols-2")),
     ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
@@ -769,7 +869,7 @@ export function CorrectionGridReference() {
               <div className="grid max-w-sm gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase">Empty state</p>
-                  <p className="text-sm font-medium">Fallback content with recovery action</p>
+                  <p className="text-sm font-medium">Empty-state content with recovery action</p>
                 </div>
                 <div className="grid gap-2 rounded border p-3" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
                   {pattern.children.map((childId) => {

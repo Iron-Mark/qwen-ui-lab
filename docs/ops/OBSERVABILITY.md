@@ -1,6 +1,6 @@
 # Observability (errors + analytics)
 
-Client observability in `qwen-ui-lab` is **opt-in** and **demo-safe by default**. Nothing is sent to Sentry, a generic reporting URL, or analytics sinks until you set explicit `NEXT_PUBLIC_*` flags in the deployment environment.
+Client observability in `qwen-ui-lab` is **opt-in** and **quiet by default**. Nothing is sent to Sentry, a generic reporting URL, or analytics sinks until you set explicit `NEXT_PUBLIC_*` flags in the deployment environment.
 
 Related docs:
 
@@ -8,14 +8,14 @@ Related docs:
 - [ANALYTICS_STAGING_ACTIVATION.md](./ANALYTICS_STAGING_ACTIVATION.md) — staging rollout checklist
 - [RELIABILITY_OPS.md](./RELIABILITY_OPS.md) — health probes and incident thresholds
 
-## Default behavior (meetup / production demo)
+## Default Behavior
 
 When all observability env vars are **unset**:
 
 - No Sentry initialization
 - No outbound error beacons
 - `captureError` / `trackEvent` are no-ops
-- Demo provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true`
+- Local-analysis provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true`
 
 ## Activation flags
 
@@ -66,7 +66,7 @@ Copy names from `.env.example` — never commit real DSNs, tokens, or collector 
 | Outcome | Reported? |
 | --- | --- |
 | Live Qwen success (`providerState: qwen`) | No |
-| Expected offline demo (`instantDemo`, missing key, live disabled) | No |
+| Expected local analysis (`instantDemo`, missing key, live disabled) | No |
 | Live call failed → offline fallback | Yes |
 | Client could not read the uploaded image | Yes |
 
@@ -100,9 +100,9 @@ Implementation files:
 ## Staging verification
 
 1. Set master + `NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true` and your Sentry DSN (or generic URL).
-2. Keep `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false` on public demo hosts.
+2. Keep `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false` on public hosts.
 3. Force a live analyze failure and confirm one issue/beacon with `source: analyze_route`.
-4. Confirm meetup demo traffic with unset flags produces **zero** outbound error traffic.
+4. Confirm normal public traffic with unset flags produces **zero** outbound error traffic.
 
 ## Privacy notes
 

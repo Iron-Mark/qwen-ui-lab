@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { StructuredDataScript } from "@/components/layout/StructuredDataScript";
-import { DemoPageClient } from "@/features/demo/components/DemoPageClient";
+import { SampleReferencePageClient } from "@/features/demo/components/SampleReferencePageClient";
 import {
   createDemoRouteMetadata,
   createDemoRouteStructuredData,
@@ -11,13 +11,13 @@ import {
 export const metadata: Metadata = createDemoRouteMetadata();
 
 export default async function DemoPage(props: DemoRoutePageProps) {
-  const { demoArchetype } = await resolveDemoPageModel(props);
+  const { sampleReferenceId } = await resolveDemoPageModel(props);
   const structuredData = createDemoRouteStructuredData();
 
   return (
     <>
       <StructuredDataScript data={structuredData} />
-      <DemoPageClient demoArchetype={demoArchetype} />
+      <SampleReferencePageClient sampleReferenceId={sampleReferenceId} />
     </>
   );
 }

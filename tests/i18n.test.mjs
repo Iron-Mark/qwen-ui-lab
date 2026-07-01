@@ -28,9 +28,9 @@ const uploadFlowZh = {
   ctaAnalyzing: "分析中…",
   analyzeStepReading: "读取图片…",
   analyzeStepPreprocessing: "预处理图片…",
-  analyzeStepChecking: "检查提供方…",
+    analyzeStepChecking: "准备分析…",
   analyzeStepLayout: "分析布局…",
-  analyzeStepBuilding: "构建产物…",
+  analyzeStepBuilding: "生成预览…",
   progressCallingApi: "调用 Qwen 视觉 API…",
   stepUpload: "上传",
   stepAnalyze: "分析",
@@ -109,7 +109,19 @@ test("localizedHref preserves share and account paths", () => {
 test("zh dictionaries cover remaining route strings", () => {
   assert.match(zhDictionarySource, /title:\s*"页面未找到"/);
   assert.match(zhDictionarySource, /title:\s*"只读分析摘要"/);
-  assert.match(zhDictionarySource, /backToDemo:\s*"返回工作流"/);
+  assert.match(zhDictionarySource, /backToWorkflow:\s*"返回工作流"/);
   assert.match(enDictionarySource, /title:\s*"Page not found"/);
-  assert.match(enDictionarySource, /tryLiveDemo:\s*"Back to workflow"/);
+  assert.match(enDictionarySource, /backToWorkflow:\s*"Back to workflow"/);
+});
+
+test("en public copy avoids test-runner wording in sample picker labels", () => {
+  assert.match(enDictionarySource, /domainUiLaws:\s*"UI Laws"/);
+  assert.doesNotMatch(enDictionarySource, /hint:\s*"Tests\b/);
+  assert.doesNotMatch(enDictionarySource, /domainUiLaws:\s*"UILaws"/);
+});
+
+test("export package tabs use product-facing package notes language", () => {
+  assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Package notes"/);
+  assert.match(enDictionarySource, /Use these notes to review the generated package/);
+  assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"包备注"/);
 });

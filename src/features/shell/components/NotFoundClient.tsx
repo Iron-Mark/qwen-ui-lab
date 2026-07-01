@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { ArrowRight, Compass, Home, LayoutGrid } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,6 +12,10 @@ import { cn } from "@/lib/utils";
 export function NotFoundClient() {
   const { locale, dict } = useLocale();
   const t = dict.notFound;
+
+  useEffect(() => {
+    document.title = `${t.title} | qwen-ui-lab`;
+  }, [t.title]);
 
   return (
     <PageContainer

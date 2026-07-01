@@ -50,7 +50,7 @@ export function WorkflowStepper({
               className={cn(
                 "min-h-8 rounded-full px-2.5 py-1 text-[11px] transition-colors sm:h-7 sm:px-3 sm:text-xs",
                 isCurrent &&
-                  "border-primary bg-primary text-primary-foreground shadow-sm",
+                  "border-primary bg-primary text-white shadow-sm dark:text-primary-foreground",
                 isComplete &&
                   "border-border/70 bg-muted/50 text-muted-foreground",
                 isLocked &&

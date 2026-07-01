@@ -1,14 +1,14 @@
 export const en = {
   hero: {
-    badgeDemo: "Screenshot to React",
+    badgeProduct: "Screenshot to React",
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
-      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind starter.",
+      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
-    oneClickDemo: "Sample reference",
-    trustDemo: "Browser-safe by default",
+    sampleReference: "Sample screenshot",
+    trustBrowserSafe: "Browser-safe by default",
     trustOffline: "Runs locally",
     benefitUploadLabel: "Plan",
     benefitUploadTitle: "Map the layout",
@@ -19,7 +19,7 @@ export const en = {
     benefitAnalyzeBody:
       "Review the generated React + Tailwind component before exporting it.",
     benefitDesignLabel: "Export",
-    benefitDesignTitle: "Export the starter",
+    benefitDesignTitle: "Export the package",
     benefitDesignBody:
       "Review TSX, Design.md, and package files before using the result.",
     trustSignalsAria: "Trust signals",
@@ -48,10 +48,10 @@ export const en = {
   share: {
     eyebrow: "Share link",
     title: "Read-only analysis summary",
-    descriptionLead: "Short link",
-    descriptionTrail: "- summary only, no private source files included.",
-    tryLiveDemo: "Back to workflow",
-    oneClickDemo: "Sample reference",
+    descriptionLead: "This link includes",
+    descriptionTrail: "- summary and detected layout only, no source files.",
+    backToWorkflow: "Back to workflow",
+    sampleReference: "Sample screenshot",
     metadataNotFoundTitle: "Share not found",
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
@@ -68,6 +68,7 @@ export const en = {
     subtitle: "Choose how saved analyses are labeled in this browser.",
     statusTitle: "Local profile",
     statusDesc: "Used by the header and recent analysis list.",
+    profilePreviewDesc: "Label for saved analyses",
     localFactsTitle: "What stays local",
     currentLabelTitle: "Shown as",
     storedInTitle: "Saved in",
@@ -84,7 +85,7 @@ export const en = {
     displayNamePlaceholder: "e.g. Alex",
     saveDisplayName: "Save changes",
     signOut: "Clear profile",
-    backToDemo: "Return to workflow",
+    backToWorkflow: "Return to workflow",
     magicLinkTitle: "Contact label",
     magicLinkDesc:
       "Optionally use an email-style label for this browser only.",
@@ -101,17 +102,11 @@ export const en = {
     toastMagicLinkConfirmed: "Local profile saved as {name}",
     errorInvalidEmail: "Enter a valid email address",
   },
-  demoBanner: {
-    title: "Analyzer ready",
-    body: "Upload a screenshot or load a sample to inspect the generated component.",
-    dismissTitle: "Dismiss",
-    dismissAria: "Dismiss local analysis notice",
-  },
   designSystem: {
     eyebrow: "Design system",
     title: "Component library",
     subtitle:
-      "Filter reusable components, preview variants, and copy starter snippets for your next build.",
+      "Filter reusable components, preview variants, and copy review-ready snippets for your next build.",
     searchLabel: "Search catalog",
     searchPlaceholder: "Search components…",
     domain: "Collection",
@@ -119,7 +114,7 @@ export const en = {
     tierAll: "all",
     domainAll: "All",
     domainProduct: "Product",
-    domainUiLaws: "UILaws",
+    domainUiLaws: "UI Laws",
     domainLawsOfUx: "Laws of UX",
     keyboardHelp:
       "Press / to search, j and k to move through the list. Alt+1–4 changes collection; Alt+Shift+1–3 changes level.",
@@ -139,16 +134,16 @@ export const en = {
     renderError: "Could not render {name}.",
   },
   uploadFlow: {
-    sharedSummaryTitle: "Shared analysis summary",
-    sharedSummaryDescription: "Read-only link — no code or secrets included ({file})",
+    sharedSummaryTitle: "Shared result",
+    sharedSummaryDescription: "Read-only summary",
     ctaAnalyzing: "Analyzing…",
     analyzeStepReading: "Reading image…",
     analyzeStepPreprocessing: "Preprocessing image…",
-    analyzeStepChecking: "Checking provider…",
+    analyzeStepChecking: "Preparing analysis…",
     analyzeStepLayout: "Analyzing layout…",
-    analyzeStepBuilding: "Building artifact…",
-    progressCheckingProvider: "Checking provider…",
-    progressBuildingOffline: "Building local analysis…",
+    analyzeStepBuilding: "Generating preview…",
+    progressCheckingProvider: "Preparing analysis…",
+    progressBuildingOffline: "Preparing preview…",
     progressCallingApi: "Analyzing screenshot…",
     progressRetrying: "Retrying after transient error…",
     progressComplete: "Analysis complete",
@@ -159,27 +154,27 @@ export const en = {
     stepPreview: "Preview",
     stepExport: "Export",
     progressStepsAria: "Screenshot workflow steps",
-    alertOfflineTitle: "Analyzer ready",
+    alertOfflineTitle: "Ready to analyze",
     alertOfflineBody:
       "Upload, detection, preview, and export are ready.",
     alertOfflineReason: "Reason: {detail}",
-    liveFlowLabel: "Live flow",
+    liveFlowLabel: "Screenshot workflow",
     headlineDefault: "Build a component preview",
     headlineFaster: "Ship React-ready UI from one screenshot",
     subtitleDefault:
       "Ideal for rapid design reviews: analyze one screenshot, generate a component, then reuse exported snippets across your next sprint.",
     subtitleFaster:
-      "A faster path to conversion: upload, analyze, and export reusable React/Tailwind starters in minutes.",
-    modeLocalDemo: "Analyzer ready",
-    modeQwenReady: "Analyzer ready",
+      "A faster path to conversion: upload, analyze, and export reusable React/Tailwind components in minutes.",
+    modeLocalReady: "Ready to analyze",
+    modeQwenReady: "Ready to analyze",
     recentAnalyses: "Recent analyses",
     recentAnalysesStored: "Stored locally (last {count})",
     recentAnalysesSavedBy: "Saved as {name}",
     removeSessionAria: "Remove {fileName} session",
-    uploadedReference: "Uploaded reference",
-    uploadedReferenceAlt: "Uploaded UI reference",
-    uploadedReferenceAltNamed: "Uploaded UI reference: {fileName}",
-    referenceImage: "Reference image",
+    uploadedReference: "Uploaded screenshot",
+    uploadedReferenceAlt: "Uploaded UI screenshot",
+    uploadedReferenceAltNamed: "Uploaded UI screenshot: {fileName}",
+    referenceImage: "Screenshot",
     fileUnknownType: "unknown type",
     fileReady: "ready",
     errorInvalidImage: "Upload an image file: PNG, JPG, SVG, or WebP.",
@@ -189,46 +184,46 @@ export const en = {
     errorSampleLoad:
       "Could not load the sample screenshot. Upload your own image instead.",
     failureTitle: "Could not continue",
-    loadingTitle: "Building preview",
+    loadingTitle: "Generating preview",
     loadingBody:
       "Reading the screenshot, mapping layout, and preparing the generated component.",
-    tryBundledReference: "Try a bundled reference",
+    tryBundledReference: "Try a sample screenshot",
     loadSampleAria: "Load {label} sample",
-    loadSampleButton: "Load reference",
+    loadSampleButton: "Load sample",
     loading: "Loading…",
-    samplePathHint: "New here? Pick a reference, then run analysis.",
+    samplePathHint: "New here? Pick a sample screenshot, then run analysis.",
     samples: {
       dashboard: {
         label: "Dashboard",
-        hint: "Tests cards, charts, activity feeds, and quick actions.",
+        hint: "Cards, charts, activity feeds, and quick actions.",
       },
       auth: {
         label: "Sign in",
-        hint: "Tests auth cards, form fields, and recovery links.",
+        hint: "Auth cards, form fields, and recovery links.",
       },
       mobile: {
         label: "Mobile app",
-        hint: "Tests phone layouts, bottom navigation, and compact content.",
+        hint: "Phone layouts, bottom navigation, and compact content.",
       },
       landing: {
         label: "Landing page",
-        hint: "Tests hero sections, pricing, and marketing CTAs.",
+        hint: "Hero sections, pricing, and marketing CTAs.",
       },
       settings: {
         label: "Settings",
-        hint: "Tests profile forms, toggles, and preference panels.",
+        hint: "Profile forms, toggles, and preference panels.",
       },
       ecommerce: {
         label: "Shop catalog",
-        hint: "Tests filters, product grids, and catalog actions.",
+        hint: "Filters, product grids, and catalog actions.",
       },
       "stress-dashboard": {
         label: "Dense dashboard",
-        hint: "Tests dense metrics, tables, and admin tools.",
+        hint: "Dense metrics, tables, and admin tools.",
       },
       "stress-list": {
         label: "Repeated list",
-        hint: "Tests repeated rows, item actions, and list rhythm.",
+        hint: "Repeated rows, item actions, and list rhythm.",
       },
     },
     ctaRegenerate: "Regenerate preview",
@@ -238,11 +233,11 @@ export const en = {
     progressLabel: "{step} ({percent}%)",
     statusQwenComplete:
       "Analysis complete — open the preview to see the generated component.",
-    statusDemoComplete:
+    statusAnalysisComplete:
       "Analysis complete — open the preview to see the generated component.",
     statusPreviewReady:
       "Preview ready — copy or export the generated component from the panel on the right.",
-    analysisOutputLabel: "Analysis output (reference on the left)",
+    analysisOutputLabel: "Analysis output (screenshot on the left)",
     copyShareLink: "Copy share link",
     copyShortShareLink: "Copy short share link",
     copying: "Copying…",
@@ -250,29 +245,29 @@ export const en = {
     toastShareCopied: "Share link copied (read-only summary)",
     toastShortShareCopied: "Short share link copied (read-only summary)",
     toastShortShareMemory:
-      "Short link copied, but it uses temporary memory storage until KV is configured",
+      "Short link copied. It may expire sooner than a permanent share link.",
     toastShareHashCopied: "Share link copied (read-only summary)",
     toastShareFailed: "Could not copy share link",
     defaultScreenshotName: "screenshot",
     exportScaffold: "Export component",
     exportScaffoldDesc:
-      "Review the generated files, then copy code, download the component, or export the starter package.",
+      "Review the generated files, then copy code, download the component, or export the package.",
     exportReviewPackage: "Review package",
     exportPackageReady: "Export package",
     exportPackageReadyDesc:
       "Preview the files, screenshot changes, and package summary before downloading.",
     exportPackageTitle: "Review export package",
     exportPackageDesc:
-      "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
+      "This export package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
-    exportPackageCopyTab: "Package copy",
+    exportPackageCopyTab: "Package notes",
     exportPackageFilesIntro:
       "Package export downloads these files as a reviewable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
-      "This is the package summary a teammate sees before importing the generated component.",
+      "Use these notes to review the generated package before importing it into a project.",
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
@@ -288,21 +283,28 @@ export const en = {
     exportChangeCorrections:
       "{edited} manual edits and {excluded} excluded boxes are captured in the recipe.",
     exportChangePackage:
-      "The export now includes {count} files: component, recipe, manifest, tokens, and detection notes.",
+      "The export now includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",
+    exportReadmeCorrections: "Manual corrections",
+    exportReadmeNoCorrections: "No manual corrections captured.",
+    exportReadmeReviewNotes: "Review notes",
+    exportReadmeReviewSummary:
+      "{count} low-confidence element(s) need review before merge.",
+    exportReadmeReviewClear: "Use the checklist before merge.",
     exportReadmeContains: "What this package contains",
     exportReadmeNext: "Next steps",
     exportCopyAll: "Copy all",
     exportDownload: "Download component",
     exportDesignDoc: "Design.md",
-    exportHandoffBundle: "Download package",
+    exportMoreOptions: "More export options",
+    exportDownloadPackage: "Download package",
     exportRepoInstructions: "Open PR instructions",
     toastScaffoldCopied: "Component copied",
     toastScaffoldExported: "Component exported",
     toastDesignDocExported: "Design.md exported",
-    toastHandoffBundleExported: "Starter package downloaded",
+    toastPackageDownloaded: "Export package downloaded",
     exportGenerateHint: "Generate preview to see live stats alongside the snippet.",
     generatedScaffold: "Generated component",
     livePreview: "Live preview",
@@ -316,14 +318,14 @@ export const en = {
     comparisonScreenshot: "Screenshot",
     comparisonGeneratedMock: "Generated mock",
     emptyState: "Upload a screenshot and run analysis to see the generated plan.",
-    toastInstantDemo: "Analysis ready",
+    toastAnalysisReady: "Analysis ready",
     toastQwenComplete: "Analysis ready",
-    toastFallback: "Local analysis ready",
-    toastAnalyzeFailed: "Using local analysis",
+    toastFallback: "Analysis ready",
+    toastAnalyzeFailed: "Preview prepared",
     toastPreviewGenerated: "Preview generated",
     toastPreviewRegenerated: "Preview regenerated",
     toastRestoredQwen: "Restored analysis session",
-    toastRestoredDemo: "Restored analysis session",
+    toastRestoredAnalysis: "Restored analysis session",
     toastRestoredSession: "Restored session: {fileName}",
     toastSessionRemoved: "Session removed",
     toastSampleLoaded: "{label} sample loaded",
@@ -362,10 +364,6 @@ export type AccountDictionary = {
   [K in keyof (typeof en)["account"]]: string;
 };
 
-export type DemoBannerDictionary = {
-  [K in keyof (typeof en)["demoBanner"]]: string;
-};
-
 export type DesignSystemDictionary = {
   [K in keyof (typeof en)["designSystem"]]: string;
 };
@@ -376,7 +374,6 @@ export type Dictionary = {
   notFound: NotFoundDictionary;
   share: ShareDictionary;
   account: AccountDictionary;
-  demoBanner: DemoBannerDictionary;
   designSystem: DesignSystemDictionary;
   uploadFlow: UploadFlowDictionary;
 };

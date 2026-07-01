@@ -1,6 +1,6 @@
-# Offline Demo and E2E Strategy
+# Local Analysis and E2E Strategy
 
-This document explains how **qwen-ui-lab** delivers a reliable demo and test suite **without Qwen, AI, or paid APIs**. Presenters and contributors can use it as a reference for meetups and CI.
+This document explains how **qwen-ui-lab** delivers a reliable screenshot-to-React workflow and test suite **without Qwen, AI, or paid APIs**. Contributors can use it as the reference for local-analysis behavior and CI.
 
 ## Three-layer guarantee
 
@@ -8,7 +8,7 @@ This document explains how **qwen-ui-lab** delivers a reliable demo and test sui
 
 - Live Qwen is **opt-in only** via `QWEN_LIVE_ANALYSIS=true` (or `USE_LIVE_QWEN=1`). An API key alone does **not** enable upstream calls.
 - `GET /api/health` reports `provider: "demo"` and `liveAnalysisEnabled: false` when live mode is off.
-- Server-side analyze route returns a deterministic demo payload when live is disabled (`buildDemoAnalyzeResponse` in `src/features/analysis/lib/qwen-analyze.mjs`).
+- Server-side analyze route returns a deterministic local-analysis payload when live is disabled (`buildDemoAnalyzeResponse` in `src/features/analysis/lib/qwen-analyze.mjs`).
 
 ### Layer 2 — Deterministic offline algorithm
 
@@ -19,7 +19,7 @@ When live analysis is disabled, the client **skips** `POST /api/analyze-ui` and 
 3. `buildUiFlowArtifact()` in `src/features/analysis/lib/ui-flow.mjs` delegates to `src/features/analysis/lib/offline-analyze.mjs`:
    - **Canvas pixel inspection** - browser uploads are sampled locally with `getImageData()` to extract palette, contrast, edge density, layout bands, connected regions, design tokens, and dense-cluster risk before any provider call.
    - **SVG structure inspection** - SVG uploads are parsed locally for viewBox, labels, shape counts, groups, and text-based archetype hints before any provider call.
-   - **Known sample registry** — bundled files like `dashboard-reference.svg` get rich, meetup-ready content by filename or local visual signature.
+   - **Known sample registry** — bundled files like `dashboard-reference.svg` get curated content by filename or local visual signature.
    - **Advanced classifier** — weighted archetype scoring (dashboard, auth, mobile, settings, landing, ecommerce) using filename keywords, MIME hints, and width/height form-factor boosts.
    - **Confidence summary** — each unknown upload gets a deterministic layout label and confidence score in the artifact summary.
 
@@ -36,7 +36,7 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 | **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide → mobile boost) |
 | **MIME hint** | Optional small boost (e.g. SVG → dashboard) |
 | **Pixel signal scan** | `src/features/analysis/lib/offline-image-inspection.mjs` samples canvas pixels, quantizes dominant colors, computes WCAG-style contrast, estimates edge density, and maps active cells on a 12x8 layout grid |
-| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed bundled references still resolve to curated offline artifacts |
+| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed sample screenshots still resolve to curated offline artifacts |
 | **SVG structure scan** | SVG markup contributes viewBox, text labels, shape counts, group counts, and archetype hints even when no raster/provider analysis is available |
 | **Otsu thresholding** | A luminance histogram separates likely foreground from dominant surfaces without a fixed magic threshold |
 | **Band-first regions** | Obvious header, bottom-nav, and side-rail bands are carved before connected components so L-shaped chrome does not collapse into one full-screen region |
@@ -102,7 +102,7 @@ npx playwright test e2e/visual-regression.spec.ts --update-snapshots
 npm run test:e2e:visual
 ```
 
-## What to run before a meetup
+## What to run before release checks
 
 ```bash
 npm run check:full

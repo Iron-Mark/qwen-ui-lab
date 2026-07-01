@@ -42,7 +42,7 @@ footer: "qwen-ui-lab · qwen-ui-lab.vercel.app/demo"
 # Archetypes
 
 - `?archetype=auth|mobile|landing|settings|shop`
-- Same offline pipeline, different bundled references
+- Same offline pipeline, different sample screenshots
 - UX compliance links per layout (Laws of UX)
 
 ---

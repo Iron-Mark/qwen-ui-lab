@@ -116,7 +116,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
                 {visibleName}
               </p>
               <p className="mt-0.5 text-sm text-muted-foreground">
-                {t.storedInBody}
+                {t.profilePreviewDesc}
               </p>
             </div>
           </div>

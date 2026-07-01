@@ -21,18 +21,18 @@ export function SharePageClient({ id, summary }: SharePageClientProps) {
   const sharePath = `/share/${id}`;
 
   return (
-    <PageContainer className="py-10">
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="space-y-2">
+    <PageContainer className="py-8 sm:py-10">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <div className="max-w-2xl space-y-2">
           <p className="text-sm font-semibold uppercase text-muted-foreground">
             {t.eyebrow}
           </p>
           <h1 className="font-display text-2xl font-semibold tracking-tight">
             {t.title}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm leading-6 text-muted-foreground">
             {t.descriptionLead}{" "}
-            <span className="font-mono text-foreground">{sharePath}</span>{" "}
+            <span className="break-all font-mono text-foreground">{sharePath}</span>{" "}
             {t.descriptionTrail}
           </p>
         </div>
@@ -44,13 +44,13 @@ export function SharePageClient({ id, summary }: SharePageClientProps) {
             href={localizedHref("/", locale)}
             className={cn(buttonVariants({ variant: "outline" }), "min-h-11 px-4")}
           >
-            {t.tryLiveDemo}
+            {t.backToWorkflow}
           </Link>
           <Link
             href={localizedHref("/demo", locale)}
             className={cn(buttonVariants({ variant: "ghost" }), "min-h-11 px-4")}
           >
-            {t.oneClickDemo}
+            {t.sampleReference}
           </Link>
         </div>
       </div>

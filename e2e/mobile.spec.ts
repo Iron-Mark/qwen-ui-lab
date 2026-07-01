@@ -3,7 +3,6 @@ import path from "node:path";
 import {
   demoModeSnackbar,
   expectBundledSampleOptionCount,
-  expectDemoSnackbarInViewport,
   loadBundledSample,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
@@ -67,23 +66,12 @@ test("upload flow completes analyze and generate on mobile", async ({ page }) =>
   await expect(page.getByText("Sections", { exact: true })).toBeVisible();
 });
 
-test("demo snackbar appears once and stays in viewport", async ({ page }) => {
+test("startup does not show implementation status snackbar", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/");
   await waitForUploadFlowReady(page);
 
-  const snackbar = demoModeSnackbar(page);
-  await expect(snackbar).toBeVisible({ timeout: 30_000 });
-  await expectDemoSnackbarInViewport(page, snackbar, { headerClearancePx: 56 });
-
-  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
-    "data-x-position",
-    "left",
-  );
-  await expect(page.locator("[data-sonner-toaster]")).toHaveAttribute(
-    "data-y-position",
-    "bottom",
-  );
+  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
 });

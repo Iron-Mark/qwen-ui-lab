@@ -29,6 +29,7 @@ interface ExportButtonProps {
   label?: string;
   filename?: string;
   overlay?: boolean;
+  showToast?: boolean;
   className?: string;
   onCopied?: () => void;
   analyticsSource?: string;
@@ -79,6 +80,7 @@ export function ExportButton({
   label,
   filename = "component.tsx",
   overlay = false,
+  showToast = true,
   className,
   onCopied,
   analyticsSource = "snippet_preview",
@@ -114,7 +116,9 @@ export function ExportButton({
           status: "success",
         });
         setDownloadStatus("success");
-        toast("File exported", "success");
+        if (showToast) {
+          toast("File exported", "success");
+        }
         onCopied?.();
         window.setTimeout(() => setDownloadStatus("idle"), 1800);
       } catch {
@@ -125,7 +129,9 @@ export function ExportButton({
           status: "failed",
         });
         setDownloadStatus("error");
-        toast("Export failed", "error");
+        if (showToast) {
+          toast("Export failed", "error");
+        }
         window.setTimeout(() => setDownloadStatus("idle"), 2200);
       }
       return;
@@ -139,7 +145,9 @@ export function ExportButton({
         trigger: "copy",
         status: "success",
       });
-      toast("Copied to clipboard", "success");
+      if (showToast) {
+        toast("Copied to clipboard", "success");
+      }
       onCopied?.();
     } else {
       analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -148,7 +156,9 @@ export function ExportButton({
         trigger: "copy",
         status: "failed",
       });
-      toast("Copy failed — try Export", "error");
+      if (showToast) {
+        toast("Copy failed — try Export", "error");
+      }
     }
   }, [
     analytics,
@@ -161,6 +171,7 @@ export function ExportButton({
     text,
     toast,
     variant,
+    showToast,
   ]);
 
   const ariaLabel =
@@ -186,7 +197,9 @@ export function ExportButton({
       )}
     >
       <StatusIcon status={effectiveStatus} variant={variant} />
-      <span className="sr-only sm:not-sr-only sm:inline">{visibleLabel}</span>
+      <span className={overlay ? "sr-only sm:not-sr-only sm:inline" : "inline"}>
+        {visibleLabel}
+      </span>
     </Button>
   );
 

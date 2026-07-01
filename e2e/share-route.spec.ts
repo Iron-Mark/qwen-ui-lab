@@ -11,7 +11,7 @@ const shareFixturePayload = {
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
   ],
-  mode: "Analyzer ready",
+  mode: "Ready to analyze",
   file: "dashboard-reference.svg",
   detections: {
     source: { width: 1440, height: 900 },
@@ -81,7 +81,7 @@ test("/share/[id] renders read-only summary from API-created link", async ({
   await expect(page.getByText(shareFixturePayload.summary)).toBeVisible();
   await expect(page.getByText(shareFixturePayload.file)).toBeVisible();
   await expect(page.getByRole("link", { name: /back to workflow/i })).toBeVisible();
-  await expect(page.locator("#main").getByRole("link", { name: /sample reference/i })).toHaveAttribute(
+  await expect(page.locator("#main").getByRole("link", { name: /sample screenshot/i })).toHaveAttribute(
     "href",
     "/demo",
   );

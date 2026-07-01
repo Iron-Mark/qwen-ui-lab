@@ -151,7 +151,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2">
+          <div className="themed-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-2">
             <Accordion multiple className="w-full">
               {checks.map((check) => {
                 const law = lawOfUxById(check.id);
@@ -209,7 +209,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           href="/design-system?domain=uilaws"
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          UILaws manual checklist →
+          UI Laws manual checklist →
         </Link>
       </p>
     </section>

@@ -79,7 +79,7 @@ test("local analysis completes when health fetch fails", async ({ page }) => {
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Generated component|Preview ready|Analyzer ready/i).first(),
+    page.getByText(/Generated component|Preview ready|Ready to analyze/i).first(),
   ).toBeVisible({
     timeout: 20_000,
   });

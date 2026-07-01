@@ -105,7 +105,7 @@ export function UiLawComplianceChecklist({
               target="_blank"
               rel="noreferrer"
             >
-              UILaws components
+              UI Laws components
             </a>
             ).
           </CardDescription>

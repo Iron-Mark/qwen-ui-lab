@@ -31,8 +31,8 @@ import {
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
 import {
   buildScaffoldZipEntries,
-  extractProductionScaffoldBlueprint,
-} from "../src/features/export/lib/github-repo.mjs";
+} from "../src/features/export/lib/scaffold-package.mjs";
+import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
 
 function assertGeneratedTsxSyntax(code, label) {
   const result = ts.transpileModule(code, {
@@ -671,7 +671,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known reference samples export as starter packages", () => {
+test("known reference samples export as export packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -701,7 +701,8 @@ test("known reference samples export as starter packages", () => {
       filename: name.replace(/\.[^.]+$/, ".tsx"),
       description: known.summary,
     });
-    assert.equal(entries.length, 6);
+    assert.equal(entries.length, 7);
+    assert.ok(entries.some((entry) => entry.name === "DESIGN.md"));
     assert.ok(entries.some((entry) => entry.name.endsWith(".recipe.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".manifest.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".tokens.css")));
@@ -1072,6 +1073,8 @@ test("lookupKnownSampleByInspection resolves bundled references by perceptual si
 
   assert.ok(exact);
   assert.match(exact.summary, /Admin dashboard/i);
+  assert.match(exact.generatedCode, /Sample screenshot metadata identifies this region/);
+  assert.doesNotMatch(exact.generatedCode, /Bundled reference metadata/);
   assert.ok(nearWebp);
   assert.equal(nearWebp.generatedCode, exact.generatedCode);
   assert.equal(unrelated, null);
@@ -1162,7 +1165,7 @@ test("classifyLayoutArchetype uses local screen intent for generic uploads", () 
 test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   const advanced = buildAdvancedOfflineOverrides(
     { name: "checkout-cart.png", type: "image/png", size: 512000, width: 1280, height: 800 },
-    { readableSize: "500.0 KB", dimensionLine: "1280×800px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1280x800px landscape frame (aspect 1.60)." },
   );
 
   assert.ok(advanced.plan.some((section) => section.title === "Layout Read"));
@@ -1181,7 +1184,7 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
       height: 900,
       offlineInspection,
     },
-    { readableSize: "500.0 KB", dimensionLine: "1440Ã—900px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1440x900px landscape frame (aspect 1.60)." },
   );
 
   assert.match(advanced.generatedCode, /const designTokens/);
@@ -1193,9 +1196,9 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
-  assert.match(advanced.generatedCode, /Detection recipe/);
+  assert.match(advanced.generatedCode, /Implementation checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
-  assert.match(advanced.generatedCode, /Input placeholder="Connect real value"/);
+  assert.match(advanced.generatedCode, /Input placeholder="Enter product data"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
   assert.match(advanced.generatedCode, /Responsive intent/);
@@ -1238,7 +1241,7 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
   assert.match(advanced.generatedCode, /repeated item/);
-  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
+  assert.match(advanced.generatedCode, /text-line signals shape the export/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1515,7 +1518,7 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /SVG starter/);
+  assert.match(artifact.generatedCode, /SVG export/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
@@ -1588,7 +1591,8 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
   assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
-  assert.match(regenerated.generatedCode, /Correction recipe/);
+  assert.match(regenerated.generatedCode, /Screenshot starter component/);
+  assert.match(regenerated.generatedCode, /Implementation checklist/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
@@ -1858,6 +1862,9 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
   assert.match(regenerated.generatedCode, /button type="button"/);
+  assert.match(regenerated.generatedCode, /Manual correction/);
+  assert.match(regenerated.generatedCode, /Correction confidence/);
+  assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
     String(detections.elements.length - 1),
@@ -1865,6 +1872,57 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Edited").value,
     "2",
+  );
+  assert.ok(
+    regenerated.detections.elements[0].confidence >= 0.72,
+    "edited included element confidence should be recomputed upward",
+  );
+  assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) => reason.code === "manual-correction",
+    ),
+  );
+  assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) =>
+        reason.code === "manual-correction" &&
+        /type, primitive, role, geometry/.test(reason.evidence),
+    ),
+    "manual correction reason should name the corrected dimensions",
+  );
+  assert.ok(
+    regenerated.detections.elements[1].reasons.some(
+      (reason) => reason.code === "manual-exclusion",
+    ),
+  );
+  assert.equal(regenerated.detections.quality.correctedElementCount, 2);
+  assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
+
+  const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.detectedElements.length, detections.elements.length - 1);
+  assert.equal(blueprint.detectedElements[0].id, detections.elements[0].id);
+  assert.equal(blueprint.detectedElements[0].primitive, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].componentRole, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].userEdited, true);
+  assert.ok(blueprint.detectedElements[0].confidence >= 0.72);
+  assert.ok(
+    blueprint.detectedElements[0].reasons.some((reason) =>
+      /Manual correction/.test(reason),
+    ),
+  );
+  assert.ok(
+    blueprint.layoutRegions.some((region) =>
+      region.children.includes(detections.elements[0].id),
+    ),
+  );
+  assert.ok(
+    blueprint.reviewChecklist.some((item) =>
+      /deterministic source/.test(item),
+    ),
+  );
+  assert.ok(
+    blueprint.detectedElements.every((element) => element.id !== detections.elements[1].id),
   );
 });
 

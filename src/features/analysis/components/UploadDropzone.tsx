@@ -60,7 +60,7 @@ export function UploadDropzone({
           <span className="relative block h-64 w-full max-w-full overflow-hidden rounded-md bg-background/70 shadow-sm ring-1 ring-border/70">
             <Image
               src={previewUrl}
-              alt="Uploaded UI reference"
+              alt="Uploaded UI screenshot"
               className="object-contain"
               fill
               sizes="(max-width: 1024px) 100vw, 640px"

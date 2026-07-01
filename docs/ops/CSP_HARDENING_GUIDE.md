@@ -32,7 +32,7 @@ This project uses a two-track CSP strategy:
 ## Rollout toggles
 
 - `CSP_REPORT_ONLY` (default enabled in production)
-  - `true` or unset: emit strict report-only policy
+  - `true` or unset: emit the selected report-only policy level
   - `false`: disable report-only header
 - `CSP_REPORT_ONLY_LEVEL` (default `standard`)
   - `standard`: practical tightening with low breakage risk

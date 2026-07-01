@@ -2,9 +2,9 @@ import type { Metadata, MetadataRoute, Viewport } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
-export const SITE_TAGLINE = "Screenshot to React starter";
+export const SITE_TAGLINE = "Screenshot to React workflow";
 export const SITE_PITCH =
-  "Turn UI screenshots into inspectable React + Tailwind starter packages.";
+  "Turn UI screenshots into inspectable React + Tailwind export packages.";
 export const DEFAULT_OG_IMAGE = "/opengraph-image";
 export const MANIFEST_PATH = "/manifest.webmanifest";
 export const LEGACY_MANIFEST_PATH = "/manifest.json";
@@ -123,7 +123,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind starter package.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -134,7 +134,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       "AI UI analysis",
       "screenshot to component",
       "React Tailwind generator",
-      "design system starter",
+      "design system export",
     ],
     alternates: {
       canonical: "/",
@@ -142,7 +142,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     openGraph: {
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Screenshot-to-React workflow with detected UI review, editable boxes, and export-ready starter files.",
+        "Screenshot-to-React workflow with detected UI review, editable boxes, and export-ready project files.",
       type: "website",
       url: "/",
       siteName: SITE_NAME,
@@ -160,7 +160,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       card: "summary_large_image",
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind starter.",
+        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind package.",
       images: [ogImagePath],
     },
     robots: {
@@ -206,7 +206,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
     name: `${SITE_NAME} - screenshot to React`,
     short_name: SITE_NAME,
     description:
-      "Screenshot-to-React workflow with reviewable starter exports.",
+      "Screenshot-to-React workflow with reviewable export packages.",
     start_url: "/",
     scope: "/",
     lang: "en-US",
@@ -271,9 +271,9 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "Sample reference",
+        name: "Sample screenshot",
         short_name: "Sample",
-        description: "Open a screenshot sample reference and generate a starter preview.",
+        description: "Open a sample screenshot and generate a component preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -430,7 +430,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Screenshot-to-React tool for converting UI references into reviewable React/Tailwind starter packages.",
+            "Screenshot-to-React tool for converting UI screenshots into reviewable React/Tailwind export packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,
@@ -449,7 +449,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           operatingSystem: "Web",
           url: siteUrl,
           description:
-            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind starter export.",
+            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind package export.",
           image: toAbsoluteUrl(ogImagePath),
           offers: {
             "@type": "Offer",

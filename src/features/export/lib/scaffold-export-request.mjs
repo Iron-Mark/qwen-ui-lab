@@ -1,4 +1,5 @@
-import { sanitizeGistFilename } from "./github-gist.mjs";
+import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
+import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 
 export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
 
@@ -25,12 +26,12 @@ export function normalizeScaffoldExportRequestBody(body) {
   const content = typeof record.content === "string" ? record.content : "";
   const filename =
     typeof record.filename === "string"
-      ? sanitizeGistFilename(record.filename)
+      ? sanitizeScaffoldFilename(record.filename)
       : "component.tsx";
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
-      : "qwen-ui-lab component export";
+      : DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const mode = record.mode === "zip" ? "zip" : "auto";
 
   if (!content.trim()) {

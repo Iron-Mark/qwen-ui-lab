@@ -1,9 +1,9 @@
 import {
   buildRepoCompareExport,
-  buildScaffoldZipEntries,
   canUseGithubRepoExport,
   getGithubRepoExportConfig,
 } from "./github-repo.mjs";
+import { buildScaffoldZipEntries } from "./scaffold-package.mjs";
 import { normalizeScaffoldExportRequestBody } from "./scaffold-export-request.mjs";
 import {
   createStoredZip,

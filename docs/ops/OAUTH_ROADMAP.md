@@ -1,28 +1,28 @@
 # OAuth & real auth — research spike
 
 **Status:** Research only — no implementation in this doc.  
-**Audience:** Engineers planning a demo-safe migration from the current `sessionStorage` account stub to real sign-in (OAuth + magic link email).
+**Audience:** Engineers planning a local-safe migration from the current `sessionStorage` profile modal to real sign-in (OAuth + magic link email).
 
-## Current state (demo stub)
+## Current state (browser-local profile)
 
-The `/account` page and header “saved by” label use a **client-only auth stub** with no server session, no cookies, and no outbound network calls.
+The header profile control opens a persistent account modal via `?account=1`. The `/account` route remains a compatibility deep link that redirects to `/?account=1`. The modal and header label use **client-only browser-local state** with no server session, no cookies, and no outbound network calls.
 
 | Piece | Location | Behavior |
 |-------|----------|----------|
 | State machine | `src/features/account/lib/auth.mjs` | Modes: `guest` → `named` (display name) or `magic-link-pending` → `named` |
 | Persistence | `sessionStorage` key `qwen-ui-lab:auth` | Tab-scoped; cleared on sign-out or empty name |
 | React context | `src/features/account/components/AuthProvider.tsx` | `AuthProvider` wraps the app in `layout.tsx` |
-| UI | `src/features/account/components/AccountPageClient.tsx` | Display name form + magic-link stub (confirm without token) |
-| Consumers | `Header.tsx`, `UploadFlow.tsx` | `savedByLabel`, `signedIn` for demo personalization |
+| UI | `src/features/account/components/AccountPageClient.tsx` | Profile modal content: display name plus local contact label flow |
+| Consumers | `Header.tsx`, `UploadFlow.tsx` | `savedByLabel`, `signedIn` for local personalization |
 | Tests | `tests/auth.test.mjs`, `e2e/account.spec.ts` | Unit + E2E against sessionStorage |
 
-**Design intent:** Meetup-safe — works offline, no secrets, no email provider, no OAuth app registration. Mirrors the project’s **demo-first / live opt-in** pattern used for Qwen analysis (`QWEN_LIVE_ANALYSIS`).
+**Design intent:** Local-safe by default: works offline, no secrets, no email provider, no OAuth app registration. Mirrors the project live opt-in pattern used for Qwen analysis (`QWEN_LIVE_ANALYSIS`).
 
 ## Goals for real auth
 
 1. **Google + GitHub OAuth** — familiar providers for developers evaluating the lab.
 2. **Magic link email** — passwordless sign-in for users who prefer email.
-3. **Demo-safe default** — production meetup URL keeps working with zero auth env vars (stub or read-only guest).
+3. **Local-safe default** - production keeps working with zero auth env vars (browser-local profile or read-only guest).
 4. **Incremental migration** — preserve `useAuth()` shape where possible; avoid breaking E2E and offline demos.
 5. **No secrets in the client** — provider keys and mail API keys server-only (same rule as `DASHSCOPE_API_KEY`).
 
@@ -94,7 +94,7 @@ AUTH_ENABLED=true       # proposed gate — see migration
 |------|------|
 | Minimal abstraction; full control | Most implementation work |
 | No large framework surface | Email delivery, token TTL, CSRF still yours |
-| Easy to keep stub and real paths separate | Security review burden on the team |
+| Easy to keep local and real auth paths separate | Security review burden on the team |
 
 **Fit:** Best for **learning / minimal deps** — poor match for meetup timeline unless auth is the product.
 
@@ -105,9 +105,9 @@ AUTH_ENABLED=true       # proposed gate — see migration
 | Pros | Cons |
 |------|------|
 | Smallest OAuth scope | No Google/GitHub without adding providers later |
-| Aligns with existing stub UX on `/account` | Token replay, rate limits, and inbox delivery are custom |
+| Aligns with existing local profile UX in the account modal | Token replay, rate limits, and inbox delivery are custom |
 
-**Fit:** Reasonable **phase 1** behind OAuth, or parallel to stub “confirm” button during dev.
+**Fit:** Reasonable **phase 1** behind OAuth, or parallel to the local contact-label confirm action during development.
 
 ---
 
@@ -115,26 +115,26 @@ AUTH_ENABLED=true       # proposed gate — see migration
 
 | Priority | Choice | Rationale |
 |----------|--------|-----------|
-| **Default path** | **Auth.js v5** | Matches Next.js 16 stack, self-hosted, Google/GitHub/Email providers, no new SaaS bill for meetup demos |
+| **Default path** | **Auth.js v5** | Matches Next.js 16 stack, self-hosted, Google/GitHub/Email providers, no new SaaS bill for optional profile features |
 | **Fast alternative** | **Clerk** | If timeline &lt; 1 sprint and vendor OK |
 | **Defer** | Lucia-only, magic-link-only | More code for same user-visible outcome |
 
-Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only — not on production demo lane until migration steps below are done.
+Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only — not on the production lane until migration steps below are done.
 
 ---
 
-## Demo-safe migration strategy
+## Local-safe migration strategy
 
-Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — demo-safe by default, live auth opt-in.
+Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — browser-local by default, live auth opt-in.
 
 ### 1. Feature gate (proposed)
 
 | Mode | `AUTH_ENABLED` | Behavior |
 |------|----------------|----------|
-| **Demo (default)** | unset / `false` | Current `auth.mjs` + `sessionStorage` stub |
-| **Live auth** | `true` + provider secrets | Server session; stub UI hidden or read-only fallback |
+| **Local profile (default)** | unset / `false` | Current `auth.mjs` + `sessionStorage` profile modal |
+| **Live auth** | `true` + provider secrets | Server session; browser-local profile hidden or read-only fallback |
 
-Optional: `AUTH_DEMO_FALLBACK=true` on preview to show OAuth buttons that noop with a toast (not recommended for production — prefer stub).
+Optional: `AUTH_LOCAL_FALLBACK=true` on preview to show OAuth buttons that noop with a toast (not recommended for production - prefer the browser-local profile).
 
 Validate in CI with `npm run deploy:env:demo` extended to assert `AUTH_ENABLED` is not set on production.
 
@@ -143,17 +143,17 @@ Validate in CI with `npm run deploy:env:demo` extended to assert `AUTH_ENABLED` 
 Introduce a thin **`auth-port`** (name TBD) so `useAuth()` stays stable:
 
 ```text
-useAuth()  →  auth-port  →  demo: auth.mjs (sessionStorage)
+useAuth()  →  auth-port  →  local: auth.mjs (sessionStorage)
                          →  live: auth-session.server + client hydrate
 ```
 
-| `AuthContextValue` field | Demo | Live |
+| `AuthContextValue` field | Local | Live |
 |--------------------------|------|------|
 | `signedIn` | `mode === "named"` | Valid server session |
 | `savedByLabel` | display name or Guest | `user.name` \|\| email local-part \|\| Guest |
 | `setDisplayName` | writes sessionStorage | PATCH profile or noop if OAuth-only |
-| `sendMagicLinkStub` | local pending state | POST `/api/auth/signin/email` |
-| `confirmMagicLink` | stub confirm | handled by callback route |
+| `sendMagicLinkStub` | local contact-label pending state | POST `/api/auth/signin/email` |
+| `confirmMagicLink` | local confirm action | handled by callback route |
 | `signOut` | clear sessionStorage | Auth.js `signOut()` |
 
 Add fields later (`userId`, `provider`) without breaking demo consumers.
@@ -168,12 +168,12 @@ flowchart TD
   D --> E[Phase 4: Optional account data in DB]
 ```
 
-| Phase | Scope | Demo impact |
+| Phase | Scope | Local-profile impact |
 |-------|--------|-------------|
 | 0 | Roadmap, env contract, `deploy:env:demo` check | None |
 | 1 | Preview deploy, middleware, session cookie | None on prod |
-| 2 | Real email magic link | Prod still stub unless flag set |
-| 3 | OAuth buttons on `/account` | Prod flag on staging first |
+| 2 | Real email magic link | Prod remains browser-local unless flag set |
+| 3 | OAuth buttons in account modal | Prod flag on staging first |
 | 4 | Persist preferences server-side | Migration path from sessionStorage export optional |
 
 ### 4. SessionStorage coexistence
@@ -181,7 +181,7 @@ flowchart TD
 During transition:
 
 - **Do not** read OAuth tokens from `sessionStorage`.
-- On first live login, **ignore** stub state (or offer “merge display name” once).
+- On first live login, **ignore** browser-local profile state (or offer "merge display name" once).
 - E2E: keep `resetE2ESessionStorage()`; add `AUTH_ENABLED=false` in Playwright webServer env so tests never hit real IdP.
 - Document `AUTH_SESSION_KEY` deprecation after live auth is default for signed-in users.
 
@@ -196,7 +196,7 @@ During transition:
 
 ### 6. UI / i18n
 
-- `/account` already describes demo behavior in EN/ZH dictionaries (`src/lib/i18n/dictionaries/*`).
+- `/account` redirects to `/?account=1`; the profile modal copy lives in EN/ZH dictionaries (`src/lib/i18n/dictionaries/*`).
 - When live: add copy for “Sign in with Google/GitHub” and real magic-link sent state; keep guest CTA for analyze flow.
 - Generated auth archetype (`/demo?archetype=auth`) remains a **visual scaffold** — not wired to real OAuth until explicitly productized.
 
@@ -215,7 +215,7 @@ Store client IDs as env vars; never `NEXT_PUBLIC_*` for secrets.
 
 ## Email magic link (ops notes)
 
-| Provider | Integration | Meetup demo |
+| Provider | Integration | Product fit |
 |----------|-------------|-------------|
 | Resend | Auth.js Email provider or custom | Free tier; domain verification required |
 | Postmark | SMTP `EMAIL_SERVER` | Transactional focus |
@@ -229,7 +229,7 @@ For local dev: Mailpit/Mailhog SMTP on `localhost:1025` — same pattern as shar
 
 | Layer | Demo (`AUTH_ENABLED=false`) | Live (preview) |
 |-------|----------------------------|----------------|
-| Unit | Keep `tests/auth.test.mjs` for stub | Add adapter mocks |
+| Unit | Keep `tests/auth.test.mjs` for browser-local profile | Add adapter mocks |
 | E2E | `e2e/account.spec.ts` unchanged | Separate tagged spec or mocked OAuth |
 | Contract | N/A | Smoke: `GET /api/auth/session` returns 401 when logged out |
 

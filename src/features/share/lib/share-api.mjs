@@ -27,7 +27,7 @@ function buildShareStorageStatus(storage) {
       ? {}
       : {
           warning:
-            "Short share links are temporary in this environment and may expire sooner than expected.",
+            "This short share link may expire sooner than a permanent share link.",
         }),
   };
 }

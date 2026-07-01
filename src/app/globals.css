@@ -525,10 +525,23 @@ body {
 }
 
 [data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
-  padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
-  max-width: calc(100vw - 1rem);
-  width: auto !important;
+  left: max(1rem, env(safe-area-inset-left, 0px)) !important;
+  padding-left: 0;
+  max-width: calc(100vw - 2rem);
+  width: min(var(--width, 356px), calc(100vw - 2rem)) !important;
   right: auto !important;
+}
+
+body:has([data-slot="dialog-content"])
+  [data-sonner-toaster][data-y-position="bottom"][data-x-position="left"] {
+  bottom: auto !important;
+  left: 50% !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  right: auto !important;
+  top: max(5rem, calc(env(safe-area-inset-top, 0px) + 4rem)) !important;
+  width: min(var(--width, 356px), calc(100vw - 2rem)) !important;
+  transform: translateX(-50%) !important;
 }
 
 /* Sonner — WCAG AA contrast (scoped to toaster theme to avoid hydration mismatches) */
@@ -561,6 +574,7 @@ body {
 [data-sonner-toaster] [data-sonner-toast] [data-description] {
   color: var(--popover-foreground) !important;
   line-height: 1.45 !important;
+  opacity: 1 !important;
 }
 
 [data-sonner-toast][data-styled="true"] [data-description] {

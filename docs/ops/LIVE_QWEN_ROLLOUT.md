@@ -1,6 +1,6 @@
 # Live Qwen Rollout Checklist
 
-Use this guide when you intentionally enable **upstream Qwen3-VL vision** on a deployed environment. The public meetup site stays **demo-safe by default**; live mode spends Model Studio credits and depends on network quota.
+Use this guide when you intentionally enable **upstream Qwen3-VL vision** on a deployed environment. The public app stays **local-analysis-first by default**; live mode spends Model Studio credits and depends on network quota.
 
 Related: **[PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** · **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** · **[ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** · **[TROUBLESHOOTING_RUNBOOK.md](./TROUBLESHOOTING_RUNBOOK.md)**
 
@@ -8,7 +8,7 @@ Related: **[PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** · **[DEPL
 
 | Scenario | Recommendation |
 |----------|----------------|
-| Public meetup / offline demo | Keep `QWEN_LIVE_ANALYSIS` **unset** |
+| Public app / local analysis | Keep `QWEN_LIVE_ANALYSIS` **unset** |
 | Staging rehearsal with real vision | Enable live on **preview/staging** only |
 | Production live analysis | Staged rollout (preview → limited → full) with monitoring |
 
@@ -18,7 +18,7 @@ An API key **alone** does not call Qwen. Both the flag and the key are required.
 
 Use this when turning on live vision on **Vercel Preview only**. Do **not** check **Production** in the Vercel UI until Stage C.
 
-- [ ] **Production untouched** — `QWEN_LIVE_ANALYSIS` unset or `false` on Production (meetup stays demo-safe).
+- [ ] **Production untouched** — `QWEN_LIVE_ANALYSIS` unset or `false` on Production (the public app stays local-analysis-first).
 - [ ] **Preview scope only** — live vars added with **Preview** checked, **Production** unchecked.
 - [ ] **Server-only secrets** — `DASHSCOPE_API_KEY` not exposed to the browser; no `NEXT_PUBLIC_QWEN_API_KEY`.
 - [ ] **Required trio on Preview** — `QWEN_LIVE_ANALYSIS=true`, `DASHSCOPE_API_KEY`, `QWEN_MODEL` (e.g. `qwen3-vl-plus`).
@@ -151,7 +151,7 @@ Set **server-only** variables in the deployment environment (never `NEXT_PUBLIC_
 
 Configure in **Vercel → Project → Settings → Environment Variables**. All Qwen secrets are **server-only** (do not enable “Expose to Browser”).
 
-| Variable | Production (public meetup) | Preview (live rehearsal) | Development |
+| Variable | Production (public app) | Preview (live rehearsal) | Development |
 |----------|---------------------------|------------------------|-------------|
 | `QWEN_LIVE_ANALYSIS` | **Unset** or `false` | `true` when rehearsing live | `true` in `.env.local` only when testing live locally |
 | `USE_LIVE_QWEN` | **Unset** (alias; do not set if using `QWEN_LIVE_ANALYSIS`) | Optional alias `1` / `yes` | Same as preview |

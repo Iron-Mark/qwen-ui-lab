@@ -61,7 +61,7 @@ Notes:
 - `/api/analyze-ui` - accepts screenshot payload and returns analysis artifact.
 - `not-found` UI handles unknown routes with navigation back to known pages.
 
-## Testing Expectations Before Handoff
+## Testing Expectations Before Review
 
 Run these before opening or updating a PR:
 

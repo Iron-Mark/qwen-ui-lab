@@ -29,8 +29,8 @@ const PRODUCT_LINKS = [
   },
   {
     href: "/demo",
-    label: "Sample reference",
-    tooltip: "Open a screenshot sample reference and review the exported starter.",
+    label: "Sample screenshot",
+    tooltip: "Open a sample screenshot and review the export package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -122,7 +122,7 @@ function FooterLink({
   tooltip: string;
 }) {
   const className =
-    "inline-flex min-h-9 w-fit min-w-0 items-center rounded-md text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-card-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "inline-flex min-h-11 w-fit min-w-0 items-center rounded-md px-2 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:bg-muted/50 hover:text-card-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   if (external) {
     return (
@@ -182,7 +182,7 @@ export function Footer() {
             <FooterTooltip content="Return to the main screenshot-to-React workspace.">
               <Link
                 href="/"
-                className="inline-flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-11 min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Image
                   src="/icons/icon.svg"
@@ -197,13 +197,13 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    React + Tailwind starter
+                    React + Tailwind package
                   </span>
                 </span>
               </Link>
             </FooterTooltip>
             <p className="mt-3 max-w-sm text-sm leading-5 text-muted-foreground">
-              Create reviewable React + Tailwind starter packages from
+              Create reviewable React + Tailwind export packages from
               screenshot analysis.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -236,7 +236,7 @@ export function Footer() {
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
           <p>
             &copy; 2026 {SITE_NAME}. Built for practical React+Tailwind
-            starter exports.
+            export packages.
           </p>
           <FooterTooltip content="Open Mark's portfolio and project work.">
             <a
@@ -244,7 +244,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="footer-portfolio-cta"
-              className="inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Globe2 className="size-3.5" aria-hidden />
               Check my portfolio

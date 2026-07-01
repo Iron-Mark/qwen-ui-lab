@@ -1,4 +1,4 @@
-/** Bundled reference screenshots for sample references and E2E (client-safe). */
+/** Sample screenshots for the compatibility sample route and E2E (client-safe). */
 export const BUNDLED_REFERENCE_SAMPLES = [
   {
     id: "dashboard",
@@ -9,7 +9,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "Tests cards, charts, activity feeds, and quick actions.",
+    hint: "Cards, charts, activity feeds, and quick actions.",
   },
   {
     id: "auth",
@@ -20,7 +20,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "Tests auth cards, form fields, and recovery links.",
+    hint: "Auth cards, form fields, and recovery links.",
   },
   {
     id: "mobile",
@@ -31,7 +31,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 390,
     height: 844,
-    hint: "Tests phone layouts, bottom navigation, and compact content.",
+    hint: "Phone layouts, bottom navigation, and compact content.",
   },
   {
     id: "landing",
@@ -42,7 +42,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "Tests hero sections, pricing, and marketing CTAs.",
+    hint: "Hero sections, pricing, and marketing CTAs.",
   },
   {
     id: "settings",
@@ -53,7 +53,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "Tests profile forms, toggles, and preference panels.",
+    hint: "Profile forms, toggles, and preference panels.",
   },
   {
     id: "ecommerce",
@@ -64,7 +64,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "Tests filters, product grids, and catalog actions.",
+    hint: "Filters, product grids, and catalog actions.",
   },
   {
     id: "stress-dashboard",
@@ -75,7 +75,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1440,
     height: 900,
-    hint: "Tests dense metrics, tables, and admin tools.",
+    hint: "Dense metrics, tables, and admin tools.",
   },
   {
     id: "stress-list",
@@ -86,7 +86,7 @@ export const BUNDLED_REFERENCE_SAMPLES = [
     mimeType: "image/png",
     width: 1200,
     height: 720,
-    hint: "Tests repeated rows, item actions, and list rhythm.",
+    hint: "Repeated rows, item actions, and list rhythm.",
   },
 ];
 
@@ -156,7 +156,7 @@ export function getReferenceSampleById(id) {
 }
 
 /**
- * Suggested export filename for a bundled reference sample id.
+ * Suggested export filename for a sample screenshot id.
  * @param {string} sampleId
  */
 export function referenceSampleExportFilename(sampleId) {
