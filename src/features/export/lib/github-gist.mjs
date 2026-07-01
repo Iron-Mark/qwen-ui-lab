@@ -3,6 +3,7 @@
  */
 
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
+import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
@@ -55,7 +56,7 @@ export async function createGithubGist({
   isPublic = false,
   fetchImpl = fetch,
 }) {
-  const safeFilename = sanitizeGistFilename(filename);
+  const safeFilename = sanitizeScaffoldFilename(filename);
   const response = await fetchImpl("https://api.github.com/gists", {
     method: "POST",
     headers: {
@@ -108,21 +109,4 @@ export async function createGithubGist({
   };
 }
 
-/**
- * @param {string} filename
- */
-export function sanitizeGistFilename(filename) {
-  const basename = String(filename || "component.tsx")
-    .trim()
-    .split(/[/\\]+/)
-    .pop();
-  const base = String(basename || "component.tsx")
-    .replace(/[^\w.-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  if (!base) return "component.tsx";
-  if (base.endsWith(".tsx") || base.endsWith(".ts") || base.endsWith(".jsx")) {
-    return base;
-  }
-  return `${base}.tsx`;
-}
+export { sanitizeScaffoldFilename as sanitizeGistFilename } from "./scaffold-filename.mjs";

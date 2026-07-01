@@ -6,8 +6,8 @@ import {
   canUseGithubGist,
   createGithubGist,
   getGithubGistToken,
-  sanitizeGistFilename,
 } from "../src/features/export/lib/github-gist.mjs";
+import { sanitizeScaffoldFilename } from "../src/features/export/lib/scaffold-filename.mjs";
 
 test("canUseGithubGist is false without token", () => {
   assert.equal(canUseGithubGist({}), false);
@@ -33,11 +33,11 @@ test("buildGithubGistUnavailablePayload returns product-facing setup instruction
   });
 });
 
-test("sanitizeGistFilename normalizes unsafe names", () => {
-  assert.equal(sanitizeGistFilename("generated-auth.tsx"), "generated-auth.tsx");
-  assert.equal(sanitizeGistFilename("../evil/name.tsx"), "name.tsx");
-  assert.equal(sanitizeGistFilename("nested/path/generated.tsx"), "generated.tsx");
-  assert.equal(sanitizeGistFilename(""), "component.tsx");
+test("sanitizeScaffoldFilename normalizes unsafe names", () => {
+  assert.equal(sanitizeScaffoldFilename("generated-auth.tsx"), "generated-auth.tsx");
+  assert.equal(sanitizeScaffoldFilename("../evil/name.tsx"), "name.tsx");
+  assert.equal(sanitizeScaffoldFilename("nested/path/generated.tsx"), "generated.tsx");
+  assert.equal(sanitizeScaffoldFilename(""), "component.tsx");
 });
 
 test("createGithubGist posts component file and returns gist URL", async () => {

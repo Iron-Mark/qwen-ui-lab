@@ -1,7 +1,7 @@
 /**
  * Server-side GitHub repo export helpers (compare URL + package download fallback).
  */
-import { sanitizeGistFilename } from "./github-gist.mjs";
+import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION, DEFAULT_EXPORT_SOURCE_REPO } from "./scaffold-package-docs.mjs";
 
 export const DEFAULT_GITHUB_EXPORT_REPO = DEFAULT_EXPORT_SOURCE_REPO;
@@ -67,7 +67,7 @@ export function buildRepoCompareExport({
   filename,
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
-  const safeFilename = sanitizeGistFilename(filename);
+  const safeFilename = sanitizeScaffoldFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
   const title = encodeURIComponent("Add screenshot UI starter package");
   const body = encodeURIComponent(
@@ -108,7 +108,7 @@ export function buildScaffoldReadme({
   filename,
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
-  const safeFilename = sanitizeGistFilename(filename);
+  const safeFilename = sanitizeScaffoldFilename(filename);
   return `# Screenshot UI starter package
 
 ${description}

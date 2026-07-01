@@ -1,4 +1,4 @@
-import { sanitizeGistFilename } from "./github-gist.mjs";
+import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 import {
   extractProductionScaffoldBlueprint,
   hashContent,
@@ -23,7 +23,7 @@ import {
  * @returns {{ name: string; content: string }[]}
  */
 export function buildScaffoldZipEntries({ content, filename, description }) {
-  const safeFilename = sanitizeGistFilename(filename);
+  const safeFilename = sanitizeScaffoldFilename(filename);
   const blueprint = extractProductionScaffoldBlueprint(content);
   if (blueprint) {
     return buildProductionScaffoldZipEntries({

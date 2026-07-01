@@ -1194,6 +1194,28 @@ test("github gist export helper reuses shared package copy", async () => {
   assert.deepEqual(violations, []);
 });
 
+test("export package helpers use neutral filename sanitizing", async () => {
+  const files = [
+    path.join(process.cwd(), "src", "features", "export", "lib", "github-repo.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-package.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-export-request.mjs"),
+  ];
+  const violations = [];
+
+  for (const file of files) {
+    const source = await readFile(file, "utf8");
+    const specifiers = collectModuleSpecifiers(file, source);
+    if (specifiers.includes("./github-gist.mjs")) {
+      violations.push(`${toRepoPath(file)} imports ./github-gist.mjs for filename sanitizing`);
+    }
+    if (!specifiers.includes("./scaffold-filename.mjs")) {
+      violations.push(`${toRepoPath(file)} does not import neutral filename helper`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("csp report api route delegates parsing and logging to shared csp helper", async () => {
   const file = path.join(
     process.cwd(),
