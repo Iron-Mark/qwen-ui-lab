@@ -206,7 +206,8 @@ export function SocialPreviewImage({
         style={{
           position: "relative",
           display: "flex",
-          width: "fit-content",
+          width: "auto",
+          alignSelf: "flex-start",
           maxWidth: 650,
           fontSize: 23,
           opacity: 0.92,
