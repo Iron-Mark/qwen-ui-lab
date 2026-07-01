@@ -211,6 +211,7 @@ type ExportPackagePreview = {
   files: ExportPackageFile[];
   metrics: Array<{ label: string; value: string }>;
   changes: string[];
+  correctionNotice: string | null;
   readmePreview: string;
   codePreview: string;
 };
@@ -1486,6 +1487,7 @@ function buildExportPackagePreview(
     files,
     metrics,
     changes,
+    correctionNotice: editedCount || excludedCount ? correctionSummary : null,
     readmePreview: buildExportReadmePreview({
       copy,
       componentName,
@@ -1792,6 +1794,13 @@ function ExportPackageReviewDialog({
                 <p className="text-sm leading-6 text-muted-foreground">
                   {copy.exportPackageChangesIntro}
                 </p>
+                {preview.correctionNotice ? (
+                  <Alert className="border-primary/25 bg-primary/5">
+                    <ListChecks className="size-4" aria-hidden />
+                    <AlertTitle>{copy.exportReadmeCorrections}</AlertTitle>
+                    <AlertDescription>{preview.correctionNotice}</AlertDescription>
+                  </Alert>
+                ) : null}
                 <ol className="grid gap-3">
                   {preview.changes.map((change, index) => (
                     <li
