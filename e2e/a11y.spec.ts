@@ -60,7 +60,7 @@ test("demo has no serious a11y violations", async ({ page }) => {
   await page.goto("/demo");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    /dashboard screen analysis/i,
+    /dashboard sample analysis/i,
   );
   await expect(page.getByTestId("scaffold-export-panel")).toBeVisible({
     timeout: 20_000,

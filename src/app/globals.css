@@ -574,6 +574,7 @@ body:has([data-slot="dialog-content"])
 [data-sonner-toaster] [data-sonner-toast] [data-description] {
   color: var(--popover-foreground) !important;
   line-height: 1.45 !important;
+  opacity: 1 !important;
 }
 
 [data-sonner-toast][data-styled="true"] [data-description] {
