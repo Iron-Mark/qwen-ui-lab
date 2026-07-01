@@ -131,6 +131,9 @@ test("export package preview surfaces correction metrics", () => {
   assert.match(zhDictionarySource, /exportMetricExcluded:\s*"排除"/);
   assert.match(uploadFlowSource, /label:\s*copy\.exportMetricEdits/);
   assert.match(uploadFlowSource, /label:\s*copy\.exportMetricExcluded/);
+  assert.match(uploadFlowSource, /correctionNotice:\s*editedCount \|\| excludedCount/);
+  assert.match(uploadFlowSource, /preview\.correctionNotice/);
+  assert.match(uploadFlowSource, /<AlertTitle>\{copy\.exportReadmeCorrections\}<\/AlertTitle>/);
 });
 
 test("export package tabs use product-facing package notes language", () => {
