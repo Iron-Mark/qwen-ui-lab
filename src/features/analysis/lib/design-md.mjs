@@ -267,7 +267,7 @@ function renderTokens(tokens) {
 
 function renderComponentInventory(components) {
   if (!components.length) {
-    return "No active detection boxes were available. Review the generated code directly.";
+    return "No active detection boxes were available. Compare the generated structure against the source screenshot before import.";
   }
 
   return [
@@ -282,7 +282,7 @@ function renderComponentInventory(components) {
 
 function renderReasonSummary(reasons) {
   if (!reasons.length) {
-    return "No detected elements were available for confidence review.";
+    return "No detected elements were available. Verify key regions, controls, and repeated groups against the screenshot.";
   }
 
   return [
@@ -296,7 +296,7 @@ function renderReasonSummary(reasons) {
 }
 
 function renderDetectedElements(elements) {
-  if (!elements.length) return "No active detection boxes were available.";
+  if (!elements.length) return "No active detection boxes were available. Verify layout regions before regeneration.";
 
   return [
     "| Order | Element | Primitive | Confidence | Box | Reasons |",
@@ -384,7 +384,7 @@ export function buildDesignMarkdown({
     `Download ${DESIGN_MD_FILENAME} and verify component inventory plus detector signals are present.`,
     activeElements.length
       ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible before generation.`
-      : "Run a manual visual review because no detection boxes were available.",
+      : "Compare the generated structure, key controls, and responsive assumptions against the screenshot.",
   ];
 
   return [
