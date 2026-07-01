@@ -2186,7 +2186,7 @@ export function UploadFlow({
     persistShareSummary(fromHash);
 
     void createShortShareLink(window.location.origin, fromHash).then((shortLink) => {
-      if (shortLink?.url) {
+      if (shortLink?.url && shortLink.durable) {
         router.replace(shortLink.url);
       }
     });
@@ -2225,22 +2225,19 @@ export function UploadFlow({
     try {
       persistShareSummary(payload);
       const shortLink = await createShortShareLink(window.location.origin, payload);
-      const url =
-        shortLink?.url ??
-        buildShareUrl(window.location.origin, pathname ?? "/", payload);
+      const hashUrl = buildShareUrl(window.location.origin, "/share/local", payload);
+      const url = shortLink?.durable ? shortLink.url : hashUrl;
       await navigator.clipboard.writeText(url);
-      if (shortLink) {
+      if (shortLink?.durable) {
         window.history.replaceState(null, "", shortLink.url);
       } else {
         window.history.replaceState(null, "", `${pathname}#${encodeShareHash(payload)}`);
       }
       toast(
-        shortLink?.warning
-          ? t.toastShortShareMemory
-          : shortLink
-            ? t.toastShortShareCopied
-            : t.toastShareHashCopied,
-        shortLink?.warning ? "warning" : "success",
+        shortLink?.durable
+          ? t.toastShortShareCopied
+          : t.toastShareHashCopied,
+        "success",
       );
     } catch {
       toast(t.toastShareFailed, "error");

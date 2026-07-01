@@ -52,6 +52,10 @@ const shareFixturePayload = {
   },
 };
 
+function encodeShareHashForE2E(payload: typeof shareFixturePayload) {
+  return `share=${Buffer.from(JSON.stringify(payload), "utf8").toString("base64url")}`;
+}
+
 test.beforeEach(async ({ page }) => {
   await stubClipboardForE2E(page);
   await mockAnalyzeApiForE2E(page);
@@ -85,6 +89,17 @@ test("/share/[id] renders read-only summary from API-created link", async ({
     "href",
     "/demo",
   );
+});
+
+test("/share/local renders read-only summary from encoded hash", async ({ page }) => {
+  await page.goto(`/share/local#${encodeShareHashForE2E(shareFixturePayload)}`);
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: /read-only analysis summary/i }),
+  ).toBeVisible();
+  await expect(page.getByTestId("shared-result-summary")).toBeVisible();
+  await expect(page.getByTestId("shared-detection-preview")).toBeVisible();
+  await expect(page.getByTestId("shared-detection-element")).toHaveCount(1);
 });
 
 test("/share/[id] returns 404 for unknown id", async ({ page }) => {
