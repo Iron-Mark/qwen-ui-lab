@@ -9,9 +9,10 @@ import { useToast } from "@/components/providers/Toast";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
-
-const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
-const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
+import {
+  DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
+  SCAFFOLD_ZIP_FILENAME,
+} from "../lib/export-package-constants.mjs";
 
 type RepoExportStatus = "idle" | "exporting" | "success" | "error";
 

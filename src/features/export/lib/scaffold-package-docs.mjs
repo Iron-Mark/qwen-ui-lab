@@ -1,5 +1,5 @@
 export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
-export const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
+export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
 const EXPORT_BUNDLE_SCHEMA = "qwen-ui-lab/export-bundle@1";
 
 export function buildScaffoldReadme({
