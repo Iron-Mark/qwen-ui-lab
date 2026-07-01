@@ -25,6 +25,8 @@ const PUBLIC_COPY_FILES = [
 const BANNED_PUBLIC_PHRASES = [
   "Bundle copy",
   "bundle copy",
+  "qwen-ui-lab export package",
+  "Add qwen-ui-lab generated UI package",
   "Gist export unavailable",
   "GitHub Gist export is not configured",
   "Set GITHUB_TOKEN",

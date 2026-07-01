@@ -6,6 +6,7 @@ export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
   "Open gist.github.com, paste the copied component into a new secret gist, and save.";
+const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 export function buildGithubGistUnavailablePayload() {
   return {
@@ -47,7 +48,7 @@ export function getGithubGistToken(env = process.env) {
  */
 export async function createGithubGist({
   token,
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   filename,
   content,
   isPublic = false,

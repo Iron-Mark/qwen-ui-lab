@@ -11,6 +11,7 @@ import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 const SCAFFOLD_ZIP_FILENAME = "qwen-ui-lab-export-package.zip";
+const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 type RepoExportStatus = "idle" | "exporting" | "success" | "error";
 
@@ -55,7 +56,7 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 export function RepoExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
   exportMode = "auto",

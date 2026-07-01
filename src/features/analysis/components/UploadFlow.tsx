@@ -1510,7 +1510,7 @@ function buildExportReadmePreview({
   reviewSummary: string;
 }) {
   return [
-    "# qwen-ui-lab export package",
+    "# Screenshot UI starter package",
     "",
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
@@ -1864,14 +1864,14 @@ function ExportPackageReviewDialog({
               <GistExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="qwen-ui-lab export package"
+                description="Screenshot UI starter package"
                 analyticsSource="upload_flow"
                 analyticsFeature="generated_scaffold"
               />
               <RepoExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="qwen-ui-lab export package"
+                description="Screenshot UI starter package"
                 label={copy.exportRepoInstructions}
                 className="min-h-11"
                 analyticsSource="upload_flow"
@@ -1883,7 +1883,7 @@ function ExportPackageReviewDialog({
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
-              description="qwen-ui-lab export package"
+              description="Screenshot UI starter package"
               label={copy.exportDownloadPackage}
               exportMode="zip"
               testId="export-package-download"

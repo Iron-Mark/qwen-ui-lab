@@ -7,6 +7,7 @@ import { sanitizeGistFilename } from "./github-gist.mjs";
 
 export const DEFAULT_GITHUB_EXPORT_REPO = "Iron-Mark/qwen-ui-lab";
 export const DEFAULT_GITHUB_EXPORT_BASE = "main";
+export const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 const SCAFFOLD_RECIPE_SCHEMA = "qwen-ui-lab/scaffold-recipe@1";
 const EXPORT_BUNDLE_SCHEMA = "qwen-ui-lab/export-bundle@1";
 
@@ -62,14 +63,14 @@ export function buildRepoCompareExport({
   repo,
   base,
   filename,
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
   const safeFilename = sanitizeGistFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
-  const title = encodeURIComponent("Add qwen-ui-lab generated UI package");
+  const title = encodeURIComponent("Add screenshot UI starter package");
   const body = encodeURIComponent(
     [
-      "## qwen-ui-lab export package",
+      "## Screenshot UI starter package",
       "",
       description,
       "",
@@ -101,9 +102,12 @@ export function buildRepoCompareExport({
  *   description?: string;
  * }} args
  */
-export function buildScaffoldReadme({ filename, description = "qwen-ui-lab export package" }) {
+export function buildScaffoldReadme({
+  filename,
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
+}) {
   const safeFilename = sanitizeGistFilename(filename);
-  return `# qwen-ui-lab export package
+  return `# Screenshot UI starter package
 
 ${description}
 
@@ -351,7 +355,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
 }
 
 function buildProductionScaffoldReadme({
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   files,
   componentName,
   blueprint,
@@ -458,7 +462,7 @@ function summarizeUnresolvedReviewNotes(blueprint) {
 }
 
 function buildFallbackPackageReadme({
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   files,
   componentName,
   dependencies = [],

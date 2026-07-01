@@ -1,4 +1,5 @@
 import { sanitizeGistFilename } from "./github-gist.mjs";
+import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./github-repo.mjs";
 
 export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
 
@@ -30,7 +31,7 @@ export function normalizeScaffoldExportRequestBody(body) {
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)
-      : "qwen-ui-lab export package";
+      : DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const mode = record.mode === "zip" ? "zip" : "auto";
 
   if (!content.trim()) {

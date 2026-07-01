@@ -12,6 +12,7 @@ import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 
 type GistExportStatus = "idle" | "exporting" | "success" | "error";
+const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 
 interface GistExportButtonProps {
   text: string;
@@ -45,7 +46,7 @@ const STATUS_LABELS: Record<GistExportStatus, string> = {
 export function GistExportButton({
   text,
   filename = "component.tsx",
-  description = "qwen-ui-lab export package",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
   analyticsSource = "snippet_preview",
