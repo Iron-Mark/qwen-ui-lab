@@ -141,6 +141,18 @@ export default function Dashboard() {
     /Treat `src\/components\/generated\/dashboard\.recipe\.json` as the regeneration source/,
   );
   assert.match(
+    entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
+    /## Why elements were detected/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
+    /button: detector evidence; clear action affordance\./,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
+    /No low-confidence regions or elements were exported/,
+  );
+  assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
     /Required UI imports: `@\/components\/ui\/button`/,
   );
