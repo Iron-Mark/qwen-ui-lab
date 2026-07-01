@@ -23,6 +23,10 @@ const zhDictionarySource = readFileSync(
   fileURLToPath(new URL("../src/lib/i18n/dictionaries/zh.ts", import.meta.url)),
   "utf8",
 );
+const uploadFlowSource = readFileSync(
+  fileURLToPath(new URL("../src/features/analysis/components/UploadFlow.tsx", import.meta.url)),
+  "utf8",
+);
 
 const uploadFlowZh = {
   ctaAnalyzing: "分析中…",
@@ -118,6 +122,15 @@ test("en public copy avoids test-runner wording in sample picker labels", () => 
   assert.match(enDictionarySource, /domainUiLaws:\s*"UI Laws"/);
   assert.doesNotMatch(enDictionarySource, /hint:\s*"Tests\b/);
   assert.doesNotMatch(enDictionarySource, /domainUiLaws:\s*"UILaws"/);
+});
+
+test("export package preview surfaces correction metrics", () => {
+  assert.match(enDictionarySource, /exportMetricEdits:\s*"Edits"/);
+  assert.match(enDictionarySource, /exportMetricExcluded:\s*"Excluded"/);
+  assert.match(zhDictionarySource, /exportMetricEdits:\s*"修正"/);
+  assert.match(zhDictionarySource, /exportMetricExcluded:\s*"排除"/);
+  assert.match(uploadFlowSource, /label:\s*copy\.exportMetricEdits/);
+  assert.match(uploadFlowSource, /label:\s*copy\.exportMetricExcluded/);
 });
 
 test("export package tabs use product-facing package notes language", () => {

@@ -266,6 +266,8 @@ export const zh = {
     exportMetricFiles: "文件",
     exportMetricRegions: "区域",
     exportMetricPrimitives: "原语",
+    exportMetricEdits: "修正",
+    exportMetricExcluded: "排除",
     exportMetricTokens: "Tokens",
     exportChangeRegions:
       "{count} 个截图区域已转换为 {intent} 组件结构。",
