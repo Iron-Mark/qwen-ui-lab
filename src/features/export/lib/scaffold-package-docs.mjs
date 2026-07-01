@@ -24,7 +24,7 @@ This export is a reviewable package. Import it into source control, connect real
 1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
-4. Review the design notes and detection notes before treating the component as final.
+4. Review the design notes and detection notes before using the component in an app.
 
 Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
@@ -165,7 +165,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
-4. Review \`DESIGN.md\` and the detection notes before treating the component as final.
+4. Review \`DESIGN.md\` and the detection notes before using the component in an app.
 5. Verify keyboard order, focus states, responsive behavior, and real empty/loading/error states.
 
 Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
@@ -680,7 +680,7 @@ function buildConfidenceReasonSummary(elements) {
 
   return reasonLines.length
     ? reasonLines.join("\n")
-    : "- No element-level confidence reasons were exported.";
+    : "- No element-level confidence reasons were available; compare the component with the screenshot before import.";
 }
 
 function detectionReasons(item) {
@@ -748,7 +748,7 @@ function fallbackDetectionReasons(item, role) {
 
   return reasons.length
     ? reasons
-    : ["exported for manual review because detector evidence was incomplete"];
+    : ["queued for review because detector evidence was incomplete"];
 }
 
 function primitiveFallbackReason(primitive) {
