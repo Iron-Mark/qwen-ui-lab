@@ -150,6 +150,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[0].content, /Required UI imports: .*@\/components\/ui\/button/);
   assert.match(entries[1].content, /Design notes/);
   assert.match(entries[1].content, /## Correction summary/);
+  assert.match(entries[1].content, /## Review contract/);
   assert.match(entries[1].content, /## Import readiness/);
   assert.match(entries[1].content, /Applied edits: 1/);
   assert.match(entries[1].content, /Excluded boxes: 1/);
@@ -164,6 +165,8 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /Applied edits: 1/);
   assert.match(entries[6].content, /Excluded boxes: 1/);
   assert.match(entries[6].content, /Source of truth: Manual corrections/);
+  assert.match(entries[6].content, /## Reviewer handoff/);
+  assert.match(entries[6].content, /Keep this detection note with the pull request/);
   assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
   assert.match(entries[6].content, /Excluded element-2: primary-action/);
 
@@ -193,6 +196,13 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(manifest.corrections.sourceOfTruth, /Manual corrections/);
   assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/generated/detected-dashboard.recipe.json");
+  assert.deepEqual(manifest.reviewContract.keepFilesUntilReviewComplete, [
+    "DESIGN.md",
+    "src/components/generated/detected-dashboard.recipe.json",
+    "src/components/generated/detected-dashboard.manifest.json",
+    "docs/detected-dashboard.detection.md",
+  ]);
+  assert.ok(manifest.reviewContract.requiredChecks.includes("visual parity"));
   assert.ok(
     manifest.qualityGates.includes(
       "Add or verify loading, empty, error, and keyboard focus states.",

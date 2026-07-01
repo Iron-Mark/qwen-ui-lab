@@ -169,7 +169,7 @@ function buildPackageEntries({
   const recipeJson = `${JSON.stringify(recipe, null, 2)}\n`;
   const manifestJson = `${JSON.stringify(manifest, null, 2)}\n`;
   const tokensCss = buildTokenCss(blueprint.designTokens);
-  const detectionSummary = buildDetectionSummaryMarkdown(blueprint);
+  const detectionSummary = buildDetectionSummaryMarkdown({ ...blueprint, files });
 
   return [
     {
