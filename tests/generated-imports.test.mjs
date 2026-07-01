@@ -33,7 +33,7 @@ test("normalizeGeneratedShadcnImports adds imports for known JSX primitives", ()
   assert.match(normalized, /import \{ Label \} from "@\/components\/ui\/label";/);
 });
 
-test("normalizeGeneratedShadcnImports only fills missing specifiers", () => {
+test("normalizeGeneratedShadcnImports merges missing specifiers into existing imports", () => {
   const normalized = normalizeGeneratedShadcnImports(`import { Card } from "@/components/ui/card";
 
 export default function GeneratedCard() {
@@ -49,13 +49,44 @@ export default function GeneratedCard() {
 
   assert.equal(
     [...normalized.matchAll(/from "@\/components\/ui\/card"/g)].length,
-    2,
+    1,
   );
   assert.match(
     normalized,
-    /import \{ CardHeader, CardTitle \} from "@\/components\/ui\/card";/,
+    /import \{ Card, CardHeader, CardTitle \} from "@\/components\/ui\/card";\n\nexport default/,
   );
-  assert.equal([...normalized.matchAll(/\bCard \}/g)].length, 1);
+  assert.equal([...normalized.matchAll(/\bCard\b/g)].length, 3);
+});
+
+test("normalizeGeneratedShadcnImports treats type-only imports as unavailable for JSX", () => {
+  const normalized = normalizeGeneratedShadcnImports(`import type { Button } from "@/components/ui/button";
+
+export default function GeneratedAction() {
+  return <Button type="button">Save</Button>;
+}
+`);
+
+  assert.match(
+    normalized,
+    /import type \{ Button \} from "@\/components\/ui\/button";\nimport \{ Button \} from "@\/components\/ui\/button";\n\nexport default/,
+  );
+});
+
+test("normalizeGeneratedShadcnImports leaves one blank line after inserted imports", () => {
+  const normalized = normalizeGeneratedShadcnImports(`type Props = {
+  label: string;
+};
+
+export default function GeneratedAction(props: Props) {
+  return <Button type="button">{props.label}</Button>;
+}
+`);
+
+  assert.match(
+    normalized,
+    /^import \{ Button \} from "@\/components\/ui\/button";\n\ntype Props =/m,
+  );
+  assert.doesNotMatch(normalized, /button";\n\n\ntype Props =/);
 });
 
 test("normalizeGeneratedShadcnImports adds imports for table primitives", () => {

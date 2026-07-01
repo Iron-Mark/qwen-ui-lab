@@ -37,7 +37,7 @@ export function normalizeGeneratedShadcnImports(code) {
   const used = collectUsedShadcnJsx(source);
   if (!used.length) return source;
 
-  const existingImports = collectExistingImports(source);
+  const existingImports = collectExistingValueImports(source);
   const missingByPath = new Map();
   for (const component of used) {
     const target = SHADCN_JSX_IMPORTS[component];
@@ -49,12 +49,15 @@ export function normalizeGeneratedShadcnImports(code) {
     missingByPath.set(target.path, names);
   }
 
-  const missingImports = [...missingByPath.entries()]
+  if (!missingByPath.size) return source;
+  const merged = mergeMissingIntoExistingImports(source, missingByPath);
+  if (!merged.remaining.size) return merged.source;
+
+  const missingImports = [...merged.remaining.entries()]
     .sort(([first], [second]) => first.localeCompare(second))
     .map(([path, names]) => buildImportLine([...names].sort(), path));
 
-  if (!missingImports.length) return source;
-  return insertAfterImportBlock(source, `${missingImports.join("\n")}\n`);
+  return insertAfterImportBlock(merged.source, missingImports.join("\n"));
 }
 
 function collectUsedShadcnJsx(source) {
@@ -67,20 +70,69 @@ function collectUsedShadcnJsx(source) {
   ].sort();
 }
 
-function collectExistingImports(source) {
+function collectExistingValueImports(source) {
   const imports = new Map();
   for (const match of source.matchAll(
-    /import\s+(?:type\s+)?\{([\s\S]*?)\}\s+from\s+["']([^"']+)["'];?/g,
+    /^import\s+\{([\s\S]*?)\}\s+from\s+["']([^"']+)["'];?[ \t]*$/gm,
   )) {
     const path = match[2];
     const names = imports.get(path) ?? new Set();
-    for (const item of match[1].split(",")) {
-      const name = item.trim().split(/\s+as\s+/i)[0];
+    for (const item of parseImportSpecifiers(match[1])) {
+      const [, alias] = item.split(/\s+as\s+/i).map((part) => part.trim());
+      const name = alias || item.trim();
       if (name) names.add(name);
     }
     imports.set(path, names);
   }
   return imports;
+}
+
+function mergeMissingIntoExistingImports(source, missingByPath) {
+  const importMatches = [...source.matchAll(
+    /^import\s+\{([\s\S]*?)\}\s+from\s+["']([^"']+)["'];?[ \t]*$/gm,
+  )];
+  if (!importMatches.length) {
+    return { source, remaining: missingByPath };
+  }
+
+  let nextSource = source;
+  const remaining = new Map([...missingByPath.entries()].map(([path, names]) => [path, new Set(names)]));
+
+  for (const match of importMatches.reverse()) {
+    const path = match[2];
+    const missing = remaining.get(path);
+    if (!missing?.size) continue;
+
+    const existing = parseImportSpecifiers(match[1]);
+    const localNames = existing.map((item) => item.split(/\s+as\s+/i).at(-1)?.trim() || item.trim());
+    const additions = [...missing].filter((name) => !localNames.includes(name)).sort();
+    if (!additions.length) {
+      remaining.delete(path);
+      continue;
+    }
+
+    const mergedNames = [...existing, ...additions].sort((first, second) =>
+      importLocalName(first).localeCompare(importLocalName(second)),
+    );
+    const replacement = buildImportLine(mergedNames, path);
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    nextSource = `${nextSource.slice(0, start)}${replacement}${nextSource.slice(end)}`;
+    remaining.delete(path);
+  }
+
+  return { source: nextSource, remaining };
+}
+
+function parseImportSpecifiers(specifiers) {
+  return specifiers
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function importLocalName(specifier) {
+  return specifier.split(/\s+as\s+/i).at(-1)?.trim() || specifier.trim();
 }
 
 function buildImportLine(names, path) {
@@ -93,11 +145,12 @@ function buildImportLine(names, path) {
 
 function insertAfterImportBlock(source, importBlock) {
   const importMatches = [...source.matchAll(/^import[\s\S]*?;\s*$/gm)];
+  const normalizedBlock = importBlock.trim();
   if (!importMatches.length) {
-    return `${importBlock}\n${source}`;
+    return `${normalizedBlock}\n\n${source.replace(/^\n+/, "")}`;
   }
 
   const last = importMatches[importMatches.length - 1];
   const insertAt = (last.index ?? 0) + last[0].length;
-  return `${source.slice(0, insertAt)}\n${importBlock}${source.slice(insertAt).replace(/^\n/, "")}`;
+  return `${source.slice(0, insertAt).replace(/\s*$/, "")}\n${normalizedBlock}\n\n${source.slice(insertAt).replace(/^\n+/, "")}`;
 }
