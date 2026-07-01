@@ -68,7 +68,7 @@ export function HomeMarketingHero() {
   ] as const;
 
   const trustSignals = [
-    { icon: ShieldCheck, label: copy.trustDemo },
+    { icon: ShieldCheck, label: copy.trustBrowserSafe },
     { icon: Zap, label: copy.trustOffline },
   ] as const;
 
@@ -98,9 +98,9 @@ export function HomeMarketingHero() {
           priority
           unoptimized
           sizes="100vw"
-          className="object-cover object-[68%_28%] opacity-100 contrast-[1.03] saturate-[0.96] dark:opacity-35"
+          className="object-cover object-[72%_20%] opacity-35 contrast-[1.03] saturate-[0.96] blur-[0.2px] sm:object-[68%_28%] sm:opacity-90 sm:blur-0 lg:opacity-100 dark:opacity-20 sm:dark:opacity-35"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background from-[0%] via-background/90 via-[44%] to-background/5 dark:via-background/95 dark:to-background/65" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background from-[0%] via-background/95 via-[58%] to-background/70 sm:via-background/90 sm:via-[44%] sm:to-background/5 dark:via-background/95 dark:to-background/80 sm:dark:to-background/65" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/85 to-transparent" />
       </div>
 
@@ -113,7 +113,7 @@ export function HomeMarketingHero() {
             >
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl bg-primary px-2.5 py-1 font-semibold text-primary-foreground shadow-sm">
                 <Sparkles className="size-3.5" aria-hidden />
-                {copy.badgeDemo}
+                {copy.badgeProduct}
               </span>
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl px-2.5 py-1 font-medium text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-primary" aria-hidden />
@@ -148,7 +148,7 @@ export function HomeMarketingHero() {
                   "min-h-11 gap-2 px-5 py-2.5",
                 )}
               >
-                {copy.oneClickDemo}
+                {copy.sampleReference}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link
@@ -188,7 +188,7 @@ export function HomeMarketingHero() {
               aria-label={`${label}: ${title}. ${body}`}
               className="relative flex min-h-16 items-center justify-center gap-2 border-l border-border/70 px-2.5 py-2.5 text-center first:border-l-0 sm:min-h-[4.75rem] sm:justify-start sm:gap-3 sm:px-4 sm:py-3 sm:text-left"
             >
-              <div className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex sm:size-10">
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10">
                 <Icon className="size-4" aria-hidden />
               </div>
               <div className="min-w-0">

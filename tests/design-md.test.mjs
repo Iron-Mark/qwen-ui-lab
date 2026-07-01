@@ -39,8 +39,8 @@ export function GeneratedDashboard() {
   return <main>Dashboard scaffold</main>;
 }
 `,
-  modeLabel: "Analyzer ready",
-  summary: "Local detector produced a dashboard starter from visible geometry.",
+  modeLabel: "Ready to analyze",
+  summary: "Local detector produced a dashboard export from visible geometry.",
   detections: {
     source: { width: 1200, height: 800 },
     designTokens: {
@@ -139,7 +139,7 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
 
   assert.equal(DESIGN_MD_FILENAME, "DESIGN.md");
   assert.match(markdown, /^# DESIGN\.md/);
-  assert.match(markdown, /Generated component file: generated-dashboard\.tsx/);
+  assert.match(markdown, /Component file: generated-dashboard\.tsx/);
   assert.match(markdown, /Exported components: GeneratedDashboard/);
   assert.match(markdown, /Average active confidence: 85% \(high\)/);
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);

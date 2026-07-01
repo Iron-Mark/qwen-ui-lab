@@ -23,7 +23,7 @@ export function WorkflowStepper({
   return (
     <div
       data-testid="upload-flow-stepper"
-      className="mb-5 flex items-center gap-2 overflow-x-auto rounded-lg pb-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="mb-5 flex flex-wrap items-center gap-2 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:flex-nowrap sm:overflow-x-auto sm:pb-2"
       aria-label={ariaLabel}
       tabIndex={0}
     >
@@ -39,7 +39,7 @@ export function WorkflowStepper({
         const isLocked = stepState === "locked";
 
         return (
-          <div key={step.id} className="flex shrink-0 items-center gap-2">
+          <div key={step.id} className="flex min-w-0 shrink-0 items-center gap-2">
             <Badge
               variant={isCurrent ? "default" : "outline"}
               data-testid="upload-flow-step"
@@ -48,9 +48,9 @@ export function WorkflowStepper({
               aria-current={isCurrent ? "step" : undefined}
               aria-disabled={isLocked ? true : undefined}
               className={cn(
-                "h-7 rounded-full px-3 py-1 text-xs transition-colors",
+                "min-h-8 rounded-full px-2.5 py-1 text-[11px] transition-colors sm:h-7 sm:px-3 sm:text-xs",
                 isCurrent &&
-                  "border-primary bg-primary text-primary-foreground shadow-sm",
+                  "border-primary bg-primary text-white shadow-sm dark:text-primary-foreground",
                 isComplete &&
                   "border-border/70 bg-muted/50 text-muted-foreground",
                 isLocked &&
@@ -63,7 +63,7 @@ export function WorkflowStepper({
             {index < steps.length - 1 ? (
               <ChevronRight
                 className={cn(
-                  "size-3",
+                  "hidden size-3 sm:block",
                   index < currentStepIndex
                     ? "text-muted-foreground/70"
                     : "text-muted-foreground/35",

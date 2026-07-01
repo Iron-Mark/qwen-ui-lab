@@ -45,6 +45,7 @@ test("all bundled reference samples use PNG paths with WebP companions", () => {
   for (const sample of BUNDLED_REFERENCE_SAMPLES) {
     assert.equal(sample.mimeType, "image/png");
     assert.doesNotMatch(sample.hint, /PNG screenshot/i);
+    assert.doesNotMatch(sample.hint, /^Tests\b/i);
     assert.ok(sample.hint.length > 20, `${sample.id} should have helpful hint copy`);
     assert.ok(sample.webpPath?.endsWith(".webp"));
   }

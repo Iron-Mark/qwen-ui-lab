@@ -964,7 +964,7 @@ const SCREEN_INTENT_LABELS = {
   landing: "Marketing or landing page",
   ecommerce: "Product catalog or commerce flow",
   modal: "Modal dialog or focused overlay",
-  empty: "Empty state or onboarding fallback",
+  empty: "Empty or onboarding state",
 };
 
 function titleCase(value) {

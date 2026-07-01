@@ -8,6 +8,22 @@ export function normalizeCspReportPayload(payload) {
   };
 }
 
+export function isLocalCspDocumentUri(documentUri) {
+  if (typeof documentUri !== "string") return false;
+
+  try {
+    const { hostname } = new URL(documentUri);
+    return (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "::1" ||
+      hostname.endsWith(".localhost")
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function readCspReportPayload(request) {
   try {
     return await request.json();
@@ -29,7 +45,7 @@ export async function handleCspReportPost(
 ) {
   const report = normalizeCspReportPayload(await readCspReportPayload(request));
 
-  if (report) {
+  if (report && !isLocalCspDocumentUri(report.documentUri)) {
     logger.warn("CSP report-only violation", {
       sourceIp: headers?.get("x-forwarded-for") ?? "unknown",
       documentUri: report.documentUri,

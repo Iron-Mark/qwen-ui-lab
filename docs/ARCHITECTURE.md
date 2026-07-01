@@ -21,7 +21,7 @@ src/features/
   account/          browser-local profile modal and session state
   analysis/         upload flow, image preprocess, offline/Qwen analysis, UX compliance
   analytics/        internal analytics dashboard
-  demo/             sample run route shell
+  demo/             sample screenshot route shell
   design-system/    catalog UI/registry, laws data, catalog filters
   export/           copy/download/Gist/repo export UI and server helpers
   home/             home hero, dashboard widgets, charts, dashboard data
@@ -100,6 +100,6 @@ Only three direct docs subfolders are used:
 
 - [README](./README.md) - project overview and commands.
 - [Contributing](./CONTRIBUTING.md) - workflow and PR expectations.
-- [Sample run](./DEMO.md) - presenter flow and local-analysis guardrails.
+- [Sample screenshot](./DEMO.md) - sample screenshot flow and local-analysis guardrails.
 - [Offline E2E](./ops/OFFLINE_DEMO_E2E.md) - deterministic local-analysis testing contract.
 - [Reliability ops](./ops/RELIABILITY_OPS.md) - checks, thresholds, and response targets.

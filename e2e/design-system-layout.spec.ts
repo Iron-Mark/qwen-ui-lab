@@ -146,6 +146,59 @@ test("design system preview scrolls with page content and clears the footer", as
     });
 });
 
+test("design system workspace stays contained on small and tablet widths", async ({
+  page,
+}) => {
+  for (const viewport of FILTER_VIEWPORTS) {
+    await page.setViewportSize(viewport);
+    await page.goto("/design-system?selected=shadcn-button");
+    await waitForDesignSystemPreview(page);
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const listPanel = document
+              .querySelector<HTMLElement>('[data-testid="component-list-metadata"]')
+              ?.closest<HTMLElement>("section");
+            const previewPanel = document.querySelector<HTMLElement>(
+              "#component-preview-panel",
+            );
+            const previewViewport = document.querySelector<HTMLElement>(
+              '[data-testid="component-preview-viewport"]',
+            );
+            if (!listPanel || !previewPanel || !previewViewport) return null;
+
+            const viewportWidth = document.documentElement.clientWidth;
+            const listBox = listPanel.getBoundingClientRect();
+            const previewBox = previewPanel.getBoundingClientRect();
+            const previewViewportBox = previewViewport.getBoundingClientRect();
+
+            return {
+              pageHasHorizontalOverflow:
+                document.documentElement.scrollWidth > viewportWidth + 1,
+              listInsideViewport:
+                listBox.left >= -1 && listBox.right <= viewportWidth + 1,
+              previewInsideViewport:
+                previewBox.left >= -1 && previewBox.right <= viewportWidth + 1,
+              previewViewportInsidePanel:
+                previewViewportBox.left >= previewBox.left - 1 &&
+                previewViewportBox.right <= previewBox.right + 1,
+            };
+          }),
+        {
+          message: `expected design system workspace to fit at ${viewport.width}px`,
+        },
+      )
+      .toEqual({
+        pageHasHorizontalOverflow: false,
+        listInsideViewport: true,
+        previewInsideViewport: true,
+        previewViewportInsidePanel: true,
+      });
+  }
+});
+
 test("design system preview modes resize the component viewport, not the panel", async ({
   page,
 }) => {
@@ -259,7 +312,7 @@ test("design system reference source follows the active domain tab", async ({
   await expect(refs).not.toContainText("uilaws.com");
   await expect(refs).not.toContainText("lawsofux.com");
 
-  await page.getByRole("tab", { name: "UILaws", exact: true }).click();
+  await page.getByRole("tab", { name: "UI Laws", exact: true }).click();
   await expect(refs).toContainText("uilaws.com");
   await expect(refs).not.toContainText("Product catalog");
   await expect(refs).not.toContainText("lawsofux.com");

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
@@ -16,12 +15,6 @@ import { buildAccountModalHref } from "@/features/account/components/AccountModa
 import { AccountNavLabel } from "@/features/account/components/AccountNavLabel";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { cn } from "@/lib/utils";
-
-const DemoModeSnackbar = dynamic(
-  () =>
-    import("./DemoModeSnackbar").then((mod) => mod.DemoModeSnackbar),
-  { ssr: false },
-);
 
 type ShellTitleContext = {
   title: string;
@@ -130,7 +123,6 @@ export function Header() {
       data-shell-header
       className="sticky top-0 z-40 border-b border-border/80 bg-card/85 backdrop-blur-md"
     >
-      <DemoModeSnackbar />
       <PageContainer className="flex h-16 min-w-0 items-center gap-2 px-2 sm:gap-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={localizedHref("/", locale)}

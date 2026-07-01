@@ -55,6 +55,15 @@ Use these thresholds as the default incident policy:
   - `p95_latency_ms > 1000` and `<= 2000`
   - Health endpoint remains healthy but mode flips unexpectedly between checks
 
+## Scheduled Production Monitor
+
+GitHub Actions runs [Production Reliability Monitor](../../.github/workflows/production-reliability.yml) daily at 07:30 UTC and on manual dispatch. It checks:
+
+- `/api/health` with `scripts/synthetic-health-check.mjs`
+- Deployed share/export behavior with `npm run smoke:share-live`
+
+The workflow uses `vars.PRODUCTION_DEPLOY_URL` when present and otherwise falls back to `https://qwen-ui-lab.vercel.app`. On failure it uploads logs and opens or comments on a single GitHub issue titled `Production reliability monitor failure`. The issue body includes a sanitized triage summary with health success rate, latency, live-mode mismatch count, share/export smoke status, target URL, workflow run URL, and commit SHA. Raw logs stay in the workflow artifact; secrets, API keys, share payloads, and local file paths are not copied into the issue body.
+
 ## Incident Response Targets
 
 - **Acknowledge (critical):** within 10 minutes
@@ -77,31 +86,7 @@ When an alert fires:
 
 ## Concrete Integration Ideas
 
-### 1) Scheduled CI synthetic check
-
-Add a scheduled GitHub Action that runs `npm run synthetic:health` against production and fails loudly on threshold breaches.
-
-Example sketch:
-
-```yaml
-name: synthetic-health
-on:
-  schedule:
-    - cron: "*/15 * * * *"
-  workflow_dispatch:
-jobs:
-  probe:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-      - run: npm ci
-      - run: node scripts/synthetic-health-check.mjs --base-url "${{ secrets.SYNTHETIC_BASE_URL }}"
-```
-
-### 2) Post-deploy gate
+### 1) Post-deploy gate
 
 During deployment, run:
 
@@ -111,6 +96,6 @@ node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5
 
 Do not declare deployment healthy until this check passes.
 
-### 3) External uptime service
+### 2) External uptime service
 
 Use any uptime monitor to probe `/api/health` every 1-5 minutes. Keep it lightweight and pair it with this repository's synthetic script for deeper triage details.

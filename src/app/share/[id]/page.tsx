@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ShareHashFallbackContent } from "@/features/share/components/ShareHashFallbackContent";
 import { SharePageContent } from "@/features/share/components/SharePageContent";
 import {
   createShareRouteMetadataFromParams,
@@ -17,6 +18,14 @@ export default async function SharePage({ params }: ShareRouteProps) {
   const model = await resolveSharePageModel({ params });
 
   if (!model) {
+    notFound();
+  }
+
+  if (model.hashFallback) {
+    return <ShareHashFallbackContent />;
+  }
+
+  if (!model.summary) {
     notFound();
   }
 

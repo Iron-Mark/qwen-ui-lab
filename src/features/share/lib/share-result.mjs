@@ -50,7 +50,7 @@ export function buildShareableSummary(artifact) {
     v: 1,
     summary,
     stats,
-    mode: truncate(String(artifact.modeLabel ?? "Analyzer ready"), 60),
+    mode: truncate(String(artifact.modeLabel ?? "Ready to analyze"), 60),
     file: truncate(fileName, 80),
     ...(detectionSummary ? { detections: detectionSummary } : {}),
   };
@@ -191,7 +191,7 @@ export function decodeShareHash(hash) {
           v: truncate(String(stat?.v ?? ""), 24),
         }))
         .filter((stat) => stat.l && stat.v),
-      mode: truncate(String(parsed.mode ?? "Analyzer ready"), 60),
+      mode: truncate(String(parsed.mode ?? "Ready to analyze"), 60),
       file: truncate(String(parsed.file ?? "screenshot"), 80),
       ...(sanitizeShareDetections(parsed.detections)
         ? { detections: sanitizeShareDetections(parsed.detections) }

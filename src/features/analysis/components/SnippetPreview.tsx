@@ -57,7 +57,7 @@ export function SnippetPreview({
       </div>
       <CodeHighlight code={code} language={language} />
       {footer ? (
-        <div className="border-t border-border/80 bg-muted/45 px-4 py-2.5">
+        <div className="min-w-0 border-t border-border/80 bg-muted/45 px-4 py-2.5">
           {footer}
         </div>
       ) : null}

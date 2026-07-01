@@ -3,6 +3,12 @@ import {
   lookupKnownSample,
   lookupKnownSampleByInspection,
 } from "./offline-analyze.mjs";
+import {
+  correctedDetectionConfidence,
+  mergeManualCorrectionReasons,
+  summarizeCorrectedElementChanges,
+} from "./detection-corrections.mjs";
+import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
@@ -42,11 +48,11 @@ function dimensionHint(width, height) {
   if (!width || !height) return null;
   const orientation = width >= height ? "landscape" : "portrait";
   const aspect = (width / height).toFixed(2);
-  return `${width}×${height}px ${orientation} frame (aspect ${aspect}).`;
+  return `${width}x${height}px ${orientation} frame (aspect ${aspect}).`;
 }
 
 /**
- * Resolve offline content: known sample registry → advanced classifier → caller overrides.
+ * Resolve offline content: known sample registry -> advanced classifier -> caller overrides.
  * @param {{
  *   name?: string;
  *   type?: string;
@@ -107,10 +113,11 @@ export function buildUiFlowArtifact(file, overrides = {}) {
   const previewStats = normalizePreviewStats(
     overrides.previewStats || offline.previewStats || defaultPreviewStats,
   );
-  const generatedCode =
+  const generatedCode = normalizeGeneratedShadcnImports(
     overrides.generatedCode ||
-    offline.generatedCode ||
-    createGeneratedCode(fileName);
+      offline.generatedCode ||
+      createGeneratedCode(fileName),
+  );
 
   return {
     file: {
@@ -125,7 +132,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
     plan,
     previewStats,
     generatedCode,
-    modeLabel: overrides.modeLabel || "Analyzer ready",
+    modeLabel: overrides.modeLabel || "Ready to analyze",
     summary: overrides.summary ?? offline.summary ?? "",
     ...(detections ? { detections } : {}),
   };
@@ -150,18 +157,18 @@ function buildDetections(file) {
 
 export function regenerateArtifactFromDetections(artifact, detections) {
   if (!artifact || !detections) return artifact;
-  const activeElements = (detections.elements ?? []).filter(
+  const correctedDetections = recomputeCorrectedDetections(detections);
+  const activeElements = (correctedDetections.elements ?? []).filter(
     (element) => element.included !== false,
   );
   const existingSectionsStat = artifact.previewStats?.find(
     (stat) => stat.label === "Sections",
   );
-  const generatedCode = createGeneratedCodeFromDetections(
-    artifact.file?.name ?? "uploaded-reference",
-    {
-      ...detections,
+  const generatedCode = normalizeGeneratedShadcnImports(
+    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-reference", {
+      ...correctedDetections,
       elements: activeElements,
-    },
+    }),
   );
   const previewStats = normalizePreviewStats([
     {
@@ -170,7 +177,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     },
     {
       label: "Edited",
-      value: String((detections.elements ?? []).filter((element) => element.userEdited).length),
+      value: String((correctedDetections.elements ?? []).filter((element) => element.userEdited).length),
     },
     {
       label: "Primitive Types",
@@ -179,8 +186,8 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     {
       label: "Confidence",
       value:
-        typeof detections.quality?.confidence === "number"
-          ? `${Math.round(detections.quality.confidence * 100)}%`
+        typeof correctedDetections.quality?.confidence === "number"
+          ? `${Math.round(correctedDetections.quality.confidence * 100)}%`
           : "local",
     },
   ]);
@@ -190,14 +197,106 @@ export function regenerateArtifactFromDetections(artifact, detections) {
     generatedCode,
     previewStats,
     detections: {
-      ...detections,
-      elements: detections.elements ?? [],
-      quality: {
-        ...(detections.quality ?? {}),
-        elementCount: activeElements.length,
-      },
+      ...correctedDetections,
+      elements: correctedDetections.elements ?? [],
     },
   };
+}
+
+function recomputeCorrectedDetections(detections) {
+  const elements = (detections.elements ?? []).map((element) =>
+    recomputeCorrectedElement(element),
+  );
+  const activeElements = elements.filter((element) => element.included !== false);
+  const averageConfidence = activeElements.length
+    ? activeElements.reduce((sum, element) => sum + (element.confidence ?? 0.5), 0) /
+      activeElements.length
+    : 0;
+  const editedCount = elements.filter((element) => element.userEdited).length;
+  const excludedCount = elements.filter((element) => element.included === false).length;
+  const correctionPenalty = Math.min(0.1, editedCount * 0.015);
+
+  return {
+    ...detections,
+    elements,
+    quality: {
+      ...(detections.quality ?? {}),
+      confidence: clampConfidence(averageConfidence - correctionPenalty),
+      elementCount: activeElements.length,
+      correctedElementCount: editedCount,
+      excludedElementCount: excludedCount,
+      strategy: editedCount
+        ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
+        : detections.quality?.strategy,
+    },
+  };
+}
+
+function recomputeCorrectedElement(element) {
+  const included = element.included !== false;
+  const confidence = correctedElementConfidence(element, included);
+  const primitive = element.primitive ?? element.kind ?? "section";
+  const componentRole =
+    element.userEdited && !correctedPrimitiveRoleCompatible(primitive, element.componentRole)
+      ? primitive
+      : element.componentRole ?? primitive;
+  return {
+    ...element,
+    primitive,
+    componentRole,
+    confidence,
+    reasons: mergeCorrectionReasons(element, included, confidence),
+  };
+}
+
+function correctedPrimitiveRoleCompatible(primitive, componentRole) {
+  if (!componentRole) return false;
+  const primitiveText = String(primitive || "");
+  const roleText = String(componentRole || "");
+  if (primitiveText === roleText) return true;
+  if (/field-or-action|button|input|control/.test(primitiveText)) {
+    return /field|action|button|input|control|search/.test(roleText);
+  }
+  if (/card|panel/.test(primitiveText)) return /card|panel|metric|content/.test(roleText);
+  if (/nav|header/.test(primitiveText)) return /nav|header|shell/.test(roleText);
+  if (/media|chart/.test(primitiveText)) return /media|chart/.test(roleText);
+  if (/text|list/.test(primitiveText)) return /text|list|row/.test(roleText);
+  if (/section/.test(primitiveText)) return /section|content/.test(roleText);
+  return roleText.includes(primitiveText) || primitiveText.includes(roleText);
+}
+
+function correctedElementConfidence(element, included) {
+  if (!element.userEdited) return clampConfidence(element.confidence ?? 0.5);
+  return correctedDetectionConfidence(element.confidence, included);
+}
+
+function mergeCorrectionReasons(element, included, confidence) {
+  if (!element.userEdited) return Array.isArray(element.reasons) ? element.reasons : [];
+  return mergeManualCorrectionReasons({
+    reasons: element.reasons,
+    included,
+    confidence,
+    changes: summarizeCorrectedElementChanges(element),
+    source: "regeneration",
+  });
+}
+
+function summarizeElementReasons(reasons) {
+  if (!Array.isArray(reasons)) return [];
+  return reasons
+    .map((reason) => {
+      if (typeof reason === "string") return reason;
+      const label = reason?.label || reason?.code;
+      const evidence = reason?.evidence ? `: ${reason.evidence}` : "";
+      return label ? `${label}${evidence}` : "";
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function clampConfidence(value) {
+  if (!Number.isFinite(value)) return 0.5;
+  return Math.max(0, Math.min(0.99, value));
 }
 
 function normalizePreviewStats(stats) {
@@ -213,7 +312,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function GeneratedDashboard() {
   return (
-    <section aria-label="Generated dashboard from ${fileName}">
+    <section aria-label="Dashboard export based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -238,12 +337,22 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     primitive: element.primitive ?? element.kind ?? "section",
     componentRole: element.componentRole ?? element.primitive ?? element.kind ?? "section",
     confidence: element.confidence ?? 0.5,
+    userEdited: element.userEdited === true,
+    reasons: summarizeElementReasons(element.reasons),
     box: element.box ?? { x: 0, y: 0, width: source.width, height: Math.max(48, source.height / 12) },
   }));
   const patterns = buildCorrectedPatternBlueprint(detections, elements);
   const responsiveIntent = buildCorrectedResponsiveBlueprint(detections);
   const screenIntent = buildCorrectedScreenIntentBlueprint(detections);
   const layoutRegions = buildCorrectedLayoutRegionBlueprint(patterns, elements);
+  const correctionSummary = {
+    activeElements: elements.length,
+    appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
+    excludedBoxes: detections.quality?.excludedElementCount ?? 0,
+    sourceOfTruth: detections.quality?.correctedElementCount
+      ? "Manual corrections are the source of truth for this regenerated scaffold."
+      : "Detection boxes are the source of truth for this regenerated scaffold.",
+  };
 
   return `import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -271,6 +380,8 @@ type CorrectedElement = {
   primitive: string;
   componentRole: string;
   confidence: number;
+  userEdited?: boolean;
+  reasons?: string[];
   label?: string;
   box: ElementBox;
 };
@@ -351,6 +462,8 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions: LayoutRegion[] = ${JSON.stringify(layoutRegions, null, 2)};
 
+const correctionSummary = ${JSON.stringify(correctionSummary, null, 2)};
+
 const groupedElementIds = new Set(
   [
     ...correctedPatterns.appShells,
@@ -393,7 +506,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "stat-row": "metric row with Card tiles",
   "content-card": "Card",
   "chart-panel": "Card with accessible chart summary",
-  "chart-series": "Chart card with text fallback",
+  "chart-series": "Chart card with accessible text summary",
   "list-item": "Card row",
   "list-row": "Card row",
   "data-table": "semantic table inside Card",
@@ -402,12 +515,25 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "empty-state": "Card with centered recovery action",
 };
 
+const sampleSectionData = {
+  rows: ["Queued review", "Ready for handoff", "Needs QA"],
+  cards: ["Overview", "Activity", "Follow-up", "Review"],
+  metrics: ["$45.2K", "12,340", "18.4%", "573"],
+  tableColumns: ["Name", "Status", "Value"],
+  tableRows: [
+    ["Acme Co", "Active", "$12.4K"],
+    ["Northstar", "Review", "$8.1K"],
+    ["Summit Labs", "Paused", "$4.8K"],
+  ],
+  chartValues: [42, 74, 55, 88, 63, 78],
+};
+
 const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
 
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Reviewed screenshot starter from ${safeName}"
+      aria-label="Screenshot export based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -418,16 +544,16 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Generated interface shell
+              Screenshot starter component
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Built from {correctedElements.length} reviewed detections with shadcn-style primitives,
-              responsive sections, and semantic landmarks ready for real data wiring.
+              Built from {correctionSummary.activeElements} active UI regions with shadcn-style
+              primitives, responsive sections, and semantic landmarks ready for real data wiring.
             </p>
           </div>
         </header>
 
-        <CorrectionRecipeSummary />
+        <ImplementationChecklist />
 
         {generatedSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -455,19 +581,19 @@ export default function ReviewedScreenshotStarter() {
   );
 }
 
-function CorrectionRecipeSummary() {
+function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Correction recipe</CardTitle>
+        <CardTitle>Implementation checklist</CardTitle>
         <CardDescription>
-          Manual edits are preserved as canonical detection metadata for deterministic export review.
+          Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+      <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
         <p>
           <span className="block font-medium text-foreground">Active elements</span>
-          {correctedElements.length} reviewed primitives
+          {correctionSummary.activeElements} reviewed primitives
         </p>
         <p>
           <span className="block font-medium text-foreground">Layout regions</span>
@@ -475,8 +601,15 @@ function CorrectionRecipeSummary() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
-          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+          {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
+        <p>
+          <span className="block font-medium text-foreground">Applied edits</span>
+          {correctionSummary.appliedEdits} manual edits, {correctionSummary.excludedBoxes} excluded boxes
+        </p>
+      </CardContent>
+      <CardContent className="border-t pt-4 text-sm text-muted-foreground">
+        {correctionSummary.sourceOfTruth}
       </CardContent>
     </Card>
   );
@@ -525,13 +658,14 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
                   {item.label}
                 </Button>
               ) : (
-                <label key={item.id} className="grid gap-2 text-sm font-medium">
-                  Field {index + 1}
-                  <Input placeholder={item.label} />
-                </label>
+                <div key={item.id} className="grid gap-2">
+                  <Label htmlFor={item.id}>Field {index + 1}</Label>
+                  <Input id={item.id} placeholder={item.label} />
+                </div>
               ),
             )}
           </form>
+          <SectionStateHint kind={section.kind} />
         </CardContent>
       </Card>
     );
@@ -552,9 +686,41 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
         {section.items.map((item) => (
           <PrimitivePreview key={item.id} element={item} />
         ))}
+        <SectionSampleDataHint kind={section.kind} />
+        <SectionStateHint kind={section.kind} />
       </CardContent>
     </Card>
   );
+}
+
+function SectionSampleDataHint({ kind }: { kind: string }) {
+  const copy: Record<string, string> = {
+    "repeated-list": "Sample rows: " + sampleSectionData.rows.join(", "),
+    "repeated-grid": "Sample cards: " + sampleSectionData.cards.join(", "),
+    "stat-row": "Sample metrics: " + sampleSectionData.metrics.join(", "),
+    "data-table": "Sample table columns: " + sampleSectionData.tableColumns.join(", "),
+    "chart-panel": "Sample chart values: " + sampleSectionData.chartValues.join(", "),
+  };
+  const message = copy[kind];
+  return message ? (
+    <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
+      {message}. Replace this sample data before shipping.
+    </p>
+  ) : null;
+}
+
+function SectionStateHint({ kind }: { kind: string }) {
+  const copy: Record<string, string> = {
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.",
+    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.",
+    "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
+    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.",
+    "chart-panel": "State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.",
+  };
+  const message = copy[kind];
+  return message ? (
+    <p className="mt-3 text-xs leading-5 text-muted-foreground">{message}</p>
+  ) : null;
 }
 
 function PrimitivePreview({ element }: { element: CorrectedElement }) {
@@ -572,10 +738,10 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
 
   if (/search-field|form-field/.test(role)) {
     return (
-      <label className="grid gap-2 text-sm font-medium">
-        {label}
-        <Input placeholder="Connect real value" />
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor={element.id}>{label}</Label>
+        <Input id={element.id} placeholder="Enter product data" />
+      </div>
     );
   }
 
@@ -602,7 +768,7 @@ function buildGeneratedSections(
   const groups = [
     ...patterns.appShells.map((pattern) => sectionFromPattern(pattern, byId, "app-shell", "Application shell", "Navigation and page regions grouped as landmarks.", "grid gap-3")),
     ...patterns.dialogPanels.map((pattern) => sectionFromPattern(pattern, byId, "dialog-panel", "Dialog surface", "Modal-ready content with close and action affordances.", "grid gap-3")),
-    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse fallback content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
+    ...patterns.emptyStates.map((pattern) => sectionFromPattern(pattern, byId, "empty-state", "Empty state", "Sparse empty-state content grouped with one recovery action.", "grid place-items-center gap-3 text-center")),
     ...patterns.repeatedLists.map((pattern) => sectionFromPattern(pattern, byId, "repeated-list", "Repeated list", "Rows share rhythm, spacing, and action placement.", "grid gap-2")),
     ...patterns.repeatedGrids.map((pattern) => sectionFromPattern(pattern, byId, "repeated-grid", "Card grid", "Repeated cards snapped into a responsive grid.", "grid gap-3 sm:grid-cols-2")),
     ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
@@ -690,14 +856,42 @@ export function CorrectionGridReference() {
                 </aside>
                 <div className="grid gap-2">
                   {pattern.regions?.topNavigation ? (
-                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                      Top navigation
+                    <nav
+                      className="flex flex-wrap items-center gap-2 rounded border px-3 py-2"
+                      aria-label="Top navigation"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {["Overview", "Reports", "Settings"].map((item, index) => (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={index === 0 ? "secondary" : "ghost"}
+                          className="h-7 rounded-full px-2.5 text-[11px]"
+                          aria-current={index === 0 ? "page" : undefined}
+                        >
+                          {item}
+                        </Button>
+                      ))}
                     </nav>
                   ) : null}
                   <main className="grid min-h-24 gap-2 md:grid-cols-[8rem_minmax(0,1fr)]">
                     {pattern.regions?.sideNavigation ? (
-                      <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                        Side navigation
+                      <nav
+                        className="grid content-start gap-1 rounded border px-2 py-2"
+                        aria-label="Side navigation"
+                        style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                      >
+                        {["Home", "Team", "Billing"].map((item, index) => (
+                          <Button
+                            key={item}
+                            type="button"
+                            variant={index === 0 ? "secondary" : "ghost"}
+                            className="h-8 justify-start rounded px-2 text-[11px]"
+                            aria-current={index === 0 ? "page" : undefined}
+                          >
+                            {item}
+                          </Button>
+                        ))}
                       </nav>
                     ) : null}
                     <section className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
@@ -705,8 +899,22 @@ export function CorrectionGridReference() {
                     </section>
                   </main>
                   {pattern.regions?.bottomNavigation ? (
-                    <nav className="rounded border px-3 py-2" style={{ borderColor: designTokens.border }}>
-                      Bottom navigation
+                    <nav
+                      className="grid grid-cols-3 gap-1 rounded border px-2 py-2"
+                      aria-label="Bottom navigation"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {["Home", "Search", "Profile"].map((item, index) => (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={index === 0 ? "secondary" : "ghost"}
+                          className="h-8 rounded px-2 text-[11px]"
+                          aria-current={index === 0 ? "page" : undefined}
+                        >
+                          {item}
+                        </Button>
+                      ))}
                     </nav>
                   ) : null}
                 </div>
@@ -719,39 +927,29 @@ export function CorrectionGridReference() {
       {correctedPatterns.dialogPanels.length ? (
         <div className="grid gap-3">
           {correctedPatterns.dialogPanels.map((pattern) => (
-            <section
-              key={pattern.id}
-              aria-label="Detected dialog panel"
-              className="space-y-3 border p-3"
-              role="dialog"
-              aria-modal="true"
-              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase">Dialog panel</p>
-                  <p className="text-sm font-medium">{primitiveLabel(pattern.modalType || "centered-dialog")}</p>
+            <Dialog key={pattern.id} defaultOpen>
+              <DialogContent className="max-w-lg" showCloseButton={false}>
+                <DialogHeader>
+                  <DialogTitle>{primitiveLabel(pattern.modalType || "centered-dialog")}</DialogTitle>
+                  <DialogDescription>
+                    Detected dialog panel converted into a reusable modal surface.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-2 rounded border p-2" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
+                  {pattern.children.map((childId) => {
+                    const child = correctedElementById.get(childId);
+                    return child ? (
+                      <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
+                        {renderCorrectedPrimitive(child, designTokens)}
+                      </div>
+                    ) : null;
+                  })}
                 </div>
-                <button
-                  type="button"
-                  aria-label="Close dialog"
-                  className="rounded border px-2 py-1 text-[10px]"
-                  style={{ borderColor: designTokens.border }}
-                >
-                  Close
-                </button>
-              </div>
-              <div className="grid gap-2 rounded border p-2" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
-                {pattern.children.map((childId) => {
-                  const child = correctedElementById.get(childId);
-                  return child ? (
-                    <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
-                      {renderCorrectedPrimitive(child, designTokens)}
-                    </div>
-                  ) : null;
-                })}
-              </div>
-            </section>
+                <DialogFooter>
+                  <Button type="button">Primary action</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
       ) : null}
@@ -769,7 +967,7 @@ export function CorrectionGridReference() {
               <div className="grid max-w-sm gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase">Empty state</p>
-                  <p className="text-sm font-medium">Fallback content with recovery action</p>
+                  <p className="text-sm font-medium">Empty-state content with recovery action</p>
                 </div>
                 <div className="grid gap-2 rounded border p-3" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
                   {pattern.children.map((childId) => {
@@ -781,13 +979,13 @@ export function CorrectionGridReference() {
                     ) : null;
                   })}
                 </div>
-                <button
+                <Button
                   type="button"
                   className="mx-auto w-fit rounded px-3 py-2 text-xs font-medium"
                   style={{ backgroundColor: designTokens.accent, color: designTokens.accentForeground }}
                 >
                   Recovery action
-                </button>
+                </Button>
               </div>
             </section>
           ))}
@@ -930,31 +1128,27 @@ export function CorrectionGridReference() {
             <section
               key={pattern.id}
               aria-label="Detected data table"
-              className="space-y-2 overflow-x-auto border p-3"
+              className="space-y-2 border p-3"
               style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
             >
               <p className="text-xs font-semibold uppercase">Data table</p>
-              <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
-                <tbody>
+              <Table className="min-w-[28rem]">
+                <TableBody>
                   {Array.from({ length: Math.max(1, pattern.rows ?? 3) }).map((_, rowIndex) => (
-                    <tr key={rowIndex}>
+                    <TableRow key={rowIndex}>
                       {Array.from({ length: Math.max(1, pattern.columns ?? 3) }).map((_, columnIndex) => {
                         const childId = pattern.children[rowIndex * Math.max(1, pattern.columns ?? 3) + columnIndex];
                         const child = childId ? correctedElementById.get(childId) : null;
                         return (
-                          <td
-                            key={columnIndex}
-                            className="border-b px-3 py-2 align-top"
-                            style={{ borderColor: designTokens.border }}
-                          >
+                          <TableCell key={columnIndex}>
                             {child ? renderCorrectedPrimitive(child, designTokens) : "Cell"}
-                          </td>
+                          </TableCell>
                         );
                       })}
-                    </tr>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </section>
           ))}
         </div>
@@ -1004,9 +1198,10 @@ export function CorrectionGridReference() {
                 {pattern.children.map((childId, index) => {
                   const child = correctedElementById.get(childId);
                   return (
-                    <button
+                    <Button
                       key={childId}
                       type="button"
+                      variant={index === 0 ? "default" : "outline"}
                       className="rounded border px-3 py-2 text-xs font-medium"
                       style={{
                         borderColor: designTokens.border,
@@ -1015,7 +1210,7 @@ export function CorrectionGridReference() {
                       }}
                     >
                       {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Action"}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -1037,40 +1232,28 @@ export function CorrectionGridReference() {
                 style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
               >
                 <p className="text-xs font-semibold uppercase">Tab set</p>
-                <div className="grid gap-2">
-                  <div
-                    role="tablist"
-                    className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
-                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
-                  >
+                <Tabs defaultValue={"tab-" + (selectedIndex + 1)}>
+                  <TabsList aria-label="Detected tab set">
                     {Array.from({ length: tabCount }).map((_, index) => {
                       const child = correctedElementById.get(pattern.children[index]);
-                      const selected = index === selectedIndex;
                       return (
-                        <button
-                          key={pattern.children[index] ?? index}
-                          type="button"
-                          role="tab"
-                          aria-selected={selected}
-                          className="rounded-full px-3 py-1.5 text-xs font-medium"
-                          style={{
-                            backgroundColor: selected ? designTokens.accent : designTokens.surface,
-                            color: selected ? designTokens.accentForeground : designTokens.foreground,
-                          }}
-                        >
+                        <TabsTrigger key={pattern.children[index] ?? index} value={"tab-" + (index + 1)}>
                           {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Tab " + (index + 1)}
-                        </button>
+                        </TabsTrigger>
                       );
                     })}
-                  </div>
-                  <section
-                    role="tabpanel"
-                    className="rounded border p-3 text-xs"
-                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
-                  >
-                    {primitiveLabel(pattern.tabKind || "tabs")} panel {selectedIndex + 1}
-                  </section>
-                </div>
+                  </TabsList>
+                  {Array.from({ length: tabCount }).map((_, index) => (
+                    <TabsContent
+                      key={pattern.children[index] ?? index}
+                      value={"tab-" + (index + 1)}
+                      className="rounded border p-3 text-xs"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {primitiveLabel(pattern.tabKind || "tabs")} panel {index + 1}
+                    </TabsContent>
+                  ))}
+                </Tabs>
               </section>
             );
           })}
@@ -1118,10 +1301,18 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       <div className="grid gap-2" aria-label={label + " primitive preview"}>
         <p className="font-semibold">{label}</p>
         <div className="flex flex-wrap gap-1">
-          {["Main", "Reports", "Settings"].map((item) => (
-            <span key={item} className="rounded-full border px-2 py-0.5 text-[10px]" style={{ borderColor: tokens.border }}>
+          {["Main", "Reports", "Settings"].map((item, index) => (
+            <Button
+              key={item}
+              type="button"
+              size="xs"
+              variant={index === 0 ? "secondary" : "ghost"}
+              className="rounded-full px-2 py-0.5 text-[10px]"
+              aria-current={index === 0 ? "page" : undefined}
+              style={{ borderColor: tokens.border, color: tokens.foreground }}
+            >
               {item}
-            </span>
+            </Button>
           ))}
         </div>
         <p className="opacity-70">{element.kind} - {confidence}%</p>
@@ -1147,9 +1338,9 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       return (
         <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
           <p className="font-semibold">{roleLabel}</p>
-          <button type="button" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+          <Button type="button" size="xs" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Action
-          </button>
+          </Button>
           <p className="opacity-70">{element.kind} - {confidence}%</p>
         </div>
       );
@@ -1158,11 +1349,14 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
     return (
       <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
         <p className="font-semibold">{roleLabel}</p>
-        <div className="flex min-h-8 items-center justify-between rounded border px-2" style={{ borderColor: tokens.border }}>
-          <span className="opacity-65">Label or value</span>
-          <button type="button" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Action
-          </button>
+        <div className="grid gap-1.5">
+          <Label htmlFor={element.id + "-value"}>Label or value</Label>
+          <div className="flex items-center gap-2">
+            <Input id={element.id + "-value"} placeholder="Enter product data" />
+            <Button type="button" size="xs" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
+              Action
+            </Button>
+          </div>
         </div>
         <p className="opacity-70">{element.kind} - {confidence}%</p>
       </div>

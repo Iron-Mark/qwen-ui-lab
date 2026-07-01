@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const shareFixturePayload = {
   file: "dashboard.png",
-  mode: "Analyzer ready",
+  mode: "Ready to analyze",
   summary: "Local layout analysis for a dashboard screenshot.",
   stats: [{ l: "sections", v: "4" }],
 };
@@ -30,7 +30,7 @@ test("laws-of-ux redirect preserves ?lang=zh", async ({ page }) => {
       url.searchParams.get("lang") === "zh"
     );
   });
-  await expect(page.getByRole("heading", { name: "原子组件实验室" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "组件库" })).toBeVisible();
 });
 
 test("uilaws redirect preserves ?lang=zh", async ({ page }) => {
@@ -42,7 +42,7 @@ test("uilaws redirect preserves ?lang=zh", async ({ page }) => {
       url.searchParams.get("lang") === "zh"
     );
   });
-  await expect(page.getByRole("heading", { name: "原子组件实验室" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "组件库" })).toBeVisible();
 });
 
 test("/account redirects to zh account modal with ?lang=zh", async ({ page }) => {
@@ -80,9 +80,7 @@ test("/share/[id] renders zh chrome with ?lang=zh", async ({ page, request }) =>
   await expect(page.getByTestId("shared-result-summary")).toBeVisible();
   await expect(page.getByText(shareFixturePayload.summary)).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "打开工作流" }),
+    page.getByRole("link", { name: "返回工作流" }),
   ).toHaveAttribute("href", "/?lang=zh");
-  await expect(
-    page.getByRole("link", { name: "示例运行" }),
-  ).toHaveAttribute("href", "/demo?lang=zh");
+  await expect(page.locator('#main a[href="/demo?lang=zh"]')).toBeVisible();
 });

@@ -35,6 +35,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Validate docs links
+        run: npm run validate:docs
+
       - name: Build
         run: npm run build
 

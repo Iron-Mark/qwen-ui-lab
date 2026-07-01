@@ -1,13 +1,11 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 /** Mirrors app sessionStorage keys — keep in sync with UI code. */
-export const DEMO_SNACKBAR_SESSION_KEY = "qwen-ui-lab:demo-mode-snackbar-shown";
 export const SAMPLE_USED_SESSION_KEY = "qwen-ui-lab:upload-sample-used";
 export const AUTH_SESSION_KEY = "qwen-ui-lab:auth";
 export const SESSION_HISTORY_KEY = "qwen-ui-lab:sessions";
 
 const E2E_SESSION_KEYS = [
-  DEMO_SNACKBAR_SESSION_KEY,
   SAMPLE_USED_SESSION_KEY,
   AUTH_SESSION_KEY,
 ] as const;
@@ -131,37 +129,10 @@ export async function waitForUploadFlowReady(page: Page, timeoutMs = 20_000) {
   await expect(page.locator('input[type="file"]')).toBeAttached({ timeout: timeoutMs });
 }
 
-/** Bottom-left local analysis notice should clear the sticky header and stay in viewport. */
-export async function expectDemoSnackbarInViewport(
-  page: Page,
-  snackbar: Locator,
-  options?: { headerClearancePx?: number; timeoutMs?: number },
-) {
-  const headerClearancePx = options?.headerClearancePx ?? 64;
-  const timeoutMs = options?.timeoutMs ?? 10_000;
-
-  await expect
-    .poll(
-      async () => {
-        const box = await snackbar.boundingBox();
-        const viewport = page.viewportSize();
-        if (!box || !viewport) return false;
-        return (
-          box.y > headerClearancePx &&
-          box.x < viewport.width * 0.5 &&
-          box.x + box.width <= viewport.width + 4 &&
-          box.y + box.height <= viewport.height + 4
-        );
-      },
-      { timeout: timeoutMs, intervals: [100, 250, 500] },
-    )
-    .toBe(true);
-}
-
 export function demoModeSnackbar(page: Page): Locator {
   return page
     .getByRole("status")
-    .filter({ hasText: /local analysis available/i })
+    .filter({ hasText: /analyzer ready/i })
     .first();
 }
 
@@ -209,14 +180,6 @@ export function primaryAnalyzeButton(page: Page): Locator {
   });
 }
 
-export async function expectDemoSnackbarSessionFlag(page: Page, value: "0" | "1") {
-  await expect
-    .poll(() =>
-      page.evaluate((key) => sessionStorage.getItem(key), DEMO_SNACKBAR_SESSION_KEY),
-    )
-    .toBe(value === "1" ? "1" : null);
-}
-
 /** Waits for idle-deferred DesignSystemPreview (LCP path uses a skeleton first). */
 export async function waitForDesignSystemPreview(page: Page, timeoutMs = 20_000) {
   const previewPanel = page.locator("#component-preview-panel");
@@ -239,6 +202,6 @@ export async function waitForDesignSystemPreview(page: Page, timeoutMs = 20_000)
 export function designSystemTierButton(page: Page, tier: string): Locator {
   return page
     .locator("header")
-    .filter({ has: page.getByText("Tier", { exact: true }) })
+    .filter({ has: page.getByText("Component level", { exact: true }) })
     .getByRole("button", { name: new RegExp(`^${tier}$`, "i") });
 }

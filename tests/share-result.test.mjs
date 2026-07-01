@@ -22,7 +22,7 @@ import { handleShareGet, handleSharePost } from "../src/features/share/lib/share
 
 const sampleArtifact = {
   summary: "Admin dashboard with stat grid and activity rail.",
-  modeLabel: "Analyzer ready",
+  modeLabel: "Ready to analyze",
   file: { name: "dashboard-reference.svg" },
   previewStats: [
     { label: "Components", value: "6" },
@@ -81,7 +81,7 @@ test("buildShareableSummary omits code and secrets", () => {
   assert.ok(payload);
   assert.equal(payload.summary, sampleArtifact.summary);
   assert.equal(payload.file, "dashboard-reference.svg");
-  assert.equal(payload.mode, "Analyzer ready");
+  assert.equal(payload.mode, "Ready to analyze");
   assert.deepEqual(payload.stats, [
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
@@ -203,7 +203,7 @@ test("POST /api/share creates short link", async () => {
   assert.match(body.url, /^https:\/\/demo\.example\/share\//);
   assert.equal(body.storage, "memory");
   assert.equal(body.durable, false);
-  assert.match(body.warning, /KV is not configured/i);
+  assert.match(body.warning, /may expire sooner than a permanent share link/i);
 });
 
 test("POST /api/share rejects empty payload", async () => {

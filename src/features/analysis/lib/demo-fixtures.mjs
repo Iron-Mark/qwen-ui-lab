@@ -30,7 +30,7 @@ export function getSampleReferenceFile({ size, fileName } = {}) {
  */
 export function buildDemoArtifactForFile(file, overrides = {}) {
   return buildUiFlowArtifact(file, {
-    modeLabel: "Analyzer ready",
+    modeLabel: "Ready to analyze",
     ...overrides,
   });
 }

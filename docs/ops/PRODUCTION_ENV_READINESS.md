@@ -1,6 +1,6 @@
 # Production Env Readiness
 
-Use this runbook to make the production validation gate pass before a release. The public demo remains demo-safe by default: production should not enable live Qwen unless a staged live rollout is intentionally approved.
+Use this runbook to make the production validation gate pass before a release. The public app remains local-analysis-first by default: production should not enable live Qwen unless a staged live rollout is intentionally approved.
 
 ## Required production variables
 

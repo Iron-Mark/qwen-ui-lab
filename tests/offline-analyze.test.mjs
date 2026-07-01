@@ -31,8 +31,8 @@ import {
 import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
 import {
   buildScaffoldZipEntries,
-  extractProductionScaffoldBlueprint,
-} from "../src/features/export/lib/github-repo.mjs";
+} from "../src/features/export/lib/scaffold-package.mjs";
+import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
 
 function assertGeneratedTsxSyntax(code, label) {
   const result = ts.transpileModule(code, {
@@ -671,7 +671,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known reference samples export as starter packages", () => {
+test("known reference samples export as export packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -701,7 +701,8 @@ test("known reference samples export as starter packages", () => {
       filename: name.replace(/\.[^.]+$/, ".tsx"),
       description: known.summary,
     });
-    assert.equal(entries.length, 6);
+    assert.equal(entries.length, 7);
+    assert.ok(entries.some((entry) => entry.name === "DESIGN.md"));
     assert.ok(entries.some((entry) => entry.name.endsWith(".recipe.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".manifest.json")));
     assert.ok(entries.some((entry) => entry.name.endsWith(".tokens.css")));
@@ -1072,6 +1073,8 @@ test("lookupKnownSampleByInspection resolves bundled references by perceptual si
 
   assert.ok(exact);
   assert.match(exact.summary, /Admin dashboard/i);
+  assert.match(exact.generatedCode, /Sample screenshot metadata identifies this region/);
+  assert.doesNotMatch(exact.generatedCode, /Bundled reference metadata/);
   assert.ok(nearWebp);
   assert.equal(nearWebp.generatedCode, exact.generatedCode);
   assert.equal(unrelated, null);
@@ -1162,7 +1165,7 @@ test("classifyLayoutArchetype uses local screen intent for generic uploads", () 
 test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   const advanced = buildAdvancedOfflineOverrides(
     { name: "checkout-cart.png", type: "image/png", size: 512000, width: 1280, height: 800 },
-    { readableSize: "500.0 KB", dimensionLine: "1280×800px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1280x800px landscape frame (aspect 1.60)." },
   );
 
   assert.ok(advanced.plan.some((section) => section.title === "Layout Read"));
@@ -1181,7 +1184,7 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
       height: 900,
       offlineInspection,
     },
-    { readableSize: "500.0 KB", dimensionLine: "1440Ã—900px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1440x900px landscape frame (aspect 1.60)." },
   );
 
   assert.match(advanced.generatedCode, /const designTokens/);
@@ -1193,9 +1196,15 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
-  assert.match(advanced.generatedCode, /Detection recipe/);
+  assert.match(advanced.generatedCode, /const sampleData/);
+  assert.match(advanced.generatedCode, /const sampleCollections/);
+  assert.match(advanced.generatedCode, /function GeneratedScreenHeader/);
+  assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
+  assert.match(advanced.generatedCode, /production-facing layout/);
+  assert.match(advanced.generatedCode, /Implementation checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
-  assert.match(advanced.generatedCode, /Input placeholder="Connect real value"/);
+  assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);
+  assert.match(advanced.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
   assert.match(advanced.generatedCode, /Responsive intent/);
@@ -1204,6 +1213,9 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /app-shell/);
   assert.match(advanced.generatedCode, /Detected app shell/);
   assert.match(advanced.generatedCode, /desktop-sidebar-shell/);
+  assert.match(advanced.generatedCode, /aria-label="Top navigation"/);
+  assert.match(advanced.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
+  assert.match(advanced.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
   assert.match(advanced.generatedCode, /renderPrimitiveBody/);
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
@@ -1237,8 +1249,10 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"primitive": "list-item"/);
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
-  assert.match(advanced.generatedCode, /repeated item/);
-  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
+  assert.match(advanced.generatedCode, /sampleCollections\.rows/);
+  assert.match(advanced.generatedCode, /Replace with a real list item/);
+  assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
+  assert.match(advanced.generatedCode, /text-line signals shape the export/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1261,6 +1275,8 @@ test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold r
   assert.match(advanced.generatedCode, /repeated-grid/);
   assert.match(advanced.generatedCode, /"primitive": "card-grid"/);
   assert.match(advanced.generatedCode, /gridTemplateColumns/);
+  assert.match(advanced.generatedCode, /sampleCollections\.cards/);
+  assert.match(advanced.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
   assert.match(advanced.generatedCode, /repeated grid patterns/);
 });
 
@@ -1284,6 +1300,7 @@ test("buildAdvancedOfflineOverrides renders stat-row patterns as scaffold region
   assert.match(advanced.generatedCode, /stat-row/);
   assert.match(advanced.generatedCode, /KPI cards/);
   assert.match(advanced.generatedCode, /cardCount/);
+  assert.match(advanced.generatedCode, /sampleCollections\.metrics/);
   assert.match(advanced.generatedCode, /stat rows/);
 });
 
@@ -1305,7 +1322,10 @@ test("buildAdvancedOfflineOverrides renders form-group patterns as scaffold regi
 
   assert.match(advanced.summary, /Authentication/i);
   assert.match(advanced.generatedCode, /form-group/);
+  assert.match(advanced.generatedCode, /<Label htmlFor=/);
+  assert.match(advanced.generatedCode, /<Input id=/);
   assert.match(advanced.generatedCode, /Submit action/);
+  assert.match(advanced.generatedCode, /State coverage: wire validation errors, pending submit state, and success feedback/);
   assert.match(advanced.generatedCode, /form groups/);
 });
 
@@ -1327,9 +1347,13 @@ test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regi
 
   assert.match(advanced.summary, /Dashboard/i);
   assert.match(advanced.generatedCode, /data-table/);
-  assert.match(advanced.generatedCode, /<table/);
-  assert.match(advanced.generatedCode, /<thead>/);
+  assert.match(advanced.generatedCode, /from "@\/components\/ui\/table"/);
+  assert.match(advanced.generatedCode, /<Table className="min-w-\[28rem\] text-xs"/);
+  assert.match(advanced.generatedCode, /<TableHeader>/);
+  assert.match(advanced.generatedCode, /<TableCell/);
+  assert.match(advanced.generatedCode, /sampleCollections\.tableRows/);
   assert.match(advanced.generatedCode, /columnIndex \+ 1/);
+  assert.match(advanced.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
   assert.match(advanced.generatedCode, /data tables/);
 });
 
@@ -1352,7 +1376,9 @@ test("buildAdvancedOfflineOverrides renders chart-series patterns as scaffold re
   assert.match(advanced.summary, /Dashboard/i);
   assert.match(advanced.generatedCode, /chart-series/);
   assert.match(advanced.generatedCode, /bar chart preview/);
+  assert.match(advanced.generatedCode, /sampleCollections\.chartValues/);
   assert.match(advanced.generatedCode, /seriesCount/);
+  assert.match(advanced.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
   assert.match(advanced.generatedCode, /chart series/);
 });
 
@@ -1374,6 +1400,8 @@ test("buildAdvancedOfflineOverrides renders action-cluster patterns as scaffold 
 
   assert.match(advanced.generatedCode, /action-cluster/);
   assert.match(advanced.generatedCode, /region\.kind === "action-cluster"/);
+  assert.match(advanced.generatedCode, /<Button\s+key=\{index\}/);
+  assert.match(advanced.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
   assert.match(advanced.generatedCode, /Action \{index \+ 1\}/);
   assert.match(advanced.generatedCode, /controlCount/);
   assert.match(advanced.generatedCode, /action clusters/);
@@ -1396,8 +1424,9 @@ test("buildAdvancedOfflineOverrides renders tab-set patterns as scaffold regions
   );
 
   assert.match(advanced.generatedCode, /tab-set/);
-  assert.match(advanced.generatedCode, /role="tablist"/);
-  assert.match(advanced.generatedCode, /aria-selected/);
+  assert.match(advanced.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
+  assert.match(advanced.generatedCode, /<Tabs defaultValue=/);
+  assert.match(advanced.generatedCode, /<TabsTrigger/);
   assert.match(advanced.generatedCode, /tabbed-content/);
   assert.match(advanced.generatedCode, /tab sets/);
 });
@@ -1420,9 +1449,9 @@ test("buildAdvancedOfflineOverrides renders dialog-panel patterns as scaffold re
 
   assert.match(advanced.summary, /Modal dialog/i);
   assert.match(advanced.generatedCode, /dialog-panel/);
-  assert.match(advanced.generatedCode, /role="dialog"/);
-  assert.match(advanced.generatedCode, /aria-modal="true"/);
-  assert.match(advanced.generatedCode, /Close dialog/);
+  assert.match(advanced.generatedCode, /from "@\/components\/ui\/dialog"/);
+  assert.match(advanced.generatedCode, /<Dialog defaultOpen>/);
+  assert.match(advanced.generatedCode, /<DialogContent/);
   assert.match(advanced.generatedCode, /modal-dialog/);
   assert.match(advanced.generatedCode, /dialog panels/);
 });
@@ -1515,7 +1544,7 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /SVG starter/);
+  assert.match(artifact.generatedCode, /SVG export/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
@@ -1588,11 +1617,15 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
   assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
-  assert.match(regenerated.generatedCode, /Correction recipe/);
+  assert.match(regenerated.generatedCode, /Screenshot starter component/);
+  assert.match(regenerated.generatedCode, /Implementation checklist/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
   assert.match(regenerated.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(regenerated.generatedCode, /aria-label="Top navigation"/);
+  assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
+  assert.match(regenerated.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
   assert.match(regenerated.generatedCode, /appShells/);
   assert.match(regenerated.generatedCode, /Detected app shell/);
   assert.match(regenerated.generatedCode, /App shell/);
@@ -1624,9 +1657,14 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
   assert.match(regenerated.generatedCode, /const correctedPatterns/);
+  assert.match(regenerated.generatedCode, /const sampleSectionData/);
   assert.match(regenerated.generatedCode, /const responsiveIntent/);
   assert.match(regenerated.generatedCode, /const correctedElementById/);
   assert.match(regenerated.generatedCode, /renderCorrectedPrimitive/);
+  assert.match(regenerated.generatedCode, /function SectionStateHint/);
+  assert.match(regenerated.generatedCode, /function SectionSampleDataHint/);
+  assert.match(regenerated.generatedCode, /Sample rows: /);
+  assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
   assert.match(regenerated.generatedCode, /Repeated list/);
   assert.match(regenerated.generatedCode, /groupedElementIds/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
@@ -1651,6 +1689,8 @@ test("regenerateArtifactFromDetections preserves repeated-grid scaffold groups",
   assert.match(regenerated.generatedCode, /repeatedGrids/);
   assert.match(regenerated.generatedCode, /Detected repeated grid/);
   assert.match(regenerated.generatedCode, /gridTemplateColumns/);
+  assert.match(regenerated.generatedCode, /Sample cards: /);
+  assert.match(regenerated.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1672,6 +1712,7 @@ test("regenerateArtifactFromDetections preserves stat-row scaffold groups", () =
   assert.match(regenerated.generatedCode, /statRows/);
   assert.match(regenerated.generatedCode, /Detected stat row/);
   assert.match(regenerated.generatedCode, /Stat row/);
+  assert.match(regenerated.generatedCode, /Sample metrics: /);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1692,6 +1733,10 @@ test("regenerateArtifactFromDetections preserves form-group scaffold groups", ()
 
   assert.match(regenerated.generatedCode, /formGroups/);
   assert.match(regenerated.generatedCode, /Detected form group/);
+  assert.match(regenerated.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
+  assert.match(regenerated.generatedCode, /<Label htmlFor=/);
+  assert.match(regenerated.generatedCode, /<Input id=/);
+  assert.match(regenerated.generatedCode, /State coverage: wire validation errors, pending submit state, and success feedback/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1712,7 +1757,11 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
 
   assert.match(regenerated.generatedCode, /dataTables/);
   assert.match(regenerated.generatedCode, /Detected data table/);
-  assert.match(regenerated.generatedCode, /<table/);
+  assert.match(regenerated.generatedCode, /from "@\/components\/ui\/table"/);
+  assert.match(regenerated.generatedCode, /<Table className="min-w-\[28rem\]"/);
+  assert.match(regenerated.generatedCode, /<TableCell/);
+  assert.match(regenerated.generatedCode, /Sample table columns: /);
+  assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1734,6 +1783,8 @@ test("regenerateArtifactFromDetections preserves chart-series scaffold groups", 
   assert.match(regenerated.generatedCode, /charts/);
   assert.match(regenerated.generatedCode, /Detected chart series/);
   assert.match(regenerated.generatedCode, /Chart series/);
+  assert.match(regenerated.generatedCode, /Sample chart values: /);
+  assert.match(regenerated.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1755,6 +1806,8 @@ test("regenerateArtifactFromDetections preserves action-cluster scaffold groups"
   assert.match(regenerated.generatedCode, /actionClusters/);
   assert.match(regenerated.generatedCode, /Detected action cluster/);
   assert.match(regenerated.generatedCode, /Action cluster/);
+  assert.match(regenerated.generatedCode, /<Button\s+key=\{childId\}/);
+  assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1776,7 +1829,9 @@ test("regenerateArtifactFromDetections preserves tab-set scaffold groups", () =>
   assert.match(regenerated.generatedCode, /tabSets/);
   assert.match(regenerated.generatedCode, /Detected tab set/);
   assert.match(regenerated.generatedCode, /Tab set/);
-  assert.match(regenerated.generatedCode, /role="tablist"/);
+  assert.match(regenerated.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
+  assert.match(regenerated.generatedCode, /<Tabs defaultValue=/);
+  assert.match(regenerated.generatedCode, /<TabsTrigger/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1796,9 +1851,9 @@ test("regenerateArtifactFromDetections preserves dialog-panel scaffold groups", 
 
   assert.match(regenerated.generatedCode, /dialogPanels/);
   assert.match(regenerated.generatedCode, /Detected dialog panel/);
-  assert.match(regenerated.generatedCode, /Dialog panel/);
-  assert.match(regenerated.generatedCode, /role="dialog"/);
-  assert.match(regenerated.generatedCode, /aria-modal="true"/);
+  assert.match(regenerated.generatedCode, /from "@\/components\/ui\/dialog"/);
+  assert.match(regenerated.generatedCode, /<Dialog[^>]*defaultOpen/);
+  assert.match(regenerated.generatedCode, /<DialogContent/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1852,12 +1907,18 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
   assert.match(regenerated.generatedCode, /CorrectionGridReference/);
+  assert.match(regenerated.generatedCode, /const correctionSummary/);
+  assert.match(regenerated.generatedCode, /Applied edits/);
+  assert.match(regenerated.generatedCode, /Manual corrections are the source of truth/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
-  assert.match(regenerated.generatedCode, /button type="button"/);
+  assert.match(regenerated.generatedCode, /Button type="button"/);
+  assert.match(regenerated.generatedCode, /Manual correction/);
+  assert.match(regenerated.generatedCode, /Correction confidence/);
+  assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
     String(detections.elements.length - 1),
@@ -1865,6 +1926,58 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Edited").value,
     "2",
+  );
+  assert.ok(
+    regenerated.detections.elements[0].confidence >= 0.72,
+    "edited included element confidence should be recomputed upward",
+  );
+  assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) => reason.code === "manual-correction",
+    ),
+  );
+  assert.ok(
+    regenerated.detections.elements[0].reasons.some(
+      (reason) =>
+        reason.code === "manual-correction" &&
+        /type, primitive, role, geometry/.test(reason.evidence),
+    ),
+    "manual correction reason should name the corrected dimensions",
+  );
+  assert.ok(
+    regenerated.detections.elements[1].reasons.some(
+      (reason) => reason.code === "manual-exclusion",
+    ),
+  );
+  assert.equal(regenerated.detections.quality.correctedElementCount, 2);
+  assert.equal(regenerated.detections.quality.excludedElementCount, 1);
+  assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
+
+  const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
+  assert.ok(blueprint);
+  assert.equal(blueprint.detectedElements.length, detections.elements.length - 1);
+  assert.equal(blueprint.detectedElements[0].id, detections.elements[0].id);
+  assert.equal(blueprint.detectedElements[0].primitive, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].componentRole, "field-or-action");
+  assert.equal(blueprint.detectedElements[0].userEdited, true);
+  assert.ok(blueprint.detectedElements[0].confidence >= 0.72);
+  assert.ok(
+    blueprint.detectedElements[0].reasons.some((reason) =>
+      /Manual correction/.test(reason),
+    ),
+  );
+  assert.ok(
+    blueprint.layoutRegions.some((region) =>
+      region.children.includes(detections.elements[0].id),
+    ),
+  );
+  assert.ok(
+    blueprint.reviewChecklist.some((item) =>
+      /deterministic source/.test(item),
+    ),
+  );
+  assert.ok(
+    blueprint.detectedElements.every((element) => element.id !== detections.elements[1].id),
   );
 });
 

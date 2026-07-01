@@ -1,18 +1,21 @@
 /**
- * Server-side GitHub Gist helpers for component export.
+ * Server-side GitHub Gist helpers for generated UI package exports.
  */
+
+import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
+import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Copy your generated component, open gist.github.com, paste into a new secret gist, and save.";
+  "Open gist.github.com, paste the copied component into a new secret gist, and save.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export is not configured. Set GITHUB_TOKEN on the server.",
+      "GitHub Gist export needs setup before it can create links automatically.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,
@@ -47,13 +50,13 @@ export function getGithubGistToken(env = process.env) {
  */
 export async function createGithubGist({
   token,
-  description = "qwen-ui-lab component export",
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   filename,
   content,
   isPublic = false,
   fetchImpl = fetch,
 }) {
-  const safeFilename = sanitizeGistFilename(filename);
+  const safeFilename = sanitizeScaffoldFilename(filename);
   const response = await fetchImpl("https://api.github.com/gists", {
     method: "POST",
     headers: {
@@ -106,21 +109,4 @@ export async function createGithubGist({
   };
 }
 
-/**
- * @param {string} filename
- */
-export function sanitizeGistFilename(filename) {
-  const basename = String(filename || "component.tsx")
-    .trim()
-    .split(/[/\\]+/)
-    .pop();
-  const base = String(basename || "component.tsx")
-    .replace(/[^\w.-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  if (!base) return "component.tsx";
-  if (base.endsWith(".tsx") || base.endsWith(".ts") || base.endsWith(".jsx")) {
-    return base;
-  }
-  return `${base}.tsx`;
-}
+export { sanitizeScaffoldFilename as sanitizeGistFilename } from "./scaffold-filename.mjs";

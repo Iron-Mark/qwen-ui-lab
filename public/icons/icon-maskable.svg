@@ -1,8 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" rx="112" fill="#18181b" />
-  <g fill="#fafafa">
-    <rect x="116" y="176" width="64" height="192" rx="8" />
-    <rect x="224" y="224" width="64" height="144" rx="8" />
-    <rect x="332" y="272" width="64" height="96" rx="8" />
+  <defs>
+    <linearGradient id="qui-512-92-120-bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08061f"/>
+      <stop offset=".58" stop-color="#111827"/>
+      <stop offset="1" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="qui-512-92-120-frame" x1="132" y1="96" x2="388" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c4b5fd"/>
+      <stop offset=".42" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+    <linearGradient id="qui-512-92-120-face" x1="180" y1="150" x2="336" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171333"/>
+      <stop offset="1" stop-color="#050315"/>
+    </linearGradient>
+    <linearGradient id="qui-512-92-120-letters" x1="168" y1="202" x2="348" y2="294" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5f3ff"/>
+      <stop offset=".42" stop-color="#c4b5fd"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="qui-512-92-120-shadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#020617" flood-opacity=".55"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="16" flood-color="#8b5cf6" flood-opacity=".34"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#qui-512-92-120-bg)"/>
+  <path d="M92 150h328M92 256h328M92 362h328M150 92v328M256 92v328M362 92v328" stroke="#22d3ee" stroke-opacity=".12" stroke-width="5"/>
+  <ellipse cx="256" cy="260" rx="196" ry="72" stroke="#22d3ee" stroke-opacity=".38" stroke-width="9" transform="rotate(-18 256 260)"/>
+  <ellipse cx="256" cy="260" rx="188" ry="66" stroke="#c4b5fd" stroke-opacity=".55" stroke-width="10" transform="rotate(24 256 260)"/>
+  <g filter="url(#qui-512-92-120-shadow)">
+    <polygon points="256,84 386,158 386,318 256,428 126,318 126,158" fill="url(#qui-512-92-120-frame)"/>
+    <polygon points="256,134 342,184 342,300 256,374 170,300 170,184" fill="url(#qui-512-92-120-face)" stroke="#ede9fe" stroke-opacity=".34" stroke-width="6"/>
+    <path d="M156 174L256 116L356 174" stroke="#ede9fe" stroke-opacity=".48" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M148 318L256 408L364 318" stroke="#4c1d95" stroke-opacity=".45" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="256" y="285" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="112" font-weight="900" letter-spacing="-5" fill="#4c1d95" opacity=".62">QUI</text>
+    <text x="256" y="274" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="112" font-weight="900" letter-spacing="-5" fill="url(#qui-512-92-120-letters)">QUI</text>
   </g>
+  <circle cx="380" cy="168" r="12" fill="#c4b5fd"/>
+  <circle cx="132" cy="342" r="9" fill="#22d3ee" fill-opacity=".84"/>
 </svg>

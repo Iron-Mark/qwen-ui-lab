@@ -65,6 +65,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Validate docs links
+        run: npm run validate:docs
+
       - name: Validate deploy env defaults (demo target)
         run: npm run deploy:env:demo
 
@@ -83,6 +86,7 @@ jobs:
       PORT: 3000
       DASHSCOPE_API_KEY: ""
       QWEN_LIVE_ANALYSIS: ""
+      NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3000"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -106,7 +110,7 @@ jobs:
         run: npx --yes wait-on@7.2.0 --timeout 120000 http://127.0.0.1:${PORT}
 
       - name: Check internal links
-        run: npx --yes linkinator@6.1.2 http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry --concurrency 3 --skip ".*(_next|api/analyze-ui).*"
+        run: npx --yes -p node@22 -p linkinator@6.1.2 linkinator http://127.0.0.1:${PORT} --recurse --timeout 15000 --retry --concurrency 3 --skip ".*_next.*" --skip ".*api/analyze-ui.*" --skip "https://ph.linkedin.com/.*"
 
       - name: Lighthouse performance budget
         run: |

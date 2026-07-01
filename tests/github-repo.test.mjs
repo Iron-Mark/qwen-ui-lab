@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildRepoCompareExport,
-  buildScaffoldReadme,
-  buildScaffoldZipEntries,
   canUseGithubRepoExport,
-  extractProductionScaffoldBlueprint,
   getGithubRepoExportConfig,
   parseGithubRepoSlug,
 } from "../src/features/export/lib/github-repo.mjs";
+import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
+import { buildScaffoldReadme } from "../src/features/export/lib/scaffold-package-docs.mjs";
+import {
+  buildScaffoldPackageFileMap,
+  buildScaffoldZipEntries,
+} from "../src/features/export/lib/scaffold-package.mjs";
 
 test("canUseGithubRepoExport mirrors gist token detection", () => {
   assert.equal(canUseGithubRepoExport({}), false);
@@ -44,7 +47,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "generated-auth.tsx",
-    description: "component export",
+    description: "export package",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
@@ -60,11 +63,15 @@ test("buildScaffoldZipEntries includes readme and sanitized filename", () => {
     description: "test",
   });
 
-  assert.equal(entries.length, 2);
-  assert.equal(entries[0].name, "README.md");
-  assert.match(entries[0].content, /test/);
-  assert.equal(entries[1].name, "name.tsx");
-  assert.equal(entries[1].content, "export const x = 1;");
+  assert.equal(entries.length, 7);
+  assert.ok(entries.some((entry) => entry.name === "README.md"));
+  assert.ok(entries.some((entry) => entry.name === "DESIGN.md"));
+  assert.ok(entries.some((entry) => entry.name === "src/components/generated/name.tsx"));
+  assert.match(entries.find((entry) => entry.name === "README.md")?.content ?? "", /test/);
+  assert.equal(
+    entries.find((entry) => entry.name === "src/components/generated/name.tsx")?.content,
+    "export const x = 1;",
+  );
 });
 
 test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () => {
@@ -78,6 +85,12 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
   assert.equal(blueprint.shadcnPrimitiveMap["data-table"], "semantic table inside Card");
   assert.equal(blueprint.primitiveSummary.primitives["data-table"], 1);
   assert.equal(blueprint.primitiveSummary.patternCounts.dataTables, 1);
+  assert.deepEqual(blueprint.correctionSummary, {
+    activeElements: 1,
+    appliedEdits: 1,
+    excludedBoxes: 1,
+    sourceOfTruth: "Manual corrections are the source of truth for this regenerated scaffold.",
+  });
   assert.match(blueprint.sourceHash, /^[a-f0-9]{64}$/);
   assert.ok(blueprint.reviewChecklist.some((item) => /table rows/.test(item)));
 });
@@ -92,7 +105,21 @@ test("extractProductionScaffoldBlueprint handles CRLF generated scaffolds", () =
   assert.equal(blueprint.shadcnPrimitiveMap["primary-action"], "Button");
 });
 
-test("buildScaffoldZipEntries creates starter package for offline scaffolds", () => {
+test("buildScaffoldPackageFileMap keeps export package paths consistent", () => {
+  assert.deepEqual(buildScaffoldPackageFileMap("detected dashboard!.tsx"), {
+    stem: "detected-dashboard",
+    files: {
+      designDoc: "DESIGN.md",
+      component: "src/components/generated/detected-dashboard.tsx",
+      recipe: "src/components/generated/detected-dashboard.recipe.json",
+      manifest: "src/components/generated/detected-dashboard.manifest.json",
+      tokens: "src/components/generated/detected-dashboard.tokens.css",
+      detectionSummary: "docs/detected-dashboard.detection.md",
+    },
+  });
+});
+
+test("buildScaffoldZipEntries creates export package for offline scaffolds", () => {
   const entries = buildScaffoldZipEntries({
     content: RICH_GENERATED_SCAFFOLD,
     filename: "detected-dashboard.tsx",
@@ -102,25 +129,60 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
 
   assert.deepEqual(names, [
     "README.md",
+    "DESIGN.md",
     "src/components/generated/detected-dashboard.tsx",
     "src/components/generated/detected-dashboard.recipe.json",
     "src/components/generated/detected-dashboard.manifest.json",
     "src/components/generated/detected-dashboard.tokens.css",
     "docs/detected-dashboard.detection.md",
   ]);
-  assert.match(entries[0].content, /starter package/i);
-  assert.match(entries[1].content, /GeneratedComponent/);
-  assert.match(entries[4].content, /--qwen-generated-accent: #2563eb/);
-  assert.match(entries[5].content, /Dashboard workspace/);
-  assert.match(entries[5].content, /dataTables: 1/);
-  assert.match(entries[5].content, /data-table: semantic table inside Card/);
+  assert.match(entries[0].content, /Screenshot UI starter package/);
+  assert.match(entries[0].content, /It is a starter package for review, not a final production component/);
+  assert.match(
+    entries[0].content,
+    /Manual corrections: 1 edited detection box, 1 excluded element captured in the recipe JSON\./,
+  );
+  assert.match(
+    entries[0].content,
+    /Review notes: 1 low-confidence element plus \d+ checklist items before merge\./,
+  );
+  assert.match(entries[0].content, /## Import readiness/);
+  assert.match(entries[0].content, /Required UI imports: .*@\/components\/ui\/button/);
+  assert.match(entries[1].content, /Design notes/);
+  assert.match(entries[1].content, /## Correction summary/);
+  assert.match(entries[1].content, /## Review contract/);
+  assert.match(entries[1].content, /## Import readiness/);
+  assert.match(entries[1].content, /Applied edits: 1/);
+  assert.match(entries[1].content, /Excluded boxes: 1/);
+  assert.match(entries[1].content, /Source of truth: Manual corrections/);
+  assert.match(entries[2].content, /GeneratedComponent/);
+  assert.match(entries[5].content, /--qwen-generated-accent: #2563eb/);
+  assert.match(entries[6].content, /Dashboard workspace/);
+  assert.match(entries[6].content, /dataTables: 1/);
+  assert.match(entries[6].content, /data-table: semantic table inside Card/);
+  assert.match(entries[6].content, /High confidence: 2/);
+  assert.match(entries[6].content, /Low confidence: 1/);
+  assert.match(entries[6].content, /Applied edits: 1/);
+  assert.match(entries[6].content, /Excluded boxes: 1/);
+  assert.match(entries[6].content, /Source of truth: Manual corrections/);
+  assert.match(entries[6].content, /## Low-confidence review queue/);
+  assert.match(entries[6].content, /element-2: 68% as primary-action/);
+  assert.match(entries[6].content, /## Why elements were detected/);
+  assert.match(entries[6].content, /primary-action: manual correction plus detector evidence; no detailed reason was exported\./);
+  assert.match(entries[6].content, /## Reviewer handoff/);
+  assert.match(entries[6].content, /Keep this detection note with the pull request/);
+  assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
+  assert.match(entries[6].content, /Excluded element-2: primary-action/);
 
-  const recipe = JSON.parse(entries[2].content);
+  const recipe = JSON.parse(entries[3].content);
   assert.equal(recipe.schema, "qwen-ui-lab/scaffold-recipe@1");
   assert.equal(recipe.files.component, "src/components/generated/detected-dashboard.tsx");
+  assert.equal(recipe.files.designDoc, "DESIGN.md");
   assert.equal(recipe.files.manifest, "src/components/generated/detected-dashboard.manifest.json");
   assert.equal(recipe.integration.importPath, "@/components/generated/detected-dashboard");
   assert.equal(recipe.primitiveSummary.primitives["data-table"], 1);
+  assert.equal(recipe.correctionSummary.appliedEdits, 1);
+  assert.equal(recipe.correctionSummary.excludedBoxes, 1);
   assert.deepEqual(recipe.integration.dependencies, [
     "@/components/ui/badge",
     "@/components/ui/button",
@@ -128,12 +190,28 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "@/components/ui/table",
   ]);
 
-  const manifest = JSON.parse(entries[3].content);
+  const manifest = JSON.parse(entries[4].content);
   assert.equal(manifest.schema, "qwen-ui-lab/export-bundle@1");
   assert.equal(manifest.bundleId, `qwen-${manifest.sourceHash.slice(0, 12)}`);
   assert.equal(manifest.contents.includesOriginalImage, false);
   assert.equal(manifest.contents.includesSecrets, false);
+  assert.equal(manifest.corrections.appliedEdits, 1);
+  assert.equal(manifest.corrections.excludedBoxes, 1);
+  assert.match(manifest.corrections.sourceOfTruth, /Manual corrections/);
+  assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/generated/detected-dashboard.recipe.json");
+  assert.deepEqual(manifest.reviewContract.keepFilesUntilReviewComplete, [
+    "DESIGN.md",
+    "src/components/generated/detected-dashboard.recipe.json",
+    "src/components/generated/detected-dashboard.manifest.json",
+    "docs/detected-dashboard.detection.md",
+  ]);
+  assert.ok(manifest.reviewContract.requiredChecks.includes("visual parity"));
+  assert.ok(
+    manifest.qualityGates.includes(
+      "Add or verify loading, empty, error, and keyboard focus states.",
+    ),
+  );
 });
 
 test("buildScaffoldReadme documents the scaffold file", () => {
@@ -165,6 +243,15 @@ const detectedElements = [
     "primitive": "data-table",
     "componentRole": "data-table",
     "confidence": 0.88
+  },
+  {
+    "id": "element-2",
+    "kind": "button",
+    "primitive": "button",
+    "componentRole": "primary-action",
+    "confidence": 0.68,
+    "included": false,
+    "userEdited": true
   }
 ];
 
@@ -202,6 +289,13 @@ const layoutRegions = [
     "confidence": 0.9
   }
 ];
+
+const correctionSummary = {
+  "activeElements": 1,
+  "appliedEdits": 1,
+  "excludedBoxes": 1,
+  "sourceOfTruth": "Manual corrections are the source of truth for this regenerated scaffold."
+};
 
 const shadcnPrimitiveMap: Record<string, string> = {
   "data-table": "semantic table inside Card",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  demoArchetypeLabel,
-  resolveDemoArchetype,
+  sampleReferenceLabel,
+  resolveSampleReferenceId,
 } from "./demo-archetypes.mjs";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
@@ -13,51 +13,51 @@ export type DemoRoutePageProps = {
 
 export function createDemoRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Sample reference",
+    title: "Sample screenshot",
     description:
-      "Preloaded screenshot references for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React starter.",
+      "Sample screenshots for dashboard, auth, mobile, landing, settings, and shop layouts. Inspect detections and export a React package.",
     path: "/demo",
     keywords: [
       "Qwen UI sample",
-      "sample reference",
-      "UI archetype starter",
-      "React starter export",
+      "sample screenshot",
+      "UI archetype export",
+      "React package export",
     ],
     ogImage: "/opengraph-image",
-    ogImageAlt: "qwen-ui-lab sample reference workflow",
+    ogImageAlt: "qwen-ui-lab sample screenshot workflow",
     twitterImage: "/twitter-image",
-    twitterImageAlt: "Preloaded screenshot-to-React sample",
+    twitterImageAlt: "Screenshot-to-React sample screenshot",
     shareSnippet:
-      "Open /demo for a sample reference and swap layouts with ?archetype=auth|mobile|landing|settings|shop.",
+      "Open a sample screenshot, inspect the detected UI, and review the export package.",
   });
 }
 
-export function resolveDemoRouteArchetype(value: string | null | undefined) {
-  return resolveDemoArchetype(value);
+export function resolveSampleReferenceRouteId(value: string | null | undefined) {
+  return resolveSampleReferenceId(value);
 }
 
 export async function resolveDemoPageModel({ searchParams }: DemoRoutePageProps) {
   const params = await searchParams;
 
   return {
-    demoArchetype: resolveDemoRouteArchetype(params.archetype),
+    sampleReferenceId: resolveSampleReferenceRouteId(params.archetype),
   };
 }
 
-export function getDemoRouteArchetypeLabel(value: string) {
-  return demoArchetypeLabel(value);
+export function getSampleReferenceRouteLabel(value: string) {
+  return sampleReferenceLabel(value);
 }
 
 export function getDemoRouteStructuredDataInput() {
   return {
-    title: "Sample reference",
+    title: "Sample screenshot",
     description:
-      "Preloaded screenshot sample references with starter output for common UI archetypes.",
+      "Sample screenshots with generated output for common UI archetypes.",
     path: "/demo",
-    breadcrumbLabel: "Sample reference",
+    breadcrumbLabel: "Sample screenshot",
     about: ["Screenshot sample", "UI archetype analysis", "React export"],
     callToAction:
-      "Open /demo to run a sample layout and review the exported starter.",
+      "Run a sample layout and review the export package.",
   };
 }
 

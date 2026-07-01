@@ -881,7 +881,7 @@ test("demo route delegates search-param parsing to feature helpers", async () =>
   const specifiers = collectModuleSpecifiers(file, source);
   const bannedMarkers = [
     "const params = await searchParams",
-    "resolveDemoRouteArchetype(",
+    "resolveSampleReferenceRouteId(",
     "Promise<{ archetype?: string }>",
   ];
 
@@ -1129,6 +1129,125 @@ test("export api routes delegate orchestration to export feature handlers", asyn
   assert.deepEqual(violations, []);
 });
 
+test("github repo export helper does not own scaffold package assembly", async () => {
+  const file = path.join(
+    process.cwd(),
+    "src",
+    "features",
+    "export",
+    "lib",
+    "github-repo.mjs",
+  );
+  const source = await readFile(file, "utf8");
+  const bannedImportSpecifiers = [
+    "./scaffold-blueprint.mjs",
+    "./scaffold-package.mjs",
+  ];
+  const bannedMarkers = [
+    "function buildScaffoldZipEntries",
+    "function buildScaffoldPackageFileMap",
+    "function buildFallbackScaffoldZipEntries",
+    "function buildProductionScaffoldZipEntries",
+    "function inferShadcnDependencies",
+    "function inferPrimitiveMapFromImports",
+    "function extractProductionScaffoldBlueprint",
+    "This export is a reviewable package. Import it into source control",
+  ];
+
+  const violations = [];
+  const importLines = source
+    .split(/\r?\n/)
+    .filter((line) => line.trimStart().startsWith("import "));
+  for (const specifier of bannedImportSpecifiers) {
+    if (importLines.some((line) => line.includes(`from "${specifier}"`) || line.includes(`from '${specifier}'`))) {
+      violations.push(`${toRepoPath(file)} imports ${specifier}`);
+    }
+  }
+  for (const marker of bannedMarkers) {
+    if (source.includes(marker)) {
+      violations.push(`${toRepoPath(file)} contains ${marker}`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("github gist export helper reuses shared package copy", async () => {
+  const file = path.join(
+    process.cwd(),
+    "src",
+    "features",
+    "export",
+    "lib",
+    "github-gist.mjs",
+  );
+  const source = await readFile(file, "utf8");
+  const specifiers = collectModuleSpecifiers(file, source);
+  const violations = [];
+
+  if (!specifiers.includes("./scaffold-package-docs.mjs")) {
+    violations.push(`${toRepoPath(file)} does not import shared package docs`);
+  }
+  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package"')) {
+    violations.push(`${toRepoPath(file)} duplicates package description copy`);
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("export package helpers use neutral filename sanitizing", async () => {
+  const files = [
+    path.join(process.cwd(), "src", "features", "export", "lib", "github-repo.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-package.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-export-request.mjs"),
+  ];
+  const violations = [];
+
+  for (const file of files) {
+    const source = await readFile(file, "utf8");
+    const specifiers = collectModuleSpecifiers(file, source);
+    if (specifiers.includes("./github-gist.mjs")) {
+      violations.push(`${toRepoPath(file)} imports ./github-gist.mjs for filename sanitizing`);
+    }
+    if (!specifiers.includes("./scaffold-filename.mjs")) {
+      violations.push(`${toRepoPath(file)} does not import neutral filename helper`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("export tests import package builders from focused modules", async () => {
+  const testFiles = [
+    path.join(process.cwd(), "tests", "github-repo.test.mjs"),
+    path.join(process.cwd(), "tests", "offline-analyze.test.mjs"),
+    path.join(process.cwd(), "tests", "scaffold-zip.test.mjs"),
+  ];
+  const bannedNames = [
+    "buildScaffoldZipEntries",
+    "buildScaffoldPackageFileMap",
+    "extractProductionScaffoldBlueprint",
+  ];
+  const violations = [];
+
+  for (const file of testFiles) {
+    const source = await readFile(file, "utf8");
+    const githubRepoImportMatch = /import\s*\{([\s\S]*?)\}\s*from\s*["']\.\.\/src\/features\/export\/lib\/github-repo\.mjs["']/.exec(source);
+    if (!githubRepoImportMatch) continue;
+    const importedNames = githubRepoImportMatch[1]
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean);
+    for (const name of bannedNames) {
+      if (importedNames.includes(name)) {
+        violations.push(`${toRepoPath(file)} imports ${name} from github-repo.mjs`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("csp report api route delegates parsing and logging to shared csp helper", async () => {
   const file = path.join(
     process.cwd(),
@@ -1212,6 +1331,41 @@ test("shared modules do not import feature modules", async () => {
     const source = await readFile(file, "utf8");
     for (const specifier of collectModuleSpecifiers(file, source)) {
       if (specifier.startsWith("@/features/")) {
+        violations.push(`${toRepoPath(file)} imports ${specifier}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("shared lib modules do not import UI, provider, app, or feature modules", async () => {
+  const libFiles = (await collectSourceFiles(["src/lib"])).filter((file) =>
+    sourceModuleExtensions.includes(path.extname(file)),
+  );
+  const blockedImportPrefixes = [
+    "@/app/",
+    "@/components/",
+    "@/features/",
+  ];
+  const blockedRelativeSegments = [
+    "/app/",
+    "/components/",
+    "/features/",
+  ];
+
+  const violations = [];
+  for (const file of libFiles) {
+    const source = await readFile(file, "utf8");
+    for (const specifier of collectModuleSpecifiers(file, source)) {
+      if (blockedImportPrefixes.some((prefix) => specifier.startsWith(prefix))) {
+        violations.push(`${toRepoPath(file)} imports ${specifier}`);
+        continue;
+      }
+
+      if (!specifier.startsWith(".")) continue;
+      const resolvedPath = toRepoPath(path.resolve(path.dirname(file), specifier));
+      if (blockedRelativeSegments.some((segment) => resolvedPath.includes(segment))) {
         violations.push(`${toRepoPath(file)} imports ${specifier}`);
       }
     }
@@ -1358,7 +1512,7 @@ test("share result core remains server-safe", async () => {
   assert.deepEqual(violations, []);
 });
 
-test("demo feature components delegate archetype helpers through demo lib", async () => {
+test("sample reference components delegate sample helpers through demo lib", async () => {
   const demoComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
     (file) => sourceModuleExtensions.includes(path.extname(file)),
   );
