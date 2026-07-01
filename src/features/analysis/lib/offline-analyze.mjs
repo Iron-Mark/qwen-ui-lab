@@ -1939,18 +1939,18 @@ function UsableSection({ section }: { section: UsableSectionModel }) {
                     {item.label}
                   </Button>
                 ) : (
-                  <label key={item.id} className="grid gap-2 text-sm font-medium">
-                    Field {index + 1}
-                    <Input placeholder="Enter product data" />
-                  </label>
+                  <div key={item.id} className="grid gap-2">
+                    <Label htmlFor={item.id}>Field {index + 1}</Label>
+                    <Input id={item.id} placeholder="Enter product data" />
+                  </div>
                 ),
               )
             ) : (
               <>
-                <label className="grid gap-2 text-sm font-medium">
-                  Primary field
-                  <Input placeholder="Enter product data" />
-                </label>
+                <div className="grid gap-2">
+                  <Label htmlFor="generated-primary-field">Primary field</Label>
+                  <Input id="generated-primary-field" placeholder="Enter product data" />
+                </div>
                 <Button type="button" className="w-fit">Submit action</Button>
               </>
             )}
@@ -1991,10 +1991,10 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
 
   if (/search-field|form-field/.test(role)) {
     return (
-      <label className="grid gap-2 text-sm font-medium">
-        {label}
-        <Input placeholder="Enter product data" />
-      </label>
+      <div className="grid gap-2">
+        <Label htmlFor={item.id}>{label}</Label>
+        <Input id={item.id} placeholder="Enter product data" />
+      </div>
     );
   }
 
@@ -2285,15 +2285,16 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     return (
       <form className="mt-3 grid gap-2" aria-label={region.label}>
         {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => (
-          <label key={itemIndex} className="grid gap-1 text-[11px] font-medium">
-            Field {itemIndex + 1}
-            <span
-              className="flex min-h-9 items-center rounded border px-3 font-normal opacity-75"
-              style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
-            >
-              Value or input
-            </span>
-          </label>
+          <div key={itemIndex} className="grid gap-1.5">
+            <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
+              Field {itemIndex + 1}
+            </Label>
+            <Input
+              id={region.id + "-field-" + (itemIndex + 1)}
+              placeholder="Value or input"
+              style={{ backgroundColor: tokens.surface }}
+            />
+          </div>
         ))}
         <button
           type="button"
@@ -2444,9 +2445,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
     return (
       <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
-        <label className="text-[11px] font-medium opacity-75">{roleLabel}</label>
-        <div className="flex min-h-9 items-center justify-between rounded border px-3 text-xs" style={{ borderColor: tokens.border }}>
-          <span className="opacity-70">User input or action</span>
+        <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
+        <div className="flex items-center gap-2">
+          <Input id={region.id + "-control"} placeholder="User input or action" />
           <button type="button" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Apply
           </button>

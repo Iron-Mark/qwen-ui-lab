@@ -1202,7 +1202,8 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Implementation checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
-  assert.match(advanced.generatedCode, /Input placeholder="Enter product data"/);
+  assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);
+  assert.match(advanced.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
   assert.match(advanced.generatedCode, /Responsive intent/);
@@ -1312,6 +1313,8 @@ test("buildAdvancedOfflineOverrides renders form-group patterns as scaffold regi
 
   assert.match(advanced.summary, /Authentication/i);
   assert.match(advanced.generatedCode, /form-group/);
+  assert.match(advanced.generatedCode, /<Label htmlFor=/);
+  assert.match(advanced.generatedCode, /<Input id=/);
   assert.match(advanced.generatedCode, /Submit action/);
   assert.match(advanced.generatedCode, /form groups/);
 });
@@ -1703,6 +1706,9 @@ test("regenerateArtifactFromDetections preserves form-group scaffold groups", ()
 
   assert.match(regenerated.generatedCode, /formGroups/);
   assert.match(regenerated.generatedCode, /Detected form group/);
+  assert.match(regenerated.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
+  assert.match(regenerated.generatedCode, /<Label htmlFor=/);
+  assert.match(regenerated.generatedCode, /<Input id=/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
