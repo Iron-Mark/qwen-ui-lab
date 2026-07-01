@@ -67,7 +67,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     responsiveIntent: {
       mode: "responsive export",
       breakpoints: ["mobile", "tablet", "desktop"],
-      primaryFlow: "Review layout against the original screenshot before shipping.",
+      primaryFlow: "Review layout against the original screenshot before import.",
     },
     detectedPatterns: {},
     detectedElements: [],

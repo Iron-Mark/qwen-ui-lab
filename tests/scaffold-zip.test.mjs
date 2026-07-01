@@ -74,6 +74,14 @@ export default function GeneratedComponent() {
     /return <GeneratedComponent \/>;/,
   );
   assert.match(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /Review layout against the original screenshot before import/,
+  );
+  assert.doesNotMatch(
+    entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
+    /before shipping/,
+  );
+  assert.match(
     entries.find((entry) => entry.name === "docs/generated.detection.md")?.content ?? "",
     /No element-level confidence reasons were available; compare the component with the screenshot before import\./,
   );

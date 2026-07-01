@@ -67,6 +67,8 @@ const BANNED_PUBLIC_PHRASES = [
   "before treating the component as final",
   "No element-level confidence reasons were exported",
   "exported for manual review",
+  "inspect the generated component manually",
+  "Review layout against the original screenshot before shipping",
   "not be merged",
   "Meetup-ready",
   "local account (demo stub)",
