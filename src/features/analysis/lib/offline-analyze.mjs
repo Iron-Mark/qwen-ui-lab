@@ -1730,6 +1730,14 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
+const sampleData = {
+  screenTitle: "${archetype.label} workspace",
+  screenDescription:
+    "Use this generated starter as a production-facing layout, then replace sample copy and values with product data.",
+  primaryAction: "Review export",
+  secondaryAction: "Open design notes",
+};
+
 const shadcnPrimitiveMap: Record<string, string> = {
   "app-shell": "App shell with semantic landmarks",
   "top-navigation": "semantic nav + Button ghost controls",
@@ -1815,21 +1823,7 @@ export default function ${componentName}() {
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
-        <header className="grid gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Screenshot export</Badge>
-            <Badge variant="secondary">{screenIntent.label}</Badge>
-          </div>
-          <div className="grid gap-2">
-            <h1 className="text-3xl font-semibold tracking-tight">
-              ${archetype.label} interface shell
-            </h1>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Built from reviewed detection signals with shadcn-style primitives, semantic sections,
-              and responsive layout defaults ready for real copy and data.
-            </p>
-          </div>
-        </header>
+        <GeneratedScreenHeader />
 
         <ImplementationChecklist />
 
@@ -1840,6 +1834,31 @@ export default function ${componentName}() {
         </div>
       </section>
     </main>
+  );
+}
+
+function GeneratedScreenHeader() {
+  return (
+    <header className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div className="grid gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">{screenIntent.label}</Badge>
+          <Badge variant="outline">{responsiveIntent.mode}</Badge>
+        </div>
+        <div className="grid gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight">{sampleData.screenTitle}</h1>
+          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+            {sampleData.screenDescription}
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 sm:justify-end">
+        <Button type="button">{sampleData.primaryAction}</Button>
+        <Button type="button" variant="outline">
+          {sampleData.secondaryAction}
+        </Button>
+      </div>
+    </header>
   );
 }
 
@@ -1860,7 +1879,7 @@ function ImplementationChecklist() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
-          {responsiveIntent.mode} · {responsiveIntent.breakpoints.join(" / ")}
+          {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
         <p>
           <span className="block font-medium text-foreground">Grouped patterns</span>
@@ -2006,7 +2025,7 @@ function buildUsableSections(
       }));
 
   return elementSections.map((region, index) => {
-    const primitive = region.componentRole || region.primitive || region.kind;
+    const primitive = region.componentRole || region.primitive || region.kind || "section";
     return {
       ...region,
       id: region.id || "section-" + (index + 1),

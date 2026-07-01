@@ -1196,6 +1196,10 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
+  assert.match(advanced.generatedCode, /const sampleData/);
+  assert.match(advanced.generatedCode, /function GeneratedScreenHeader/);
+  assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
+  assert.match(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Implementation checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
   assert.match(advanced.generatedCode, /Input placeholder="Enter product data"/);
