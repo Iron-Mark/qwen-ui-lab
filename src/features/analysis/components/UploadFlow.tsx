@@ -709,8 +709,16 @@ function DetectedReferencePreview({
 
       {canShowOverlay ? (
         <Card className="bg-background" data-testid="detector-quality-dashboard">
-          <CardContent className="space-y-3 p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardContent className="space-y-4 p-4">
+            <div className="grid gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Detection review
+                </p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Adjust boxes before regenerating. Edits become the source of truth.
+                </p>
+              </div>
               <div className="flex flex-wrap gap-2">
                 <Badge variant={qualityStats.reviewCount ? "destructive" : "secondary"}>
                   {qualityStats.reviewCount} review
@@ -725,6 +733,12 @@ function DetectedReferencePreview({
                   {qualityStats.visualScore}% visual match
                 </Badge>
               </div>
+            </div>
+
+            <div className="grid gap-2 rounded-lg border border-border/70 bg-muted/20 p-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Correction tools
+              </p>
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
@@ -736,7 +750,7 @@ function DetectedReferencePreview({
                   data-testid="toggle-detector-debug"
                 >
                   <Bug className="size-3.5" aria-hidden />
-                  Debug
+                  Debug labels
                 </Button>
                 <Button
                   type="button"
@@ -771,7 +785,7 @@ function DetectedReferencePreview({
                   data-testid="snap-detections-grid"
                 >
                   <Grid2X2 className="size-3.5" aria-hidden />
-                  Snap
+                  Snap to grid
                 </Button>
                 <Button
                   type="button"
@@ -782,7 +796,7 @@ function DetectedReferencePreview({
                   data-testid="export-detections-json"
                 >
                   <Download className="size-3.5" aria-hidden />
-                  JSON
+                  Export JSON
                 </Button>
               </div>
             </div>
@@ -792,11 +806,11 @@ function DetectedReferencePreview({
 
       {selectedElement ? (
         <Card className="bg-background" data-testid="detection-details">
-          <CardContent className="space-y-3 p-3">
-            <div className="flex flex-wrap items-start justify-between gap-2">
+          <CardContent className="space-y-4 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {copy.detectionDetails}
+                  Selected element
                 </p>
                 <p className="mt-1 text-sm font-medium text-card-foreground">
                   {selectedElement.primitive ?? primitiveForKind(selectedElement.kind)} -{" "}
@@ -858,18 +872,28 @@ function DetectedReferencePreview({
               </select>
             </label>
 
-            <div className="flex flex-wrap gap-1.5">
-              {(selectedElement.reasons ?? []).slice(0, 4).map((reason) => (
-                <Badge key={reason.code} variant="outline" className="max-w-full">
-                  <span className="truncate">{reason.label}</span>
+            <div className="grid gap-2 rounded-lg border border-border/70 bg-muted/20 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Confidence reasons
+                </p>
+                <Badge variant="outline">
+                  {(selectedElement.reasons ?? []).length} signals
                 </Badge>
-              ))}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {(selectedElement.reasons ?? []).slice(0, 4).map((reason) => (
+                  <Badge key={reason.code} variant="outline" className="max-w-full bg-background">
+                    <span className="truncate">{reason.label}</span>
+                  </Badge>
+                ))}
+              </div>
+              <ul className="space-y-1 text-xs leading-5 text-muted-foreground">
+                {(selectedElement.reasons ?? []).slice(0, 3).map((reason) => (
+                  <li key={reason.code}>{reason.evidence}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-1 text-xs text-muted-foreground">
-              {(selectedElement.reasons ?? []).slice(0, 3).map((reason) => (
-                <li key={reason.code}>{reason.evidence}</li>
-              ))}
-            </ul>
 
             {debugEnabled ? (
               <div
