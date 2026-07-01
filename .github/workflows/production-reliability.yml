@@ -74,6 +74,20 @@ jobs:
           set -o pipefail
           npm run smoke:share-live 2>&1 | tee share-export-smoke.log
 
+      - name: Build sanitized reliability summary
+        if: always()
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+          SHARE_SMOKE_OUTCOME: ${{ steps.share_smoke.outcome }}
+        run: |
+          node scripts/build-reliability-summary.mjs \
+            --target "${DEPLOY_URL}" \
+            --expected-live "${EXPECT_LIVE_ANALYSIS}" \
+            --health-outcome "${HEALTH_OUTCOME}" \
+            --share-outcome "${SHARE_SMOKE_OUTCOME}" \
+            --run-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --commit "${GITHUB_SHA}"
+
       - name: Fail monitor on smoke errors
         env:
           HEALTH_OUTCOME: ${{ steps.health.outcome }}
@@ -91,6 +105,7 @@ jobs:
         with:
           name: production-reliability-${{ github.run_id }}
           path: |
+            reliability-summary.md
             synthetic-health.log
             share-export-smoke.log
             test-results/
@@ -104,22 +119,22 @@ jobs:
         run: |
           set -euo pipefail
           issue_number="$(gh issue list --state open --search "${MONITOR_ISSUE_TITLE} in:title" --json number --jq '.[0].number // empty')"
-          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           body_file="$(mktemp)"
-          {
-            echo "## Production reliability monitor failed"
-            echo
-            echo "- Target: ${DEPLOY_URL}"
-            echo "- Expected live analysis: ${EXPECT_LIVE_ANALYSIS}"
-            echo "- Health check: ${{ steps.health.outcome }}"
-            echo "- Share/export smoke: ${{ steps.share_smoke.outcome }}"
-            echo "- Run: ${run_url}"
-            echo "- Workflow: ${GITHUB_WORKFLOW}"
-            echo "- Commit: ${GITHUB_SHA}"
-            echo
-            echo "The uploaded workflow artifact contains the health and share/export smoke logs."
-            echo "No secrets, API keys, or local file paths are included in this issue body."
-          } > "${body_file}"
+          if [ -f reliability-summary.md ]; then
+            cp reliability-summary.md "${body_file}"
+          else
+            {
+              echo "## Production reliability monitor failed"
+              echo
+              echo "- Target: ${DEPLOY_URL}"
+              echo "- Expected live analysis: ${EXPECT_LIVE_ANALYSIS}"
+              echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              echo "- Commit: ${GITHUB_SHA}"
+              echo
+              echo "Summary generation did not complete; inspect the workflow logs."
+              echo "No secrets, API keys, or local file paths are intentionally included in this issue body."
+            } > "${body_file}"
+          fi
 
           if [ -n "${issue_number}" ]; then
             gh issue comment "${issue_number}" --body-file "${body_file}"
