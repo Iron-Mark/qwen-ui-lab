@@ -47,11 +47,11 @@ function dimensionHint(width, height) {
   if (!width || !height) return null;
   const orientation = width >= height ? "landscape" : "portrait";
   const aspect = (width / height).toFixed(2);
-  return `${width}×${height}px ${orientation} frame (aspect ${aspect}).`;
+  return `${width}x${height}px ${orientation} frame (aspect ${aspect}).`;
 }
 
 /**
- * Resolve offline content: known sample registry → advanced classifier → caller overrides.
+ * Resolve offline content: known sample registry -> advanced classifier -> caller overrides.
  * @param {{
  *   name?: string;
  *   type?: string;

@@ -1163,7 +1163,7 @@ test("classifyLayoutArchetype uses local screen intent for generic uploads", () 
 test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   const advanced = buildAdvancedOfflineOverrides(
     { name: "checkout-cart.png", type: "image/png", size: 512000, width: 1280, height: 800 },
-    { readableSize: "500.0 KB", dimensionLine: "1280×800px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1280x800px landscape frame (aspect 1.60)." },
   );
 
   assert.ok(advanced.plan.some((section) => section.title === "Layout Read"));
@@ -1182,7 +1182,7 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
       height: 900,
       offlineInspection,
     },
-    { readableSize: "500.0 KB", dimensionLine: "1440Ã—900px landscape frame (aspect 1.60)." },
+    { readableSize: "500.0 KB", dimensionLine: "1440x900px landscape frame (aspect 1.60)." },
   );
 
   assert.match(advanced.generatedCode, /const designTokens/);
