@@ -62,7 +62,7 @@ See [Architecture](./ARCHITECTURE.md) for the folder rules and feature ownership
 | `npm run build` | Production build. |
 | `npm run validate:docs` | Check local Markdown links in README.md and docs/. |
 | `npm run check` | Lint plus unit tests. |
-| `npm run check:full` | Lint, unit tests, and production build. |
+| `npm run check:full` | Lint, unit tests, docs link validation, and production build. |
 | `npm run test:e2e` | Playwright smoke tests with offline mocks. |
 | `npm run export:demo-fixtures` | Regenerate E2E demo fixtures from analysis libs. |
 | `npm run doctor` | Local environment and optional provider diagnostics. |

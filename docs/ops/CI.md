@@ -8,7 +8,7 @@ Branch policy: normal work starts on `dev`; production promotion is a protected 
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| [pr-checks.yml](../../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, build (no E2E) |
+| [pr-checks.yml](../../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, docs link validation, build (no E2E) |
 | [pr-e2e-smoke.yml](../../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract + upload-flow (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
 | [ci.yml](../../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
@@ -38,7 +38,7 @@ Runs a **fast subset** of Playwright specs on every pull request:
 - `e2e/live-qwen-contract.spec.ts` — live-path contract (mocked JSON, no API key)
 - `e2e/upload-flow.spec.ts` — upload size guard and sample-picker flow
 
-**Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, build).
+**Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, docs links, build).
 
 **Strict on PRs:** set repository variable **`PR_E2E_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables** to fail the job on test errors and block merge (same pattern as `PERF_LCP_STRICT` for the LCP budget).
 

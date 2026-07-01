@@ -65,6 +65,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Validate docs links
+        run: npm run validate:docs
+
       - name: Validate deploy env defaults (demo target)
         run: npm run deploy:env:demo
 

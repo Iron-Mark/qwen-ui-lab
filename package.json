@@ -28,7 +28,7 @@
     "start": "next start",
     "lint": "eslint",
     "check": "npm run lint && npm test",
-    "check:full": "npm run check && npm run build",
+    "check:full": "npm run check && npm run validate:docs && npm run build",
     "export:demo-fixtures": "node scripts/export-demo-fixtures.mjs",
     "generate:reference-rasters": "node scripts/generate-reference-rasters.mjs",
     "analyze": "node scripts/analyze-build.mjs",
