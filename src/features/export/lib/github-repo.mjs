@@ -2,7 +2,11 @@
  * Server-side GitHub repo export helpers (compare URL + package download fallback).
  */
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
-import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION, DEFAULT_EXPORT_SOURCE_REPO } from "./scaffold-package-docs.mjs";
+import {
+  buildScaffoldReadme as buildPackageScaffoldReadme,
+  DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
+  DEFAULT_EXPORT_SOURCE_REPO,
+} from "./scaffold-package-docs.mjs";
 
 export const DEFAULT_GITHUB_EXPORT_REPO = DEFAULT_EXPORT_SOURCE_REPO;
 export const DEFAULT_GITHUB_EXPORT_BASE = "main";
@@ -109,25 +113,9 @@ export function buildScaffoldReadme({
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
-  return `# Screenshot UI starter package
-
-${description}
-
-This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
-
-## Files
-
-- \`README.md\` - package overview and import checklist
-- \`DESIGN.md\` - design notes, review items, and responsive assumptions
-- \`${safeFilename}\` - generated React + Tailwind component
-
-## Next steps
-
-1. Unzip this export package into your app.
-2. Install any missing dependencies referenced by the component.
-3. Adjust imports and routes to match your project structure.
-4. Review the design notes and detection notes before treating the component as final.
-
-Exported from [qwen-ui-lab](https://github.com/${DEFAULT_GITHUB_EXPORT_REPO}).
-`;
+  return buildPackageScaffoldReadme({
+    filename: safeFilename,
+    description,
+    sourceRepo: DEFAULT_GITHUB_EXPORT_REPO,
+  });
 }

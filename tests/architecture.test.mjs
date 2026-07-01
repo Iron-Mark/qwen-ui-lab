@@ -1151,6 +1151,7 @@ test("github repo export helper does not own scaffold package assembly", async (
     "function inferShadcnDependencies",
     "function inferPrimitiveMapFromImports",
     "function extractProductionScaffoldBlueprint",
+    "This export is a reviewable package. Import it into source control",
   ];
 
   const violations = [];

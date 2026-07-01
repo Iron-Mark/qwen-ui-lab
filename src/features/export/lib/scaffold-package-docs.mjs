@@ -2,6 +2,34 @@ export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
 export const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package";
 const EXPORT_BUNDLE_SCHEMA = "qwen-ui-lab/export-bundle@1";
 
+export function buildScaffoldReadme({
+  filename,
+  description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
+  sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
+}) {
+  return `# Screenshot UI starter package
+
+${description}
+
+This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+
+## Files
+
+- \`README.md\` - package overview and import checklist
+- \`DESIGN.md\` - design notes, review items, and responsive assumptions
+- \`${filename}\` - generated React + Tailwind component
+
+## Next steps
+
+1. Unzip this export package into your app.
+2. Install any missing dependencies referenced by the component.
+3. Adjust imports and routes to match your project structure.
+4. Review the design notes and detection notes before treating the component as final.
+
+Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
+`;
+}
+
 export function buildProductionScaffoldReadme({
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   files,
