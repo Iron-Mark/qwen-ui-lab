@@ -1711,15 +1711,15 @@ function ExportPackageReviewDialog({
         <Tabs defaultValue="files" className="min-h-0 flex-1 gap-0 overflow-hidden bg-background">
           <div className="shrink-0 overflow-visible border-b border-border/60 bg-background/95 px-4 py-3.5 sm:px-5">
             <ResponsiveTabsList columns={3}>
-              <TabsTrigger value="files" className="h-10 min-h-10 gap-2 px-3">
+              <TabsTrigger value="files" className="h-11 min-h-11 gap-1 px-2 text-xs sm:gap-2 sm:px-3 sm:text-sm">
                 <FileCode2 className="size-4" aria-hidden />
                 {copy.exportPackageFilesTab}
               </TabsTrigger>
-              <TabsTrigger value="changes" className="h-10 min-h-10 gap-2 px-3">
+              <TabsTrigger value="changes" className="h-11 min-h-11 gap-1 px-2 text-xs sm:gap-2 sm:px-3 sm:text-sm">
                 <ListChecks className="size-4" aria-hidden />
                 {copy.exportPackageChangesTab}
               </TabsTrigger>
-              <TabsTrigger value="copy" className="h-10 min-h-10 gap-2 px-3">
+              <TabsTrigger value="copy" className="h-11 min-h-11 gap-1 px-2 text-xs sm:gap-2 sm:px-3 sm:text-sm">
                 <FileText className="size-4" aria-hidden />
                 {copy.exportPackageCopyTab}
               </TabsTrigger>
