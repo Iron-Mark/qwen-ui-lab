@@ -15,15 +15,14 @@ export async function generateMetadata(props: ShareRouteProps) {
 }
 
 export default async function SharePage({ params }: ShareRouteProps) {
-  const { id } = await params;
-  if (id === "local") {
-    return <ShareHashFallbackContent />;
-  }
-
   const model = await resolveSharePageModel({ params });
 
   if (!model) {
     notFound();
+  }
+
+  if (model.hashFallback) {
+    return <ShareHashFallbackContent />;
   }
 
   return <SharePageContent id={model.id} summary={model.summary} />;
