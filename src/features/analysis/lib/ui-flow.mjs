@@ -652,6 +652,7 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
               ),
             )}
           </form>
+          <SectionStateHint kind={section.kind} />
         </CardContent>
       </Card>
     );
@@ -672,9 +673,24 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
         {section.items.map((item) => (
           <PrimitivePreview key={item.id} element={item} />
         ))}
+        <SectionStateHint kind={section.kind} />
       </CardContent>
     </Card>
   );
+}
+
+function SectionStateHint({ kind }: { kind: string }) {
+  const copy: Record<string, string> = {
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.",
+    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.",
+    "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
+    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.",
+    "chart-panel": "State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.",
+  };
+  const message = copy[kind];
+  return message ? (
+    <p className="mt-3 text-xs leading-5 text-muted-foreground">{message}</p>
+  ) : null;
 }
 
 function PrimitivePreview({ element }: { element: CorrectedElement }) {

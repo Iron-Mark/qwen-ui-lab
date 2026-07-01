@@ -2261,39 +2261,49 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   if (region.kind === "repeated-list" || primitive === "list-item") {
     return (
-      <ul className="mt-3 space-y-2" aria-label={region.label}>
-        {Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map((_, itemIndex) => (
-          <li
-            key={itemIndex}
-            className="rounded border px-2 py-1 text-xs"
-            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-          >
-            Row {itemIndex + 1} - repeated item
-          </li>
-        ))}
-      </ul>
+      <div className="mt-3 grid gap-2">
+        <ul className="space-y-2" aria-label={region.label}>
+          {Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map((_, itemIndex) => (
+            <li
+              key={itemIndex}
+              className="rounded border px-2 py-1 text-xs"
+              style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+            >
+              Row {itemIndex + 1} - repeated item
+            </li>
+          ))}
+        </ul>
+        <p className="text-[11px] opacity-70">
+          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.
+        </p>
+      </div>
     );
   }
 
   if (region.kind === "repeated-grid" || primitive === "card-grid") {
     return (
-      <div
-        className="mt-3 grid gap-2"
-        style={{
-          gridTemplateColumns: "repeat(" + Math.max(1, region.columns ?? 2) + ", minmax(0, 1fr))",
-        }}
-        aria-label={region.label}
-      >
-        {Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map((_, itemIndex) => (
-          <article
-            key={itemIndex}
-            className="rounded border p-2 text-xs"
-            style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
-          >
-            <p className="font-medium">Card {itemIndex + 1}</p>
-            <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
-          </article>
-        ))}
+      <div className="mt-3 grid gap-2">
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: "repeat(" + Math.max(1, region.columns ?? 2) + ", minmax(0, 1fr))",
+          }}
+          aria-label={region.label}
+        >
+          {Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map((_, itemIndex) => (
+            <article
+              key={itemIndex}
+              className="rounded border p-2 text-xs"
+              style={{ borderColor: tokens.border, backgroundColor: tokens.muted }}
+            >
+              <p className="font-medium">Card {itemIndex + 1}</p>
+              <span className="mt-2 block h-2 w-8/12 rounded-full" style={{ backgroundColor: tokens.border }} />
+            </article>
+          ))}
+        </div>
+        <p className="text-[11px] opacity-70">
+          State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.
+        </p>
       </div>
     );
   }
@@ -2345,6 +2355,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         >
           Submit action
         </Button>
+        <p className="text-[11px] opacity-70">
+          State coverage: wire validation errors, pending submit state, and success feedback.
+        </p>
       </form>
     );
   }
@@ -2353,26 +2366,31 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
     return (
-      <Table className="mt-3 min-w-[28rem] text-xs" aria-label={region.label}>
-        <TableHeader>
-          <TableRow>
-            {Array.from({ length: columns }).map((_, columnIndex) => (
-              <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {Array.from({ length: rows }).map((_, rowIndex) => (
-            <TableRow key={rowIndex}>
+      <div className="mt-3 grid gap-2 overflow-x-auto">
+        <Table className="min-w-[28rem] text-xs" aria-label={region.label}>
+          <TableHeader>
+            <TableRow>
               {Array.from({ length: columns }).map((_, columnIndex) => (
-                <TableCell key={columnIndex}>
-                  Cell {rowIndex + 1}.{columnIndex + 1}
-                </TableCell>
+                <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: rows }).map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {Array.from({ length: columns }).map((_, columnIndex) => (
+                  <TableCell key={columnIndex}>
+                    Cell {rowIndex + 1}.{columnIndex + 1}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <p className="text-[11px] opacity-70">
+          State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.
+        </p>
+      </div>
     );
   }
 
@@ -2380,24 +2398,29 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const bars = Math.max(3, region.seriesCount ?? region.itemCount ?? 5);
     const heights = [42, 74, 55, 88, 63, 78, 48, 92];
     return (
-      <div
-        className="mt-3 grid min-h-32 items-end gap-2 rounded border p-3"
-        style={{
-          borderColor: tokens.border,
-          gridTemplateColumns: "repeat(" + bars + ", minmax(0, 1fr))",
-        }}
-        aria-label={region.label + " bar chart preview"}
-      >
-        {Array.from({ length: bars }).map((_, index) => (
-          <span
-            key={index}
-            className="rounded-t"
-            style={{
-              height: heights[index % heights.length] + "%",
-              backgroundColor: tokens.accent,
-            }}
-          />
-        ))}
+      <div className="mt-3 grid gap-2">
+        <div
+          className="grid min-h-32 items-end gap-2 rounded border p-3"
+          style={{
+            borderColor: tokens.border,
+            gridTemplateColumns: "repeat(" + bars + ", minmax(0, 1fr))",
+          }}
+          aria-label={region.label + " bar chart preview"}
+        >
+          {Array.from({ length: bars }).map((_, index) => (
+            <span
+              key={index}
+              className="rounded-t"
+              style={{
+                height: heights[index % heights.length] + "%",
+                backgroundColor: tokens.accent,
+              }}
+            />
+          ))}
+        </div>
+        <p className="text-[11px] opacity-70">
+          State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.
+        </p>
       </div>
     );
   }
