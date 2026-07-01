@@ -85,6 +85,12 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
   assert.equal(blueprint.shadcnPrimitiveMap["data-table"], "semantic table inside Card");
   assert.equal(blueprint.primitiveSummary.primitives["data-table"], 1);
   assert.equal(blueprint.primitiveSummary.patternCounts.dataTables, 1);
+  assert.deepEqual(blueprint.correctionSummary, {
+    activeElements: 1,
+    appliedEdits: 1,
+    excludedBoxes: 1,
+    sourceOfTruth: "Manual corrections are the source of truth for this regenerated scaffold.",
+  });
   assert.match(blueprint.sourceHash, /^[a-f0-9]{64}$/);
   assert.ok(blueprint.reviewChecklist.some((item) => /table rows/.test(item)));
 });
@@ -148,6 +154,9 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /data-table: semantic table inside Card/);
   assert.match(entries[6].content, /High confidence: 2/);
   assert.match(entries[6].content, /Low confidence: 1/);
+  assert.match(entries[6].content, /Applied edits: 1/);
+  assert.match(entries[6].content, /Excluded boxes: 1/);
+  assert.match(entries[6].content, /Source of truth: Manual corrections/);
   assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
   assert.match(entries[6].content, /Excluded element-2: primary-action/);
 
@@ -158,6 +167,8 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.equal(recipe.files.manifest, "src/components/generated/detected-dashboard.manifest.json");
   assert.equal(recipe.integration.importPath, "@/components/generated/detected-dashboard");
   assert.equal(recipe.primitiveSummary.primitives["data-table"], 1);
+  assert.equal(recipe.correctionSummary.appliedEdits, 1);
+  assert.equal(recipe.correctionSummary.excludedBoxes, 1);
   assert.deepEqual(recipe.integration.dependencies, [
     "@/components/ui/badge",
     "@/components/ui/button",
@@ -170,6 +181,9 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.equal(manifest.bundleId, `qwen-${manifest.sourceHash.slice(0, 12)}`);
   assert.equal(manifest.contents.includesOriginalImage, false);
   assert.equal(manifest.contents.includesSecrets, false);
+  assert.equal(manifest.corrections.appliedEdits, 1);
+  assert.equal(manifest.corrections.excludedBoxes, 1);
+  assert.match(manifest.corrections.sourceOfTruth, /Manual corrections/);
   assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/generated/detected-dashboard.recipe.json");
   assert.ok(
@@ -254,6 +268,13 @@ const layoutRegions = [
     "confidence": 0.9
   }
 ];
+
+const correctionSummary = {
+  "activeElements": 1,
+  "appliedEdits": 1,
+  "excludedBoxes": 1,
+  "sourceOfTruth": "Manual corrections are the source of truth for this regenerated scaffold."
+};
 
 const shadcnPrimitiveMap: Record<string, string> = {
   "data-table": "semantic table inside Card",
