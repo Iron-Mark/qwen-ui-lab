@@ -64,6 +64,7 @@ test("createGithubGist posts component file and returns gist URL", async () => {
 
   const body = JSON.parse(captured.init.body);
   assert.equal(body.public, false);
+  assert.equal(body.description, "Screenshot UI starter package");
   assert.equal(
     body.files["generated-dashboard.tsx"].content,
     "export function Demo() { return null; }",

@@ -1171,6 +1171,29 @@ test("github repo export helper does not own scaffold package assembly", async (
   assert.deepEqual(violations, []);
 });
 
+test("github gist export helper reuses shared package copy", async () => {
+  const file = path.join(
+    process.cwd(),
+    "src",
+    "features",
+    "export",
+    "lib",
+    "github-gist.mjs",
+  );
+  const source = await readFile(file, "utf8");
+  const specifiers = collectModuleSpecifiers(file, source);
+  const violations = [];
+
+  if (!specifiers.includes("./scaffold-package-docs.mjs")) {
+    violations.push(`${toRepoPath(file)} does not import shared package docs`);
+  }
+  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package"')) {
+    violations.push(`${toRepoPath(file)} duplicates package description copy`);
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("csp report api route delegates parsing and logging to shared csp helper", async () => {
   const file = path.join(
     process.cwd(),
