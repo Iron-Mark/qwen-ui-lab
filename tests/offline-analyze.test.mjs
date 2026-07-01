@@ -1386,6 +1386,8 @@ test("buildAdvancedOfflineOverrides renders action-cluster patterns as scaffold 
 
   assert.match(advanced.generatedCode, /action-cluster/);
   assert.match(advanced.generatedCode, /region\.kind === "action-cluster"/);
+  assert.match(advanced.generatedCode, /<Button\s+key=\{index\}/);
+  assert.match(advanced.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
   assert.match(advanced.generatedCode, /Action \{index \+ 1\}/);
   assert.match(advanced.generatedCode, /controlCount/);
   assert.match(advanced.generatedCode, /action clusters/);
@@ -1774,6 +1776,8 @@ test("regenerateArtifactFromDetections preserves action-cluster scaffold groups"
   assert.match(regenerated.generatedCode, /actionClusters/);
   assert.match(regenerated.generatedCode, /Detected action cluster/);
   assert.match(regenerated.generatedCode, /Action cluster/);
+  assert.match(regenerated.generatedCode, /<Button\s+key=\{childId\}/);
+  assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1881,7 +1885,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.match(regenerated.generatedCode, /field-or-action/);
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
-  assert.match(regenerated.generatedCode, /button type="button"/);
+  assert.match(regenerated.generatedCode, /Button type="button"/);
   assert.match(regenerated.generatedCode, /Manual correction/);
   assert.match(regenerated.generatedCode, /Correction confidence/);
   assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
