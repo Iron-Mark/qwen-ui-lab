@@ -1403,8 +1403,9 @@ test("buildAdvancedOfflineOverrides renders tab-set patterns as scaffold regions
   );
 
   assert.match(advanced.generatedCode, /tab-set/);
-  assert.match(advanced.generatedCode, /role="tablist"/);
-  assert.match(advanced.generatedCode, /aria-selected/);
+  assert.match(advanced.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
+  assert.match(advanced.generatedCode, /<Tabs defaultValue=/);
+  assert.match(advanced.generatedCode, /<TabsTrigger/);
   assert.match(advanced.generatedCode, /tabbed-content/);
   assert.match(advanced.generatedCode, /tab sets/);
 });
@@ -1427,9 +1428,9 @@ test("buildAdvancedOfflineOverrides renders dialog-panel patterns as scaffold re
 
   assert.match(advanced.summary, /Modal dialog/i);
   assert.match(advanced.generatedCode, /dialog-panel/);
-  assert.match(advanced.generatedCode, /role="dialog"/);
-  assert.match(advanced.generatedCode, /aria-modal="true"/);
-  assert.match(advanced.generatedCode, /Close dialog/);
+  assert.match(advanced.generatedCode, /from "@\/components\/ui\/dialog"/);
+  assert.match(advanced.generatedCode, /<Dialog defaultOpen>/);
+  assert.match(advanced.generatedCode, /<DialogContent/);
   assert.match(advanced.generatedCode, /modal-dialog/);
   assert.match(advanced.generatedCode, /dialog panels/);
 });
@@ -1784,7 +1785,9 @@ test("regenerateArtifactFromDetections preserves tab-set scaffold groups", () =>
   assert.match(regenerated.generatedCode, /tabSets/);
   assert.match(regenerated.generatedCode, /Detected tab set/);
   assert.match(regenerated.generatedCode, /Tab set/);
-  assert.match(regenerated.generatedCode, /role="tablist"/);
+  assert.match(regenerated.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
+  assert.match(regenerated.generatedCode, /<Tabs defaultValue=/);
+  assert.match(regenerated.generatedCode, /<TabsTrigger/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1804,9 +1807,9 @@ test("regenerateArtifactFromDetections preserves dialog-panel scaffold groups", 
 
   assert.match(regenerated.generatedCode, /dialogPanels/);
   assert.match(regenerated.generatedCode, /Detected dialog panel/);
-  assert.match(regenerated.generatedCode, /Dialog panel/);
-  assert.match(regenerated.generatedCode, /role="dialog"/);
-  assert.match(regenerated.generatedCode, /aria-modal="true"/);
+  assert.match(regenerated.generatedCode, /from "@\/components\/ui\/dialog"/);
+  assert.match(regenerated.generatedCode, /<Dialog[^>]*defaultOpen/);
+  assert.match(regenerated.generatedCode, /<DialogContent/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 

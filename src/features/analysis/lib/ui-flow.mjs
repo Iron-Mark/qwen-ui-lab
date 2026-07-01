@@ -839,39 +839,29 @@ export function CorrectionGridReference() {
       {correctedPatterns.dialogPanels.length ? (
         <div className="grid gap-3">
           {correctedPatterns.dialogPanels.map((pattern) => (
-            <section
-              key={pattern.id}
-              aria-label="Detected dialog panel"
-              className="space-y-3 border p-3"
-              role="dialog"
-              aria-modal="true"
-              style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase">Dialog panel</p>
-                  <p className="text-sm font-medium">{primitiveLabel(pattern.modalType || "centered-dialog")}</p>
+            <Dialog key={pattern.id} defaultOpen>
+              <DialogContent className="max-w-lg" showCloseButton={false}>
+                <DialogHeader>
+                  <DialogTitle>{primitiveLabel(pattern.modalType || "centered-dialog")}</DialogTitle>
+                  <DialogDescription>
+                    Detected dialog panel converted into a reusable modal surface.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-2 rounded border p-2" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
+                  {pattern.children.map((childId) => {
+                    const child = correctedElementById.get(childId);
+                    return child ? (
+                      <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
+                        {renderCorrectedPrimitive(child, designTokens)}
+                      </div>
+                    ) : null;
+                  })}
                 </div>
-                <button
-                  type="button"
-                  aria-label="Close dialog"
-                  className="rounded border px-2 py-1 text-[10px]"
-                  style={{ borderColor: designTokens.border }}
-                >
-                  Close
-                </button>
-              </div>
-              <div className="grid gap-2 rounded border p-2" style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}>
-                {pattern.children.map((childId) => {
-                  const child = correctedElementById.get(childId);
-                  return child ? (
-                    <div key={childId} className="rounded border px-3 py-2 text-sm" style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}>
-                      {renderCorrectedPrimitive(child, designTokens)}
-                    </div>
-                  ) : null;
-                })}
-              </div>
-            </section>
+                <DialogFooter>
+                  <Button type="button">Primary action</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
       ) : null}
@@ -1157,40 +1147,28 @@ export function CorrectionGridReference() {
                 style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
               >
                 <p className="text-xs font-semibold uppercase">Tab set</p>
-                <div className="grid gap-2">
-                  <div
-                    role="tablist"
-                    className="flex w-fit flex-wrap gap-1 rounded-full border p-1"
-                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
-                  >
+                <Tabs defaultValue={"tab-" + (selectedIndex + 1)}>
+                  <TabsList aria-label="Detected tab set">
                     {Array.from({ length: tabCount }).map((_, index) => {
                       const child = correctedElementById.get(pattern.children[index]);
-                      const selected = index === selectedIndex;
                       return (
-                        <button
-                          key={pattern.children[index] ?? index}
-                          type="button"
-                          role="tab"
-                          aria-selected={selected}
-                          className="rounded-full px-3 py-1.5 text-xs font-medium"
-                          style={{
-                            backgroundColor: selected ? designTokens.accent : designTokens.surface,
-                            color: selected ? designTokens.accentForeground : designTokens.foreground,
-                          }}
-                        >
+                        <TabsTrigger key={pattern.children[index] ?? index} value={"tab-" + (index + 1)}>
                           {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Tab " + (index + 1)}
-                        </button>
+                        </TabsTrigger>
                       );
                     })}
-                  </div>
-                  <section
-                    role="tabpanel"
-                    className="rounded border p-3 text-xs"
-                    style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
-                  >
-                    {primitiveLabel(pattern.tabKind || "tabs")} panel {selectedIndex + 1}
-                  </section>
-                </div>
+                  </TabsList>
+                  {Array.from({ length: tabCount }).map((_, index) => (
+                    <TabsContent
+                      key={pattern.children[index] ?? index}
+                      value={"tab-" + (index + 1)}
+                      className="rounded border p-3 text-xs"
+                      style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
+                    >
+                      {primitiveLabel(pattern.tabKind || "tabs")} panel {index + 1}
+                    </TabsContent>
+                  ))}
+                </Tabs>
               </section>
             );
           })}
