@@ -262,12 +262,12 @@ export const en = {
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
-    exportPackageCopyTab: "Summary",
+    exportPackageCopyTab: "Bundle copy",
     exportPackageFilesIntro:
       "Package export downloads these files as a reviewable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
-      "This is the package summary a teammate sees before importing the generated component.",
+      "This is the bundle copy a teammate sees before importing the generated component.",
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
