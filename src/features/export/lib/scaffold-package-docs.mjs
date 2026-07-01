@@ -672,10 +672,10 @@ function buildConfidenceReasonSummary(elements) {
         : element.included === false
           ? "excluded from generated output"
           : "detector evidence";
-      if (!reasons.length) {
-        return `- ${role}: ${prefix}; no detailed reason was exported.`;
-      }
-      return `- ${role}: ${prefix}; ${reasons.join("; ")}.`;
+      const evidence = reasons.length
+        ? reasons
+        : fallbackDetectionReasons(element, role).slice(0, 3);
+      return `- ${role}: ${prefix}; ${evidence.join("; ")}.`;
     });
 
   return reasonLines.length
@@ -701,4 +701,75 @@ function detectionReasons(item) {
 
 function firstDetectionReason(item) {
   return detectionReasons(item)[0] ?? "";
+}
+
+function fallbackDetectionReasons(item, role) {
+  const reasons = [];
+  const confidence = item?.confidence ?? item?.patternConfidence;
+  const box = item?.box ?? item?.bounds ?? item?.rect;
+  const primitive = item?.primitive ?? item?.componentRole ?? item?.kind ?? role;
+
+  if (item?.userEdited) {
+    reasons.push("reviewer correction marked this box as intentional");
+  }
+
+  if (item?.included === false) {
+    reasons.push("reviewer excluded this box from generation");
+  }
+
+  if (typeof confidence === "number") {
+    const bucket =
+      confidence >= 0.9
+        ? "high-confidence"
+        : confidence >= 0.75
+          ? "medium-confidence"
+          : "low-confidence";
+    reasons.push(`${bucket} score ${Math.round(confidence * 100)}%`);
+  }
+
+  if (box && typeof box === "object") {
+    const width = Number(box.width ?? box.w);
+    const height = Number(box.height ?? box.h);
+    if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+      const orientation =
+        width > height * 1.8
+          ? "wide horizontal"
+          : height > width * 1.4
+            ? "tall vertical"
+            : "balanced";
+      reasons.push(`${orientation} geometry ${Math.round(width)}x${Math.round(height)}px`);
+    }
+  }
+
+  const primitiveReason = primitiveFallbackReason(primitive);
+  if (primitiveReason) {
+    reasons.push(primitiveReason);
+  }
+
+  return reasons.length
+    ? reasons
+    : ["exported for manual review because detector evidence was incomplete"];
+}
+
+function primitiveFallbackReason(primitive) {
+  const normalized = String(primitive ?? "").toLowerCase();
+  if (/button|action/.test(normalized)) {
+    return "action-like role should be checked for label, state, and target behavior";
+  }
+  if (/input|field|form/.test(normalized)) {
+    return "field-like role should be checked for visible label and validation state";
+  }
+  if (/card|panel|section/.test(normalized)) {
+    return "container-like role should be checked for grouping and hierarchy";
+  }
+  if (/table|row|list/.test(normalized)) {
+    return "repeated-data role should be checked against real row content";
+  }
+  if (/chart|metric|stat/.test(normalized)) {
+    return "data-visual role should be checked for labels and text summary";
+  }
+  if (/tab|dialog|modal|nav/.test(normalized)) {
+    return "interactive structure should be checked for focus and keyboard behavior";
+  }
+  return "";
 }
