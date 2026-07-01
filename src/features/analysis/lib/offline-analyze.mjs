@@ -1737,7 +1737,7 @@ const layoutRegions = ${JSON.stringify(regions, null, 2)};
 const sampleData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this generated starter as a production-facing layout, then replace sample copy and values with product data.",
+    "Use this generated starter as a review-ready layout, then replace sample copy and values with product data.",
   primaryAction: "Review export",
   secondaryAction: "Open design notes",
 };

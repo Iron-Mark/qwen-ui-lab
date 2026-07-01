@@ -1203,7 +1203,8 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /function FormSection/);
   assert.match(advanced.generatedCode, /function GenericSection/);
   assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
-  assert.match(advanced.generatedCode, /production-facing layout/);
+  assert.match(advanced.generatedCode, /review-ready layout/);
+  assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Implementation checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
   assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);

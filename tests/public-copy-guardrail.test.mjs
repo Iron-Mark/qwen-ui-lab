@@ -60,6 +60,8 @@ const BANNED_PUBLIC_PHRASES = [
   "Handoff bundle",
   "final production",
   "production data wiring",
+  "production-facing layout",
+  "production components",
   "before production",
   "before merge",
   "not be merged",

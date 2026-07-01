@@ -671,7 +671,7 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
 
   if (visualDensity === "high") {
     recommendations.push(
-      "Group dense regions into clearer sections and add whitespace before generating production components.",
+      "Group dense regions into clearer sections and add whitespace before generating the review scaffold.",
     );
   } else if (!layout.topBand && !layout.bottomBand && !layout.leftRail) {
     recommendations.push(
