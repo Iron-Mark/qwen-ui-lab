@@ -149,7 +149,7 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
   assert.match(markdown, /Top band position/);
   assert.match(markdown, /Aligned text signal/);
   assert.match(markdown, /Download DESIGN\.md and verify component inventory plus detector signals are present/);
-  assert.match(markdown, /accessibility before shipping/);
+  assert.match(markdown, /accessibility before using it in an app/);
   assert.doesNotMatch(markdown, /before production/);
 });
 

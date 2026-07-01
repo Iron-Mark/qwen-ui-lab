@@ -11,7 +11,7 @@ export function buildScaffoldReadme({
 
 ${description}
 
-This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before using it in an app.
 
 ## Files
 
@@ -123,7 +123,7 @@ export function buildFallbackPackageReadme({
 
 ${description}
 
-This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before shipping.
+This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before using it in an app.
 
 ## What this package is
 
@@ -262,7 +262,7 @@ ${manualCorrectionNotes}
 
 - Mode: ${blueprint.responsiveIntent?.mode ?? "unknown"}
 - Breakpoints: ${(blueprint.responsiveIntent?.breakpoints ?? []).join(", ") || "base"}
-- Primary flow: ${blueprint.responsiveIntent?.primaryFlow ?? "Review layout manually."}
+- Primary flow: ${blueprint.responsiveIntent?.primaryFlow ?? "Compare the layout against the screenshot at mobile, tablet, and desktop widths."}
 
 ## Pattern counts
 
@@ -334,7 +334,7 @@ ${buildReviewContractMarkdown({ files })}
 
 ## Primitive mapping
 
-${primitiveMap || "- No shadcn-style primitive map was inferred. Review the JSX and map controls manually."}
+${primitiveMap || "- No shadcn-style primitive map was inferred. Verify imports, controls, and semantic wrappers before import."}
 
 ## Package contents
 
@@ -454,7 +454,7 @@ Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}
 function buildImportReadinessMarkdown({ dependencies, files }) {
   const dependencyLine = dependencies.length
     ? dependencies.map((item) => `\`${item}\``).join(", ")
-    : "No shadcn component imports were inferred; review JSX imports manually.";
+    : "No shadcn component imports were inferred; verify imports and primitive wrappers before import.";
 
   return `## Import readiness
 
