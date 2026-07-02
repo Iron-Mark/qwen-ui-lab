@@ -15,13 +15,13 @@ export function createHomeRouteMetadata(): Metadata {
     keywords: [
       "screenshot to React",
       "UI screenshot to React",
-      "Qwen3-VL UI analysis",
+      "UI layout detection",
       "Tailwind component generator",
       "UI detection workflow",
     ],
-    ogImage: "/opengraph-image",
+    ogImage: "/social/home-social-preview-1200x630.png",
     ogImageAlt: "qwen-ui-lab screenshot to React workflow",
-    twitterImage: "/twitter-image",
+    twitterImage: "/social/home-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab screenshot to React workflow",
     shareSnippet:
       "Upload a screenshot, review detected UI, and export a React/Tailwind package.",
@@ -50,7 +50,7 @@ export function getHomeRouteStructuredDataInput() {
         },
         featureList: [
           "Screenshot upload flow",
-          "AI analysis summary",
+          "Detection summary",
           "React + Tailwind package export",
         ],
       },
@@ -68,7 +68,7 @@ export function getHomeRouteSocialPreviewImage() {
     badge: "Screenshot to React",
     title: "Turn screenshots into starter UI",
     description:
-      "Upload a reference, inspect detected regions, refine boxes, and export React + Tailwind files.",
+      "Upload a screenshot, inspect detected regions, refine boxes, and export React + Tailwind files.",
     workflow: "Upload -> Detect -> Refine -> Export package",
     background:
       "linear-gradient(135deg, #08061f 0%, #111827 46%, #312e81 100%)",

@@ -20,6 +20,8 @@ The visual system should feel like a practical frontend engineering tool: clear,
 
 **Final logo reference:** Use the approved glossy purple `QUI` hexagonal badge source from the project asset handoff. Do not commit workstation-local file paths into prompts or documentation.
 
+**Current installed assets:** App/PWA icons, favicon, social preview PNGs, and the docs before/after image now use the final violet `QUI` brand direction. Sample reference screenshots are source-based assets in `public/references` and should be restyled through SVG/raster regeneration, not replaced with fake AI-rendered screenshot art.
+
 **Avoid:** Generic AI magic, stock-photo people, cartoon mascots, cyberpunk noise, copied platform logos, and unrelated abstract art. Purple/violet is now the brand anchor, but supporting assets should still feel controlled, readable, and product-focused.
 
 ## Visual Identity

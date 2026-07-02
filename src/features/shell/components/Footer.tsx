@@ -19,7 +19,7 @@ interface FooterLinkConfig {
 const PRODUCT_LINKS = [
   {
     href: "/",
-    label: "Dashboard",
+    label: "Workflow",
     tooltip: "Return to your workspace and continue building from the uploaded screenshots.",
   },
   {
@@ -29,8 +29,8 @@ const PRODUCT_LINKS = [
   },
   {
     href: "/demo",
-    label: "Sample screenshot",
-    tooltip: "Open a sample screenshot and review the export package.",
+    label: "Sample run",
+    tooltip: "Open a prepared layout and review the export package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -185,7 +185,7 @@ export function Footer() {
                 className="inline-flex min-h-11 min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Image
-                  src="/icons/icon.svg"
+                  src="/icons/icon-512.png"
                   alt=""
                   width={40}
                   height={40}

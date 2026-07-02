@@ -29,7 +29,7 @@ const spaceGrotesk = Space_Grotesk({
   adjustFontFallback: true,
 });
 
-const ogImagePath = "/opengraph-image";
+const ogImagePath = "/social/home-social-preview-1200x630.png";
 
 export const metadata = createSiteMetadata(ogImagePath);
 export const viewport = createSiteViewport();

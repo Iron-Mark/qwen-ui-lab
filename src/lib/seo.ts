@@ -5,7 +5,8 @@ export const SITE_NAME = "qwen-ui-lab";
 export const SITE_TAGLINE = "Screenshot to React workflow";
 export const SITE_PITCH =
   "Turn UI screenshots into inspectable React + Tailwind export packages.";
-export const DEFAULT_OG_IMAGE = "/opengraph-image";
+export const DEFAULT_OG_IMAGE =
+  "/social/home-social-preview-1200x630.png";
 export const MANIFEST_PATH = "/manifest.webmanifest";
 export const LEGACY_MANIFEST_PATH = "/manifest.json";
 export const APP_ICON_SVG = "/icons/icon.svg";
@@ -131,7 +132,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     authors: [{ name: SITE_NAME }],
     keywords: [
       "Qwen UI Lab",
-      "AI UI analysis",
+      "UI structure detection",
       "screenshot to component",
       "React Tailwind generator",
       "design system export",
@@ -259,7 +260,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Analyze screenshot",
         short_name: "Analyze",
-        description: "Upload a UI screenshot and export a React component.",
+        description: "Upload a UI screenshot and export a starter package.",
         url: "/#upload-flow",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -271,9 +272,9 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "Sample screenshot",
+        name: "Sample run",
         short_name: "Sample",
-        description: "Open a sample screenshot and generate a component preview.",
+        description: "Open a sample layout and generate a component preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -284,14 +285,14 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         sizes: "1440x900",
         type: "image/png",
         form_factor: "wide",
-        label: "Dashboard screenshot reference",
+        label: "Dashboard sample run",
       },
       {
         src: "/references/mobile-reference.png",
         sizes: "390x844",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile app screenshot reference",
+        label: "Mobile app sample run",
       },
     ],
     launch_handler: {

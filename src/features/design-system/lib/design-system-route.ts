@@ -27,9 +27,11 @@ export function createDesignSystemRouteMetadata(): Metadata {
       "copy and export snippets",
       "React UI patterns",
     ],
-    ogImage: "/design-system/opengraph-image",
+    ogImage:
+      "/social/design-system-social-preview-1200x630.png",
     ogImageAlt: "qwen-ui-lab design system component gallery",
-    twitterImage: "/design-system/twitter-image",
+    twitterImage:
+      "/social/design-system-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab design system growth snippets",
     shareSnippet:
       "Browse reusable UI patterns and export-ready snippets from the qwen-ui-lab design system.",
@@ -83,9 +85,11 @@ export function createLawsOfUxRouteMetadata(): Metadata {
       description:
         "Jump into the Laws of UX slice of the qwen-ui-lab design system and copy practical pattern snippets faster.",
       path: "/design-system/laws-of-ux",
-      ogImage: "/design-system/laws-of-ux/opengraph-image",
+      ogImage:
+        "/social/laws-of-ux-social-preview-1200x630.png",
       ogImageAlt: "Laws of UX route preview in qwen-ui-lab",
-      twitterImage: "/design-system/laws-of-ux/twitter-image",
+      twitterImage:
+        "/social/laws-of-ux-social-preview-1200x630.png",
       twitterImageAlt: "Laws of UX snippets in qwen-ui-lab",
       shareSnippet:
         "Open the Laws of UX collection and export implementation-ready snippets in seconds.",
@@ -104,9 +108,9 @@ export function createUiLawsRouteMetadata(): Metadata {
       description:
         "Open the UI Laws collection in qwen-ui-lab to discover high-clarity interface patterns with copy-ready snippets.",
       path: "/design-system/uilaws",
-      ogImage: "/design-system/uilaws/opengraph-image",
+      ogImage: "/social/uilaws-social-preview-1200x630.png",
       ogImageAlt: "UI Laws route preview in qwen-ui-lab",
-      twitterImage: "/design-system/uilaws/twitter-image",
+      twitterImage: "/social/uilaws-social-preview-1200x630.png",
       twitterImageAlt: "UI Laws snippets in qwen-ui-lab",
       shareSnippet:
         "Browse UI Laws-inspired components and export snippets your team can ship immediately.",

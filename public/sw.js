@@ -1,5 +1,5 @@
 /** Bump when PRECACHE or fetch strategy changes so activate() drops stale caches. */
-const CACHE_NAME = "qwen-ui-lab-v11";
+const CACHE_NAME = "qwen-ui-lab-v14";
 
 const HEALTH_API_PATH = "/api/health";
 
@@ -10,8 +10,10 @@ const PRECACHE = [
   "/design-system",
   "/manifest.json",
   "/manifest.webmanifest",
-  "/opengraph-image",
-  "/twitter-image",
+  "/social/home-social-preview-1200x630.png",
+  "/social/design-system-social-preview-1200x630.png",
+  "/social/laws-of-ux-social-preview-1200x630.png",
+  "/social/uilaws-social-preview-1200x630.png",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/icon-maskable-512.png",
