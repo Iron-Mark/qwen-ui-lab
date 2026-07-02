@@ -2,7 +2,7 @@
 
 This file collects generated replacement candidates created from the final `QUI` violet hex-badge style references supplied by the user.
 
-The brand icons, social previews, and docs comparison graphic from this pack were wired into the app/docs. The first-pass AI-generated reference screenshots were rejected as too fake; the actual sample references now use the repository's deterministic SVG sources under `public/references/`, restyled to the final violet `QUI` direction and rasterized through `npm run generate:reference-rasters`.
+The brand icons, social previews, and docs comparison graphic from this pack were wired into the app/docs. The actual sample references still use the repository's deterministic SVG sources under `public/references/`, restyled to the final violet `QUI` direction and rasterized through `npm run generate:reference-rasters`. A second AI-generated sample-reference candidate set now lives under `public/generated-assets/references/` for review only; it is not wired into runtime sample selection.
 
 ## Style Source
 
@@ -10,7 +10,7 @@ Reference images used as inspiration:
 
 - User-supplied `QUI` violet hex-badge style references.
 
-Core style: glossy 3D purple `QUI` hexagonal badge, deep indigo background, beveled violet and lavender surfaces, neon purple rim lighting, restrained cyan accents, premium AI developer-tool tone.
+Core style: glossy 3D purple `QUI` hexagonal badge, deep indigo background, beveled violet and lavender surfaces, neon purple rim lighting, brand violet as the primary theme, blue as the secondary/info/positive accent, red only for risk/error/negative states, premium AI developer-tool tone.
 
 ## Ready-To-Use Candidates
 
@@ -27,6 +27,14 @@ Core style: glossy 3D purple `QUI` hexagonal badge, deep indigo background, beve
 | A024 | UILaws social preview | `public/generated-assets/social/uilaws-social-preview-1200x630.png` | 1200x630 |
 | A015 | Before/after docs graphic | `public/generated-assets/docs/before-after-comparison-1600x900.png` | 1600x900 |
 | A030 | Abstract brand background | `public/generated-assets/backgrounds/qwen-ui-lab-abstract-background-2400x1350.png` | 2400x1350 |
+| A007 | Dashboard reference candidate | `public/generated-assets/references/dashboard-reference-candidate-1440x900.png` | 1440x900 |
+| A008 | Auth reference candidate | `public/generated-assets/references/auth-reference-candidate-1200x720.png` | 1200x720 |
+| A009 | Mobile reference candidate | `public/generated-assets/references/mobile-reference-candidate-390x844.png` | 390x844 |
+| A010 | Landing reference candidate | `public/generated-assets/references/landing-reference-candidate-1440x900.png` | 1440x900 |
+| A011 | Settings reference candidate | `public/generated-assets/references/settings-reference-candidate-1200x720.png` | 1200x720 |
+| A012 | Ecommerce reference candidate | `public/generated-assets/references/ecommerce-reference-candidate-1200x720.png` | 1200x720 |
+| A013 | Dense dashboard stress candidate | `public/generated-assets/references/stress-dashboard-reference-candidate-1440x900.png` | 1440x900 |
+| A014 | Repeated list stress candidate | `public/generated-assets/references/stress-list-reference-candidate-1200x720.png` | 1200x720 |
 
 ## Wired Files
 
@@ -47,6 +55,7 @@ Core style: glossy 3D purple `QUI` hexagonal badge, deep indigo background, beve
 The first render files were also copied into the same folders without exact-size suffixes. These preserve the original image-generator canvas before resizing:
 
 - `public/generated-assets/social/*.png` without `-1200x630`
+- `public/generated-assets/references/*-generated.png`
 - `public/generated-assets/docs/before-after-comparison-generated.png`
 - `public/generated-assets/backgrounds/qwen-ui-lab-abstract-background.png`
 
@@ -57,16 +66,19 @@ Original untouched generator outputs remain outside the repository and are inten
 ## Usage Notes
 
 - The ready files are exact-size PNG candidates for the audited slots.
-- Reference sample replacements are source-based, not image-generator based: use `public/references/*.svg`, `*.png`, and `*.webp`.
+- Active reference sample replacements are source-based: use `public/references/*.svg`, `*.png`, and `*.webp`.
+- AI-generated reference sample files under `public/generated-assets/references/` are candidate review images only. Do not wire them into the analyzer/sample picker without a separate visual and test review.
 - The social previews include embedded text and should be visually checked before replacing generated OG routes.
 - The app icons are opaque rounded-square icon candidates. A true transparent cutout logo was not generated in this pass.
-- The AI-generated reference screenshots were removed from `public/generated-assets/references` because they looked too artificial for the sample picker/analyzer workflow.
+- The first AI-generated reference screenshots were removed because they looked too artificial for the sample picker/analyzer workflow. The current A007-A014 candidates were regenerated with more source-like UI screenshot prompts and kept separate from active app assets.
 
 ## Final QA
 
 Completed on 2026-07-03:
 
 - Removed rejected fake reference screenshot drafts from `public/generated-assets/references`.
+- Regenerated A007-A014 reference screenshot candidates with imagegen and saved exact-size review copies under `public/generated-assets/references/`.
+- Refined the reference-candidate palette so violet is primary, blue is secondary/supportive, and red is the only risk/negative color.
 - Confirmed active sample references are the source-based `public/references/*.svg`, `*.png`, and `*.webp` files.
 - Confirmed generated social previews, app icon PNGs, favicon, and docs before/after graphic exist at their wired locations.
 - Captured browser QA screenshots under `.local-logs/asset-qa/`.

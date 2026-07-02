@@ -6,7 +6,7 @@ IDs below track logical replaceable visuals. When a visual ships in several form
 
 Brand refinement note: the final logo direction is now the approved glossy purple 3D `QUI` hexagonal badge from the project asset handoff. Use that style as the brand anchor for future generated assets: dark indigo core, beveled violet/lavender frame, bold extruded lettering, neon rim highlights, and orbital analysis swooshes. Do not commit workstation-local file paths into prompts or documentation.
 
-Implementation status: the generated app icon PNG family, favicon, social preview PNGs, and documentation before/after PNG are installed. The sample references were deliberately not replaced with AI-rendered screenshots; instead, the source SVG samples in `public/references` were restyled to the final violet `QUI` direction and regenerated as PNG/WebP via `npm run generate:reference-rasters`. Rejected AI sample draft files were removed from `public/generated-assets/references`.
+Implementation status: the generated app icon PNG family, favicon, social preview PNGs, and documentation before/after PNG are installed. The active sample references were deliberately kept source-based; the source SVG samples in `public/references` were restyled to the final violet `QUI` direction and regenerated as PNG/WebP via `npm run generate:reference-rasters`. A second imagegen pass produced A007-A014 review-only sample-reference candidates under `public/generated-assets/references/`; these are not wired into runtime sample selection.
 
 ## 1. Repository Summary
 
@@ -62,14 +62,14 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A004 | Maskable app icon set | SVG + PNG | `public/icons/icon-maskable.svg`, `public/icons/icon-maskable-512.png` | `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191` | PWA maskable icon and mask icon | 512x512 | Used | High |
 | A005 | Apple touch icon set | SVG + PNG | `public/icons/apple-touch-icon.svg`, `public/icons/apple-touch-icon.png` | `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16` | iOS/PWA touch icon | 180x180 | Used | High |
 | A006 | Static social preview file | PNG | Removed: `public/images/og-image.png` | No exact runtime reference found | Older/static Open Graph style image candidate | 1200x630 | Removed | Medium |
-| A007 | Dashboard reference sample | SVG + PNG + WebP | `public/references/dashboard-reference.svg`, `.png`, `.webp` | `HomeMarketingHero.tsx:95`, `reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, tests/docs | Home hero background, bundled sample, PWA screenshot | 1440x900 | Used | High |
-| A008 | Auth reference sample | SVG + PNG + WebP | `public/references/auth-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests | Bundled sign-in sample | 1200x720 | Used | High |
-| A009 | Mobile reference sample | SVG + PNG + WebP | `public/references/mobile-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, tests | Bundled mobile/PWA screenshot sample | 390x844 | Used | High |
-| A010 | Landing reference sample | SVG + PNG + WebP | `public/references/landing-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:39-41`, `offline-analyze.mjs:186`, tests | Bundled marketing landing-page sample | 1440x900 | Used | High |
-| A011 | Settings reference sample | SVG + PNG + WebP | `public/references/settings-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:50-52`, `offline-analyze.mjs:241`, tests | Bundled settings UI sample | 1200x720 | Used | High |
-| A012 | Ecommerce reference sample | SVG + PNG + WebP | `public/references/ecommerce-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, tests | Bundled shop catalog sample | 1200x720 | Used | High |
-| A013 | Dense dashboard stress sample | SVG + PNG + WebP | `public/references/stress-dashboard-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:72-74`, tests, raster script | Bundled dense dashboard sample | 1440x900 | Used | High |
-| A014 | Repeated list stress sample | SVG + PNG + WebP | `public/references/stress-list-reference.svg`, `.png`, `.webp` | `reference-samples.data.mjs:83-85`, tests, raster script | Bundled repeated-list sample | 1200x720 | Used | High |
+| A007 | Dashboard reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/dashboard-reference-candidate-1440x900.png` | `HomeMarketingHero.tsx:95`, `reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, tests/docs | Home hero background, bundled sample, PWA screenshot | 1440x900 | Used + Candidate | High |
+| A008 | Auth reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/auth-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/auth-reference-candidate-1200x720.png` | `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests | Bundled sign-in sample | 1200x720 | Used + Candidate | High |
+| A009 | Mobile reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/mobile-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/mobile-reference-candidate-390x844.png` | `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, tests | Bundled mobile/PWA screenshot sample | 390x844 | Used + Candidate | High |
+| A010 | Landing reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/landing-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/landing-reference-candidate-1440x900.png` | `reference-samples.data.mjs:39-41`, `offline-analyze.mjs:186`, tests | Bundled marketing landing-page sample | 1440x900 | Used + Candidate | High |
+| A011 | Settings reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/settings-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/settings-reference-candidate-1200x720.png` | `reference-samples.data.mjs:50-52`, `offline-analyze.mjs:241`, tests | Bundled settings UI sample | 1200x720 | Used + Candidate | High |
+| A012 | Ecommerce reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/ecommerce-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/ecommerce-reference-candidate-1200x720.png` | `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, tests | Bundled shop catalog sample | 1200x720 | Used + Candidate | High |
+| A013 | Dense dashboard stress sample | SVG + PNG + WebP + candidate PNG | Active `public/references/stress-dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-dashboard-reference-candidate-1440x900.png` | `reference-samples.data.mjs:72-74`, tests, raster script | Bundled dense dashboard sample | 1440x900 | Used + Candidate | High |
+| A014 | Repeated list stress sample | SVG + PNG + WebP + candidate PNG | Active `public/references/stress-list-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-list-reference-candidate-1200x720.png` | `reference-samples.data.mjs:83-85`, tests, raster script | Bundled repeated-list sample | 1200x720 | Used + Candidate | High |
 | A015 | Before/after comparison graphic | PNG + SVG source | `docs/media/before-after-comparison.png`; legacy source `docs/media/before-after-comparison.svg` | `docs/specs/ARTIFACT_CHECKLIST.md:11`; legacy demo docs may still reference the SVG until the docs migration is finalized | Documentation comparison graphic | 1600x900 | Used in docs | High |
 | A016 | Next.js starter logo | SVG | Removed: `public/next.svg` | No exact runtime reference found | Starter/framework logo leftover | 394x80 viewBox | Removed | High |
 | A017 | Vercel starter logo | SVG | Removed: `public/vercel.svg` | No exact runtime reference found | Starter/deployment logo leftover | 1155x1000 viewBox | Removed | High |
@@ -94,8 +94,9 @@ Local file variants covered by grouped entries:
 | Asset set | Files and sizes |
 |---|---|
 | App icons | `src/app/favicon.ico` 285478 bytes; `public/icons/icon.svg` 2871 bytes; `icon-maskable.svg` 2803 bytes; `apple-touch-icon.svg` 3100 bytes; `icon-192.png` 51695 bytes; `icon-512.png` 316156 bytes; `icon-maskable-512.png` 316156 bytes; `apple-touch-icon.png` 46160 bytes |
-| Static social | Removed after confirming generated Open Graph and Twitter image routes provide social previews: `public/images/og-image.png` |
-| Reference samples | `dashboard-reference` SVG 10596 bytes, PNG 92287 bytes, WebP 39048 bytes; `auth-reference` SVG 3793, PNG 24785, WebP 9654; `mobile-reference` SVG 4614, PNG 26845, WebP 8734; `landing-reference` SVG 5848, PNG 72495, WebP 34202; `settings-reference` SVG 4297, PNG 33014, WebP 13214; `ecommerce-reference` SVG 7355, PNG 44658, WebP 19290; `stress-dashboard-reference` SVG 5509, PNG 38533, WebP 21332; `stress-list-reference` SVG 5241, PNG 28420, WebP 11280 |
+| Static social | Promoted active PNGs in `public/social`: home 1005207 bytes, design-system 950390 bytes, laws-of-ux 937800 bytes, uilaws 1063395 bytes. Removed legacy `public/images/og-image.png` |
+| Reference samples | `dashboard-reference` SVG 10591 bytes, PNG 92042 bytes, WebP 38918 bytes; `auth-reference` SVG 3793, PNG 24785, WebP 9654; `mobile-reference` SVG 4614, PNG 26845, WebP 8734; `landing-reference` SVG 5848, PNG 72495, WebP 34202; `settings-reference` SVG 4297, PNG 33014, WebP 13214; `ecommerce-reference` SVG 7355, PNG 44658, WebP 19290; `stress-dashboard-reference` SVG 5509, PNG 37488, WebP 20450; `stress-list-reference` SVG 5241, PNG 28317, WebP 11478 |
+| Generated reference candidates | Exact-size PNG candidates under `public/generated-assets/references`: dashboard 978694 bytes; auth 757488; mobile 315796; landing 1081046; settings 641861; ecommerce 754581; stress-dashboard 1126179; stress-list 712079 |
 | Documentation graphic | `docs/media/before-after-comparison.png` 1797157 bytes; legacy source `docs/media/before-after-comparison.svg` |
 | Starter leftovers | Removed after confirming no runtime references: `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, `public/window.svg` |
 | Visual snapshots | 18 PNG files under `e2e/visual-regression.spec.ts-snapshots/linux` and `.../win32`; dimensions include 1280x619, 960x685, 295x681, 298x29, 250x335, 239x399 |
@@ -195,150 +196,150 @@ Local file variants covered by grouped entries:
 - **File size:** 19527 bytes.
 - **Usage locations:** No exact runtime source reference found.
 - **Usage purpose:** Likely older Open Graph/social preview fallback.
-- **Visual description:** Removed static social preview used the older dark navy/cyan grid direction. If recreated, it should now use the final purple `QUI` badge as the anchor visual.
-- **Replacement recommendation:** Completed: removed after confirming generated social preview routes cover home, demo, and design-system metadata.
+- **Visual description:** Removed static social preview used the older dark navy technical-grid direction. If recreated, it should now use the final purple `QUI` badge as the anchor visual.
+- **Replacement recommendation:** Completed: removed after confirming promoted static social preview PNGs cover home, demo, and design-system metadata.
 - **Suggested AI prompt:** Create a 1200x630 social preview card for qwen-ui-lab, a screenshot-to-React developer tool. Use the final logo style as the anchor: glossy purple `QUI` hex badge, deep indigo background, violet/lavender rim lighting, subtle technical grid, screenshot-analysis panels, code/export motif, and a large safe editable headline area. Premium SaaS/devtool mood, crisp composition, high contrast.
 - **Negative prompt:** Illegible generated text, copied platform branding, unrelated Qwen logo variants, stock people, noisy cyberpunk background, flat purple wash, watermark, distorted UI panels.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
 - **Transparency needed:** No.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage. The app uses generated `opengraph-image` and `twitter-image` routes instead.
+- **Notes:** Removed from `public` after reference search confirmed no runtime usage. The app now uses promoted static PNGs in `public/social`; generated image routes remain as fallback route files.
 
 ### Asset ID: A007
 - **Asset name:** Dashboard reference sample.
-- **Asset path or URL:** `public/references/dashboard-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/dashboard-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/dashboard-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** SVG 10014 bytes; PNG 89887 bytes; WebP 33302 bytes.
+- **File size:** Active SVG 10591 bytes; PNG 92042 bytes; WebP 38918 bytes. Candidate PNG 978694 bytes; raw render 1080712 bytes.
 - **Usage locations:** `src/features/home/components/HomeMarketingHero.tsx:95`, `src/features/analysis/lib/reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, `scripts/generate-reference-rasters.mjs:15`, `offline-analyze.mjs:20`, tests/docs.
 - **Usage purpose:** Home hero background, default sample reference, PWA wide screenshot, known offline-analysis sample.
-- **Visual description:** Light admin analytics dashboard with top nav, metric cards, revenue chart placeholder, activity feed, and quick actions. Mostly white/gray with black text, green/red trend accents.
-- **Replacement recommendation:** Replace as a UI screenshot/mockup, not a decorative illustration. Preserve 1440x900 and keep enough clean interface detail for the analyzer demo.
-- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS analytics dashboard screenshot for a screenshot-to-code demo. Clean white interface, top navigation, four metric cards, revenue line or bar chart, recent activity feed, quick action buttons, subtle green/red trend indicators, restrained neutral palette with violet/lavender brand accents and optional cyan scan/detail accents, realistic spacing, crisp readable UI structure, no real company logos, no copyrighted brand marks, no people.
+- **Visual description:** Light admin analytics dashboard with top nav, metric cards, revenue chart placeholder, activity feed, and quick actions. Mostly white/gray with black text, violet primary accents, blue positive/supporting details, and red negative/risk details.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review as a UI screenshot/mockup, not a decorative illustration. Preserve 1440x900 and keep enough clean interface detail for the analyzer demo before wiring it in.
+- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS analytics dashboard screenshot for a screenshot-to-code demo. Clean white interface, top navigation, four metric cards, revenue line or bar chart, recent activity feed, quick action buttons, restrained neutral palette with violet/lavender as the main brand theme, blue as the secondary/info/positive accent, and red only for negative/risk indicators. Realistic spacing, crisp readable UI structure, no real company logos, no copyrighted brand marks, no people, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Photorealistic office scene, cluttered dashboard, illegible text blobs, extreme gradients, dark-only design, trademarked logos, watermark, broken UI alignment.
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus SVG source if maintaining raster workflow.
 - **Transparency needed:** No.
-- **Notes:** Replacement affects hero visuals, sample picker, PWA screenshots, known-sample hashes/signatures, tests, and docs.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Wiring it into runtime would affect hero visuals, sample picker, PWA screenshots, known-sample hashes/signatures, tests, and docs.
 
 ### Asset ID: A008
 - **Asset name:** Auth reference sample.
-- **Asset path or URL:** `public/references/auth-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/auth-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/auth-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/auth-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** SVG 2487 bytes; PNG 24253 bytes; WebP 7900 bytes.
+- **File size:** Active SVG 3793 bytes; PNG 24785 bytes; WebP 9654 bytes. Candidate PNG 757488 bytes; raw render 1200389 bytes.
 - **Usage locations:** `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests.
 - **Usage purpose:** Bundled sign-in sample.
 - **Visual description:** Centered sign-in card on pale gray background, black square logo at top, email/password inputs, black primary button, Google/GitHub secondary buttons, forgot-password and sign-up links.
-- **Replacement recommendation:** Preserve centered-auth-card composition and form controls. Use generic provider names or neutral SSO labels if avoiding brand marks.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; preserve centered-auth-card composition and form controls. Use generic provider names or neutral SSO labels if avoiding brand marks.
 - **Suggested AI prompt:** Generate a clean desktop sign-in screen screenshot. Pale neutral canvas, centered white authentication card, small abstract app mark, title, email and password fields, strong primary sign-in button, two secondary SSO buttons with generic labels, forgot-password and sign-up links, calm professional SaaS style, high spacing discipline, no real brand logos.
 - **Negative prompt:** Real Google/GitHub logos unless licensed, faces, noisy background, illegible form labels, distorted inputs, low contrast, watermark.
 - **Suggested aspect ratio:** 5:3.
 - **Suggested output size:** 1200x720 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Offline analyzer maps `auth-reference.svg` by filename; update mappings if semantics change.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Offline analyzer maps `auth-reference.svg` by filename; update mappings if semantics change.
 
 ### Asset ID: A009
 - **Asset name:** Mobile reference sample.
-- **Asset path or URL:** `public/references/mobile-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/mobile-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/mobile-reference-candidate-390x844.png`; raw render `public/generated-assets/references/mobile-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 390x844.
-- **File size:** SVG 3371 bytes; PNG 25704 bytes; WebP 7668 bytes.
+- **File size:** Active SVG 4614 bytes; PNG 26845 bytes; WebP 8734 bytes. Candidate PNG 315796 bytes; raw render 1071594 bytes.
 - **Usage locations:** `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, `offline-analyze.mjs:131`, tests.
 - **Usage purpose:** Bundled portrait mobile app sample and PWA narrow screenshot.
 - **Visual description:** Minimal phone feed layout with status time, `Feed` title, stacked social/activity cards with avatar initials, bottom navigation, and floating plus button.
-- **Replacement recommendation:** Preserve exact portrait dimensions and bottom navigation structure for PWA screenshot and mobile analyzer coverage.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; preserve exact portrait dimensions and bottom navigation structure for PWA screenshot and mobile analyzer coverage.
 - **Suggested AI prompt:** Generate a portrait mobile app UI screenshot for a productivity/social feed. 390x844 layout, clean light background, status bar, top title, three to five stacked activity cards with initials avatars, concise metadata, bottom navigation with three tabs, floating action button, modern native-app spacing, accessible contrast, no real brand names.
 - **Negative prompt:** Device hardware frame, hands, faces, photos, cluttered social media feed, tiny illegible labels, trademarked app icons, watermark.
 - **Suggested aspect ratio:** 390:844.
 - **Suggested output size:** 390x844 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Used as manifest screenshot; keep `form_factor: narrow` metadata correct.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Used as manifest screenshot if promoted; keep `form_factor: narrow` metadata correct.
 
 ### Asset ID: A010
 - **Asset name:** Landing reference sample.
-- **Asset path or URL:** `public/references/landing-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/landing-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/landing-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/landing-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** SVG 4573 bytes; PNG 72781 bytes; WebP 29986 bytes.
+- **File size:** Active SVG 5848 bytes; PNG 72495 bytes; WebP 34202 bytes. Candidate PNG 1081046 bytes; raw render 1184370 bytes.
 - **Usage locations:** `reference-samples.data.mjs:39-41`, `offline-analyze.mjs:186`, `scripts/generate-reference-rasters.mjs:18`, tests.
 - **Usage purpose:** Bundled marketing landing-page sample.
 - **Visual description:** Minimal SaaS landing page with top nav, hero headline, CTA buttons, feature cards, testimonial strip, and pricing cards. The SVG source contains an invalid control character in testimonial text but the raster previews render.
-- **Replacement recommendation:** Generate as a UI screenshot with clear marketing structure. Avoid baked-in copy that must be exact; use placeholders if future text will be manually recreated.
-- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS landing page screenshot for an AI UI tooling product. White background, compact top navigation, large hero headline area, two CTA buttons, three feature cards, subtle testimonial strip, three pricing cards, refined black/neutral typography with violet/lavender brand accents and small cyan technical highlights, polished product-led layout, no real brand logos, no people.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review as a UI screenshot with clear marketing structure. Avoid baked-in copy that must be exact; use placeholders if future text will be manually recreated.
+- **Suggested AI prompt:** Generate a high-fidelity desktop SaaS landing page screenshot for an AI UI tooling product. White background, compact top navigation, large hero headline area, two CTA buttons, three feature cards, subtle testimonial strip, three pricing cards, refined black/neutral typography with violet/lavender as the main brand theme, blue as the only secondary/support accent, and red only for risk/error details if needed. Polished product-led layout, no real brand logos, no people, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Generic stock hero illustration, huge gradient blobs, illegible text, luxury ecommerce style, copied brand marks, broken pricing cards, watermark.
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus fixed SVG source if maintaining generator.
 - **Transparency needed:** No.
-- **Notes:** Clean invalid SVG text during replacement.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Clean invalid SVG text during source-based replacement.
 
 ### Asset ID: A011
 - **Asset name:** Settings reference sample.
-- **Asset path or URL:** `public/references/settings-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/settings-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/settings-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/settings-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** SVG 3090 bytes; PNG 32314 bytes; WebP 10928 bytes.
+- **File size:** Active SVG 4297 bytes; PNG 33014 bytes; WebP 13214 bytes. Candidate PNG 641861 bytes; raw render 984038 bytes.
 - **Usage locations:** `reference-samples.data.mjs:50-52`, `offline-analyze.mjs:241`, `scripts/generate-reference-rasters.mjs:19`, tests.
 - **Usage purpose:** Bundled settings/preferences sample.
 - **Visual description:** Desktop settings screen with left sidebar tabs, profile form fields, notification toggles, and cancel/save buttons.
-- **Replacement recommendation:** Keep the form-and-toggle surface obvious for analyzer coverage.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; keep the form-and-toggle surface obvious for analyzer coverage.
 - **Suggested AI prompt:** Generate a clean desktop account settings UI screenshot. Neutral background, left settings sidebar with three sections, main profile form with display name and email fields, notification toggles, secondary cancel button, primary save button, quiet enterprise SaaS styling, clear labels and spacing, no real user data or brand logos.
 - **Negative prompt:** Photorealistic person, decorative illustration, illegible labels, crowded settings, harsh colors, watermark.
 - **Suggested aspect ratio:** 5:3.
 - **Suggested output size:** 1200x720 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Good candidate for a consistent sample-set redesign.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Good candidate for a consistent sample-set redesign.
 
 ### Asset ID: A012
 - **Asset name:** Ecommerce reference sample.
-- **Asset path or URL:** `public/references/ecommerce-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/ecommerce-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/ecommerce-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/ecommerce-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** SVG 6182 bytes; PNG 42386 bytes; WebP 15554 bytes.
+- **File size:** Active SVG 7355 bytes; PNG 44658 bytes; WebP 19290 bytes. Candidate PNG 754581 bytes; raw render 1162559 bytes.
 - **Usage locations:** `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, `scripts/generate-reference-rasters.mjs:20`, tests.
 - **Usage purpose:** Bundled product catalog sample.
 - **Visual description:** Light ecommerce catalog UI with header, search field, cart/profile icon, left filters, and product grid cards with gray product placeholders and Add buttons. The SVG source has an encoded text issue, but the raster previews render.
-- **Replacement recommendation:** Replace as a UI screenshot with clear filter/product-grid semantics. Avoid using real product trademarks.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review as a UI screenshot with clear filter/product-grid semantics. Avoid using real product trademarks.
 - **Suggested AI prompt:** Generate a desktop ecommerce catalog UI screenshot. Clean white store layout, top search bar, small cart indicator, left filter sidebar with categories and price, grid of eight product cards with abstract neutral product thumbnails, product names and prices, compact add buttons, modern retail SaaS style, no real brand logos, no copyrighted products.
 - **Negative prompt:** Real brand packaging, fashion model photos, cluttered marketplace page, illegible prices, distorted grid, watermark.
 - **Suggested aspect ratio:** 5:3.
 - **Suggested output size:** 1200x720 PNG/WebP plus corrected SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Clean malformed SVG text during replacement.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Clean malformed SVG text during source-based replacement.
 
 ### Asset ID: A013
 - **Asset name:** Dense dashboard stress sample.
-- **Asset path or URL:** `public/references/stress-dashboard-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/stress-dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-dashboard-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/stress-dashboard-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** SVG 4261 bytes; PNG 38306 bytes; WebP 19798 bytes.
+- **File size:** Active SVG 5509 bytes; PNG 37488 bytes; WebP 20450 bytes. Candidate PNG 1126179 bytes; raw render 1219063 bytes.
 - **Usage locations:** `reference-samples.data.mjs:72-74`, `scripts/generate-reference-rasters.mjs:21`, tests.
 - **Usage purpose:** Stress test for dense metrics, charts, tables, and admin layouts.
-- **Visual description:** Dense admin dashboard with dark top bar, left navigation, metric cards, line chart, donut chart, and table rows. Uses blue, green, yellow, pink, and pale neutral UI accents.
-- **Replacement recommendation:** Keep density high and controls/tables distinct. Generate as a matching sibling to A014.
-- **Suggested AI prompt:** Generate a dense desktop admin analytics dashboard screenshot. Dark compact top bar, left navigation rail, four compact KPI cards, large line chart, donut chart, data table with several rows, status pills, restrained neutral background with blue/green accents, professional operational-tool feel, high information density but clean alignment.
+- **Visual description:** Dense admin dashboard with dark top bar, left navigation, metric cards, line chart, donut chart, and table rows. Uses violet/lavender as the primary theme, blue as the secondary/support color, red for risk/negative states, and pale neutral UI surfaces.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; keep density high and controls/tables distinct. Generate as a matching sibling to A014.
+- **Suggested AI prompt:** Generate a dense desktop admin analytics dashboard screenshot. Dark compact top bar, left navigation rail, four compact KPI cards, large line chart, donut chart, data table with several rows, status pills, restrained neutral background with violet/lavender as the primary theme, blue as the secondary/info/positive accent, and red only for risk/negative states. Professional operational-tool feel, high information density but clean alignment, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Oversized marketing hero, sparse dashboard, messy data labels, real brand logos, photos, people, watermark.
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Generate with A014 as a matching stress-test set.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only with A014 as a matching stress-test set.
 
 ### Asset ID: A014
 - **Asset name:** Repeated list stress sample.
-- **Asset path or URL:** `public/references/stress-list-reference.svg`, `.png`, `.webp`.
+- **Asset path or URL:** Active `public/references/stress-list-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-list-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/stress-list-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** SVG 4006 bytes; PNG 27264 bytes; WebP 10896 bytes.
+- **File size:** Active SVG 5241 bytes; PNG 28317 bytes; WebP 11478 bytes. Candidate PNG 712079 bytes; raw render 1087347 bytes.
 - **Usage locations:** `reference-samples.data.mjs:83-85`, `scripts/generate-reference-rasters.mjs:22`, tests.
 - **Usage purpose:** Stress test for repeated rows, list rhythm, item actions, and status pills.
 - **Visual description:** Desktop app list/table view with top bar, left sidebar, repeated rows with circular avatars/status indicators, text lines, pills, and action buttons.
-- **Replacement recommendation:** Preserve repeated structure and row rhythm for analyzer robustness.
-- **Suggested AI prompt:** Generate a desktop task or customer list UI screenshot. Top toolbar with search and action buttons, left navigation sidebar, main panel with 8 repeated list rows, each row containing avatar dot, primary/secondary text, status pill, metadata chip, and action button. Clean operational SaaS style, pale neutral background, violet/lavender brand accents with mint status details, consistent row spacing.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; preserve repeated structure and row rhythm for analyzer robustness.
+- **Suggested AI prompt:** Generate a desktop task or customer list UI screenshot. Top toolbar with search and action buttons, left navigation sidebar, main panel with 8 repeated list rows, each row containing avatar dot, primary/secondary text, status pill, metadata chip, and action button. Clean operational SaaS style, pale neutral background, violet/lavender as the main brand theme, blue for secondary/info/positive details, red only for blocked/critical/overdue states, consistent row spacing, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Spreadsheet-only view, random photos, dense unreadable text, inconsistent row heights, trademarked logos, watermark.
 - **Suggested aspect ratio:** 5:3.
 - **Suggested output size:** 1200x720 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Generate with A013 as a matching stress-test set.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only with A013 as a matching stress-test set.
 
 ### Asset ID: A015
 - **Asset name:** Before/after comparison graphic.
@@ -350,7 +351,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Documentation graphic comparing a first-pass scaffold and refined starter.
 - **Visual description:** Installed generated dark indigo comparison graphic with the glossy violet `QUI` badge, "Before" raster screenshot panel, central analysis step, and "After" editable React + Tailwind component view.
 - **Replacement recommendation:** Completed: use the PNG in docs; keep SVG only as legacy/source context.
-- **Suggested AI prompt:** Create a clean 1600x900 comparison infographic for a frontend workflow. Split layout: left "AI scaffold" panel with rough code block and red issue checklist, right "Refactored final" panel with polished code block and green improvement checklist. White cards on pale neutral background, crisp UI/editor styling, professional documentation look, editable text zones, no real brand logos.
+- **Suggested AI prompt:** Create a clean 1600x900 comparison infographic for a frontend workflow. Split layout: left "AI scaffold" panel with rough code block and red issue checklist, right "Refactored final" panel with polished code block and violet/blue improvement checklist. White cards on pale neutral background, crisp UI/editor styling, professional documentation look, editable text zones, no real brand logos, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Garbled text, emoji artifacts, photorealistic people, dark unreadable code, cluttered layout, watermark.
 - **Suggested aspect ratio:** 16:9.
 - **Suggested output size:** 1600x900 SVG or PNG.
@@ -452,7 +453,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Social preview for home and demo.
 - **Visual description:** Installed dark indigo social card with the glossy purple `QUI` badge, qwen-ui-lab wordmark, screenshot-to-React tagline, workflow icons, violet divider, and clean right-side safe area.
 - **Replacement recommendation:** Completed: metadata and service-worker cache point at the static generated PNG.
-- **Suggested AI prompt:** Create a 1200x630 social preview image for qwen-ui-lab, a screenshot-to-React workflow. Strong developer-tool composition with deep indigo background, final glossy purple `QUI` hex badge, violet/lavender rim lighting, abstract screenshot upload panel, detection boxes, code export motif, subtle cyan scan-line accents, large safe text area for title and subtitle, polished SaaS launch-card mood, high contrast.
+- **Suggested AI prompt:** Create a 1200x630 social preview image for qwen-ui-lab, a screenshot-to-React workflow. Strong developer-tool composition with deep indigo background, final glossy purple `QUI` hex badge, violet/lavender rim lighting, abstract screenshot upload panel, detection boxes, code export motif, subtle blue scan-line accents, large safe text area for title and subtitle, polished SaaS launch-card mood, high contrast, red only for risk/error details if needed.
 - **Negative prompt:** Illegible baked-in text, random code gibberish, people, stock photos, copied platform logos, unrelated Qwen logo variants, flat purple wash, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
@@ -469,7 +470,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Social preview for design system playground.
 - **Visual description:** Installed dark indigo/violet social preview with the `QUI` badge direction and component-library/UI tile visual language.
 - **Replacement recommendation:** Completed: metadata points at the static generated PNG.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a design system playground. Deep indigo/charcoal background with the final glossy purple `QUI` badge, violet/lavender beveled-light accents, subtle cyan grid details, organized grid of reusable UI component tiles, code snippet panels, small UX-law cards, premium developer-tool feel, large safe headline zone, no real brand logos, no people.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a design system playground. Deep indigo/charcoal background with the final glossy purple `QUI` badge, violet/lavender beveled-light accents, subtle blue grid details, organized grid of reusable UI component tiles, code snippet panels, small UX-law cards, premium developer-tool feel, large safe headline zone, no real brand logos, no people, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Marketing stock imagery, flat one-note purple wash, illegible text, messy component grid, trademarked logos, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
@@ -486,7 +487,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Social preview for Laws of UX slice.
 - **Visual description:** Installed dark/violet social preview oriented around UX principle cards and interface decision diagrams.
 - **Replacement recommendation:** Completed: metadata points at the static generated PNG.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a UX principles catalog inside a developer design system. Deep indigo technical background, final purple `QUI` badge or small badge fragment, violet/lavender rim lighting, floating cards representing usability laws, small interface examples, comparison arrows, subtle cyan measurement-grid accents, calm authoritative mood, large safe headline area, clean vector-like UI elements, no brand imitation.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a UX principles catalog inside a developer design system. Deep indigo technical background, final purple `QUI` badge or small badge fragment, violet/lavender rim lighting, floating cards representing usability laws, small interface examples, comparison arrows, subtle blue measurement-grid accents, calm authoritative mood, large safe headline area, clean vector-like UI elements, no brand imitation, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Psychology stock photos, textbook cover style, illegible small text, celebrity/artist imitation, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
@@ -503,7 +504,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Social preview for UILaws route.
 - **Visual description:** Installed dark/violet social preview with rule-card, component-library, and annotation motifs.
 - **Replacement recommendation:** Completed: metadata points at the static generated PNG.
-- **Suggested AI prompt:** Create a 1200x630 social preview for a UI-laws component library. Dark indigo/charcoal background with final glossy purple `QUI` badge, violet/lavender highlights, clean component cards, usability checklist motifs, code export panel, subtle cyan scan accents, bold safe headline space, modern product-design tooling mood, original and brand-safe.
+- **Suggested AI prompt:** Create a 1200x630 social preview for a UI-laws component library. Dark indigo/charcoal background with final glossy purple `QUI` badge, violet/lavender highlights, clean component cards, usability checklist motifs, code export panel, subtle blue scan accents, bold safe headline space, modern product-design tooling mood, original and brand-safe, red only for risk/error details if needed.
 - **Negative prompt:** Neon chaos, orange-heavy palette, illegible text, copied website logos, photos of people, flat purple wash, watermark.
 - **Suggested aspect ratio:** 1.91:1.
 - **Suggested output size:** 1200x630 PNG.
@@ -573,7 +574,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Data visualization in sample dashboard and component catalog.
 - **Visual description:** Recharts line/area chart with grid, tooltip, gradient fill, and primary-color line; Chart.js donut chart with legend and multiple series colors.
 - **Replacement recommendation:** Do not replace with static AI art unless intentionally freezing charts. If restyling, update chart theme tokens and maintain accessible `role="img"` labels.
-- **Suggested AI prompt:** Create a static preview graphic of a clean SaaS analytics chart module: line chart with subtle area fill, clear grid, compact axis labels, plus companion donut chart with three to four segments and legend. Neutral white card, violet/lavender primary series, mint success details, optional cyan analysis line, crisp vector-like UI, no real data labels, no brand logos.
+- **Suggested AI prompt:** Create a static preview graphic of a clean SaaS analytics chart module: line chart with subtle area fill, clear grid, compact axis labels, plus companion donut chart with three to four segments and legend. Neutral white card, violet/lavender primary series, blue secondary/info/positive details, red only for negative/risk markers, crisp vector-like UI, no real data labels, no brand logos, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Financial candlestick chart, unreadable tiny text, neon glow, 3D pie chart, cluttered legend, watermark.
 - **Suggested aspect ratio:** Use target component crop.
 - **Suggested output size:** 1200x720 for marketing/sample image or component-specific exported SVG.
@@ -607,7 +608,7 @@ Local file variants covered by grouped entries:
 - **Usage purpose:** Decorative atmosphere, contrast overlays, and social-preview backgrounds.
 - **Visual description:** Subtle radial top glows, linear overlays, and generated social gradients.
 - **Replacement recommendation:** Usually keep CSS gradients. If replacing with AI-generated bitmap backgrounds, export lightweight, non-distracting textures and verify text contrast.
-- **Suggested AI prompt:** Create a subtle abstract background texture for a developer SaaS interface. Dark-to-light neutral base with soft violet/lavender brand glow, faint technical grid or pixel structure, tiny optional cyan scan-line accents, very low contrast, no distinct objects, no text, designed to sit behind real UI without distracting from content.
+- **Suggested AI prompt:** Create a subtle abstract background texture for a developer SaaS interface. Dark-to-light neutral base with soft violet/lavender brand glow, faint technical grid or pixel structure, tiny optional blue scan-line accents, very low contrast, no distinct objects, no text, designed to sit behind real UI without distracting from content, no green/cyan/mint/yellow/amber theme accents.
 - **Negative prompt:** Orb decorations, bokeh blobs, loud gradients, photos, complex illustrations, text, watermark.
 - **Suggested aspect ratio:** 16:9 or wide responsive crop.
 - **Suggested output size:** 2400x1350 or CSS-only token replacement.
@@ -672,7 +673,7 @@ Generate the eight reference samples as a matching UI screenshot suite. They sho
 
 - Neutral UI foundations.
 - Consistent corner radii, spacing, typography scale, and card treatment.
-- Violet/lavender brand accents echoing the final `QUI` badge, with cyan used only as a secondary analysis/scan accent.
+- Violet/lavender brand accents echoing the final `QUI` badge, with blue as the only secondary analysis/info/positive accent and red reserved for risk/error/negative states.
 - Distinct screen archetypes: dashboard, auth, mobile, landing, settings, ecommerce, dense dashboard, repeated list.
 - Same product world but no real private data or real brand logos.
 
@@ -716,9 +717,9 @@ Recommended color palette:
 - Base dark: deep indigo/near-black `#08061F`, navy/charcoal `#0B1020` or `#111827`.
 - Primary brand accent: violet `#7C3AED` and electric violet `#8B5CF6`.
 - Highlight accent: lavender `#C4B5FD`.
-- Secondary technical accent: cyan `#22D3EE`.
-- Success/progress accent: mint `#10B981`.
-- Status accents: green for positive, red for negative, amber for warning, but used sparingly.
+- Secondary/info/positive accent: blue `#2563EB`.
+- Risk/error/negative accent: red `#DC2626`.
+- Avoid green, mint, cyan, teal, yellow, and amber as theme or status colors.
 
 Composition rules:
 
@@ -752,7 +753,7 @@ Illustration style:
 
 Background style:
 
-- Use subtle technical grids, UI frames, violet/lavender rim light, and tiny cyan scan accents.
+- Use subtle technical grids, UI frames, violet/lavender rim light, and tiny blue scan accents.
 - Avoid orbs, blobs, bokeh, and purely atmospheric backgrounds.
 
 Brand consistency guidance:
@@ -782,7 +783,7 @@ Style:
 Premium developer-tool SaaS, clean UI-first composition, crisp vector-like detail, restrained modern product design, no stock imagery. For brand assets, echo the final glossy purple 3D `QUI` hex badge with dark indigo core, violet/lavender bevels, neon rim highlights, and orbital analysis swooshes.
 
 Color palette:
-[COLOR_PALETTE], with neutral white/zinc surfaces, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final `QUI` badge, cyan as a secondary technical/analysis accent, and mint only for success/progress states.
+[COLOR_PALETTE], with neutral white/zinc surfaces, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final `QUI` badge, blue as the secondary/info/positive accent, and red only for risk/error/negative states. Avoid green, mint, cyan, teal, yellow, and amber theme accents.
 
 Composition:
 [COMPOSITION_RULES]. Preserve the original layout function and safe areas. The asset must remain compatible with [LAYOUT_CONSTRAINTS].
@@ -856,7 +857,7 @@ Recommended verification after actual replacement:
 - Static social fallback `public/images/og-image.png` was removed after generated social preview routes were confirmed as the active metadata path.
 - Starter leftovers `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, and `public/window.svg` were removed after reference search confirmed no runtime usage.
 - Footer GitHub and LinkedIn inline SVG marks may require brand/legal review if kept as official social marks.
-- Generated social images are not static files. Replacing them may require code changes, not image uploads.
+- Social previews are now promoted static PNGs in `public/social`, with archive copies under `public/generated-assets/social`. Generated route files still exist as fallback/source context.
 - Chart and upload preview visuals are runtime-generated; replacing them with AI images may reduce responsiveness and accessibility.
 - Visual regression snapshots are test artifacts. They should be regenerated from the app after replacement rather than manually image-generated.
 - Documentation and slide files reference some old visual assets and may need updates after replacements.

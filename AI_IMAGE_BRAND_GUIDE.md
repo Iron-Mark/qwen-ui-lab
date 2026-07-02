@@ -84,19 +84,17 @@ Use this as the default palette for generated assets.
 | Primary brand violet | `#7C3AED` | Main brand accent and logo material |
 | Electric violet | `#8B5CF6` | Glow, bevel edges, active emphasis |
 | Lavender highlight | `#C4B5FD` | Logo shine and soft highlights |
-| Technical cyan | `#22D3EE` | Secondary analysis frame and scan-line accent |
-| Success mint | `#10B981` | Success and progress |
-| Positive | `#059669` | Success trends |
-| Negative | `#DC2626` | Error or negative trends |
-| Warning | `#F59E0B` | Warning state |
+| Support blue | `#2563EB` | Secondary/info/positive accent |
+| Signal red | `#DC2626` | Error, risk, blocked, or negative trend accent |
 
 ### Palette Rules
 
 - Use neutral UI surfaces as the foundation.
 - Use violet/lavender as the primary brand accent, especially in logos, social images, hero accents, and premium highlights.
-- Use cyan only as a secondary technical/analysis accent.
+- Use blue as the only secondary accent for info, positive, analysis, and supporting details.
+- Use red only for risk, blocked, error, or negative states.
 - Keep UI screenshots mostly neutral with selective purple brand chrome; do not flood every screen with purple.
-- Avoid beige, brown, orange-heavy, or unrelated one-note palettes.
+- Avoid green, mint, cyan, teal, yellow, amber, beige, brown, orange-heavy, or unrelated one-note palettes as theme accents.
 - Keep status colors functional, not decorative.
 - Prefer high contrast over atmospheric blending.
 
@@ -198,12 +196,12 @@ Recommended layout:
 
 - Dark navy or charcoal background.
 - Deep indigo background with violet/lavender rim light.
-- Optional subtle cyan grid or scan motif as a secondary detail.
+- Optional subtle blue grid or scan motif as a secondary detail.
 - Abstract screenshot-analysis panel.
 - Small or medium final-logo badge placement.
 - Safe area for title and subtitle.
 - Violet/lavender primary accent.
-- Cyan/mint secondary analysis accent.
+- Blue secondary analysis accent; red only for risk/error details.
 - Minimal UI/code elements.
 
 Social cards should not depend on exact generated text. Prefer editable text areas or manually added final text later.
@@ -242,7 +240,7 @@ Social cards should not depend on exact generated text. Prefer editable text are
 Use this at the top of image-generation requests:
 
 ```text
-Use the final qwen-ui-lab logo direction as the brand anchor: a glossy 3D hexagonal shield badge with a dark indigo core, beveled violet/lavender frame, bold extruded QUI lettering, neon purple rim highlights, and curved orbital analysis swooshes. For supporting assets, preserve the same premium developer-tool feel: clean, precise, calm, technical, and polished. Use neutral UI surfaces, deep navy/charcoal contrast, violet/lavender primary brand accents, and cyan/mint only as secondary analysis or success accents. Favor crisp UI detail, realistic product screenshots, clear grid alignment, modest rounded corners, readable hierarchy, high contrast, and controlled luminous depth.
+Use the final qwen-ui-lab logo direction as the brand anchor: a glossy 3D hexagonal shield badge with a dark indigo core, beveled violet/lavender frame, bold extruded QUI lettering, neon purple rim highlights, and curved orbital analysis swooshes. For supporting assets, preserve the same premium developer-tool feel: clean, precise, calm, technical, and polished. Use neutral UI surfaces, deep navy/charcoal contrast, violet/lavender as the primary brand theme, blue as the only secondary/info/positive accent, and red only for risk/error/negative states. Favor crisp UI detail, realistic product screenshots, clear grid alignment, modest rounded corners, readable hierarchy, high contrast, and controlled luminous depth. Avoid green, mint, cyan, teal, yellow, and amber theme accents.
 ```
 
 ## Global Negative Prompt
@@ -250,7 +248,7 @@ Use the final qwen-ui-lab logo direction as the brand anchor: a glossy 3D hexago
 Use this in every request:
 
 ```text
-Avoid copied brand logos, Qwen logo imitation beyond the provided final QUI badge direction, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, flat one-note purple washes, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
+Avoid copied brand logos, Qwen logo imitation beyond the provided final QUI badge direction, Next.js logo, Vercel triangle, GitHub Octocat, LinkedIn logo, Google logo, copyrighted characters, living artist imitation, stock-photo people, watermarks, garbled text, tiny unreadable microcopy, random code gibberish, cyberpunk noise, mascot art, flat one-note purple washes, green/mint/cyan/teal/yellow/amber theme accents, beige/brown/orange-heavy palette, decorative blobs, bokeh orbs, cluttered UI, broken alignment, low contrast, cropped interface, device hands, and photorealistic office scenes.
 ```
 
 ## Reusable Prompt Template
@@ -277,7 +275,7 @@ Style:
 Premium developer-tool SaaS, clean UI-first design, crisp vector-like detail, realistic product interface, calm technical mood.
 
 Color:
-Neutral white/zinc UI foundation, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final QUI badge, cyan/mint secondary analysis accents.
+Neutral white/zinc UI foundation, deep indigo or charcoal contrast, violet/lavender primary brand accents from the final QUI badge, blue secondary/info/positive accents, and red only for risk/error/negative states. Avoid green, mint, cyan, teal, yellow, and amber as theme accents.
 
 Functional constraints:
 [SAFE AREA, TRANSPARENCY, MASKABLE ICON SAFE ZONE, TEXT AREA, NO TEXT, ETC.]
