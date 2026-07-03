@@ -47,7 +47,7 @@ test("analyzeUiImageWithQwen returns structured artifact when upstream mock retu
   assert.equal(result.ok, true);
   assert.equal(result.artifact.modeLabel, `Qwen provider: ${MOCK_QWEN_MODEL}`);
   assert.equal(result.artifact.plan[0].title, MOCK_QWEN_ANALYSIS_JSON.plan[0].title);
-  assert.match(result.artifact.generatedCode, /MockedQwenDashboard/);
+  assert.match(result.artifact.generatedCode, /ContractDashboardStarter/);
   assert.equal(
     result.artifact.previewStats[0].label,
     MOCK_QWEN_ANALYSIS_JSON.previewStats[0].label,
@@ -112,6 +112,6 @@ test("postAnalyzeUi calls analyze-ui when health reports live mode and maps succ
   assert.equal(outcome.sampleRun, false);
   assert.match(outcome.message, /qwen3-vl-plus-mock/);
   assert.equal(outcome.artifact.plan[0].title, "Contract Layout Read");
-  assert.match(outcome.artifact.generatedCode, /MockedQwenDashboard/);
+  assert.match(outcome.artifact.generatedCode, /ContractDashboardStarter/);
   assert.equal(outcome.artifact.previewStats[0].label, "Contract Sections");
 });

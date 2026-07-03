@@ -126,7 +126,7 @@ test("buildQwenVisionRequest uses OpenAI-compatible image_url content", () => {
   assert.equal(request.messages[0].role, "system");
   assert.equal(request.messages[1].role, "user");
   assert.equal(request.messages[1].content[1].type, "image_url");
-  assert.match(request.messages[1].content[0].text, /usable starter TSX/);
+  assert.match(request.messages[1].content[0].text, /concrete starter TSX/);
   assert.match(request.messages[1].content[0].text, /sample-run imports/);
   assert.match(request.messages[1].content[0].text, /shadcn-style primitives/);
   assert.match(request.messages[1].content[0].text, /export a default top-level component/);

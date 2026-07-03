@@ -68,11 +68,11 @@ export function buildQwenVisionRequest({
               "Return JSON with keys: summary, plan, generatedCode, previewStats.",
               "plan must be an array of {title, body}.",
               "previewStats must be an array of {label, value}.",
-              "generatedCode must be usable starter TSX, not a sample-run note.",
+              "generatedCode must be concrete starter TSX, not a sample-run note.",
               "generatedCode should prefer shadcn-style primitives from @/components/ui: Card, Button, Input, Badge, Tabs, Dialog, Select, Table when those match the screenshot.",
               "generatedCode should export a default top-level component plus small named subcomponents for repeated sections.",
               "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and clearly named starter data constants that can be replaced with product data.",
-              "Avoid app-specific sample-run imports unless they are included in generatedCode. Do not leave TODO-only blocks as the main output.",
+              "Avoid app-specific sample-run imports unless they are included in generatedCode. Do not leave instruction-only placeholders as the main output.",
             ].join("\n"),
           },
           {

@@ -19,7 +19,19 @@ export const MOCK_QWEN_ANALYSIS_JSON = {
     },
   ],
   generatedCode:
-    "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
+    [
+      "export default function ContractDashboardStarter() {",
+      "  return (",
+      '    <main data-contract-test aria-label="Contract dashboard starter">',
+      '      <section className="grid gap-4 md:grid-cols-3">',
+      '        <article className="rounded-lg border p-4">Contract metric</article>',
+      '        <article className="rounded-lg border p-4">Contract chart</article>',
+      '        <article className="rounded-lg border p-4">Contract activity</article>',
+      "      </section>",
+      "    </main>",
+      "  );",
+      "}",
+    ].join("\n"),
   previewStats: [
     { label: "Contract Sections", value: "5" },
     { label: "Contract Components", value: "9" },

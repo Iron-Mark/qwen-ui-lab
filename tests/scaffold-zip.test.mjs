@@ -195,7 +195,7 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /After approval, keep `DESIGN\.md` if it helps future maintenance/,
+    /After verification, keep `DESIGN\.md` if it helps future maintenance/,
   );
   assert.doesNotMatch(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",

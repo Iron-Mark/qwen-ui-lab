@@ -56,7 +56,7 @@ import { ActivityList } from "@/features/home/components/ActivityList";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export">
+    <section aria-label="Dashboard starter">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -110,7 +110,7 @@ import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
 export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth export" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth starter" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -167,7 +167,7 @@ import { BottomNav } from "@/features/mobile/components/BottomNav";
 
 export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile export" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile starter" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -277,7 +277,7 @@ import { SaveBar } from "@/features/settings/components/SaveBar";
 
 export function SettingsStarter() {
   return (
-    <section aria-label="Settings export" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings starter" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -339,7 +339,7 @@ import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
 export function CatalogStarter() {
   return (
-    <div aria-label="Catalog export" className="min-h-dvh bg-background">
+    <div aria-label="Catalog starter" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -814,13 +814,13 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="${profile.label} export"
+      aria-label="${profile.label} starter"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Export</Badge>
+            <Badge variant="secondary">Starter</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
@@ -1166,7 +1166,7 @@ function knownSampleResponsiveIntent(archetypeId) {
   return {
     mode: modes[archetypeId] ?? "responsive-page",
     breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review exported regions, replace starter content, then connect live data.",
+    primaryFlow: "Review starter regions, replace starter content, then connect live data.",
   };
 }
 
@@ -1344,7 +1344,7 @@ import { Card } from "@/components/ui/card";
 
 export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth export based on ${safeName}">
+    <main aria-label="Auth starter based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
         <h1 className="text-xl font-semibold">Sign in</h1>
         {/* Email + password fields */}
@@ -1356,7 +1356,7 @@ export function AuthScreenStarter() {
     case "mobile":
       return `export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile export based on ${safeName}" className="flex min-h-dvh flex-col">
+    <div aria-label="Mobile starter based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
       <main className="flex-1 space-y-3 p-4">{/* stacked cards */}</main>
       <nav aria-label="Primary" className="border-t p-2">{/* bottom nav */}</nav>
@@ -1366,7 +1366,7 @@ export function AuthScreenStarter() {
     case "settings":
       return `export function SettingsStarter() {
   return (
-    <section aria-label="Settings export based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <section aria-label="Settings starter based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
@@ -1427,7 +1427,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export based on ${safeName}">
+    <section aria-label="Dashboard starter based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -1516,13 +1516,13 @@ const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap
 export default function ${componentName}() {
   return (
     <main
-      aria-label="${archetype.label} export based on ${safeName}"
+      aria-label="${archetype.label} starter based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">SVG export</Badge>
+            <Badge variant="secondary">SVG starter</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1658,7 +1658,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} export.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} starter.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1769,7 +1769,7 @@ const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
     "Use this starter package to review structure, then replace starter copy and values with product data.",
-  primaryAction: "Review export",
+  primaryAction: "Review starter",
   secondaryAction: "Open design notes",
 };
 
@@ -1880,7 +1880,7 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="${archetype.label} export from ${safeName}"
+      aria-label="${archetype.label} starter from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -2124,17 +2124,17 @@ function buildUsableSections(
 export function LayoutGridReference() {
   return (
     <section
-      aria-label="${archetype.label} export based on ${safeName}"
+      aria-label="${archetype.label} starter based on ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Screenshot export</p>
+        <p className="text-xs font-medium uppercase">Screenshot starter</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
           {detectedElements.length} UI elements were detected before starter preview review.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the export.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the starter.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.

@@ -50,7 +50,7 @@ export function buildProductionScaffoldReadme({
   dependencies = normalizeDependencies(dependencies);
   const designDoc = files.designDoc;
   componentName = normalizeComponentName(componentName);
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
@@ -69,7 +69,7 @@ ${RICH_PACKAGE_INTRO}
 ## What this package is
 
 - A React + Tailwind starting point based on the uploaded screenshot.
-- A rebuild recipe that records detected regions, primitive mappings, and manual edits.
+- A rebuild recipe that records detected regions, primitive mappings, and review edits.
 - Design and detection notes for integration and verification.
 
 ## What this package still needs
@@ -156,7 +156,7 @@ ${buildReviewContractMarkdown({ files })}
 
 ## What changed from the screenshot
 
-- The exported TSX was wrapped with package metadata for integration.
+- The starter component was packaged with integration metadata.
 - No detection-box edits were included with this component package.
 - Compare the component against the screenshot before connecting it to a route.
 
@@ -321,7 +321,7 @@ export function buildPackageDesignMarkdown({
   files = normalizePackageFiles(files);
   dependencies = normalizeDependencies(dependencies);
   componentName = normalizeComponentName(componentName);
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
   const responsiveIntent = blueprint?.responsiveIntent;
   const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
     .sort(([first], [second]) => first.localeCompare(second))
@@ -350,7 +350,7 @@ ${description}
 
 ## Responsive assumptions
 
-- Mode: ${responsiveIntent?.mode ?? "responsive export"}
+- Mode: ${responsiveIntent?.mode ?? "responsive starter"}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Compare mobile, tablet, and desktop layouts against the source screenshot."}
 
@@ -442,7 +442,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
         "lint/build",
       ],
       safeToRemoveSupportFilesAfter:
-        "Visual parity, accessibility, responsive layout, and product data states are approved.",
+        "Visual parity, accessibility, responsive layout, and product data states are verified.",
     },
     qualityGates: [
       "Compare the placed starter against the source screenshot.",
@@ -529,7 +529,7 @@ function buildReviewContractMarkdown({ files }) {
 - Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the starter until verification is complete.
 - Compare the placed component against the screenshot.
 - Verify keyboard focus, labels, responsive layout, and real loading/empty/error states.
-- After approval, keep \`${designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
+- After verification, keep \`${designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
 }
 
 function normalizePackageFiles(files) {

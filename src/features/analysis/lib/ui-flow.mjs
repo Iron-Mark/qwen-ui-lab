@@ -312,7 +312,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export based on ${fileName}">
+    <section aria-label="Dashboard starter based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -533,7 +533,7 @@ const starterSections = buildStarterSections(correctedPatterns, correctedElement
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Screenshot export based on ${safeName}"
+      aria-label="Screenshot starter based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -597,7 +597,7 @@ function ImplementationChecklist() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Layout regions</span>
-          {layoutRegions.length} export-ready groups
+          {layoutRegions.length} starter groups
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>

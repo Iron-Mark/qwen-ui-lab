@@ -41,7 +41,7 @@ export function StarterDashboard() {
 }
 `,
   modeLabel: "Ready to analyze",
-  summary: "Local detector produced a dashboard export from visible geometry.",
+  summary: "Local detector produced a dashboard starter from visible geometry.",
   detections: {
     source: { width: 1200, height: 800 },
     designTokens: {

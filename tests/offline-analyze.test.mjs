@@ -1286,7 +1286,7 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /starterCollections\.rows/);
   assert.match(advanced.generatedCode, /Connect this row to product data/);
   assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
-  assert.match(advanced.generatedCode, /text-line signals shape the export/);
+  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1578,7 +1578,7 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /SVG export/);
+  assert.match(artifact.generatedCode, /SVG starter/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /AuthScreenStarter/);

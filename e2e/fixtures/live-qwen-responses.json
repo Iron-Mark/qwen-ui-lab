@@ -64,7 +64,7 @@
           "value": "9"
         }
       ],
-      "generatedCode": "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
+      "generatedCode": "export default function ContractDashboardStarter() {\n  return (\n    <main data-contract-test aria-label=\"Contract dashboard starter\">\n      <section className=\"grid gap-4 md:grid-cols-3\">\n        <article className=\"rounded-lg border p-4\">Contract metric</article>\n        <article className=\"rounded-lg border p-4\">Contract chart</article>\n        <article className=\"rounded-lg border p-4\">Contract activity</article>\n      </section>\n    </main>\n  );\n}",
       "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
       "summary": "Contract test dashboard shell from contract upstream."
     },
@@ -89,7 +89,6 @@
       }
     ],
     "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
-    "summary": "Contract test dashboard shell from contract upstream.",
-    "generatedCodeMarker": "MockedQwenDashboard"
+    "summary": "Contract test dashboard shell from contract upstream."
   }
 }

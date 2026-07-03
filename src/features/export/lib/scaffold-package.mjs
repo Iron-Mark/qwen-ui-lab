@@ -75,9 +75,9 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     sourceHash: hashContent(content),
     componentName: inferStarterComponentName(content),
     designTokens: {},
-    screenIntent: { label: "Screenshot export", confidence: 0.5 },
+    screenIntent: { label: "Screenshot starter", confidence: 0.5 },
     responsiveIntent: {
-      mode: "responsive export",
+      mode: "responsive starter",
       breakpoints: ["mobile", "tablet", "desktop"],
       primaryFlow: "Compare the component with the source screenshot during review.",
     },

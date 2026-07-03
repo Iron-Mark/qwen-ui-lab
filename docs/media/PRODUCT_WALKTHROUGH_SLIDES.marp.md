@@ -18,7 +18,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 # Problem
 
 - UI screenshots are easy to collect
-- Component structure, states, and export-ready files take longer
+- Component structure, states, and starter package files take longer
 - Goal: compress screenshot-to-starter-package review into minutes
 
 ---
