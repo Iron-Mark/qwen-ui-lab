@@ -92,7 +92,7 @@ Core docs:
 | --- | --- |
 | [Architecture](./ARCHITECTURE.md) | Feature colocation and component boundaries. |
 | [Contributing](./CONTRIBUTING.md) | Workflow, checks, and PR expectations. |
-| [Sample run](./DEMO.md) | Prepared-layout flow and troubleshooting table. |
+| [Sample run](./DEMO.md) | Guided-layout flow and troubleshooting table. |
 | [Agent notes](./AGENTS.md) | Repository-specific agent guidance. |
 
 Media docs:

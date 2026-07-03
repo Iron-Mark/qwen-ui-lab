@@ -4,7 +4,7 @@ export const en = {
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
-      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind package.",
+      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind starter package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
     sampleRun: "Sample run",

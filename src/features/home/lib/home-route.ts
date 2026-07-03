@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 const homeRouteDescription =
-  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind package.";
+  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind starter package.";
 
 export const homeRouteSocialPreviewImageAlt =
   "qwen-ui-lab screenshot-to-React workflow";
@@ -24,7 +24,7 @@ export function createHomeRouteMetadata(): Metadata {
     twitterImage: "/social/home-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab screenshot to React workflow",
     shareSnippet:
-      "Upload a screenshot, review detected UI, and export a React/Tailwind package.",
+      "Upload a screenshot, review detected UI, and export a React/Tailwind starter package.",
   });
 }
 
@@ -51,7 +51,7 @@ export function getHomeRouteStructuredDataInput() {
         featureList: [
           "Screenshot upload flow",
           "Detection summary",
-          "React + Tailwind package export",
+          "React + Tailwind starter package export",
         ],
       },
     ],

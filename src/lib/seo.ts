@@ -4,7 +4,7 @@ const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
 export const SITE_TAGLINE = "Screenshot to React workspace";
 export const SITE_PITCH =
-  "Turn UI screenshots into inspectable React + Tailwind export packages.";
+  "Turn UI screenshots into inspectable React + Tailwind starter packages.";
 export const DEFAULT_OG_IMAGE =
   "/social/home-social-preview-1200x630.png";
 export const MANIFEST_PATH = "/manifest.webmanifest";
@@ -124,7 +124,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind package.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind starter package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -143,7 +143,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     openGraph: {
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Screenshot-to-React workflow with detected UI review, editable boxes, and export-ready project files.",
+        "Screenshot-to-React workflow with detected UI review, editable boxes, and starter project files.",
       type: "website",
       url: "/",
       siteName: SITE_NAME,
@@ -161,7 +161,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       card: "summary_large_image",
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind package.",
+        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind starter package.",
       images: [ogImagePath],
     },
     robots: {
@@ -285,14 +285,14 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         sizes: "1440x900",
         type: "image/png",
         form_factor: "wide",
-        label: "Sample run workspace",
+        label: "Dashboard layout workspace",
       },
       {
         src: "/references/mobile-reference.png",
         sizes: "390x844",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile sample workspace",
+        label: "Mobile layout workspace",
       },
     ],
     launch_handler: {
@@ -450,7 +450,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           operatingSystem: "Web",
           url: siteUrl,
           description:
-            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind package export.",
+            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind starter package export.",
           image: toAbsoluteUrl(ogImagePath),
           offers: {
             "@type": "Offer",

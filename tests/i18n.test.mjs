@@ -59,8 +59,12 @@ test("resolveLocale defaults to en and accepts zh", () => {
 test("zh export package copy avoids merge-gate wording", () => {
   assert.match(zhDictionarySource, /exportReadmeReviewSummary:\s*".*\u4ea4\u63a5\u65f6/);
   assert.match(zhDictionarySource, /exportReadmeReviewClear:\s*".*\u4ea4\u63a5\u65f6/);
+  assert.match(zhDictionarySource, /React \+ Tailwind \u8d77\u59cb\u9879\u76ee\u5305/);
+  assert.match(zhDictionarySource, /exportPackageTitle:\s*"\u68c0\u89c6\u5bfc\u51fa\u9879\u76ee\u5305"/);
+  assert.match(zhDictionarySource, /exportPackageCopyIntro:\s*".*\u8d77\u59cb\u9879\u76ee\u5305/);
   assert.doesNotMatch(zhDictionarySource, /\u5bfc\u5165\u524d/);
   assert.doesNotMatch(zhDictionarySource, /\u5408\u5e76\u524d/);
+  assert.doesNotMatch(zhDictionarySource, /React \+ Tailwind \u9879\u76ee\u5305/);
 });
 
 test("interpolate replaces placeholders", () => {
@@ -167,6 +171,8 @@ test("zh sample picker copy uses sample-run language", () => {
 
   assert.match(zhDictionarySource, new RegExp(`sampleRun:\\s*"${sampleRun}"`));
   assert.match(zhDictionarySource, new RegExp(`trySampleRun:\\s*"\u8bd5\u7528${sampleRun}"`));
+  assert.match(zhDictionarySource, /loadSampleAria:\s*"\u52a0\u8f7d \{label\} \u5e03\u5c40"/);
+  assert.match(zhDictionarySource, /toastSampleLoaded:\s*"\u5df2\u52a0\u8f7d \{label\} \u5e03\u5c40"/);
   assert.match(zhDictionarySource, new RegExp(`toastSampleLoadFailed:\\s*"\u65e0\u6cd5\u52a0\u8f7d${sampleRun}"`));
   assert.doesNotMatch(zhDictionarySource, new RegExp(sampleScreenshot));
   assert.doesNotMatch(zhDictionarySource, new RegExp(loadReferenceImage));

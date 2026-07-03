@@ -98,14 +98,14 @@
       "sizes": "1440x900",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Sample run workspace"
+      "label": "Dashboard layout workspace"
     },
     {
       "src": "/references/mobile-reference.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile sample workspace"
+      "label": "Mobile layout workspace"
     }
   ],
   "launch_handler": {

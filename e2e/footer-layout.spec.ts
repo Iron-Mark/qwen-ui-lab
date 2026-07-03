@@ -14,7 +14,9 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await expect(footer).toBeVisible();
 
   await expect(footer.locator('a[href="/"] img').first()).toBeVisible();
-  await expect(footer.getByText("React + Tailwind package")).toBeVisible();
+  await expect(
+    footer.getByRole("link", { name: /qwen-ui-lab React \+ Tailwind starter package/ }),
+  ).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
   const githubIconLink = footer.locator('a[aria-label="GitHub"]');

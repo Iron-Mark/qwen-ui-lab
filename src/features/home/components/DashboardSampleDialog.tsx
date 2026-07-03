@@ -81,7 +81,7 @@ const samplePlan = [
   },
   {
     title: "Prepare component",
-    body: "Export a React + Tailwind package that matches the sample hierarchy.",
+    body: "Export a React + Tailwind starter package that matches the sample hierarchy.",
     icon: Code2,
   },
   {

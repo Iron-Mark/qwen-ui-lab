@@ -197,7 +197,7 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    React + Tailwind package
+                    React + Tailwind starter package
                   </span>
                 </span>
               </Link>
