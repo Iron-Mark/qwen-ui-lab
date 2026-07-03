@@ -222,9 +222,9 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /project guide/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /^guide$/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /^copy all code$/i })).toBeVisible();
-  await expect(dialog.getByRole("button", { name: /download component code/i })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /^download component$/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /download package/i })).toBeVisible();
 
   const layout = await dialog.evaluate((node) => {
@@ -393,10 +393,10 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   await exportDialog.getByText(/more export options/i).click();
   await expect(exportDialog.getByTestId("export-design-md")).toBeVisible();
   await expect(
-    exportDialog.getByRole("button", { name: /export to github gist code/i }),
+    exportDialog.getByRole("button", { name: /^export to github gist$/i }),
   ).toBeVisible();
   await expect(
-    exportDialog.getByRole("button", { name: /open pr instructions code/i }),
+    exportDialog.getByRole("button", { name: /^open pr instructions$/i }),
   ).toBeVisible();
 
   await exportDialog.getByRole("button", { name: /copy all code/i }).click();
@@ -427,7 +427,7 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
 
   await page.getByTestId("gist-export-button").click();
-  await expect(page.getByText(/GitHub Gist setup needed/i)).toBeVisible({
+  await expect(page.getByText(/Open GitHub Gist/i)).toBeVisible({
     timeout: 5_000,
   });
 
@@ -498,9 +498,9 @@ test("export package dialog keeps tabs and actions visible on mobile widths", as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /project guide/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /^guide$/i })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /^copy all code$/i })).toBeVisible();
-  await expect(dialog.getByRole("button", { name: /download component code/i })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /^download component$/i })).toBeVisible();
   await expect(
     dialog.getByRole("button", { name: /download package/i }),
   ).toBeVisible();

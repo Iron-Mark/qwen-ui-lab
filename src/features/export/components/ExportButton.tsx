@@ -20,6 +20,7 @@ import {
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
 
 export type ExportButtonVariant = "copy" | "export";
 
@@ -157,7 +158,7 @@ export function ExportButton({
         status: "failed",
       });
       if (showToast) {
-        toast("Copy failed — try Export", "error");
+          toast("Copy failed - try Export", "error");
       }
     }
   }, [
@@ -175,7 +176,9 @@ export function ExportButton({
   ]);
 
   const ariaLabel =
-    effectiveStatus === "idle" ? `${visibleLabel} code` : message || visibleLabel;
+    effectiveStatus === "idle"
+      ? createExportActionAriaLabel(visibleLabel)
+      : message || createExportActionAriaLabel(visibleLabel);
 
   const button = (
     <Button

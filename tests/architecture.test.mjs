@@ -1827,6 +1827,28 @@ test("export defaults use starter component naming", async () => {
   assert.deepEqual(violations, []);
 });
 
+test("export action buttons derive accessible names from shared helper", async () => {
+  const exportActionButtonFiles = [
+    path.join(process.cwd(), "src", "features", "export", "components", "ExportButton.tsx"),
+    path.join(process.cwd(), "src", "features", "export", "components", "GistExportButton.tsx"),
+    path.join(process.cwd(), "src", "features", "export", "components", "RepoExportButton.tsx"),
+  ];
+
+  const violations = [];
+  for (const file of exportActionButtonFiles) {
+    const source = await readFile(file, "utf8");
+    const specifiers = collectModuleSpecifiers(file, source);
+    if (!specifiers.includes("../lib/export-action-labels.mjs")) {
+      violations.push(`${toRepoPath(file)} does not use export action label helper`);
+    }
+    if (source.includes("${visibleLabel} code")) {
+      violations.push(`${toRepoPath(file)} appends code directly to visibleLabel`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("source modules do not contain circular imports", async () => {
   const sourceFiles = (await collectSourceFiles([
     "src/app",

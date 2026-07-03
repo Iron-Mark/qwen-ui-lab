@@ -9,6 +9,7 @@ import { useToast } from "@/components/providers/Toast";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
 import {
   DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   SCAFFOLD_ZIP_FILENAME,
@@ -157,7 +158,7 @@ export function RepoExportButton({
       }
 
       setStatus("error");
-      toast("Repo export returned an unexpected response", "error");
+      toast("Could not prepare repo export", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -167,7 +168,7 @@ export function RepoExportButton({
       resetStatus();
     } catch {
       setStatus("error");
-      toast("Could not reach repo export API", "error");
+      toast("Could not prepare repo export", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -207,7 +208,7 @@ export function RepoExportButton({
       size="sm"
       onClick={() => void handleClick()}
       disabled={!text?.trim() || status === "exporting"}
-      aria-label={`${visibleLabel} code`}
+      aria-label={createExportActionAriaLabel(visibleLabel)}
       aria-busy={status === "exporting"}
       data-testid={testId}
       className={cn(

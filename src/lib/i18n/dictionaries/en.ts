@@ -256,7 +256,7 @@ export const en = {
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
-    exportPackageCopyTab: "Project guide",
+    exportPackageCopyTab: "Guide",
     exportPackageFilesIntro:
       "Package export downloads these files as an inspectable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",

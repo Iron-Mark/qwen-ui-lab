@@ -9,14 +9,14 @@ import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Open GitHub Gist when you want a shareable secret link.";
+  "Use it when you want a shareable snippet link.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export needs setup before automatic links are available.",
+      "Automatic GitHub Gist links are unavailable. Copy the component and open GitHub Gist.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,

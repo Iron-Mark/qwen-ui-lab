@@ -10,6 +10,7 @@ import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "../lib/export-package-constants.mjs";
 
 type GistExportStatus = "idle" | "exporting" | "success" | "error";
@@ -40,7 +41,7 @@ const STATUS_LABELS: Record<GistExportStatus, string> = {
   idle: "Export to GitHub Gist",
   exporting: "Creating gist...",
   success: "Gist created",
-  error: "Gist setup needed",
+  error: "Open GitHub Gist",
 };
 
 export function GistExportButton({
@@ -74,15 +75,15 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Open GitHub Gist when you want a shareable secret link.";
+        "Use it when you want a shareable snippet link.";
 
       const copyResult = await copy(text, "Component copied for Gist");
       const copied = copyResult.ok;
 
       toast(
         copied
-          ? `Component copied. GitHub Gist setup needed. ${instructions} ${gistUrl}`
-          : `GitHub Gist setup needed. ${instructions} ${gistUrl}`,
+          ? `Component copied. Open GitHub Gist. ${instructions} ${gistUrl}`
+          : `Open GitHub Gist. ${instructions} ${gistUrl}`,
         copied ? "warning" : "error",
       );
 
@@ -141,7 +142,7 @@ export function GistExportButton({
       const gistUrl = (payload as GistSuccessResponse).url;
       if (!gistUrl) {
         setStatus("error");
-        toast("GitHub Gist created but no URL was returned", "error");
+        toast("GitHub Gist was created, but the link was unavailable", "error");
         resetStatus();
         return;
       }
@@ -159,7 +160,7 @@ export function GistExportButton({
       resetStatus();
     } catch {
       setStatus("error");
-      toast("Could not reach gist export API", "error");
+      toast("Could not prepare GitHub Gist export", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -199,7 +200,7 @@ export function GistExportButton({
       size="sm"
       onClick={() => void handleClick()}
       disabled={!text?.trim() || status === "exporting"}
-      aria-label={`${visibleLabel} code`}
+      aria-label={createExportActionAriaLabel(visibleLabel)}
       aria-busy={status === "exporting"}
       data-testid="gist-export-button"
       className={cn(

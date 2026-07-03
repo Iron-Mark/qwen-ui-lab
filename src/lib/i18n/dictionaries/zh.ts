@@ -244,7 +244,7 @@ export const zh = {
     exportPackageFilesLabel: "个文件",
     exportPackageFilesTab: "文件",
     exportPackageChangesTab: "变更",
-    exportPackageCopyTab: "项目指南",
+    exportPackageCopyTab: "指南",
     exportPackageFilesIntro:
       "项目包导出会下载这些文件组成的 zip。直接组件下载仅导出 TSX 文件。",
     exportPackageChangesIntro: "相比上传截图，已完成：",

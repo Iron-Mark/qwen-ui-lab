@@ -220,8 +220,13 @@ test("export package preview surfaces review update metrics", () => {
   assert.match(uploadFlowSource, /<AlertTitle>\{copy\.exportReadmeCorrections\}<\/AlertTitle>/);
 });
 
-test("export package tabs use product-facing project guide language", () => {
-  assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Project guide"/);
+test("export package tabs keep compact product-facing labels", () => {
+  const enCopyTab = enDictionarySource.match(/exportPackageCopyTab:\s*"([^"]+)"/)?.[1] ?? "";
+  const zhCopyTab = zhDictionarySource.match(/exportPackageCopyTab:\s*"([^"]+)"/)?.[1] ?? "";
+
+  assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Guide"/);
+  assert.ok(enCopyTab.length <= 8);
+  assert.ok(zhCopyTab.length <= 4);
   assert.match(enDictionarySource, /This starter package is created from the screenshot analysis/);
   assert.match(enDictionarySource, /The starter package includes \{count\} files/);
   assert.match(enDictionarySource, /Use these notes to review the starter package/);
@@ -233,7 +238,7 @@ test("export package tabs use product-facing project guide language", () => {
   assert.doesNotMatch(enDictionarySource, /toastPreviewGenerated:\s*"Preview generated"/);
   assert.doesNotMatch(enDictionarySource, /This export package is created/);
   assert.doesNotMatch(enDictionarySource, /The export now includes/);
-  assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"\u9879\u76ee\u6307\u5357"/);
+  assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"\u6307\u5357"/);
   assert.match(zhDictionarySource, /generatedScaffold:\s*"\u8d77\u59cb\u7ec4\u4ef6"/);
   assert.match(zhDictionarySource, /comparisonGeneratedPreview:\s*"\u7ec4\u4ef6\u9884\u89c8"/);
   assert.match(zhDictionarySource, /toastPreviewGenerated:\s*"\u9884\u89c8\u5df2\u5c31\u7eea"/);
