@@ -148,7 +148,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "Users best remember the first and last items in a series.",
     application:
-      "Workflow steps highlight Upload and Export; session history surfaces the latest entry first.",
+      "Workflow steps highlight Upload and Download; session history surfaces the latest entry first.",
     exampleSurface: "dashboard",
     inAppHref: "/",
     relatedUiLawIds: ["continuity"],
@@ -160,7 +160,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "For any system there is a certain amount of complexity which cannot be reduced.",
     application:
-      "Provider details stay out of the main workflow so upload, review, and export remain focused.",
+      "Provider details stay out of the main workflow so upload, review, and download remain focused.",
     exampleSurface: "upload",
     inAppHref: "/",
   },
@@ -218,7 +218,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "The tendency to approach a goal increases with proximity to the goal.",
     application:
-      "Step chips advance color as Upload -> Analyze -> Preview -> Export progresses.",
+      "Step chips advance color as Upload -> Analyze -> Preview -> Download progresses.",
     exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["continuity"],

@@ -5,7 +5,7 @@ import {
 
 export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
 export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
-const EXPORT_PACKAGE_SCHEMA = "qwen-ui-lab/export-package@1";
+const STARTER_PACKAGE_SCHEMA = "qwen-ui-lab/starter-package@1";
 const EXPORT_README_TITLE = "Screenshot-to-React starter package";
 const REVIEW_UPDATES_HEADING = "Review updates";
 const STARTER_PACKAGE_INTRO =
@@ -405,7 +405,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
       : "unknown-source";
 
   return {
-    schema: EXPORT_PACKAGE_SCHEMA,
+    schema: STARTER_PACKAGE_SCHEMA,
     packageId: `qwen-${sourceHash.slice(0, 12)}`,
     generator: blueprint.generator,
     sourceHash,
@@ -619,7 +619,7 @@ function summarizeReviewUpdates(blueprint) {
     const edited = Number(summary.appliedEdits) || 0;
     const excluded = Number(summary.excludedBoxes) || 0;
     if (!edited && !excluded) {
-      return "none captured in this export.";
+      return "none captured in this package.";
     }
 
     const parts = [];
@@ -639,7 +639,7 @@ function summarizeReviewUpdates(blueprint) {
   const excluded = elements.filter((element) => element.included === false).length;
 
   if (!edited && !excluded) {
-    return "none captured in this export.";
+    return "none captured in this package.";
   }
 
   const parts = [];
@@ -716,7 +716,7 @@ function buildBoxUpdateNotes(elements) {
   const edited = elements.filter((element) => element.userEdited === true);
   const excluded = elements.filter((element) => element.included === false);
   if (!edited.length && !excluded.length) {
-    return "- No box updates were captured for detection boxes in this export.";
+    return "- No box updates were captured for detection boxes in this package.";
   }
 
   return [

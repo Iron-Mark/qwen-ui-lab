@@ -3,9 +3,12 @@ const GENERIC_CODE_ACTIONS = new Set([
   "copy all",
   "copying...",
   "copied",
-  "export",
-  "exporting...",
-  "exported",
+]);
+
+const LEGACY_DOWNLOAD_ACTIONS = new Map([
+  ["export", (subject) => `Download ${subject}`],
+  ["exporting...", (subject) => `Downloading ${subject}...`],
+  ["exported", (subject) => `Downloaded ${subject}`],
 ]);
 
 export function createExportActionAriaLabel(label, subject = "code") {
@@ -13,7 +16,13 @@ export function createExportActionAriaLabel(label, subject = "code") {
   const fallbackSubject = String(subject ?? "").trim() || "code";
 
   if (!visibleLabel) return fallbackSubject;
-  if (GENERIC_CODE_ACTIONS.has(visibleLabel.toLowerCase())) {
+  const normalizedLabel = visibleLabel.toLowerCase();
+  const legacyDownloadLabel = LEGACY_DOWNLOAD_ACTIONS.get(normalizedLabel);
+  if (legacyDownloadLabel) {
+    return legacyDownloadLabel(fallbackSubject);
+  }
+
+  if (GENERIC_CODE_ACTIONS.has(normalizedLabel)) {
     return `${visibleLabel} ${fallbackSubject}`;
   }
 

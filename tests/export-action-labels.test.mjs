@@ -6,7 +6,12 @@ import { createExportActionAriaLabel } from "../src/features/export/lib/export-a
 test("createExportActionAriaLabel adds context only to generic code actions", () => {
   assert.equal(createExportActionAriaLabel("Copy"), "Copy code");
   assert.equal(createExportActionAriaLabel("Copy all"), "Copy all code");
-  assert.equal(createExportActionAriaLabel("  Export  ", "package"), "Export package");
+  assert.equal(createExportActionAriaLabel("  Export  ", "package"), "Download package");
+  assert.equal(
+    createExportActionAriaLabel("Exporting...", "package"),
+    "Downloading package...",
+  );
+  assert.equal(createExportActionAriaLabel("Exported", "package"), "Downloaded package");
   assert.equal(createExportActionAriaLabel("Failed"), "Failed");
   assert.equal(createExportActionAriaLabel("Download component"), "Download component");
   assert.equal(createExportActionAriaLabel("Download package"), "Download package");

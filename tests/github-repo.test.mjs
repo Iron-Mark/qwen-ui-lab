@@ -56,15 +56,17 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "starter-auth.tsx",
-    description: "export package",
+    description: "starter package",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
   assert.match(result.url, /starter-auth\.tsx/);
   assert.match(decodeURIComponent(result.url), /add the package files from the package panel/);
   assert.doesNotMatch(decodeURIComponent(result.url), /paste package contents manually/);
-  assert.match(result.branch, /^qwen-ui-lab-export-/);
+  assert.match(result.branch, /^qwen-ui-lab-starter-/);
+  assert.match(result.instructions, /create the starter branch/);
   assert.match(result.instructions, /add the package files from the package panel/);
+  assert.doesNotMatch(result.instructions, /create the export branch/);
 });
 
 test("repo export helpers redact sensitive description metadata", () => {
@@ -169,7 +171,7 @@ export default function StarterReviewScreen() {
   );
 });
 
-test("buildScaffoldPackageFileMap keeps export package paths consistent", () => {
+test("buildScaffoldPackageFileMap keeps starter package paths consistent", () => {
   assert.deepEqual(buildScaffoldPackageFileMap("detected dashboard!.tsx"), {
     stem: "detected-dashboard",
     files: {
@@ -183,7 +185,7 @@ test("buildScaffoldPackageFileMap keeps export package paths consistent", () => 
   });
 });
 
-test("buildScaffoldZipEntries creates export package for offline scaffolds", () => {
+test("buildScaffoldZipEntries creates starter package for offline scaffolds", () => {
   const entries = buildScaffoldZipEntries({
     content: RICH_GENERATED_SCAFFOLD,
     filename: "detected-dashboard.tsx",
@@ -270,7 +272,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   ]);
 
   const manifest = JSON.parse(entries[4].content);
-  assert.equal(manifest.schema, "qwen-ui-lab/export-package@1");
+  assert.equal(manifest.schema, "qwen-ui-lab/starter-package@1");
   assert.equal(manifest.packageId, `qwen-${manifest.sourceHash.slice(0, 12)}`);
   assert.equal(manifest.contents.includesOriginalImage, false);
   assert.equal(manifest.contents.includesSecrets, false);

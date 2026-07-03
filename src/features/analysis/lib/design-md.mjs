@@ -374,7 +374,8 @@ export function buildDesignMarkdown({
       ? artifact.detections.quality.confidence
       : averageConfidence;
   const layout = layoutBandSummary(artifact, activeElements);
-  const componentNames = exportedComponentNames(artifact?.generatedCode).join(", ") || "Review starter export";
+  const componentNames =
+    exportedComponentNames(artifact?.generatedCode).join(", ") || "Review starter component";
   const excludedCount = allElements.length - activeElements.length;
   const editedCount = allElements.filter((element) => element.userEdited).length;
   const algorithmNotes = [

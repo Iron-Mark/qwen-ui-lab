@@ -40,10 +40,10 @@ test("createStoredZip uses starter naming for empty entry names", () => {
   assert.match(text, /starter-component\.tsx/);
 });
 
-test("buildScaffoldZipEntries exports sparse code as an export package", () => {
+test("buildScaffoldZipEntries packages sparse code as a starter package", () => {
   const entries = buildScaffoldZipEntries({
     filename: "starter-fixture.tsx",
-    description: "Starter export",
+    description: "Starter package",
     content: `import { Button } from "@/components/ui/button";
 
 export default function StarterComponent() {
@@ -282,7 +282,7 @@ export default function Dashboard() {
   assert.deepEqual(recipe.integration.dependencies, ["@/components/ui/button"]);
 });
 
-test("export package normalizes legacy correction-source wording", () => {
+test("starter package normalizes legacy correction-source wording", () => {
   const entries = buildScaffoldZipEntries({
     filename: "dashboard.tsx",
     description: "Dashboard export",
@@ -309,7 +309,7 @@ export default function Dashboard() {
   assert.match(combinedPackageText, /Review updates/);
 });
 
-test("export package docs use concrete sparse-package review guidance", () => {
+test("starter package docs use concrete sparse-package review guidance", () => {
   const readme = buildFallbackPackageReadme({
     filename: "starter-review.tsx",
     description: "Starter export",
@@ -369,7 +369,7 @@ test("export package docs use concrete sparse-package review guidance", () => {
   assert.equal(manifest.files.detectionSummary, "docs/starter-review.detection.md");
 });
 
-test("export package docs tolerate sparse blueprint metadata", () => {
+test("starter package docs tolerate sparse blueprint metadata", () => {
   const detectionSummary = buildDetectionSummaryMarkdown({
     files: {
       recipe: "src/components/starters/sparse.recipe.json",
@@ -399,7 +399,7 @@ test("export package docs tolerate sparse blueprint metadata", () => {
   assert.equal(manifest.files.designDoc, "DESIGN.md");
 });
 
-test("export package docs normalize invalid component names", () => {
+test("starter package docs normalize invalid component names", () => {
   const readme = buildFallbackPackageReadme({
     description: "Whitespace component export",
     componentName: "   ",
@@ -438,7 +438,7 @@ test("export package docs normalize invalid component names", () => {
   assert.equal(manifest.component.name, "StarterComponent");
 });
 
-test("export package docs normalize dependency lists", () => {
+test("starter package docs normalize dependency lists", () => {
   const readme = buildFallbackPackageReadme({
     description: "Dependency export",
     componentName: "StarterComponent",
@@ -476,7 +476,7 @@ test("export package docs normalize dependency lists", () => {
   );
 });
 
-test("export package docs normalize inventory rows", () => {
+test("starter package docs normalize inventory rows", () => {
   const readme = buildFallbackPackageReadme({
     description: "Inventory export",
     componentName: "StarterComponent",

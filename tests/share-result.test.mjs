@@ -102,6 +102,9 @@ test("normalizeShareModeLabel keeps provider/internal wording out of shared summ
   assert.equal(normalizeShareModeLabel("Local demo mode"), "Analysis summary");
   assert.equal(normalizeShareModeLabel("Files Changes Bundle copy"), "Analysis summary");
   assert.equal(normalizeShareModeLabel("Export package"), "Analysis summary");
+  assert.equal(normalizeShareModeLabel("Download package"), "Analysis summary");
+  assert.equal(normalizeShareModeLabel("Download detections"), "Analysis summary");
+  assert.equal(normalizeShareModeLabel("Download JSON"), "Analysis summary");
   assert.equal(normalizeShareModeLabel("Ready to analyze"), "Ready for review");
   assert.equal(normalizeShareModeLabel("Responsive dashboard"), "Responsive dashboard");
 });

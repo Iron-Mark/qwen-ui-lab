@@ -135,7 +135,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       "UI structure detection",
       "screenshot to component",
       "React Tailwind starter package",
-      "design system export",
+      "design system snippets",
     ],
     alternates: {
       canonical: "/",

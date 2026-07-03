@@ -153,6 +153,8 @@ const BANNED_PUBLIC_PHRASES = [
   "export-bundle",
   "bundle copy",
   "qwen-ui-lab export package",
+  "qwen-ui-lab/export-package@1",
+  "qwen-ui-lab-export-package.zip",
   "Export Package",
   "Export packages are intended",
   "starter package export",

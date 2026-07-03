@@ -42,8 +42,8 @@ export function SampleRunPageClient({
                 {label} layout
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Review detected structure, starter preview, and export
-                package from a guided layout.
+                Review detected structure, starter preview, and downloadable
+                package files from a guided layout.
               </p>
             </div>
           </div>

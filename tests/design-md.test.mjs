@@ -154,6 +154,7 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
   assert.match(markdown, /Download DESIGN\.md and verify component inventory plus detector signals are present/);
   assert.match(markdown, /accessibility before connecting it to a route/);
   assert.doesNotMatch(markdown, /before production/);
+  assert.doesNotMatch(markdown, /Review starter export/);
 });
 
 test("normalizeDesignReviewStatus keeps provider/internal wording out of generated docs", () => {
@@ -195,6 +196,19 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
     /Compare the starter structure, key controls, and responsive assumptions against the screenshot/,
   );
   assert.doesNotMatch(markdown, /manual visual review/);
+});
+
+test("buildDesignMarkdown names missing component inventory as a starter component", () => {
+  const markdown = buildDesignMarkdown({
+    artifact: {
+      file: { name: "blank.png", type: "image/png", readableSize: "2 KB" },
+      generatedCode: "",
+    },
+    exportedAt: "2026-06-22T00:00:00.000Z",
+  });
+
+  assert.match(markdown, /Starter components: Review starter component/);
+  assert.doesNotMatch(markdown, /Review starter export/);
 });
 
 test("buildDesignMarkdown synthesizes review evidence for detections without reasons", () => {

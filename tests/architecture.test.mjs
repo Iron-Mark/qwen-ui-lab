@@ -1257,7 +1257,7 @@ test("github gist export helper reuses shared package copy", async () => {
   assert.deepEqual(violations, []);
 });
 
-test("export package helpers use neutral filename sanitizing", async () => {
+test("starter package helpers use neutral filename sanitizing", async () => {
   const files = [
     path.join(process.cwd(), "src", "features", "export", "lib", "github-repo.mjs"),
     path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-package.mjs"),

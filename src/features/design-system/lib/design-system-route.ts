@@ -92,7 +92,7 @@ export function createLawsOfUxRouteMetadata(): Metadata {
         "/social/laws-of-ux-social-preview-1200x630.png",
       twitterImageAlt: "Laws of UX snippets in qwen-ui-lab",
       shareSnippet:
-        "Open the Laws of UX collection and export implementation-ready snippets in seconds.",
+        "Open the Laws of UX collection and download implementation-ready snippets in seconds.",
     }),
     robots: {
       index: false,
@@ -130,7 +130,7 @@ export function getDesignSystemDomainRouteSocialPreviewImage(
       routeLabel: "laws-of-ux",
       title: "Apply UX laws with clearer patterns",
       description: "Compare practical principles, inspect examples, and copy implementation snippets.",
-      workflow: "Open collection -> Compare patterns -> Export code",
+      workflow: "Open collection -> Compare patterns -> Download code",
       background:
         "linear-gradient(135deg, #08061f 0%, #312e81 48%, #083344 100%)",
       accent: "#22d3ee",

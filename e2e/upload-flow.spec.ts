@@ -424,7 +424,7 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
   const packageDownloadPromise = page.waitForEvent("download");
   await page.getByTestId("export-package-download").click();
   const packageDownload = await packageDownloadPromise;
-  expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
+  expect(packageDownload.suggestedFilename()).toBe("qwen-ui-lab-starter-package.zip");
 
   await page.getByTestId("gist-export-button").click();
   await expect(page.getByText(/Open GitHub Gist/i)).toBeVisible({
@@ -434,7 +434,7 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
   const repoZipDownloadPromise = page.waitForEvent("download");
   await page.getByTestId("repo-export-button").click();
   const repoZipDownload = await repoZipDownloadPromise;
-  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
+  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-starter-package.zip");
   await expect(page.getByText(/Package downloaded/i).first()).toBeVisible({
     timeout: 5_000,
   });
