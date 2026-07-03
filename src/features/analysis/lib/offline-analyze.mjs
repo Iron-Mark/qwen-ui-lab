@@ -2074,7 +2074,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Implementation pattern: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Suggested primitive: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
       <PrimitiveBody item={item} />
     </article>

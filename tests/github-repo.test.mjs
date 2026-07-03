@@ -178,7 +178,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.doesNotMatch(entries[0].content, /final production|production data wiring/);
   assert.match(
     entries[0].content,
-    /Review changes: 1 edited detection box, 1 excluded element captured in the recipe JSON\./,
+    /Review changes: 1 updated box, 1 hidden element captured in the recipe JSON\./,
   );
   assert.match(
     entries[0].content,
@@ -190,8 +190,8 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[1].content, /## Review changes/);
   assert.match(entries[1].content, /## Review contract/);
   assert.match(entries[1].content, /## Package readiness/);
-  assert.match(entries[1].content, /Applied edits: 1/);
-  assert.match(entries[1].content, /Omitted boxes: 1/);
+  assert.match(entries[1].content, /Updated boxes: 1/);
+  assert.match(entries[1].content, /Hidden boxes: 1/);
   assert.match(
     entries[1].content,
     /Rebuild guide: Detection boxes and review edits are captured in the recipe JSON\./,
@@ -204,8 +204,8 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /data-table: semantic table inside Card/);
   assert.match(entries[6].content, /High confidence: 2/);
   assert.match(entries[6].content, /Low confidence: 1/);
-  assert.match(entries[6].content, /Applied edits: 1/);
-  assert.match(entries[6].content, /Omitted boxes: 1/);
+  assert.match(entries[6].content, /Updated boxes: 1/);
+  assert.match(entries[6].content, /Hidden boxes: 1/);
   assert.match(
     entries[6].content,
     /Rebuild guide: Detection boxes and review edits are captured in the recipe JSON\./,
@@ -219,10 +219,10 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   );
   assert.match(
     entries[6].content,
-    /primary-action: review edit plus detector evidence; reviewer correction marked this box as intentional; reviewer excluded this box from generation; low-confidence score 68%\./,
+    /primary-action: review edit plus detector evidence; review edit marks this box as intentional; reviewer hid this box from starter sections; low-confidence score 68%\./,
   );
   assert.match(entries[6].content, /## Review notes/);
-  assert.match(entries[6].content, /Keep this detection note with the package when any low-confidence or edited boxes remain/);
+  assert.match(entries[6].content, /Keep this detection note with the package when any low-confidence or updated boxes remain/);
   assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
   assert.match(entries[6].content, /Excluded element-2: primary-action/);
 

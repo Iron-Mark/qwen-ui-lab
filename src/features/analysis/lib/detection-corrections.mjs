@@ -26,15 +26,15 @@ export function mergeManualCorrectionReasons({
 
   const sourceText =
     source === "regeneration"
-      ? "guide for the next rebuild"
-      : "guide for rebuild and export";
+      ? "the next rebuild"
+      : "rebuild and export";
   const correctionReasons = [
     {
       code: "manual-correction",
       label: "Review edit",
       evidence: changes.length
-        ? `Edited ${changes.join(", ")}; this box is now the ${sourceText}.`
-        : `This edited box is now the ${sourceText}.`,
+        ? `Updated ${changes.join(", ")}; this box now guides ${sourceText}.`
+        : `This updated box now guides ${sourceText}.`,
       weight: 0.96,
     },
     {
@@ -48,11 +48,11 @@ export function mergeManualCorrectionReasons({
   if (!included) {
     correctionReasons.splice(1, 0, {
       code: "manual-exclusion",
-      label: "Omitted from starter",
+      label: "Hidden from starter",
       evidence:
         source === "regeneration"
-          ? "User excluded this detection, so it is omitted from starter sections."
-          : "This box is omitted from starter sections until included again.",
+          ? "The reviewer hid this detection, so it stays out of starter sections."
+          : "This box stays hidden from starter sections until included again.",
       weight: 0.98,
     });
   }

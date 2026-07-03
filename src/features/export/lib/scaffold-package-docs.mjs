@@ -28,12 +28,12 @@ ${STARTER_PACKAGE_INTRO}
 
 ## Next steps
 
-1. Unzip this export package into your app.
+1. Unzip this starter package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review the design notes and detection notes before connecting the component to a route.
 
-Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
+Created with [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
 }
 
@@ -112,13 +112,13 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 ## Integration checklist
 
 1. Copy \`src/components/starters/\` into your app.
-2. Add the exported component to the route or page where it belongs.
+2. Add the starter component to the route or page where it belongs.
 3. Replace starter content with real product data.
 4. Keep the recipe JSON during integration so edits can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
 
-Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
+Created with [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
 }
 
@@ -145,7 +145,7 @@ ${STARTER_PACKAGE_INTRO}
 
 - A starter component file plus supporting integration documents.
 - A portable starter for adapting screenshot-inspired UI inside your app.
-- A portable export package with recipe, manifest, tokens, and detection notes.
+- A portable starter package with recipe, manifest, tokens, and detection notes.
 
 ## What this package still needs
 
@@ -184,13 +184,13 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 ## Next steps
 
-1. Unzip this export package into your app.
+1. Unzip this starter package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review \`DESIGN.md\` and the detection notes before connecting the component to a route.
 5. Verify keyboard order, focus states, responsive behavior, and real empty/loading/error states.
 
-Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
+Created with [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
 }
 
@@ -250,7 +250,7 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 
 - Visible regions were grouped into ${regions.length} layout region${regions.length === 1 ? "" : "s"}.
 - ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
-- Primitive mappings were exported so the component can move toward shadcn-style UI without guessing later.
+- Primitive mappings were included so the component can move toward shadcn-style UI without guessing later.
 - The recipe and manifest keep integration tied to the screenshot-derived decisions.
 
 ## Confidence summary
@@ -271,8 +271,8 @@ ${confidenceReasonSummary}
 ## Review changes
 
 - Active elements: ${correctionMetadata?.activeElements ?? elements.filter((element) => element.included !== false).length}
-- Applied edits: ${correctionMetadata?.appliedEdits ?? elements.filter((element) => element.userEdited === true).length}
-- Omitted boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
+- Updated boxes: ${correctionMetadata?.appliedEdits ?? elements.filter((element) => element.userEdited === true).length}
+- Hidden boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
 - Rebuild guide: ${correctionMetadata?.sourceOfTruth ?? DEFAULT_REVIEW_BASIS}
 
 ${reviewEditNotes}
@@ -280,8 +280,8 @@ ${reviewEditNotes}
 ## Review notes
 
 - Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the rebuild recipe until visual verification is complete.
-- Keep this detection note with the package when any low-confidence or edited boxes remain.
-- Do not delete omitted boxes from the recipe unless the reviewer confirms they are decorative or intentionally out of scope.
+- Keep this detection note with the package when any low-confidence or updated boxes remain.
+- Keep hidden boxes in the recipe until the reviewer confirms they are decorative or intentionally out of scope.
 
 ## Responsive intent
 
@@ -291,19 +291,19 @@ ${reviewEditNotes}
 
 ## Pattern counts
 
-${patternLines || "- No grouped patterns were exported."}
+${patternLines || "- No grouped patterns were captured."}
 
 ## Primitive mapping
 
-${primitiveLines || "- No shadcn primitive map was exported."}
+${primitiveLines || "- No shadcn primitive map was included."}
 
 ## Regions
 
-${regionLines || "- No layout regions were exported."}
+${regionLines || "- No layout regions were captured."}
 
 ## Detected elements
 
-${elementLines || "- No detected elements were exported."}
+${elementLines || "- No detected elements were captured."}
 
 ## Integration notes
 
@@ -312,7 +312,7 @@ ${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n")
 }
 
 export function buildPackageDesignMarkdown({
-  description = "React export package",
+  description = "React starter package",
   files,
   componentName,
   blueprint,
@@ -446,7 +446,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
     },
     qualityGates: [
       "Compare the placed starter against the source screenshot.",
-      "Review detection summary, low-confidence regions, and edited boxes.",
+      "Review detection summary, low-confidence regions, and updated boxes.",
       "Replace starter data and copy with product-owned content.",
       "Add or verify loading, empty, error, and keyboard focus states.",
       "Run app lint/build after placing the starter.",
@@ -620,10 +620,10 @@ function summarizeReviewChanges(blueprint) {
 
     const parts = [];
     if (edited) {
-      parts.push(`${edited} edited detection box${edited === 1 ? "" : "es"}`);
+      parts.push(`${edited} updated box${edited === 1 ? "" : "es"}`);
     }
     if (excluded) {
-      parts.push(`${excluded} excluded element${excluded === 1 ? "" : "s"}`);
+      parts.push(`${excluded} hidden element${excluded === 1 ? "" : "s"}`);
     }
     return `${parts.join(", ")} captured in the recipe JSON. ${summary.sourceOfTruth}`;
   }
@@ -640,10 +640,10 @@ function summarizeReviewChanges(blueprint) {
 
   const parts = [];
   if (edited) {
-    parts.push(`${edited} edited detection box${edited === 1 ? "" : "es"}`);
+    parts.push(`${edited} updated box${edited === 1 ? "" : "es"}`);
   }
   if (excluded) {
-    parts.push(`${excluded} excluded element${excluded === 1 ? "" : "s"}`);
+    parts.push(`${excluded} hidden element${excluded === 1 ? "" : "s"}`);
   }
   return `${parts.join(", ")} captured in the recipe JSON.`;
 }
@@ -653,16 +653,16 @@ function formatReviewChangesSection(blueprint) {
   if (!summary || typeof summary !== "object") {
     return [
       "- Active elements: unknown",
-      "- Applied edits: 0",
-      "- Omitted boxes: 0",
+      "- Updated boxes: 0",
+      "- Hidden boxes: 0",
       `- Rebuild guide: ${DEFAULT_REVIEW_BASIS}`,
     ].join("\n");
   }
 
   return [
     `- Active elements: ${Number(summary.activeElements) || 0}`,
-    `- Applied edits: ${Number(summary.appliedEdits) || 0}`,
-    `- Omitted boxes: ${Number(summary.excludedBoxes) || 0}`,
+    `- Updated boxes: ${Number(summary.appliedEdits) || 0}`,
+    `- Hidden boxes: ${Number(summary.excludedBoxes) || 0}`,
     `- Rebuild guide: ${
       summary.sourceOfTruth ||
       DEFAULT_REVIEW_BASIS
@@ -739,7 +739,7 @@ function buildLowConfidenceReviewQueue(items) {
     .slice(0, 8);
 
   if (!lowConfidenceItems.length) {
-    return "- No low-confidence regions or elements were exported.";
+    return "- No low-confidence regions or elements were captured.";
   }
 
   return lowConfidenceItems
@@ -807,11 +807,11 @@ function fallbackDetectionReasons(item, role) {
   const primitive = item?.primitive ?? item?.componentRole ?? item?.kind ?? role;
 
   if (item?.userEdited) {
-    reasons.push("reviewer correction marked this box as intentional");
+    reasons.push("review edit marks this box as intentional");
   }
 
   if (item?.included === false) {
-    reasons.push("reviewer excluded this box from generation");
+    reasons.push("reviewer hid this box from starter sections");
   }
 
   if (typeof confidence === "number") {

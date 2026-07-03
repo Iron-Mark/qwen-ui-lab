@@ -94,6 +94,18 @@ export default function StarterComponent() {
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /Use this as a starter package/,
   );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Unzip this starter package into your app/,
+  );
+  assert.match(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Created with \[qwen-ui-lab\]/,
+  );
+  assert.doesNotMatch(
+    entries.find((entry) => entry.name === "README.md")?.content ?? "",
+    /Exported from \[qwen-ui-lab\]/,
+  );
   assert.doesNotMatch(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
     /before shipping/,
@@ -232,7 +244,7 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "docs/dashboard.detection.md")?.content ?? "",
-    /No low-confidence regions or elements were exported/,
+    /No low-confidence regions or elements were captured/,
   );
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",

@@ -587,17 +587,17 @@ function ImplementationChecklist() {
       <CardHeader>
         <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
-          Review metadata stays in the exported recipe, while this component keeps the UI structure ready for app integration.
+          Review metadata stays in the recipe JSON, while this component keeps the UI structure ready for app integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
         <p>
           <span className="block font-medium text-foreground">Active elements</span>
-          {correctionSummary.activeElements} reviewed primitives
+          {correctionSummary.activeElements} active UI elements
         </p>
         <p>
           <span className="block font-medium text-foreground">Layout regions</span>
-          {layoutRegions.length} starter groups
+          {layoutRegions.length} layout groups
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
@@ -605,7 +605,7 @@ function ImplementationChecklist() {
         </p>
         <p>
           <span className="block font-medium text-foreground">Review changes</span>
-          {correctionSummary.appliedEdits} edited boxes, {correctionSummary.excludedBoxes} omitted boxes
+          {correctionSummary.appliedEdits} updated boxes, {correctionSummary.excludedBoxes} hidden boxes
         </p>
       </CardContent>
     </Card>
@@ -761,7 +761,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Implementation pattern: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Suggested primitive: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
     </article>
   );
@@ -783,7 +783,7 @@ function buildStarterSections(
     ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
     ...patterns.formGroups.map((pattern) => sectionFromPattern(pattern, byId, "form-group", "Form group", "Inputs and actions arranged as a usable form.", "grid gap-3")),
     ...patterns.dataTables.map((pattern) => sectionFromPattern(pattern, byId, "data-table", "Data table", "Table-like regions preserved for row and column wiring.", "grid gap-2")),
-    ...patterns.charts.map((pattern) => sectionFromPattern(pattern, byId, "chart-panel", "Chart panel", "Chart region exported with accessible summary text.", "grid gap-3")),
+    ...patterns.charts.map((pattern) => sectionFromPattern(pattern, byId, "chart-panel", "Chart panel", "Chart region captured with accessible summary text.", "grid gap-3")),
     ...patterns.actionClusters.map((pattern) => sectionFromPattern(pattern, byId, "action-cluster", "Action cluster", "Controls grouped as a toolbar or segmented control.", "flex flex-wrap gap-2")),
     ...patterns.tabSets.map((pattern) => sectionFromPattern(pattern, byId, "tab-set", "Tabs", "Detected tabs become a real Tabs primitive.", "grid gap-3")),
   ];

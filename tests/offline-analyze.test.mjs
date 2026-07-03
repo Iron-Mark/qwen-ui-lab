@@ -1221,7 +1221,7 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /export default function DashboardStarter/);
   assert.doesNotMatch(advanced.generatedCode, /export\s+(?:default\s+)?function\s+Generated[A-Z]/);
   assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
-  assert.match(advanced.generatedCode, /Implementation pattern: \{shadcnPrimitiveMap\[role\]/);
+  assert.match(advanced.generatedCode, /Suggested primitive: \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
   assert.match(advanced.generatedCode, /const starterData/);
@@ -1656,7 +1656,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
-  assert.match(regenerated.generatedCode, /Implementation pattern: \{shadcnPrimitiveMap\[role\]/);
+  assert.match(regenerated.generatedCode, /Suggested primitive: \{shadcnPrimitiveMap\[role\]/);
   assert.match(regenerated.generatedCode, /aria-label="Top navigation"/);
   assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
   assert.match(regenerated.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);

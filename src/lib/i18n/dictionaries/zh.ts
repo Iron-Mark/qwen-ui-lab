@@ -250,7 +250,7 @@ export const zh = {
       "下载前预览文件、截图变更和项目包说明。",
     exportPackageTitle: "检视导出项目包",
     exportPackageDesc:
-      "这是从截图分析得到的起始项目包，会将组件、配方、manifest、tokens 和检测记录放在一起。",
+      "这个起始项目包来自截图分析，会将组件、配方、manifest、tokens 和检测记录放在一起。",
     exportPackageFilesLabel: "个文件",
     exportPackageFilesTab: "文件",
     exportPackageChangesTab: "变更",
@@ -263,8 +263,8 @@ export const zh = {
     exportMetricFiles: "文件",
     exportMetricRegions: "区域",
     exportMetricPrimitives: "原语",
-    exportMetricEdits: "修正",
-    exportMetricExcluded: "排除",
+    exportMetricEdits: "更新",
+    exportMetricExcluded: "隐藏",
     exportMetricTokens: "Tokens",
     exportChangeRegions:
       "{count} 个截图区域已转换为 {intent} 组件结构。",
@@ -275,9 +275,9 @@ export const zh = {
     exportChangePatterns:
       "{count} 组重复或结构化 UI 模式已保留供复核。",
     exportChangeCorrections:
-      "{edited} 个已编辑框和 {excluded} 个已省略框已记入配方。",
+      "{edited} 个已更新框和 {excluded} 个已隐藏框已记入配方。",
     exportChangePackage:
-      "导出现在包含 {count} 个文件：设计说明、组件、配方、manifest、tokens 和检测记录。",
+      "起始项目包包含 {count} 个文件：设计说明、组件、配方、manifest、tokens 和检测记录。",
     exportReadmeIntent: "界面意图",
     exportReadmeComponent: "入口组件",
     exportReadmeResponsive: "响应式模式",

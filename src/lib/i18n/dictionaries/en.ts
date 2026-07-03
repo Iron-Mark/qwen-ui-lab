@@ -259,7 +259,7 @@ export const en = {
       "Preview the files, screenshot changes, and package summary before downloading.",
     exportPackageTitle: "Review export package",
     exportPackageDesc:
-      "This export package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
+      "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
@@ -272,8 +272,8 @@ export const en = {
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
-    exportMetricEdits: "Edits",
-    exportMetricExcluded: "Excluded",
+    exportMetricEdits: "Updated",
+    exportMetricExcluded: "Hidden",
     exportMetricTokens: "Tokens",
     exportChangeRegions:
       "{count} screenshot regions were converted into a {intent} component structure.",
@@ -284,9 +284,9 @@ export const en = {
     exportChangePatterns:
       "{count} repeated or structured UI pattern groups were preserved for review.",
     exportChangeCorrections:
-      "{edited} edited boxes and {excluded} omitted boxes are captured in the recipe.",
+      "{edited} updated boxes and {excluded} hidden boxes are captured in the recipe.",
     exportChangePackage:
-      "The export now includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
+      "The starter package includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",

@@ -179,10 +179,10 @@ test("zh sample picker copy uses sample-run language", () => {
 });
 
 test("export package preview surfaces correction metrics", () => {
-  assert.match(enDictionarySource, /exportMetricEdits:\s*"Edits"/);
-  assert.match(enDictionarySource, /exportMetricExcluded:\s*"Excluded"/);
-  assert.match(zhDictionarySource, /exportMetricEdits:\s*"\u4fee\u6b63"/);
-  assert.match(zhDictionarySource, /exportMetricExcluded:\s*"\u6392\u9664"/);
+  assert.match(enDictionarySource, /exportMetricEdits:\s*"Updated"/);
+  assert.match(enDictionarySource, /exportMetricExcluded:\s*"Hidden"/);
+  assert.match(zhDictionarySource, /exportMetricEdits:\s*"\u66f4\u65b0"/);
+  assert.match(zhDictionarySource, /exportMetricExcluded:\s*"\u9690\u85cf"/);
   assert.match(uploadFlowSource, /label:\s*copy\.exportMetricEdits/);
   assert.match(uploadFlowSource, /label:\s*copy\.exportMetricExcluded/);
   assert.match(uploadFlowSource, /correctionNotice:\s*editedCount \|\| excludedCount/);
@@ -192,6 +192,8 @@ test("export package preview surfaces correction metrics", () => {
 
 test("export package tabs use product-facing project guide language", () => {
   assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Project guide"/);
+  assert.match(enDictionarySource, /This starter package is created from the screenshot analysis/);
+  assert.match(enDictionarySource, /The starter package includes \{count\} files/);
   assert.match(enDictionarySource, /Use these notes to review the starter package/);
   assert.match(enDictionarySource, /generatedScaffold:\s*"Starter component"/);
   assert.match(enDictionarySource, /comparisonGeneratedPreview:\s*"Component preview"/);
@@ -199,6 +201,8 @@ test("export package tabs use product-facing project guide language", () => {
   assert.match(enDictionarySource, /toastPreviewRegenerated:\s*"Preview refreshed"/);
   assert.doesNotMatch(enDictionarySource, /generatedScaffold:\s*"Generated component"/);
   assert.doesNotMatch(enDictionarySource, /toastPreviewGenerated:\s*"Preview generated"/);
+  assert.doesNotMatch(enDictionarySource, /This export package is created/);
+  assert.doesNotMatch(enDictionarySource, /The export now includes/);
   assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"\u9879\u76ee\u6307\u5357"/);
   assert.match(zhDictionarySource, /generatedScaffold:\s*"\u8d77\u59cb\u7ec4\u4ef6"/);
   assert.match(zhDictionarySource, /comparisonGeneratedPreview:\s*"\u7ec4\u4ef6\u9884\u89c8"/);

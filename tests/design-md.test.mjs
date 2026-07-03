@@ -140,9 +140,10 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
 
   assert.equal(DESIGN_MD_FILENAME, "DESIGN.md");
   assert.match(markdown, /^# DESIGN\.md/);
-  assert.match(markdown, /Component file: starter-dashboard\.tsx/);
+  assert.match(markdown, /Starter file: starter-dashboard\.tsx/);
+  assert.match(markdown, /Package created: 2026-06-22T00:00:00\.000Z/);
   assert.match(markdown, /Review status: Ready for review/);
-  assert.match(markdown, /Exported components: StarterDashboard/);
+  assert.match(markdown, /Starter components: StarterDashboard/);
   assert.match(markdown, /Average active confidence: 85% \(high\)/);
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);
   assert.match(markdown, /\| Card \| 2 \| 82% \| card-or-panel \| 1 \|/);
@@ -186,7 +187,7 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
-  assert.match(markdown, /Exported components: StarterWireframe/);
+  assert.match(markdown, /Starter components: StarterWireframe/);
   assert.match(markdown, /No active detection boxes were available/);
   assert.match(markdown, /No design tokens were detected/);
   assert.match(
@@ -238,6 +239,6 @@ test("buildDesignMarkdown synthesizes review evidence for detections without rea
   assert.match(markdown, /Detector medium confidence/);
   assert.match(markdown, /Centered overlay geometry suggests dialog content/);
   assert.match(markdown, /Reviewer edit guides rebuild/);
-  assert.match(markdown, /Reviewer omitted from exported starter/);
+  assert.match(markdown, /Reviewer hid this box from starter sections/);
   assert.match(markdown, /Geometry evidence 600x520/);
 });

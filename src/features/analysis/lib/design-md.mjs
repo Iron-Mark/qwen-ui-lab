@@ -94,7 +94,7 @@ function elementFallbackSignals(element) {
 
   if (element?.included === false) {
     signals.push({
-      label: "Reviewer omitted from exported starter",
+      label: "Reviewer hid this box from starter sections",
       weight: 0.18,
     });
   }
@@ -277,7 +277,7 @@ function renderComponentInventory(components) {
   }
 
   return [
-    "| Primitive | Count | Avg confidence | Source kinds | Edited |",
+    "| Primitive | Count | Avg confidence | Source kinds | Updated |",
     "| --- | ---: | ---: | --- | ---: |",
     ...components.map(
       (component) =>
@@ -403,9 +403,9 @@ export function buildDesignMarkdown({
     `- Source size: ${text(artifact?.file?.readableSize, "unknown")}`,
     `- Source dimensions: ${sourceDimensions(artifact)}`,
     `- Review status: ${normalizeDesignReviewStatus(artifact?.modeLabel)}`,
-    `- Exported at: ${exportedAt}`,
-    `- Component file: ${componentFilename}`,
-    `- Exported components: ${componentNames}`,
+    `- Package created: ${exportedAt}`,
+    `- Starter file: ${componentFilename}`,
+    `- Starter components: ${componentNames}`,
     "",
     normalizeLine(artifact?.summary)
       ? `> ${normalizeLine(artifact.summary).replace(/\n/g, "\n> ")}`
@@ -416,8 +416,8 @@ export function buildDesignMarkdown({
     `- Average active confidence: ${percent(averageConfidence)} (${confidenceBand(averageConfidence)})`,
     `- Detector quality confidence: ${percent(qualityConfidence)} (${confidenceBand(qualityConfidence)})`,
     `- Active elements: ${activeElements.length}`,
-    `- Excluded elements: ${excludedCount}`,
-    `- User-edited elements: ${editedCount}`,
+    `- Hidden elements: ${excludedCount}`,
+    `- Updated elements: ${editedCount}`,
     `- Ambiguity: ${text(artifact?.detections?.quality?.ambiguity, "not reported")}`,
     "",
     "## Algorithm Notes",
@@ -455,7 +455,7 @@ export function buildDesignMarkdown({
     "## Review Notes",
     "",
     "- Starter code needs review for imports, data wiring, and accessibility before connecting it to a route.",
-    "- Detection boxes reflect the current browser session, including user edits and excluded elements.",
+    "- Detection boxes reflect the current browser session, including updated and hidden elements.",
     "- Use the component inventory as a checklist for replacing scaffold primitives with app-specific components.",
     "",
   ].join("\n");
