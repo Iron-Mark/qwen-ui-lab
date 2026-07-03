@@ -218,7 +218,7 @@ function buildReviewChecklist({
   const patterns = detectedPatterns ?? {};
   const checklist = [
     `Review ${elements.length} detected element${elements.length === 1 ? "" : "s"} against the source screenshot.`,
-    "Keep semantic landmarks, visible labels, focus states, and keyboard order while connecting product data.",
+    "Keep semantic landmarks, visible labels, focus states, and keyboard order while wiring app data.",
     "Use the recipe JSON to rebuild the starter after review updates.",
   ];
 

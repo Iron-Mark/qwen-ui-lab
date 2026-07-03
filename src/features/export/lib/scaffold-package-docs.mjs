@@ -9,9 +9,9 @@ const STARTER_PACKAGE_SCHEMA = "qwen-ui-lab/starter-package@1";
 const EXPORT_README_TITLE = "Screenshot-to-React starter package";
 const REVIEW_UPDATES_HEADING = "Review updates";
 const STARTER_PACKAGE_INTRO =
-  "Use this as a starter package: place the files in your app, connect product data, and compare the screen against the uploaded screenshot.";
+  "Use this as a starter package: place the files in your app, wire app data, and compare the screen against the uploaded screenshot.";
 const RICH_PACKAGE_INTRO =
-  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter package that still needs product data and visual parity checks.";
+  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter package that still needs app data wiring and visual parity checks.";
 
 export function buildScaffoldReadme({
   filename,
@@ -78,8 +78,8 @@ ${RICH_PACKAGE_INTRO}
 
 ## What this package still needs
 
-- It does not include the original screenshot, user data, secrets, or product data adapters.
-- Visual parity, accessibility, responsive layout, and product data states still need verification.
+- It does not include the original screenshot, user data, secrets, or app data adapters.
+- Visual parity, accessibility, responsive layout, and app data states still need verification.
 
 ${buildReviewContractMarkdown({ files })}
 
@@ -117,7 +117,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 1. Copy \`src/components/starters/\` into your app.
 2. Add the starter component to the route or page where it belongs.
-3. Replace starter content with real product data.
+3. Replace starter content with real app data.
 4. Keep the recipe JSON during integration so review updates can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
@@ -153,8 +153,8 @@ ${STARTER_PACKAGE_INTRO}
 
 ## What this package still needs
 
-- It does not include the original screenshot, user data, secrets, or product data adapters.
-- Visual parity, accessibility, responsive layout, and product data states still need verification.
+- It does not include the original screenshot, user data, secrets, or app data adapters.
+- Visual parity, accessibility, responsive layout, and app data states still need verification.
 
 ${buildReviewContractMarkdown({ files })}
 
@@ -240,7 +240,7 @@ export function buildDetectionSummaryMarkdown(blueprint) {
 
   return `# Detection summary
 
-This file explains how the uploaded screenshot was translated into the starter component. Use it to review confidence, decide which sections need product data, and rebuild the starter consistently.
+This file explains how the uploaded screenshot was translated into the starter component. Use it to review confidence, decide which sections need app data, and rebuild the starter consistently.
 
 ## Screen intent
 
@@ -311,7 +311,7 @@ ${elementLines || "- No detected elements were captured."}
 
 ## Integration notes
 
-${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n") : "- Validate the starter against the source screenshot before connecting product data."}
+${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n") : "- Validate the starter against the source screenshot before wiring app data."}
 `;
 }
 
@@ -442,11 +442,11 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
         "visual parity",
         "keyboard focus",
         "responsive layout",
-        "product data states",
+        "app data states",
         "lint/build",
       ],
       safeToRemoveSupportFilesAfter:
-        "Visual parity, accessibility, responsive layout, and product data states are verified.",
+        "Visual parity, accessibility, responsive layout, and app data states are verified.",
     },
     qualityGates: [
       "Compare the placed starter against the source screenshot.",

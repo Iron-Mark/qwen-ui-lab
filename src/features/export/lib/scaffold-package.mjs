@@ -104,7 +104,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     primitiveSummary: [],
     reviewChecklist: [
       "Review spacing, typography, and responsive behavior against the source screenshot.",
-      "Replace starter content with product data.",
+      "Replace starter content with app data.",
       "Run lint/build after placing the component.",
     ],
   };
@@ -148,7 +148,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
       dependencies,
       nextSteps: [
         "Replace starter copy with product content.",
-        "Connect cards, tables, charts, and forms to product data.",
+        "Wire cards, tables, charts, and forms to app data.",
         "Review the detection summary before deleting unused regions.",
       ],
     },

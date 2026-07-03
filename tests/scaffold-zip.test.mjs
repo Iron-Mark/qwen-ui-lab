@@ -378,7 +378,7 @@ test("starter package docs tolerate sparse blueprint metadata", () => {
 
   assert.match(
     detectionSummary,
-    /Validate the starter against the source screenshot before connecting product data/,
+    /Validate the starter against the source screenshot before wiring app data/,
   );
   assert.doesNotMatch(detectionSummary, /undefined/);
 
@@ -547,7 +547,7 @@ test("buildScaffoldZipEntries infers dependencies from known JSX primitives", ()
   );
   assert.match(
     manifest.reviewContract.safeToRemoveSupportFilesAfter,
-    /product data states/,
+    /app data states/,
   );
   assert.doesNotMatch(
     manifest.reviewContract.safeToRemoveSupportFilesAfter,
