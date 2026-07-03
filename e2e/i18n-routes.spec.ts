@@ -78,7 +78,7 @@ test("/account redirects to zh account modal with ?lang=zh", async ({ page }) =>
       level: 2,
     }),
   ).toBeVisible();
-  await expect(page.getByTestId("account-mode-badge")).toHaveText("仅本地");
+  await expect(page.getByTestId("account-mode-badge")).toHaveText("访客资料");
   await expect(page.getByTestId("header-account-link")).toContainText("访客");
 });
 

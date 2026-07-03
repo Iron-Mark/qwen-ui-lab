@@ -15,7 +15,7 @@ export function createAccountRouteMetadata(lang?: string): Metadata {
     title: t.eyebrow,
     description: t.subtitle,
     path: "/account",
-    keywords: ["browser profile", "local profile", "saved analyses", "local session"],
+    keywords: ["profile", "display name", "saved analyses", "screenshot workflow"],
   });
 }
 

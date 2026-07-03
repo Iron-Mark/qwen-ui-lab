@@ -27,14 +27,15 @@ test("/account redirects to the account modal in guest mode", async ({ page }) =
     }),
   ).toBeVisible();
   await expect(
-    page.getByTestId("account-modal").getByText("This browser only").first(),
+    page.getByTestId("account-modal").getByText("Manage the name shown").first(),
   ).toBeVisible();
   await expect(page.getByText("Used for saved analyses in this browser.")).toBeVisible();
+  await expect(page.getByText("This browser only")).toHaveCount(0);
   await expect(page.getByText("Private to this browser")).toHaveCount(0);
   await expect(page.getByText(staleInternalAccountCopy.localAccountLabel)).toHaveCount(0);
   await expect(page.getByText(staleInternalAccountCopy.optionalContactLabel)).toHaveCount(0);
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/local only/i);
-  await expect(page.getByTestId("account-status-card")).toHaveText(/local only/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/guest profile/i);
+  await expect(page.getByTestId("account-status-card")).toHaveText(/guest profile/i);
   await expect(page.getByTestId("account-saved-by-label")).toHaveCount(0);
   await expect(page.getByTestId("account-profile-preview")).not.toContainText(
     /Guest\s+Guest/i,
@@ -146,7 +147,7 @@ test("display name persists in sessionStorage and header", async ({ page }) => {
   await page.getByTestId("account-display-name-input").fill("Alex");
   await page.getByTestId("account-save-display-name").click();
 
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/saved name/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/named profile/i);
   await expect(page.getByTestId("header-account-link")).toContainText("Alex");
   await expect
     .poll(() =>
@@ -170,11 +171,11 @@ test("contact label signs in locally after confirm", async ({ page }) => {
 
   await page.getByTestId("account-contact-label-confirm").click();
 
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/saved name/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/named profile/i);
   await expect(page.getByTestId("header-account-link")).toContainText("reviewer.label");
 });
 
-test("clear local profile returns to guest mode", async ({ page }) => {
+test("clear profile returns to guest mode", async ({ page }) => {
   await page.goto("/account");
   await expect(page.getByTestId("account-modal")).toBeVisible();
 
@@ -184,7 +185,7 @@ test("clear local profile returns to guest mode", async ({ page }) => {
 
   await page.getByRole("button", { name: /clear profile/i }).click();
 
-  await expect(page.getByTestId("account-mode-badge")).toHaveText(/local only/i);
+  await expect(page.getByTestId("account-mode-badge")).toHaveText(/guest profile/i);
   await expect(page.getByTestId("header-account-link")).toContainText(/guest/i);
   await expect
     .poll(() =>

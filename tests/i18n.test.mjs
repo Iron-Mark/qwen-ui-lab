@@ -32,6 +32,10 @@ const translateAnalyzeStepSource = readFileSync(
   fileURLToPath(new URL("../src/lib/i18n/translate-analyze-step.mjs", import.meta.url)),
   "utf8",
 );
+const accountRouteSource = readFileSync(
+  fileURLToPath(new URL("../src/features/account/lib/account-route.ts", import.meta.url)),
+  "utf8",
+);
 
 const uploadFlowZh = {
   ctaAnalyzing: "\u5206\u6790\u4e2d\u2026",
@@ -148,6 +152,19 @@ test("buildDesignSystemDomainRedirect preserves lang=zh", () => {
 test("localizedHref preserves share and account paths", () => {
   assert.equal(localizedHref("/share/Ab12Cd34", "zh"), "/share/Ab12Cd34?lang=zh");
   assert.equal(localizedHref("/account", "zh"), "/account?lang=zh");
+});
+
+test("account profile copy stays modal-focused", () => {
+  assert.match(enDictionarySource, /modeGuest:\s*"Guest profile"/);
+  assert.match(enDictionarySource, /modeNamed:\s*"Named profile"/);
+  assert.match(enDictionarySource, /subtitle:\s*"Manage the name shown in saved analyses and the app header\."/);
+  assert.match(enDictionarySource, /contactLabelPendingBody:\s*"\s*Use \{email\} as the contact label/);
+  assert.match(zhDictionarySource, /modeGuest:\s*"\\u8bbf\\u5ba2\\u8d44\\u6599"/);
+  assert.match(zhDictionarySource, /modeNamed:\s*"\\u5df2\\u547d\\u540d\\u8d44\\u6599"/);
+  assert.match(accountRouteSource, /keywords:\s*\["profile", "display name", "saved analyses", "screenshot workflow"\]/);
+  assert.doesNotMatch(enDictionarySource, /Local only|Saved name|This browser only|local label/);
+  assert.doesNotMatch(zhDictionarySource, /\u4ec5\u672c\u5730|\\u4ec5\\u672c\\u5730/);
+  assert.doesNotMatch(accountRouteSource, /local profile|local session|browser profile/i);
 });
 
 test("zh dictionaries cover remaining route strings", () => {
