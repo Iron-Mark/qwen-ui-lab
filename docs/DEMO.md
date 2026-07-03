@@ -19,7 +19,7 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 | 0:00-1:00 | `/demo` | The default sample loads automatically and runs the same analysis pipeline as uploaded screenshots. |
 | 1:00-2:00 | Analysis result | Show the screenshot, detected regions, plan cards, confidence reasons, and editable detection boxes. |
 | 2:00-3:00 | Starter preview | Refresh after edits, compare the screenshot with the starter component, and point out responsive assumptions. |
-| 3:00-4:00 | Export package | Open the export dialog. Review `Files`, `Changes`, and `Guide`; use **Download component** or package export actions. |
+| 3:00-4:00 | Download package | Open the package dialog. Review `Files`, `Changes`, and `Guide`; use **Download component** or **Download package**. |
 | 4:00-5:00 | `/design-system` | Browse reusable components, Laws of UX references, preview modes, and snippet export. |
 
 ## Sample Routes
@@ -48,7 +48,7 @@ The local analysis path is the default. It lets the workflow stay usable without
 
 ## Export Review
 
-The export package is meant to be inspectable before download:
+The starter package is meant to be inspectable before download:
 
 - `README.md` explains the starter package and next steps.
 - `DESIGN.md` documents layout, tokens, component inventory, and E2E expectations.
@@ -61,7 +61,7 @@ The export package is meant to be inspectable before download:
 | --- | --- | --- |
 | Export panel does not appear | Browser is still hydrating or the machine is slow | Wait briefly, then refresh and retry the sample route. |
 | Analysis errors | Unsupported file, oversized image, or live analysis misconfiguration | Use a PNG/JPG/SVG/WebP under the upload limit, or return to local analysis. |
-| Copy fails | Browser clipboard permissions are restricted | Use **Download component** or package export. |
+| Copy fails | Browser clipboard permissions are restricted | Use **Download component** or **Download package**. |
 | Wrong sample appears | Stale route or cached tab | Navigate directly to the desired `/demo?archetype=...` URL. |
 | Live Qwen is unexpectedly active | `QWEN_LIVE_ANALYSIS=true` is set | Remove the flag unless upstream calls are intentional. |
 

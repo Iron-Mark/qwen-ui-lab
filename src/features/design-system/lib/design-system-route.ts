@@ -24,7 +24,7 @@ export function createDesignSystemRouteMetadata(): Metadata {
       "Design system catalog",
       "atomic design components",
       "UX law references",
-      "copy and export snippets",
+      "copy and download snippets",
       "React UI patterns",
     ],
     ogImage:
@@ -42,11 +42,11 @@ export function getDesignSystemRouteStructuredDataInput() {
   return {
     title: "Design System Catalog",
     description:
-      "Explore a workflow-ready component catalog with atomic patterns, UX-law references, and instant copy/export snippets for faster delivery.",
+      "Explore a workflow-ready component catalog with atomic patterns, UX-law references, and instant copy/download snippets for faster delivery.",
     path: "/design-system",
     breadcrumbLabel: "Design System",
     about: ["Atomic design", "UI pattern libraries", "UX laws"],
-    callToAction: "Filter components by domain and export snippets in one click.",
+    callToAction: "Filter components by domain and download snippets in one click.",
     additionalGraph: [
       {
         "@type": "CollectionPage",
@@ -113,7 +113,7 @@ export function createUiLawsRouteMetadata(): Metadata {
       twitterImage: "/social/uilaws-social-preview-1200x630.png",
       twitterImageAlt: "UI Laws snippets in qwen-ui-lab",
       shareSnippet:
-        "Browse UI Laws-inspired components and export snippets your team can ship immediately.",
+        "Browse UI Laws-inspired components and download snippets your team can adapt immediately.",
     }),
     robots: {
       index: false,

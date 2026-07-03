@@ -38,7 +38,7 @@ interface GistSuccessResponse {
 }
 
 const STATUS_LABELS: Record<GistExportStatus, string> = {
-  idle: "Export to GitHub Gist",
+  idle: "Create GitHub Gist",
   exporting: "Creating gist...",
   success: "Gist created",
   error: "Open GitHub Gist",
@@ -128,7 +128,7 @@ export function GistExportButton({
 
       if (!response.ok || !payload || typeof payload !== "object") {
         setStatus("error");
-        toast("Could not create GitHub Gist", "error");
+        toast("Could not create the Gist. Copy the component instead.", "error");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -142,7 +142,7 @@ export function GistExportButton({
       const gistUrl = (payload as GistSuccessResponse).url;
       if (!gistUrl) {
         setStatus("error");
-        toast("GitHub Gist was created, but the link was unavailable", "error");
+        toast("Gist created, but the link was unavailable.", "error");
         resetStatus();
         return;
       }
@@ -160,7 +160,7 @@ export function GistExportButton({
       resetStatus();
     } catch {
       setStatus("error");
-      toast("Could not prepare GitHub Gist export", "error");
+      toast("Could not prepare the Gist. Copy the component instead.", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,

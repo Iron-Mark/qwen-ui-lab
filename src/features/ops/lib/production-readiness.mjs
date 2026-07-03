@@ -83,7 +83,7 @@ export function buildProductionReadiness(env = process.env) {
       active: gistConfigured,
       detail: gistConfigured
         ? "GitHub export credentials are configured for gist publishing."
-        : "Users can still copy code, download the component, or download the export package.",
+        : "Users can still copy code, download the component, or download the package.",
     }),
     createCheck({
       id: "github-repo",
@@ -92,7 +92,7 @@ export function buildProductionReadiness(env = process.env) {
       active: repoExportConfigured,
       detail: repoExportConfigured
         ? "Repository compare export is configured."
-        : "Repository export is available as a downloadable export package.",
+        : "Repository export is available as a downloadable package.",
     }),
     createCheck({
       id: "public-site-url",

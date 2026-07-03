@@ -15,7 +15,7 @@ const homeRouteSource = readFileSync(
 test("site metadata keeps starter-package positioning", () => {
   assert.match(seoSource, /React \+ Tailwind starter packages/);
   assert.match(seoSource, /React \+ Tailwind starter package/);
-  assert.match(seoSource, /React\/Tailwind starter package export/);
+  assert.match(seoSource, /React\/Tailwind starter package download/);
   assert.match(seoSource, /starter project files/);
   assert.doesNotMatch(seoSource, /React \+ Tailwind package/);
   assert.doesNotMatch(seoSource, /React\/Tailwind package/);
@@ -25,7 +25,7 @@ test("site metadata keeps starter-package positioning", () => {
 test("home route metadata mirrors starter-package positioning", () => {
   assert.match(homeRouteSource, /React \+ Tailwind starter package/);
   assert.match(homeRouteSource, /React\/Tailwind starter package/);
-  assert.match(homeRouteSource, /React \+ Tailwind starter package export/);
+  assert.match(homeRouteSource, /React \+ Tailwind starter package download/);
   assert.doesNotMatch(homeRouteSource, /React \+ Tailwind package/);
   assert.doesNotMatch(homeRouteSource, /React\/Tailwind package/);
 });

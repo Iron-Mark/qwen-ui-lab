@@ -43,12 +43,12 @@ Use this script when recording a short product walkthrough.
 **Voiceover:**
 > "Before export, the detected UI boxes are editable. The inspector shows confidence, geometry, primitive mapping, and why each region was classified."
 
-### [0:48-0:56] Export package
+### [0:48-0:56] Download package
 
-**Action:** Open the export package panel.
+**Action:** Open the package download panel.
 
 **Voiceover:**
-> "The export includes starter component TSX, design notes, detection JSON, and a package manifest for engineering review."
+> "The package includes starter component TSX, design notes, detection JSON, and a manifest for engineering review."
 
 ### [0:56-1:08] Show the starter preview
 
@@ -83,7 +83,7 @@ If live recording fails, use these 7 screenshots in order:
 - Load **Dense dashboard** to stress test overlapping dashboard cards, charts, and table rows.
 - Load **Repeated list** to stress test repeated row detection and action clusters.
 - Use **Box labels** in the detector panel to show confidence reasons and primitive snapping.
-- Use **Export package** to show the complete artifact exported without exposing credentials.
+- Use **Download package** to show the complete artifact without exposing credentials.
 
 ---
 

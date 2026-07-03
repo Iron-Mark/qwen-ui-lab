@@ -59,7 +59,7 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 15_000 });
 
   const scaffoldCard = page
@@ -92,7 +92,7 @@ for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
     await primaryAnalyzeButton(page).click();
 
     await expect(
-      page.getByText(/Preview ready - copy or export the starter component/i),
+      page.getByText(/Preview ready - copy or download the starter component/i),
     ).toBeVisible({ timeout: 15_000 });
 
     const summaryCard = page

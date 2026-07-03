@@ -37,7 +37,7 @@ test("local sample mode skips POST /api/analyze-ui entirely", async ({ page }) =
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 15_000 });
 
   expect(analyzePosts).toHaveLength(0);
@@ -55,7 +55,7 @@ test("sample upload produces deterministic offline artifact content", async ({
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 15_000 });
 
   await expect(page.getByText("Layout Read", { exact: true })).toBeVisible();
@@ -79,6 +79,6 @@ test("local analysis completes when health fetch fails", async ({ page }) => {
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 20_000 });
 });

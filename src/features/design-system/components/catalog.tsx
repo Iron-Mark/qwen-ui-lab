@@ -148,7 +148,7 @@ export function ExampleInput() {
     usage: "Place in the header nav; toggles document `dark` class and localStorage.",
     sourcePath: "features/shell/components/ThemeToggle.tsx",
     props: [
-      { name: "(none)", type: "—", description: "Self-contained; reads ThemeProvider context." },
+      { name: "(none)", type: "-", description: "Self-contained; reads ThemeProvider context." },
     ],
     preview: <ThemeToggle />,
     code: `import { ThemeToggle } from "@/features/shell/components/ThemeToggle";
@@ -163,11 +163,11 @@ export function ExampleThemeToggle() {
     level: "atom",
     domain: "product",
     name: "Export button",
-    description: "Copy or download snippet with loading/success/error feedback.",
+    description: "Copy snippets or download component files with clear status feedback.",
     usage: "Overlay on preview cards; pass `text`, `variant`, and optional `filename`.",
     sourcePath: "features/export/components/ExportButton.tsx",
     props: [
-      { name: "text", type: "string", description: "Source code or content to copy/export." },
+      { name: "text", type: "string", description: "Source code or content to copy or download." },
       { name: "variant", type: '"copy" | "export"', description: "Clipboard vs file download." },
       { name: "filename", type: "string", description: "Download filename for export variant." },
     ],
@@ -179,7 +179,7 @@ export function ExampleThemeToggle() {
       },
       {
         id: "export",
-        label: "Export",
+        label: "Download",
         preview: (
           <ExportButton text="const x = 1;" variant="export" filename="snippet.tsx" />
         ),
@@ -228,7 +228,7 @@ export function ExampleQuickAction() {
     domain: "product",
     name: "Snippet preview",
     description: "Monospace code block with Prism highlighting and optional copy.",
-    usage: "Wrap starter or catalog snippets; use `hideHeader` when a parent supplies copy/export controls.",
+    usage: "Wrap starter or catalog snippets; use `hideHeader` when a parent supplies copy/download controls.",
     sourcePath: "features/analysis/components/SnippetPreview.tsx",
     props: [
       { name: "code", type: "string", description: "Source text to highlight." },

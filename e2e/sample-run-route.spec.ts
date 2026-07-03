@@ -49,9 +49,9 @@ test("/demo?archetype=auth loads sign-in component export", async ({ page }) => 
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByTestId("export-package-review").click();
-  const dialog = page.getByRole("dialog", { name: /review export package/i });
+  const dialog = page.getByRole("dialog", { name: /review package/i });
   await expect(dialog).toBeVisible();
-  await dialog.getByText(/more export options/i).click();
+  await dialog.getByText(/more download options/i).click();
   await dialog.getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("starter-auth.tsx");

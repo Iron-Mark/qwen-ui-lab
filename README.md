@@ -32,9 +32,9 @@ Never expose provider secrets through `NEXT_PUBLIC_*` variables.
 | `/account` | Redirects to the browser-local profile modal. |
 | `/share/[id]` | Read-only analysis summary. |
 
-## Export Package
+## Download Package
 
-Export packages are intended as inspectable starter packages, not finished screens. A package can include:
+Downloaded packages are intended as inspectable starter packages, not finished screens. A package can include:
 
 - `README.md`
 - `DESIGN.md`

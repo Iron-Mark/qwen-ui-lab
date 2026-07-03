@@ -11,7 +11,7 @@ test("createExportActionAriaLabel adds context only to generic code actions", ()
   assert.equal(createExportActionAriaLabel("Download component"), "Download component");
   assert.equal(createExportActionAriaLabel("Download package"), "Download package");
   assert.equal(createExportActionAriaLabel("Open PR instructions"), "Open PR instructions");
-  assert.equal(createExportActionAriaLabel("Export to GitHub Gist"), "Export to GitHub Gist");
+  assert.equal(createExportActionAriaLabel("Create GitHub Gist"), "Create GitHub Gist");
 });
 
 test("createExportActionAriaLabel falls back to a useful subject", () => {

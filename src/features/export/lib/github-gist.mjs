@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub Gist helpers for starter UI package exports.
+ * Server-side GitHub Gist helpers for starter UI package sharing.
  */
 
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
@@ -16,7 +16,7 @@ export function buildGithubGistUnavailablePayload() {
     ok: false,
     code: "gist_unavailable",
     message:
-      "Automatic GitHub Gist links are unavailable. Copy the component and open GitHub Gist.",
+      "Copy the component, then open GitHub Gist to create a shareable snippet.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,

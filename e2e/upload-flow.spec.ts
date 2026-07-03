@@ -213,12 +213,12 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
     .click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();
 
-  const dialog = page.getByRole("dialog", { name: /review export package/i });
+  const dialog = page.getByRole("dialog", { name: /review package/i });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();
@@ -281,7 +281,7 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   await runPipeline.click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
   await expect(page.getByTestId("detection-overlay-count")).toContainText(/detected/i);
@@ -387,13 +387,13 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   await expect(page.getByTestId("detection-box")).toHaveCount(0);
 
   await page.getByTestId("export-package-review").click();
-  const exportDialog = page.getByRole("dialog", { name: /review export package/i });
+  const exportDialog = page.getByRole("dialog", { name: /review package/i });
   await expect(exportDialog).toBeVisible();
-  await expect(exportDialog.getByText(/more export options/i)).toBeVisible();
-  await exportDialog.getByText(/more export options/i).click();
+  await expect(exportDialog.getByText(/more download options/i)).toBeVisible();
+  await exportDialog.getByText(/more download options/i).click();
   await expect(exportDialog.getByTestId("export-design-md")).toBeVisible();
   await expect(
-    exportDialog.getByRole("button", { name: /^export to github gist$/i }),
+    exportDialog.getByRole("button", { name: /^create github gist$/i }),
   ).toBeVisible();
   await expect(
     exportDialog.getByRole("button", { name: /^open pr instructions$/i }),
@@ -435,7 +435,7 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   await page.getByTestId("repo-export-button").click();
   const repoZipDownload = await repoZipDownloadPromise;
   expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-export-package.zip");
-  await expect(page.getByText(/Export package downloaded/i).first()).toBeVisible({
+  await expect(page.getByText(/Package downloaded/i).first()).toBeVisible({
     timeout: 5_000,
   });
   await page.keyboard.press("Escape");
@@ -489,12 +489,12 @@ test("export package dialog keeps tabs and actions visible on mobile widths", as
     .click();
 
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();
 
-  const dialog = page.getByRole("dialog", { name: /review export package/i });
+  const dialog = page.getByRole("dialog", { name: /review package/i });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /files/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /changes/i })).toBeVisible();

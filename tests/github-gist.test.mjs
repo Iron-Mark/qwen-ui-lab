@@ -24,7 +24,7 @@ test("buildGithubGistUnavailablePayload returns product-facing recovery instruct
     ok: false,
     code: "gist_unavailable",
     message:
-      "Automatic GitHub Gist links are unavailable. Copy the component and open GitHub Gist.",
+      "Copy the component, then open GitHub Gist to create a shareable snippet.",
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:

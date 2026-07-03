@@ -98,7 +98,7 @@ tokens CSS, and detection notes so the next step is inspectable.
 
 > The product is not "done code." The product is a better first review.
 
-**Image:** Export package dialog or file preview
+**Image:** Package download dialog or file preview
 
 ---
 
@@ -118,7 +118,7 @@ What qwen-ui-lab now supports:
 - confidence reasons per detected element
 - editable detection boxes before rebuilding
 - side-by-side screenshot and starter preview
-- export package with files and review notes
+- starter package with files and review notes
 - design system catalog with reusable snippets
 - PWA, metadata, 404, and release checks
 

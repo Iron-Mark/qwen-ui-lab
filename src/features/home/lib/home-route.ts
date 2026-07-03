@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 const homeRouteDescription =
-  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind starter package.";
+  "Upload a UI screenshot, inspect detected structure, refine boxes, and download a React + Tailwind starter package.";
 
 export const homeRouteSocialPreviewImageAlt =
   "qwen-ui-lab screenshot-to-React workflow";
@@ -24,7 +24,7 @@ export function createHomeRouteMetadata(): Metadata {
     twitterImage: "/social/home-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab screenshot to React workflow",
     shareSnippet:
-      "Upload a screenshot, review detected UI, and export a React/Tailwind starter package.",
+      "Upload a screenshot, review detected UI, and download a React/Tailwind starter package.",
   });
 }
 
@@ -34,7 +34,7 @@ export function getHomeRouteStructuredDataInput() {
     description: homeRouteDescription,
     path: "/",
     breadcrumbLabel: "Workflow",
-    about: ["UI screenshot analysis", "React starter review", "Design system export"],
+    about: ["UI screenshot analysis", "React starter review", "Design system download"],
     callToAction:
       "Turn UI screenshots into inspectable React and Tailwind project files.",
     additionalGraph: [
@@ -51,7 +51,7 @@ export function getHomeRouteStructuredDataInput() {
         featureList: [
           "Screenshot upload flow",
           "Detection summary",
-          "React + Tailwind starter package export",
+          "React + Tailwind starter package download",
         ],
       },
     ],
@@ -68,8 +68,8 @@ export function getHomeRouteSocialPreviewImage() {
     badge: "Screenshot to React",
     title: "Turn screenshots into starter UI",
     description:
-      "Upload a screenshot, inspect detected regions, refine boxes, and export React + Tailwind files.",
-    workflow: "Upload -> Detect -> Refine -> Export package",
+      "Upload a screenshot, inspect detected regions, refine boxes, and download React + Tailwind files.",
+    workflow: "Upload -> Detect -> Refine -> Download package",
     background:
       "linear-gradient(135deg, #08061f 0%, #111827 46%, #312e81 100%)",
     accent: "#8b5cf6",

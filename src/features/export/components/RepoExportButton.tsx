@@ -38,9 +38,9 @@ interface RepoCompareResponse {
 
 const STATUS_LABELS: Record<RepoExportStatus, string> = {
   idle: "Open PR instructions",
-  exporting: "Preparing export...",
-  success: "Export ready",
-  error: "Export failed",
+  exporting: "Preparing package...",
+  success: "Package ready",
+  error: "Download package instead",
 };
 
 function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
@@ -105,7 +105,7 @@ export function RepoExportButton({
         const blob = await response.blob();
         downloadZipBlob(blob);
         setStatus("success");
-        toast("Export package downloaded", "success");
+        toast("Package downloaded", "success");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -126,7 +126,7 @@ export function RepoExportButton({
 
       if (!response.ok || !payload || typeof payload !== "object") {
         setStatus("error");
-        toast("Could not export component to repo", "error");
+        toast("Could not open PR instructions. Download the package instead.", "error");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -158,7 +158,7 @@ export function RepoExportButton({
       }
 
       setStatus("error");
-      toast("Could not prepare repo export", "error");
+      toast("Could not open PR instructions. Download the package instead.", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -168,7 +168,7 @@ export function RepoExportButton({
       resetStatus();
     } catch {
       setStatus("error");
-      toast("Could not prepare repo export", "error");
+      toast("Could not open PR instructions. Download the package instead.", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,

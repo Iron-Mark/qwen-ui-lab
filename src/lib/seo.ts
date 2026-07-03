@@ -450,7 +450,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           operatingSystem: "Web",
           url: siteUrl,
           description:
-            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind starter package export.",
+            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind starter package download.",
           image: toAbsoluteUrl(ogImagePath),
           offers: {
             "@type": "Offer",

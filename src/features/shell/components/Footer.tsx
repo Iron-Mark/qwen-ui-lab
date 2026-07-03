@@ -25,12 +25,12 @@ const PRODUCT_LINKS = [
   {
     href: "/design-system",
     label: "Design system",
-    tooltip: "Browse reusable components, variants, and export snippets.",
+    tooltip: "Browse reusable components, variants, and download snippets.",
   },
   {
     href: "/demo",
     label: "Sample run",
-    tooltip: "Open a guided layout and review the export package.",
+    tooltip: "Open a guided layout and review the starter package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -236,7 +236,7 @@ export function Footer() {
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs text-muted-foreground sm:mt-4 sm:gap-3 sm:pt-3">
           <p className="max-[420px]:sr-only">
             &copy; 2026 {SITE_NAME}. Built for practical React+Tailwind
-            export packages.
+            starter packages.
           </p>
           <FooterTooltip content="Open Mark's portfolio and project work.">
             <a

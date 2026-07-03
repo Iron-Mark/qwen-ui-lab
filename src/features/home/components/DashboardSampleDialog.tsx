@@ -131,7 +131,7 @@ const exportOptions = [
   },
   {
     title: "Local download",
-    body: "Copy TSX or export the package from the workflow.",
+    body: "Copy TSX or download the package from the workflow.",
     icon: Download,
   },
 ] as const;

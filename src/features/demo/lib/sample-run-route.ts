@@ -15,12 +15,12 @@ export function createSampleRunRouteMetadata(): Metadata {
   return createRouteMetadata({
     title: "Sample run",
     description:
-      "Run dashboard, sign-in, mobile, landing, settings, and shop layouts. Inspect detections and export a React/Tailwind starter package.",
+      "Run dashboard, sign-in, mobile, landing, settings, and shop layouts. Inspect detections and download a React/Tailwind starter package.",
     path: "/demo",
     keywords: [
       "screenshot-to-React sample run",
       "guided layout",
-      "UI archetype export",
+      "UI archetype download",
       "React Tailwind starter package",
     ],
     ogImage: "/social/home-social-preview-1200x630.png",
@@ -28,7 +28,7 @@ export function createSampleRunRouteMetadata(): Metadata {
     twitterImage: "/social/home-social-preview-1200x630.png",
     twitterImageAlt: "Screenshot-to-React sample run",
     shareSnippet:
-      "Open a guided layout, inspect the detected UI, and review the export package.",
+      "Open a guided layout, inspect the detected UI, and review the starter package.",
   });
 }
 
@@ -55,9 +55,9 @@ export function getSampleRunRouteStructuredDataInput() {
       "Guided layouts with starter output for common UI archetypes.",
     path: "/demo",
     breadcrumbLabel: "Sample run",
-    about: ["Guided layout", "UI archetype analysis", "React/Tailwind export"],
+    about: ["Guided layout", "UI archetype analysis", "React/Tailwind download"],
     callToAction:
-      "Run a guided layout and review the export package.",
+      "Run a guided layout and review the starter package.",
   };
 }
 

@@ -84,7 +84,7 @@ export function buildRepoCompareExport({
       "",
       safeDescription,
       "",
-      `Add \`${safeFilename}\` from the export package.`,
+      `Add \`${safeFilename}\` from the downloaded package.`,
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,

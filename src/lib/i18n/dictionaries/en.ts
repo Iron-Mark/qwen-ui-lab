@@ -120,7 +120,7 @@ export const en = {
     domainSrOnly: "Collection",
     noResults: "No components match your search.",
     previewToolbarAria: "Preview panel actions",
-    exportAll: "Export all snippets",
+    exportAll: "Download all snippets",
     tryWorkflow: "Try screenshot-to-React workflow ->",
     pickComponent: "Pick a component from the list to inspect preview, props, and snippet.",
     snippetsDownloaded: "Design system snippets downloaded",
@@ -230,7 +230,7 @@ export const en = {
     statusAnalysisComplete:
       "Analysis complete - open the preview to see the starter component.",
     statusPreviewReady:
-      "Preview ready - copy or export the starter component from the panel on the right.",
+      "Preview ready - copy or download the starter component from the panel on the right.",
     analysisOutputLabel: "Analysis output (screenshot on the left)",
     copyShareLink: "Copy share link",
     copyShortShareLink: "Copy short share link",
@@ -243,14 +243,14 @@ export const en = {
     toastShareHashCopied: "Share link copied (read-only summary)",
     toastShareFailed: "Could not copy share link",
     defaultScreenshotName: "screenshot",
-    exportScaffold: "Export component",
+    exportScaffold: "Download component",
     exportScaffoldDesc:
-      "Review the starter files, then copy code, download the component, or export the package.",
+      "Review the starter files, then copy code, download the component, or download the package.",
     exportReviewPackage: "Review package",
-    exportPackageReady: "Export package",
+    exportPackageReady: "Download package",
     exportPackageReadyDesc:
       "Preview the files, screenshot changes, and package summary before downloading.",
-    exportPackageTitle: "Review export package",
+    exportPackageTitle: "Review package",
     exportPackageDesc:
       "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
     exportPackageFilesLabel: "files",
@@ -258,7 +258,7 @@ export const en = {
     exportPackageChangesTab: "Changes",
     exportPackageCopyTab: "Guide",
     exportPackageFilesIntro:
-      "Package export downloads these files as an inspectable zip. The direct component download exports only the TSX file.",
+      "Download package saves these files as an inspectable zip. Download component saves only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
       "Use these notes to review the starter package during project integration.",
@@ -294,13 +294,13 @@ export const en = {
     exportCopyAll: "Copy all",
     exportDownload: "Download component",
     exportDesignDoc: "Design.md",
-    exportMoreOptions: "More export options",
+    exportMoreOptions: "More download options",
     exportDownloadPackage: "Download package",
     exportRepoInstructions: "Open PR instructions",
     toastScaffoldCopied: "Component copied",
-    toastScaffoldExported: "Component exported",
-    toastDesignDocExported: "Design.md exported",
-    toastPackageDownloaded: "Export package downloaded",
+    toastScaffoldExported: "Component downloaded",
+    toastDesignDocExported: "Design.md downloaded",
+    toastPackageDownloaded: "Package downloaded",
     exportGenerateHint: "Prepare preview to see live stats alongside the snippet.",
     generatedScaffold: "Starter component",
     livePreview: "Live preview",

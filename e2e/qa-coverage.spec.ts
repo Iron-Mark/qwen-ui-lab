@@ -241,7 +241,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
   await expect(
-    page.getByText(/Preview ready - copy or export the starter component/i),
+    page.getByText(/Preview ready - copy or download the starter component/i),
   ).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
@@ -255,7 +255,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(complianceDialog).toBeHidden();
 
   await page.getByTestId("export-package-review").click();
-  const exportDialog = page.getByRole("dialog", { name: /review export package/i });
+  const exportDialog = page.getByRole("dialog", { name: /review package/i });
   await expect(exportDialog).toBeVisible();
   const dashboardDownloadPromise = page.waitForEvent("download");
   await exportDialog.getByRole("button", { name: /download component/i }).click();

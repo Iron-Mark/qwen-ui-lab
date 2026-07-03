@@ -26,6 +26,7 @@ const PUBLIC_COPY_FILES = [
   "docs/ops/TROUBLESHOOTING_RUNBOOK.md",
   "docs/ops/ANALYTICS_STAGING_ACTIVATION.md",
   "docs/ops/PRODUCTION_SETUP_CHECKLIST.md",
+  "docs/ops/STORYBOOK.md",
   "docs/specs/PULL_REQUEST_TEMPLATE.md",
   "docs/specs/ARTIFACT_CHECKLIST.md",
   "public/manifest.json",
@@ -39,8 +40,10 @@ const PUBLIC_COPY_FILES = [
   "src/features/design-system/lib/export-snippets.ts",
   "src/features/design-system/lib/export-snippets.client.ts",
   "src/features/design-system/lib/design-system-route.ts",
+  "src/features/design-system/components/catalog.tsx",
   "src/features/design-system/components/LawOfUxCard.tsx",
   "src/features/design-system/components/LawOfUxExamples.tsx",
+  "src/features/design-system/data/uilaws.ts",
   "src/lib/i18n/dictionaries/en.ts",
   "src/lib/i18n/dictionaries/zh.ts",
   "src/lib/i18n/translate-analyze-step.mjs",
@@ -62,6 +65,7 @@ const PUBLIC_COPY_FILES = [
   "src/features/analysis/lib/qwen-mock-fixtures.mjs",
   "src/features/export/components/ExportButton.tsx",
   "src/features/export/components/GistExportButton.tsx",
+  "src/features/export/components/RepoExportButton.tsx",
   "src/features/export/lib/scaffold-package.mjs",
   "src/features/export/lib/scaffold-package-docs.mjs",
   "src/features/export/lib/scaffold-blueprint.mjs",
@@ -120,11 +124,26 @@ const EXPERIMENT_ARTIFACT_FILES = [
   "experiments/01-dashboard/reviewed-starter.tsx",
 ];
 
+const COPY_DOWNLOAD_SURFACE_FILES = [
+  "docs/ops/STORYBOOK.md",
+  "src/features/design-system/components/catalog.tsx",
+  "src/features/design-system/data/uilaws.ts",
+  "src/features/design-system/lib/design-system-route.ts",
+];
+
+const EXPORT_RECOVERY_COPY_FILES = [
+  "src/features/export/components/ExportButton.tsx",
+  "src/features/export/components/GistExportButton.tsx",
+  "src/features/export/components/RepoExportButton.tsx",
+  "src/features/export/lib/github-gist.mjs",
+];
+
 const BANNED_PUBLIC_PHRASES = [
   "Bundle copy",
   "Bundle identity",
   "Package notes",
   "Project guide",
+  "package copy",
   "bundleDownloaded",
   "bundleId",
   "design system bundle",
@@ -132,6 +151,12 @@ const BANNED_PUBLIC_PHRASES = [
   "export-bundle",
   "bundle copy",
   "qwen-ui-lab export package",
+  "Export Package",
+  "Export packages are intended",
+  "starter package export",
+  "copy or export the starter component",
+  "export snippets your team",
+  "from the export package",
   "Add qwen-ui-lab generated UI package",
   "Gist export unavailable",
   "GitHub Gist export is not configured",
@@ -141,11 +166,26 @@ const BANNED_PUBLIC_PHRASES = [
   "Could not reach gist export API",
   "Could not reach repo export API",
   "Repo export returned an unexpected response",
+  "Could not prepare repo export",
+  "Could not export component to repo",
   "Open GitHub Gist manually",
   "GitHub Gist created but no URL was returned",
   "Set GITHUB_TOKEN",
   "Automatic Gist links",
+  "Automatic GitHub Gist links",
   "Gist links need setup first",
+  "Could not prepare GitHub Gist export",
+  "Could not create GitHub Gist",
+  "File exported",
+  "Export failed",
+  "Export ready",
+  "Preparing export...",
+  "Copy failed - try Export",
+  "导出起始项目包",
+  "检视导出项目包",
+  "项目包导出会下载",
+  "组件已导出",
+  "Design.md 已导出",
   "The component is copied",
   "sample reference",
   "Open sample run",
@@ -653,6 +693,45 @@ test("public and exported copy avoid mojibake artifacts", async () => {
   }
 
   assert.deepEqual(violations, []);
+});
+
+test("public design-system export surfaces use copy/download wording", async () => {
+  const violations = [];
+
+  for (const file of COPY_DOWNLOAD_SURFACE_FILES) {
+    const source = await fs.readFile(path.join(process.cwd(), file), "utf8");
+    if (source.includes("copy/export")) {
+      violations.push(`${file}: copy/export`);
+    }
+    if (source.includes("Copy or download snippet")) {
+      violations.push(`${file}: Copy or download snippet`);
+    }
+    if (source.includes('label: "Export"')) {
+      violations.push(`${file}: label: "Export"`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("export recovery copy gives a next action", async () => {
+  const combined = (
+    await Promise.all(
+      EXPORT_RECOVERY_COPY_FILES.map((file) =>
+        fs.readFile(path.join(process.cwd(), file), "utf8"),
+      ),
+    )
+  ).join("\n");
+
+  assert.match(combined, /Copy the component/);
+  assert.match(combined, /Try downloading instead/);
+  assert.match(combined, /Download the package instead/);
+  assert.doesNotMatch(combined, /"Exported"/);
+  assert.doesNotMatch(combined, /"Export ready"/);
+  assert.doesNotMatch(combined, /"Export to GitHub Gist"/);
+  assert.doesNotMatch(combined, /"Preparing export\.\.\."/);
+  assert.doesNotMatch(combined, /Could not (?:prepare|reach).*export/i);
+  assert.doesNotMatch(combined, /export failed/i);
 });
 
 test("experiment artifacts stay ascii and portable", async () => {

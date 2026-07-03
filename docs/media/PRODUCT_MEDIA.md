@@ -28,7 +28,7 @@ Recording and slide assets for qwen-ui-lab walkthroughs, product tours, and shor
 
 - [ ] Start on `/demo` when the clip needs a guided sample run.
 - [ ] Move the cursor deliberately and pause during transitions.
-- [ ] Show the export package tabs: files, changes, and package copy.
+- [ ] Show the package tabs: files, changes, and guide.
 - [ ] Trigger one archetype swap, such as `/demo?archetype=auth` or `/demo?archetype=shop`, to show variety.
 - [ ] Optional B-roll: `/design-system` search plus snippet export.
 - [ ] Keep live analysis disabled unless the recording specifically covers connecting an upstream model.

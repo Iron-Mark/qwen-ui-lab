@@ -56,14 +56,15 @@ test("resolveLocale defaults to en and accepts zh", () => {
   assert.equal(resolveLocale("fr"), "en");
 });
 
-test("zh export package copy avoids merge-gate wording", () => {
+test("zh package copy avoids merge-gate and stale export wording", () => {
   assert.match(zhDictionarySource, /exportReadmeReviewSummary:\s*".*\u4ea4\u63a5\u65f6/);
   assert.match(zhDictionarySource, /exportReadmeReviewClear:\s*".*\u4ea4\u63a5\u65f6/);
   assert.match(zhDictionarySource, /React \+ Tailwind \u8d77\u59cb\u9879\u76ee\u5305/);
-  assert.match(zhDictionarySource, /exportPackageTitle:\s*"\u68c0\u89c6\u5bfc\u51fa\u9879\u76ee\u5305"/);
+  assert.match(zhDictionarySource, /exportPackageTitle:\s*"\u68c0\u89c6\u9879\u76ee\u5305"/);
   assert.match(zhDictionarySource, /exportPackageCopyIntro:\s*".*\u8d77\u59cb\u9879\u76ee\u5305/);
   assert.doesNotMatch(zhDictionarySource, /\u5bfc\u5165\u524d/);
   assert.doesNotMatch(zhDictionarySource, /\u5408\u5e76\u524d/);
+  assert.doesNotMatch(zhDictionarySource, /\u68c0\u89c6\u5bfc\u51fa\u9879\u76ee\u5305/);
   assert.doesNotMatch(zhDictionarySource, /React \+ Tailwind \u9879\u76ee\u5305/);
 });
 

@@ -56,7 +56,7 @@ export const UI_LAWS: UiLaw[] = [
     summary:
       "Users expect your site to work like others they already know.",
     application:
-      "Dashboard shell, file upload, and copy/export patterns mirror familiar SaaS admin UIs.",
+      "Dashboard shell, file upload, and copy/download patterns mirror familiar SaaS admin UIs.",
   },
   {
     id: "consistency",

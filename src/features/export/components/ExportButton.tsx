@@ -45,10 +45,10 @@ const LABELS: Record<ExportButtonVariant, Record<CopyStatus, string>> = {
     error: "Failed",
   },
   export: {
-    idle: "Export",
-    copying: "Exporting...",
-    success: "Exported",
-    error: "Failed",
+    idle: "Download component",
+    copying: "Downloading...",
+    success: "Downloaded",
+    error: "Download failed",
   },
 };
 
@@ -118,7 +118,7 @@ export function ExportButton({
         });
         setDownloadStatus("success");
         if (showToast) {
-          toast("File exported", "success");
+          toast("Component downloaded", "success");
         }
         onCopied?.();
         window.setTimeout(() => setDownloadStatus("idle"), 1800);
@@ -131,7 +131,7 @@ export function ExportButton({
         });
         setDownloadStatus("error");
         if (showToast) {
-          toast("Export failed", "error");
+          toast("Download failed. Try copying instead.", "error");
         }
         window.setTimeout(() => setDownloadStatus("idle"), 2200);
       }
@@ -158,7 +158,7 @@ export function ExportButton({
         status: "failed",
       });
       if (showToast) {
-          toast("Copy failed - try Export", "error");
+        toast("Copy failed. Try downloading instead.", "error");
       }
     }
   }, [

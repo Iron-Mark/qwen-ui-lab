@@ -47,7 +47,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 ---
 
-# Export package
+# Download package
 
 - Component TSX
 - DESIGN.md
