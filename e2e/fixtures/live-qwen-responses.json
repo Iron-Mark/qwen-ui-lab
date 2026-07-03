@@ -47,11 +47,11 @@
       "plan": [
         {
           "title": "Contract Layout Read",
-          "body": "Header row and stat grid from mock upstream."
+          "body": "Header row and stat grid from contract upstream."
         },
         {
           "title": "Contract Component Map",
-          "body": "Cards, chart, and activity regions from mock upstream."
+          "body": "Cards, chart, and activity regions from contract upstream."
         }
       ],
       "previewStats": [
@@ -66,7 +66,7 @@
       ],
       "generatedCode": "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
       "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
-      "summary": "Contract test dashboard shell from mocked upstream."
+      "summary": "Contract test dashboard shell from contract upstream."
     },
     "provider": {
       "model": "qwen3-vl-plus-mock",
@@ -89,7 +89,7 @@
       }
     ],
     "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
-    "summary": "Contract test dashboard shell from mocked upstream.",
+    "summary": "Contract test dashboard shell from contract upstream.",
     "generatedCodeMarker": "MockedQwenDashboard"
   }
 }

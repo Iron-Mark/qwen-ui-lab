@@ -74,15 +74,15 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "The component is copied. Create a secret gist when you want a shareable GitHub link.";
+        "Open GitHub Gist when you want a shareable secret link.";
 
       const copyResult = await copy(text, "Component copied for Gist");
       const copied = copyResult.ok;
 
       toast(
         copied
-          ? `Component copied. Automatic Gist links need setup first. ${instructions} (${gistUrl})`
-          : `Automatic Gist links need setup first. ${instructions} (${gistUrl})`,
+          ? `Component copied. GitHub Gist setup needed. ${instructions} ${gistUrl}`
+          : `GitHub Gist setup needed. ${instructions} ${gistUrl}`,
         copied ? "warning" : "error",
       );
 

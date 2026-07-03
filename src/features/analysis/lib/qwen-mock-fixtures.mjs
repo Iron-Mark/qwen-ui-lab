@@ -7,15 +7,15 @@ export const MOCK_CI_API_KEY = "ci-mock-key-not-real";
 
 /** Deterministic analysis JSON returned inside Qwen chat/completions content. */
 export const MOCK_QWEN_ANALYSIS_JSON = {
-  summary: "Contract test dashboard shell from mocked upstream.",
+  summary: "Contract test dashboard shell from contract upstream.",
   plan: [
     {
       title: "Contract Layout Read",
-      body: "Header row and stat grid from mock upstream.",
+      body: "Header row and stat grid from contract upstream.",
     },
     {
       title: "Contract Component Map",
-      body: "Cards, chart, and activity regions from mock upstream.",
+      body: "Cards, chart, and activity regions from contract upstream.",
     },
   ],
   generatedCode:

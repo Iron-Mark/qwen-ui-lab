@@ -1310,7 +1310,7 @@ test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold r
   assert.match(advanced.generatedCode, /"primitive": "card-grid"/);
   assert.match(advanced.generatedCode, /gridTemplateColumns/);
   assert.match(advanced.generatedCode, /starterCollections\.cards/);
-  assert.match(advanced.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
+  assert.match(advanced.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-state handling/);
   assert.match(advanced.generatedCode, /repeated grid patterns/);
 });
 
@@ -1387,7 +1387,7 @@ test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regi
   assert.match(advanced.generatedCode, /<TableCell/);
   assert.match(advanced.generatedCode, /starterCollections\.tableRows/);
   assert.match(advanced.generatedCode, /columnIndex \+ 1/);
-  assert.match(advanced.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
+  assert.match(advanced.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery/);
   assert.match(advanced.generatedCode, /data tables/);
 });
 
@@ -1412,7 +1412,7 @@ test("buildAdvancedOfflineOverrides renders chart-series patterns as scaffold re
   assert.match(advanced.generatedCode, /bar chart preview/);
   assert.match(advanced.generatedCode, /starterCollections\.chartValues/);
   assert.match(advanced.generatedCode, /seriesCount/);
-  assert.match(advanced.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
+  assert.match(advanced.generatedCode, /State coverage: include loading, no-data, and request-error summaries/);
   assert.match(advanced.generatedCode, /chart series/);
 });
 
@@ -1701,7 +1701,7 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   assert.match(regenerated.generatedCode, /function SectionStateHint/);
   assert.match(regenerated.generatedCode, /function SectionStarterDataHint/);
   assertNoGeneratedStarterSlop(regenerated.generatedCode, "regenerated starter");
-  assert.match(regenerated.generatedCode, /Draft rows: /);
+  assert.match(regenerated.generatedCode, /Starter rows: /);
   assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
   assert.match(regenerated.generatedCode, /Repeated list/);
   assert.match(regenerated.generatedCode, /groupedElementIds/);
@@ -1727,8 +1727,8 @@ test("regenerateArtifactFromDetections preserves repeated-grid scaffold groups",
   assert.match(regenerated.generatedCode, /repeatedGrids/);
   assert.match(regenerated.generatedCode, /Detected repeated grid/);
   assert.match(regenerated.generatedCode, /gridTemplateColumns/);
-  assert.match(regenerated.generatedCode, /Draft cards: /);
-  assert.match(regenerated.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
+  assert.match(regenerated.generatedCode, /Starter cards: /);
+  assert.match(regenerated.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-state handling/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1750,7 +1750,7 @@ test("regenerateArtifactFromDetections preserves stat-row scaffold groups", () =
   assert.match(regenerated.generatedCode, /statRows/);
   assert.match(regenerated.generatedCode, /Detected stat row/);
   assert.match(regenerated.generatedCode, /Stat row/);
-  assert.match(regenerated.generatedCode, /Draft metrics: /);
+  assert.match(regenerated.generatedCode, /Starter metrics: /);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1798,8 +1798,8 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
   assert.match(regenerated.generatedCode, /from "@\/components\/ui\/table"/);
   assert.match(regenerated.generatedCode, /<Table className="min-w-\[28rem\]"/);
   assert.match(regenerated.generatedCode, /<TableCell/);
-  assert.match(regenerated.generatedCode, /Draft table columns: /);
-  assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
+  assert.match(regenerated.generatedCode, /Starter table columns: /);
+  assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1821,8 +1821,8 @@ test("regenerateArtifactFromDetections preserves chart-series scaffold groups", 
   assert.match(regenerated.generatedCode, /charts/);
   assert.match(regenerated.generatedCode, /Detected chart series/);
   assert.match(regenerated.generatedCode, /Chart series/);
-  assert.match(regenerated.generatedCode, /Draft chart values: /);
-  assert.match(regenerated.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
+  assert.match(regenerated.generatedCode, /Starter chart values: /);
+  assert.match(regenerated.generatedCode, /State coverage: include loading, no-data, and request-error summaries/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 

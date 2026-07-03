@@ -196,7 +196,7 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
   assert.doesNotMatch(markdown, /manual visual review/);
 });
 
-test("buildDesignMarkdown synthesizes fallback review evidence for detections without reasons", () => {
+test("buildDesignMarkdown synthesizes review evidence for detections without reasons", () => {
   const markdown = buildDesignMarkdown({
     artifact: {
       file: {

@@ -32,10 +32,10 @@ test("createStoredZip uses starter naming for empty entry names", () => {
   assert.match(text, /starter-component\.tsx/);
 });
 
-test("buildScaffoldZipEntries exports fallback code as an export package", () => {
+test("buildScaffoldZipEntries exports sparse code as an export package", () => {
   const entries = buildScaffoldZipEntries({
     filename: "starter-fixture.tsx",
-    description: "Fallback export",
+    description: "Starter export",
     content: `import { Button } from "@/components/ui/button";
 
 export default function StarterComponent() {
@@ -272,17 +272,17 @@ export default function Dashboard() {
   assert.match(combinedPackageText, /Review changes/);
 });
 
-test("export package docs use concrete fallback review guidance", () => {
+test("export package docs use concrete sparse-package review guidance", () => {
   const readme = buildFallbackPackageReadme({
-    filename: "starter-fallback.tsx",
-    description: "Fallback export",
+    filename: "starter-review.tsx",
+    description: "Starter export",
     componentName: "StarterComponent",
     files: {
-      component: "src/components/starters/starter-fallback.tsx",
-      recipe: "src/components/starters/starter-fallback.recipe.json",
-      manifest: "src/components/starters/starter-fallback.manifest.json",
-      tokens: "src/components/starters/starter-fallback.tokens.css",
-      detectionSummary: "docs/starter-fallback.detection.md",
+      component: "src/components/starters/starter-review.tsx",
+      recipe: "src/components/starters/starter-review.recipe.json",
+      manifest: "src/components/starters/starter-review.manifest.json",
+      tokens: "src/components/starters/starter-review.tokens.css",
+      detectionSummary: "docs/starter-review.detection.md",
     },
     inventory: [],
     dependencies: [],
@@ -296,10 +296,10 @@ test("export package docs use concrete fallback review guidance", () => {
   assert.doesNotMatch(readme, /Inspect the zip entries before import/);
 
   const design = buildPackageDesignMarkdown({
-    description: "Fallback export",
+    description: "Starter export",
     componentName: "StarterComponent",
     files: {
-      component: "src/components/starters/starter-fallback.tsx",
+      component: "src/components/starters/starter-review.tsx",
     },
     blueprint: {},
   });
@@ -320,16 +320,16 @@ test("export package docs use concrete fallback review guidance", () => {
     },
     dependencies: [],
     files: {
-      component: "src/components/starters/starter-fallback.tsx",
+      component: "src/components/starters/starter-review.tsx",
     },
-    stem: "starter-fallback",
+    stem: "starter-review",
   });
 
   assert.equal(manifest.files.designDoc, "DESIGN.md");
-  assert.equal(manifest.files.recipe, "src/components/starters/starter-fallback.recipe.json");
-  assert.equal(manifest.files.manifest, "src/components/starters/starter-fallback.manifest.json");
-  assert.equal(manifest.files.tokens, "src/components/starters/starter-fallback.tokens.css");
-  assert.equal(manifest.files.detectionSummary, "docs/starter-fallback.detection.md");
+  assert.equal(manifest.files.recipe, "src/components/starters/starter-review.recipe.json");
+  assert.equal(manifest.files.manifest, "src/components/starters/starter-review.manifest.json");
+  assert.equal(manifest.files.tokens, "src/components/starters/starter-review.tokens.css");
+  assert.equal(manifest.files.detectionSummary, "docs/starter-review.detection.md");
 });
 
 test("export package docs tolerate sparse blueprint metadata", () => {

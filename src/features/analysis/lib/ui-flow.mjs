@@ -704,16 +704,16 @@ function GenericScaffoldSection({ section }: { section: StarterSection }) {
 
 function SectionStarterDataHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "Draft rows: " + starterSectionData.rows.join(", "),
-    "repeated-grid": "Draft cards: " + starterSectionData.cards.join(", "),
-    "stat-row": "Draft metrics: " + starterSectionData.metrics.join(", "),
-    "data-table": "Draft table columns: " + starterSectionData.tableColumns.join(", "),
-    "chart-panel": "Draft chart values: " + starterSectionData.chartValues.join(", "),
+    "repeated-list": "Starter rows: " + starterSectionData.rows.join(", "),
+    "repeated-grid": "Starter cards: " + starterSectionData.cards.join(", "),
+    "stat-row": "Starter metrics: " + starterSectionData.metrics.join(", "),
+    "data-table": "Starter table columns: " + starterSectionData.tableColumns.join(", "),
+    "chart-panel": "Starter chart values: " + starterSectionData.chartValues.join(", "),
   };
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this draft data before connecting the component to a route.
+      {message}. Replace this starter data before connecting the component to a route.
     </p>
   ) : null;
 }
@@ -721,10 +721,10 @@ function SectionStarterDataHint({ kind }: { kind: string }) {
 function SectionStateHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
     "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before connecting product data.",
-    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.",
+    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-state handling.",
     "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
-    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.",
-    "chart-panel": "State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.",
+    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.",
+    "chart-panel": "State coverage: include loading, no-data, and request-error summaries for screen readers.",
   };
   const message = copy[kind];
   return message ? (

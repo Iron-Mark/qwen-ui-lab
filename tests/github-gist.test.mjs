@@ -28,12 +28,12 @@ test("buildGithubGistUnavailablePayload returns product-facing setup instruction
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "The component is copied. Create a secret gist when you want a shareable GitHub link.",
+        "Open GitHub Gist when you want a shareable secret link.",
     },
   });
   assert.doesNotMatch(
     buildGithubGistUnavailablePayload().fallback.instructions,
-    /paste the copied component/i,
+    /paste the copied component|component is copied/i,
   );
 });
 

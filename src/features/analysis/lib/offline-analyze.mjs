@@ -1105,7 +1105,7 @@ function buildKnownSamplePrimitiveMap(elements) {
     "action-cluster": "Button group inside Card footer",
     "bottom-navigation": "semantic nav with Button icon controls",
     "brand-header": "Card header with logo and heading",
-    "chart-panel": "Card with chart summary and text fallback",
+    "chart-panel": "Card with chart summary and accessible text summary",
     "control-group": "fieldset with switch-style controls",
     "dialog-panel": "Dialog or Sheet surface with focus management",
     "form-field": "Input with label, helper text, and validation slot",
@@ -1782,7 +1782,7 @@ const starterCollections = {
   cards: [
     { title: "Overview", detail: "Connect this card to product data" },
     { title: "Activity", detail: "Swap for real entity data" },
-    { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
+    { title: "Follow-up", detail: "Support unavailable and empty states" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
   ],
   metrics: [
@@ -2387,7 +2387,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </div>
         <p className="text-[11px] opacity-70">
-          State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.
+          State coverage: include loading cards, empty grid messaging, and unavailable-state handling.
         </p>
       </div>
     );
@@ -2484,7 +2484,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           </TableBody>
         </Table>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.
+          State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.
         </p>
       </div>
     );
@@ -2514,7 +2514,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </div>
         <p className="text-[11px] opacity-70">
-          State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.
+          State coverage: include loading, no-data, and request-error summaries for screen readers.
         </p>
       </div>
     );

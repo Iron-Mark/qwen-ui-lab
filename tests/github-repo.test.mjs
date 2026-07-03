@@ -108,7 +108,7 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
   );
 });
 
-test("inferStarterComponentName uses starter fallback naming", () => {
+test("inferStarterComponentName uses neutral starter naming", () => {
   assert.equal(inferStarterComponentName("export default function DashboardStarter() {}"), "DashboardStarter");
   assert.equal(inferStarterComponentName("const noExport = true;"), "StarterComponent");
 });
