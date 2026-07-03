@@ -78,7 +78,7 @@ export function buildMockLiveAnalyzeUiRouteResponse(file) {
       plan: MOCK_QWEN_ANALYSIS_JSON.plan,
       generatedCode: MOCK_QWEN_ANALYSIS_JSON.generatedCode,
       previewStats: MOCK_QWEN_ANALYSIS_JSON.previewStats,
-      modeLabel: `Qwen provider: ${MOCK_QWEN_MODEL}`,
+      modeLabel: "Ready for review",
       summary: MOCK_QWEN_ANALYSIS_JSON.summary,
     }),
     provider: {

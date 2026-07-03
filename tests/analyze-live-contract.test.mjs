@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { postAnalyzeUi } from "../src/features/analysis/lib/analyze-outcome.mjs";
+import { REMOTE_ANALYSIS_COPY } from "../src/features/analysis/lib/analysis-copy.mjs";
 import { analyzeUiImageWithQwen } from "../src/features/analysis/lib/qwen-analyze.mjs";
 import {
   MOCK_CI_API_KEY,
@@ -45,7 +46,8 @@ test("analyzeUiImageWithQwen returns structured artifact when upstream mock retu
 
   assert.equal(upstreamCalls.length, 1);
   assert.equal(result.ok, true);
-  assert.equal(result.artifact.modeLabel, `Qwen provider: ${MOCK_QWEN_MODEL}`);
+  assert.equal(result.artifact.modeLabel, REMOTE_ANALYSIS_COPY.readyForReview);
+  assert.doesNotMatch(result.artifact.modeLabel, /qwen|provider|model/i);
   assert.equal(result.artifact.plan[0].title, MOCK_QWEN_ANALYSIS_JSON.plan[0].title);
   assert.match(result.artifact.generatedCode, /ContractDashboardStarter/);
   assert.equal(
@@ -110,7 +112,8 @@ test("postAnalyzeUi calls analyze-ui when health reports live mode and maps succ
   assert.equal(analyzePosts, 1);
   assert.equal(outcome.providerState, "qwen");
   assert.equal(outcome.sampleRun, false);
-  assert.match(outcome.message, /qwen3-vl-plus-mock/);
+  assert.equal(outcome.message, REMOTE_ANALYSIS_COPY.complete);
+  assert.doesNotMatch(outcome.message, /qwen|configured model/i);
   assert.equal(outcome.artifact.plan[0].title, "Contract Layout Read");
   assert.match(outcome.artifact.generatedCode, /ContractDashboardStarter/);
   assert.equal(outcome.artifact.previewStats[0].label, "Contract Sections");

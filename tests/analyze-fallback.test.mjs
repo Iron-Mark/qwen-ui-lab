@@ -14,6 +14,7 @@ import {
   canUseLiveQwen,
   isLiveQwenAnalysisEnabled,
 } from "../src/features/analysis/lib/qwen-analyze.mjs";
+import { REMOTE_ANALYSIS_COPY } from "../src/features/analysis/lib/analysis-copy.mjs";
 
 const sampleFile = {
   name: "dashboard-reference.png",
@@ -39,7 +40,8 @@ test("resolveAnalyzeOutcome returns Qwen artifact on success", () => {
 
   assert.equal(outcome.providerState, "qwen");
   assert.equal(outcome.artifact, qwenArtifact);
-  assert.match(outcome.message, /qwen3-vl-plus/);
+  assert.equal(outcome.message, REMOTE_ANALYSIS_COPY.complete);
+  assert.doesNotMatch(outcome.message, /qwen|configured model/i);
   assert.equal(outcome.detail, null);
 });
 
@@ -134,11 +136,15 @@ test("resolveAnalyzeOutcome maps upload-read errors to plain user copy", () => {
 test("fallbackReasonFromPayload maps known server codes", () => {
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_network_error" }),
-    /live analysis could not be reached/,
+    /remote vision service could not be reached/,
   );
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_request_failed" }),
-    /live service was not reachable/,
+    /remote vision service was not reachable/,
+  );
+  assert.doesNotMatch(
+    fallbackReasonFromPayload({ code: "invalid_qwen_json" }),
+    /live analysis|analysis route/i,
   );
 });
 
@@ -236,7 +242,7 @@ test("postAnalyzeUi falls back on non-JSON responses", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /unreadable response/);
+  assert.match(outcome.detail, /analysis response was unreadable/);
 });
 
 test("postAnalyzeUi falls back when fetch throws", async () => {
@@ -266,6 +272,8 @@ test("analyzeUiImageWithQwen reports missing API key", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "missing_qwen_api_key");
   assert.equal(result.status, 503);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.notConfigured);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen returns local analysis when key is set but live is disabled", async () => {
@@ -326,6 +334,8 @@ test("analyzeUiImageWithQwen reports auth failures from Qwen", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "qwen_request_failed");
   assert.equal(result.status, 401);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.requestFailed);
+  assert.doesNotMatch(result.message, /qwen|api key|unauthorized|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports network errors", async () => {
@@ -343,6 +353,8 @@ test("analyzeUiImageWithQwen reports network errors", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "qwen_network_error");
   assert.equal(result.status, 503);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.unreachable);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports empty model responses", async () => {
@@ -364,6 +376,8 @@ test("analyzeUiImageWithQwen reports empty model responses", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "empty_qwen_response");
   assert.equal(result.status, 502);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.emptyResponse);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports invalid JSON from model", async () => {
@@ -385,4 +399,6 @@ test("analyzeUiImageWithQwen reports invalid JSON from model", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "invalid_qwen_json");
   assert.equal(result.status, 502);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.unreadableResponse);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });

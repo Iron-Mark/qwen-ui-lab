@@ -186,6 +186,8 @@ describe("service worker shell", () => {
     assert.match(offline, /Saved workspace/);
     assert.match(offline, /Open workflow/);
     assert.match(offline, /Open sample run/);
+    assert.match(offline, /sharing and uncached assets/);
+    assert.doesNotMatch(offline, /live analysis|live links/i);
     assert.doesNotMatch(offline, /\u00e2/);
   });
 });

@@ -486,6 +486,18 @@ test("seo route convention files delegate crawl metadata to shared seo helpers",
   assert.deepEqual(violations, []);
 });
 
+test("sitemap only advertises standalone public routes", async () => {
+  const source = await readFile(path.join(process.cwd(), "src", "lib", "seo.ts"), "utf8");
+  const routesMatch = source.match(/SITEMAP_STATIC_ROUTES\s*=\s*\[([\s\S]*?)\]\s*as const/);
+  assert.ok(routesMatch, "SITEMAP_STATIC_ROUTES should stay centralized in src/lib/seo.ts");
+
+  const routes = [...routesMatch[1].matchAll(/"([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(routes.includes("/"), "homepage should remain in the sitemap");
+  assert.ok(routes.includes("/design-system"), "design system should remain in the sitemap");
+  assert.ok(routes.includes("/demo"), "sample run compatibility route should remain in the sitemap");
+  assert.equal(routes.includes("/account"), false, "account is a modal redirect, not a sitemap page");
+});
+
 test("root layout delegates theme bootstrap logic to shared helpers", async () => {
   const file = path.join(process.cwd(), "src", "app", "layout.tsx");
   const source = await readFile(file, "utf8");
@@ -882,13 +894,15 @@ test("design-system domain redirect pages delegate search-param parsing", async 
   assert.deepEqual(violations, []);
 });
 
-test("account route delegates metadata search-param parsing to feature helpers", async () => {
+test("account route is a compatibility redirect into the shell modal", async () => {
   const file = path.join(process.cwd(), "src", "app", "account", "page.tsx");
   const source = await readFile(file, "utf8");
   const specifiers = collectModuleSpecifiers(file, source);
   const bannedMarkers = [
     "const { lang } = await searchParams",
     "createAccountRouteMetadata(",
+    "createAccountRouteMetadataFromParams(",
+    "generateMetadata(",
     "Promise<{ lang?: string }>",
   ];
 
@@ -896,13 +910,24 @@ test("account route delegates metadata search-param parsing to feature helpers",
   if (!specifiers.includes("@/features/account/lib/account-route")) {
     violations.push(`${toRepoPath(file)} does not import account route helpers`);
   }
-  if (!source.includes("createAccountRouteMetadataFromParams(")) {
-    violations.push(`${toRepoPath(file)} does not call createAccountRouteMetadataFromParams`);
+  if (!source.includes("createAccountModalRedirectHrefFromParams(")) {
+    violations.push(`${toRepoPath(file)} does not call createAccountModalRedirectHrefFromParams`);
   }
   for (const marker of bannedMarkers) {
     if (source.includes(marker)) {
       violations.push(`${toRepoPath(file)} contains ${marker}`);
     }
+  }
+
+  const helperSource = await readFile(
+    path.join(process.cwd(), "src", "features", "account", "lib", "account-route.ts"),
+    "utf8",
+  );
+  if (helperSource.includes("createRouteMetadata(")) {
+    violations.push("account route helper still creates standalone route metadata");
+  }
+  if (!helperSource.includes('new URLSearchParams({ account: "1" })')) {
+    violations.push("account route helper does not build the account modal URL state");
   }
 
   assert.deepEqual(violations, []);

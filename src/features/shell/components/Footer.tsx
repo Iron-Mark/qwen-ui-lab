@@ -38,7 +38,7 @@ const RESOURCE_LINKS = [
   {
     href: "https://github.com/qwenlm/qwen3-vl",
     label: "Vision model",
-    tooltip: "Open the Qwen3-VL project used when live analysis is enabled.",
+    tooltip: "Open the Qwen3-VL project behind the optional vision analyzer.",
   },
   {
     href: "https://qwenlm.github.io/qwen-code-docs/en/users/overview/",

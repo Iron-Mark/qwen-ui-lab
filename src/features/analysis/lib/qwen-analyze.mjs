@@ -1,4 +1,5 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
+import { REMOTE_ANALYSIS_COPY } from "./analysis-copy.mjs";
 import {
   canUseLiveQwen,
   getQwenConfig,
@@ -114,7 +115,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 503,
       code: "missing_qwen_api_key",
-      message: `${config.missing} is not configured on the server.`,
+      message: REMOTE_ANALYSIS_COPY.notConfigured,
     };
   }
 
@@ -149,8 +150,8 @@ export async function analyzeUiImageWithQwen({
       code: "qwen_network_error",
       message:
         error?.name === "AbortError"
-          ? "Qwen request timed out."
-          : "Could not reach the Qwen API.",
+          ? REMOTE_ANALYSIS_COPY.timedOut
+          : REMOTE_ANALYSIS_COPY.unreachable,
     };
   }
 
@@ -161,10 +162,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: response.status,
       code: "qwen_request_failed",
-      message:
-        payload?.error?.message ||
-        payload?.message ||
-        "Qwen analysis request failed.",
+      message: REMOTE_ANALYSIS_COPY.requestFailed,
     };
   }
 
@@ -175,7 +173,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 502,
       code: "empty_qwen_response",
-      message: "Qwen returned an empty analysis response.",
+      message: REMOTE_ANALYSIS_COPY.emptyResponse,
     };
   }
 
@@ -193,7 +191,7 @@ export async function analyzeUiImageWithQwen({
           plan: analysis.plan,
           generatedCode: analysis.generatedCode,
           previewStats: analysis.previewStats,
-          modeLabel: `Qwen provider: ${config.model}`,
+          modeLabel: REMOTE_ANALYSIS_COPY.readyForReview,
           summary: analysis.summary,
         },
       ),
@@ -207,7 +205,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 502,
       code: "invalid_qwen_json",
-      message: "Qwen returned text, but it was not valid analysis JSON.",
+      message: REMOTE_ANALYSIS_COPY.unreadableResponse,
       rawText: modelText,
     };
   }

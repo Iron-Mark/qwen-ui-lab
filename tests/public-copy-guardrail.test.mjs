@@ -51,9 +51,12 @@ const PUBLIC_COPY_FILES = [
   "src/features/analytics/components/AnalyticsDashboardClient.tsx",
   "src/features/analytics/lib/analytics-route.ts",
   "src/features/analysis/components/UploadFlow.tsx",
+  "src/features/analysis/lib/analysis-copy.mjs",
+  "src/features/analysis/lib/analyze-ui-api.mjs",
   "src/features/analysis/lib/analyze-outcome.mjs",
   "src/features/analysis/lib/offline-analyze.mjs",
   "src/features/analysis/lib/offline-image-inspection.mjs",
+  "src/features/analysis/lib/qwen-analyze.mjs",
   "src/features/analysis/lib/ui-flow.mjs",
   "src/features/analysis/lib/design-md.mjs",
   "src/features/analysis/lib/qwen-mock-fixtures.mjs",
@@ -523,6 +526,22 @@ const BANNED_MOJIBAKE_PATTERNS = [
   { label: "replacement character", pattern: /\uFFFD/u },
 ];
 
+const BANNED_PUBLIC_PATTERNS = [
+  {
+    label: "provider-specific analyzer message",
+    pattern:
+      /message:\s*["`][^"`]*(?:Qwen|DASHSCOPE_API_KEY|API key|live analysis|provider)[^"`]*["`]/i,
+  },
+  {
+    label: "provider-specific status label",
+    pattern: /modeLabel:\s*["`][^"`]*(?:Qwen|provider|model|demo|fallback)[^"`]*["`]/i,
+  },
+  {
+    label: "provider-specific toast or banner copy",
+    pattern: /(?:toast|banner)[A-Za-z0-9_]*:\s*["`][^"`]*(?:Qwen|API key|live analysis|provider)[^"`]*["`]/i,
+  },
+];
+
 const CORRUPTED_DOC_LINK_PATTERNS = [
   "chetype|New here-|\\?archetype|Try screenshot-to-React workflow",
   "scaffold-package-chetype",
@@ -581,6 +600,13 @@ test("public and exported copy avoid stale demo/internal phrasing", async () => 
     for (const phrase of BANNED_PUBLIC_PHRASES) {
       if (source.includes(phrase)) {
         violations.push(`${file}: ${phrase}`);
+      }
+    }
+
+    for (const { label, pattern } of BANNED_PUBLIC_PATTERNS) {
+      const match = source.match(pattern);
+      if (match) {
+        violations.push(`${file}: ${label}: ${match[0]}`);
       }
     }
   }

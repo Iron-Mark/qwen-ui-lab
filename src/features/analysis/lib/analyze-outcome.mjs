@@ -1,4 +1,5 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
+import { REMOTE_ANALYSIS_COPY } from "./analysis-copy.mjs";
 
 export const FALLBACK_BANNER_MISSING =
   "Analysis is ready.";
@@ -16,15 +17,15 @@ const FALLBACK_REASONS = {
   live_analysis_disabled:
     "Local analysis prepared the preview.",
   qwen_request_failed:
-    "Local analysis prepared the preview while the live service was not reachable.",
+    "Local analysis prepared the preview while the remote vision service was not reachable.",
   qwen_network_error:
-    "Local analysis prepared the preview after live analysis could not be reached.",
+    "Local analysis prepared the preview after the remote vision service could not be reached.",
   invalid_qwen_json:
-    "Local analysis prepared the preview after live analysis returned an unreadable response.",
+    "Local analysis prepared the preview after the remote vision service returned an unreadable response.",
   empty_qwen_response:
-    "Local analysis prepared the preview after live analysis returned no content.",
+    "Local analysis prepared the preview after the remote vision service returned no content.",
   invalid_response:
-    "Local analysis prepared the preview after the analysis route returned an unreadable response.",
+    "Local analysis prepared the preview after the analysis response was unreadable.",
 };
 
 const TRANSIENT_CODES = new Set([
@@ -106,7 +107,7 @@ export function resolveAnalyzeOutcome({
     return {
       providerState: "qwen",
       artifact: payload.artifact,
-      message: `Qwen analysis complete with ${payload.provider?.model || "configured model"}.`,
+      message: REMOTE_ANALYSIS_COPY.complete,
       detail: null,
       sampleRun: false,
       code: null,
