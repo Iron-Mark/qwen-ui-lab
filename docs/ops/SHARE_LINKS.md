@@ -1,6 +1,6 @@
 # Share links v2
 
-Read-only analysis summaries can be shared without exposing exported component code, plans, or credentials.
+Read-only analysis summaries can be shared without exposing generated component code, plans, or credentials.
 
 ## Endpoints
 

@@ -696,7 +696,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known sample run files export as export packages", () => {
+test("known sample run files export as starter packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -1236,7 +1236,10 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Integration checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
-  assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);
+  assert.match(advanced.generatedCode, /function fieldPlaceholder/);
+  assert.match(advanced.generatedCode, /placeholder=\{fieldPlaceholder/);
+  assert.doesNotMatch(advanced.generatedCode, /placeholder="Enter product data"/);
+  assert.doesNotMatch(advanced.generatedCode, /placeholder="Enter field value"/);
   assert.match(advanced.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
   assert.match(advanced.generatedCode, /const responsiveIntent/);
   assert.match(advanced.generatedCode, /const screenIntent/);
@@ -1284,8 +1287,8 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
   assert.match(advanced.generatedCode, /starterCollections\.rows/);
-  assert.match(advanced.generatedCode, /Connect this row to product data/);
-  assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
+  assert.match(advanced.generatedCode, /Bind this row to your data source/);
+  assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data/);
   assert.match(advanced.generatedCode, /text-line signals shape the starter/);
 });
 
@@ -1386,7 +1389,10 @@ test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regi
   assert.match(advanced.generatedCode, /<TableHeader>/);
   assert.match(advanced.generatedCode, /<TableCell/);
   assert.match(advanced.generatedCode, /starterCollections\.tableRows/);
-  assert.match(advanced.generatedCode, /columnIndex \+ 1/);
+  assert.match(advanced.generatedCode, /starterCollections\.tableColumns/);
+  assert.match(advanced.generatedCode, /"Account", "Status", "Value", "Owner"/);
+  assert.doesNotMatch(advanced.generatedCode, /Column \{columnIndex \+ 1\}/);
+  assert.doesNotMatch(advanced.generatedCode, /Cell " \+ \(rowIndex \+ 1\)/);
   assert.match(advanced.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery/);
   assert.match(advanced.generatedCode, /data tables/);
 });
@@ -1436,7 +1442,9 @@ test("buildAdvancedOfflineOverrides renders action-cluster patterns as scaffold 
   assert.match(advanced.generatedCode, /region\.kind === "action-cluster"/);
   assert.match(advanced.generatedCode, /<Button\s+key=\{index\}/);
   assert.match(advanced.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
-  assert.match(advanced.generatedCode, /Action \{index \+ 1\}/);
+  assert.match(advanced.generatedCode, /function actionLabels/);
+  assert.match(advanced.generatedCode, /"Save", "Preview", "Share", "More"/);
+  assert.doesNotMatch(advanced.generatedCode, /Action \{index \+ 1\}/);
   assert.match(advanced.generatedCode, /controlCount/);
   assert.match(advanced.generatedCode, /action clusters/);
 });
@@ -1461,6 +1469,9 @@ test("buildAdvancedOfflineOverrides renders tab-set patterns as scaffold regions
   assert.match(advanced.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
   assert.match(advanced.generatedCode, /<Tabs defaultValue=/);
   assert.match(advanced.generatedCode, /<TabsTrigger/);
+  assert.match(advanced.generatedCode, /starterCollections\.tabLabels/);
+  assert.match(advanced.generatedCode, /"Overview", "Details", "Activity", "Settings"/);
+  assert.doesNotMatch(advanced.generatedCode, /Tab \{index \+ 1\}/);
   assert.match(advanced.generatedCode, /tabbed-content/);
   assert.match(advanced.generatedCode, /tab sets/);
 });
@@ -1702,7 +1713,7 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   assert.match(regenerated.generatedCode, /function SectionStarterDataHint/);
   assertNoGeneratedStarterSlop(regenerated.generatedCode, "regenerated starter");
   assert.match(regenerated.generatedCode, /Starter rows: /);
-  assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
+  assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data/);
   assert.match(regenerated.generatedCode, /Repeated list/);
   assert.match(regenerated.generatedCode, /groupedElementIds/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
@@ -1797,7 +1808,12 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
   assert.match(regenerated.generatedCode, /Detected data table/);
   assert.match(regenerated.generatedCode, /from "@\/components\/ui\/table"/);
   assert.match(regenerated.generatedCode, /<Table className="min-w-\[28rem\]"/);
+  assert.match(regenerated.generatedCode, /<TableHeader>/);
+  assert.match(regenerated.generatedCode, /<TableHead/);
   assert.match(regenerated.generatedCode, /<TableCell/);
+  assert.match(regenerated.generatedCode, /starterSectionData\.tableColumns/);
+  assert.match(regenerated.generatedCode, /"Account", "Status", "Value", "Owner"/);
+  assert.doesNotMatch(regenerated.generatedCode, />Cell</);
   assert.match(regenerated.generatedCode, /Starter table columns: /);
   assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
@@ -1846,6 +1862,8 @@ test("regenerateArtifactFromDetections preserves action-cluster scaffold groups"
   assert.match(regenerated.generatedCode, /Action cluster/);
   assert.match(regenerated.generatedCode, /<Button\s+key=\{childId\}/);
   assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "default" : "outline"\}/);
+  assert.match(regenerated.generatedCode, /starterSectionData\.actionLabels/);
+  assert.match(regenerated.generatedCode, /"Save", "Preview", "Share", "More"/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1870,6 +1888,9 @@ test("regenerateArtifactFromDetections preserves tab-set scaffold groups", () =>
   assert.match(regenerated.generatedCode, /import \{ Tabs, TabsContent, TabsList, TabsTrigger \} from "@\/components\/ui\/tabs"/);
   assert.match(regenerated.generatedCode, /<Tabs defaultValue=/);
   assert.match(regenerated.generatedCode, /<TabsTrigger/);
+  assert.match(regenerated.generatedCode, /starterSectionData\.tabLabels/);
+  assert.match(regenerated.generatedCode, /"Overview", "Details", "Activity", "Settings"/);
+  assert.doesNotMatch(regenerated.generatedCode, /Tab " \+ \(index \+ 1\)/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 

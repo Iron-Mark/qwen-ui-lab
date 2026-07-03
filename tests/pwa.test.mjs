@@ -185,7 +185,7 @@ describe("service worker shell", () => {
     assert.match(offline, /Offline - qwen-ui-lab/);
     assert.match(offline, /Saved workspace/);
     assert.match(offline, /Open workflow/);
-    assert.match(offline, /Open sample/);
+    assert.match(offline, /Open saved example/);
     assert.match(offline, /sharing and uncached assets/);
     assert.doesNotMatch(offline, /live analysis|live links/i);
     assert.doesNotMatch(offline, /\u00e2/);

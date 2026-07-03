@@ -827,7 +827,7 @@ export default function ${profile.componentName}() {
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               Starter component translated from the screenshot structure. Replace starter copy,
-              connect product data, and keep the recipe JSON beside this component during review.
+              bind app data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1173,7 +1173,7 @@ function knownSampleResponsiveIntent(archetypeId) {
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
     "Replace starter content",
-    "Connect product data",
+    "Bind app data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
 }
@@ -1397,7 +1397,7 @@ export function EmptyStateStarter() {
     <main aria-label="Empty-state starter" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
-        <p className="text-sm text-muted-foreground">Connect product data, upload a source, or create the first item.</p>
+        <p className="text-sm text-muted-foreground">Bind app data, upload a source, or create the first item.</p>
         <Button type="button" className="mx-auto mt-2">Start now</Button>
       </Card>
     </main>
@@ -1724,7 +1724,7 @@ function buildGeneratedSvgResponsiveBlueprint(svgInspection) {
   return {
     mode: portrait ? "svg-mobile-stack" : "svg-responsive-grid",
     breakpoints: portrait ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review SVG labels as semantic regions, then connect sample controls to product data.",
+    primaryFlow: "Review SVG labels as semantic regions, then bind sample controls to app data.",
   };
 }
 
@@ -1768,20 +1768,20 @@ const layoutRegions = ${JSON.stringify(regions, null, 2)};
 const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this starter package to review structure, then replace starter copy and values with product data.",
+    "Use this starter package to review structure, then replace starter values with your app data.",
   primaryAction: "Review starter",
   secondaryAction: "Open design notes",
 };
 
 const starterCollections = {
   rows: [
-    { title: "Queued review", detail: "Connect this row to product data" },
-    { title: "Ready for integration", detail: "Connect this row to product data" },
+    { title: "Queued review", detail: "Bind this row to your data source" },
+    { title: "Ready for integration", detail: "Replace with a live record" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
-    { title: "Overview", detail: "Connect this card to product data" },
-    { title: "Activity", detail: "Swap for real entity data" },
+    { title: "Overview", detail: "Replace with the primary entity summary" },
+    { title: "Activity", detail: "Bind to recent events or audit logs" },
     { title: "Follow-up", detail: "Support unavailable and empty states" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
   ],
@@ -1796,6 +1796,8 @@ const starterCollections = {
     ["Northstar", "Review", "$8.1K"],
     ["Summit Labs", "Paused", "$4.8K"],
   ],
+  tableColumns: ["Account", "Status", "Value", "Owner"],
+  tabLabels: ["Overview", "Details", "Activity", "Settings"],
   chartValues: [42, 74, 55, 88, 63, 78, 48, 92],
 };
 
@@ -2001,23 +2003,27 @@ function FormSection({ section }: { section: UsableSectionModel }) {
       <CardContent>
         <form className="grid gap-4">
           {section.items.length ? (
-            section.items.map((item, index) =>
-              /action|button/.test(item.componentRole ?? "") ? (
-                <Button key={item.id} type="button" className="w-fit">
-                  {item.label}
-                </Button>
-              ) : (
+            section.items.map((item, index) => {
+              if (/action|button/.test(item.componentRole ?? "")) {
+                return (
+                  <Button key={item.id} type="button" className="w-fit">
+                    {item.label}
+                  </Button>
+                );
+              }
+              const fieldLabel = item.label || "Field " + (index + 1);
+              return (
                 <div key={item.id} className="grid gap-2">
-                  <Label htmlFor={item.id}>Field {index + 1}</Label>
-                  <Input id={item.id} placeholder="Enter product data" />
+                  <Label htmlFor={item.id}>{fieldLabel}</Label>
+                  <Input id={item.id} placeholder={fieldPlaceholder(fieldLabel)} />
                 </div>
-              ),
-            )
+              );
+            })
           ) : (
             <>
               <div className="grid gap-2">
                 <Label htmlFor="generated-primary-field">Primary field</Label>
-                <Input id="generated-primary-field" placeholder="Enter product data" />
+                <Input id="generated-primary-field" placeholder="Enter primary field" />
               </div>
               <Button type="button" className="w-fit">Save changes</Button>
             </>
@@ -2062,7 +2068,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
     return (
       <div className="grid gap-2">
         <Label htmlFor={item.id}>{label}</Label>
-        <Input id={item.id} placeholder="Enter product data" />
+        <Input id={item.id} placeholder={fieldPlaceholder(label)} />
       </div>
     );
   }
@@ -2104,7 +2110,7 @@ function buildUsableSections(
       id: region.id || "section-" + (index + 1),
       primitive,
       title: region.label || formatPrimitiveLabel(primitive),
-      guidance: region.guidance || "Connect this starter section to product data and copy.",
+      guidance: region.guidance || "Bind this starter section to app data and final copy.",
       layoutClass: /grid|stat-row|repeated-grid/.test(primitive)
         ? "grid gap-3 sm:grid-cols-2"
         : /action-cluster/.test(primitive)
@@ -2333,7 +2339,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       (_, index) =>
         starterCollections.rows[index] ?? {
           title: "Row " + (index + 1),
-          detail: "Connect this row to product data",
+          detail: "Bind this row to your data source",
         },
     );
     return (
@@ -2351,7 +2357,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </ul>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading skeletons, empty copy, and row-level error handling before connecting product data.
+          State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data.
         </p>
       </div>
     );
@@ -2362,7 +2368,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       (_, index) =>
         starterCollections.cards[index] ?? {
           title: "Card " + (index + 1),
-          detail: "Swap for real entity data",
+          detail: "Replace with a live entity summary",
         },
     );
     return (
@@ -2400,7 +2406,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         starterCollections.metrics[index] ?? {
           label: "Metric " + (index + 1),
           value: "0",
-          trend: "Connect to product data",
+          trend: "Bind to a real metric",
         },
     );
     return (
@@ -2429,18 +2435,21 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "form-group" || primitive === "form-group") {
     return (
       <form className="mt-3 grid gap-2" aria-label={region.label}>
-        {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => (
-          <div key={itemIndex} className="grid gap-1.5">
-            <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
-              Field {itemIndex + 1}
-            </Label>
-            <Input
-              id={region.id + "-field-" + (itemIndex + 1)}
-              placeholder="Enter field value"
-              style={{ backgroundColor: tokens.surface }}
-            />
-          </div>
-        ))}
+        {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => {
+          const fieldLabel = formatPrimitiveLabel(region.label || "Field") + " " + (itemIndex + 1);
+          return (
+            <div key={itemIndex} className="grid gap-1.5">
+              <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
+                {fieldLabel}
+              </Label>
+              <Input
+                id={region.id + "-field-" + (itemIndex + 1)}
+                placeholder={fieldPlaceholder(fieldLabel)}
+                style={{ backgroundColor: tokens.surface }}
+              />
+            </div>
+          );
+        })}
         <Button
           type="button"
           className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
@@ -2467,7 +2476,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           <TableHeader>
             <TableRow>
               {Array.from({ length: columns }).map((_, columnIndex) => (
-                <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
+                <TableHead key={columnIndex}>
+                  {starterCollections.tableColumns[columnIndex] || "Field " + (columnIndex + 1)}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -2476,7 +2487,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               <TableRow key={row.join("-")}>
                 {Array.from({ length: columns }).map((_, columnIndex) => (
                   <TableCell key={columnIndex}>
-                    {row[columnIndex] ?? "Cell " + (rowIndex + 1) + "." + (columnIndex + 1)}
+                    {row[columnIndex] ?? "Review value"}
                   </TableCell>
                 ))}
               </TableRow>
@@ -2528,7 +2539,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         <TabsList aria-label={region.label}>
           {Array.from({ length: tabs }).map((_, index) => (
             <TabsTrigger key={index} value={"tab-" + (index + 1)}>
-              Tab {index + 1}
+              {starterCollections.tabLabels[index] || "Section " + (index + 1)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -2539,7 +2550,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             className="rounded border p-3 text-xs"
             style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
           >
-            {formatPrimitiveLabel(region.tabKind || "tabs")} panel {index + 1}
+            {starterCollections.tabLabels[index] || formatPrimitiveLabel(region.tabKind || "tabs")} content
           </TabsContent>
         ))}
       </Tabs>
@@ -2549,6 +2560,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "action-cluster" || primitive === "action-cluster") {
     const controls = Math.max(2, region.controlCount ?? region.itemCount ?? 3);
     const clusterType = region.clusterType || "toolbar";
+    const labels = actionLabels(clusterType, controls);
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " controls"}>
         {Array.from({ length: controls }).map((_, index) => (
@@ -2563,7 +2575,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               color: index === 0 ? tokens.accentForeground : tokens.foreground,
             }}
           >
-            Action {index + 1}
+            {labels[index]}
           </Button>
         ))}
       </div>
@@ -2615,7 +2627,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
         <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
         <div className="flex items-center gap-2">
-          <Input id={region.id + "-control"} placeholder="Enter field value" />
+          <Input id={region.id + "-control"} placeholder={fieldPlaceholder(roleLabel)} />
           <Button type="button" size="xs" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
             Save
           </Button>
@@ -2676,6 +2688,18 @@ function formatPrimitiveLabel(value: string | undefined) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function fieldPlaceholder(label: string) {
+  const value = String(label || "field").trim();
+  return "Enter " + value.charAt(0).toLowerCase() + value.slice(1);
+}
+
+function actionLabels(clusterType: string, count: number) {
+  const segmented = ["Overview", "Details", "Activity", "Settings"];
+  const toolbar = ["Save", "Preview", "Share", "More"];
+  const source = clusterType === "segmented-control" ? segmented : toolbar;
+  return Array.from({ length: count }).map((_, index) => source[index] || "Option " + (index + 1));
 }`;
 }
 
@@ -3213,7 +3237,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     },
     {
       title: "Human Review",
-      body: "Confirm classification against the screenshot, connect product data, and validate responsive breakpoints.",
+      body: "Confirm classification against the screenshot, bind app data, and validate responsive breakpoints.",
     },
   ];
 

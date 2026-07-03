@@ -366,6 +366,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type ElementBox = {
   x: number;
@@ -518,13 +526,16 @@ const shadcnPrimitiveMap: Record<string, string> = {
 const starterSectionData = {
   rows: ["Queued review", "Ready for integration", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
+  metricLabels: ["Revenue", "Users", "Conversion", "Tickets"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
-  tableColumns: ["Name", "Status", "Value"],
+  tableColumns: ["Account", "Status", "Value", "Owner"],
   tableRows: [
     ["Acme Co", "Active", "$12.4K"],
     ["Northstar", "Review", "$8.1K"],
     ["Summit Labs", "Paused", "$4.8K"],
   ],
+  tabLabels: ["Overview", "Details", "Activity", "Settings"],
+  actionLabels: ["Save", "Preview", "Share", "More"],
   chartValues: [42, 74, 55, 88, 63, 78],
 };
 
@@ -548,7 +559,7 @@ export default function ReviewedScreenshotStarter() {
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Built from {correctionSummary.activeElements} active UI regions with shadcn-style
-              primitives, responsive sections, and semantic landmarks ready for product data integration.
+              primitives, responsive sections, and semantic landmarks ready for app data wiring.
             </p>
           </div>
         </header>
@@ -667,8 +678,8 @@ function FormScaffoldSection({ section }: { section: StarterSection }) {
               </Button>
             ) : (
               <div key={item.id} className="grid gap-2">
-                <Label htmlFor={item.id}>Field {index + 1}</Label>
-                <Input id={item.id} placeholder={item.label} />
+                <Label htmlFor={item.id}>{item.label || "Field " + (index + 1)}</Label>
+                <Input id={item.id} placeholder={fieldPlaceholder(item.label || "Field " + (index + 1))} />
               </div>
             ),
           )}
@@ -713,14 +724,14 @@ function SectionStarterDataHint({ kind }: { kind: string }) {
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this starter data before connecting the component to a route.
+      {message}. Swap these starter values before wiring the component to a route.
     </p>
   ) : null;
 }
 
 function SectionStateHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before connecting product data.",
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data.",
     "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-state handling.",
     "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
     "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.",
@@ -749,7 +760,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
     return (
       <div className="grid gap-2">
         <Label htmlFor={element.id}>{label}</Label>
-        <Input id={element.id} placeholder="Enter product data" />
+        <Input id={element.id} placeholder={fieldPlaceholder(label)} />
       </div>
     );
   }
@@ -1091,7 +1102,9 @@ export function LayoutPreviewStarter() {
                       className="rounded border px-3 py-2 text-sm"
                       style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
                     >
-                      <p className="text-[11px] uppercase opacity-70">Metric {index + 1}</p>
+                      <p className="text-[11px] uppercase opacity-70">
+                        {starterSectionData.metricLabels[index] || "Metric"}
+                      </p>
                       <p className="font-semibold">{child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Metric card"}</p>
                     </article>
                   );
@@ -1142,6 +1155,15 @@ export function LayoutPreviewStarter() {
             >
               <p className="text-xs font-semibold uppercase">Data table</p>
               <Table className="min-w-[28rem]">
+                <TableHeader>
+                  <TableRow>
+                    {Array.from({ length: Math.max(1, pattern.columns ?? 3) }).map((_, columnIndex) => (
+                      <TableHead key={columnIndex}>
+                        {starterSectionData.tableColumns[columnIndex] || "Field " + (columnIndex + 1)}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {Array.from({ length: Math.max(1, pattern.rows ?? 3) }).map((_, rowIndex) => (
                     <TableRow key={rowIndex}>
@@ -1150,7 +1172,7 @@ export function LayoutPreviewStarter() {
                         const child = childId ? correctedElementById.get(childId) : null;
                         return (
                           <TableCell key={columnIndex}>
-                            {child ? renderCorrectedPrimitive(child, designTokens) : "Cell"}
+                            {child ? renderCorrectedPrimitive(child, designTokens) : starterSectionData.tableRows[rowIndex]?.[columnIndex] ?? "Review value"}
                           </TableCell>
                         );
                       })}
@@ -1218,7 +1240,7 @@ export function LayoutPreviewStarter() {
                         color: index === 0 ? designTokens.accentForeground : designTokens.foreground,
                       }}
                     >
-                      {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Action"}
+                      {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : starterSectionData.actionLabels[index] || "More"}
                     </Button>
                   );
                 })}
@@ -1247,7 +1269,7 @@ export function LayoutPreviewStarter() {
                       const child = correctedElementById.get(pattern.children[index]);
                       return (
                         <TabsTrigger key={pattern.children[index] ?? index} value={"tab-" + (index + 1)}>
-                          {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Tab " + (index + 1)}
+                          {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : starterSectionData.tabLabels[index] || "Section " + (index + 1)}
                         </TabsTrigger>
                       );
                     })}
@@ -1259,7 +1281,7 @@ export function LayoutPreviewStarter() {
                       className="rounded border p-3 text-xs"
                       style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
                     >
-                      {primitiveLabel(pattern.tabKind || "tabs")} panel {index + 1}
+                      {starterSectionData.tabLabels[index] || primitiveLabel(pattern.tabKind || "tabs")} content
                     </TabsContent>
                   ))}
                 </Tabs>
@@ -1348,7 +1370,7 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
         <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
           <p className="font-semibold">{roleLabel}</p>
           <Button type="button" size="xs" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Action
+            {roleLabel}
           </Button>
           <p className="opacity-70">{element.kind} - {confidence}%</p>
         </div>
@@ -1359,11 +1381,11 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
         <p className="font-semibold">{roleLabel}</p>
         <div className="grid gap-1.5">
-          <Label htmlFor={element.id + "-value"}>Label or value</Label>
+          <Label htmlFor={element.id + "-value"}>{roleLabel}</Label>
           <div className="flex items-center gap-2">
-            <Input id={element.id + "-value"} placeholder="Enter product data" />
+            <Input id={element.id + "-value"} placeholder={fieldPlaceholder(roleLabel)} />
             <Button type="button" size="xs" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-              Action
+              Save
             </Button>
           </div>
         </div>
@@ -1433,6 +1455,11 @@ function primitiveLabel(value: string | undefined) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function fieldPlaceholder(label: string) {
+  const value = String(label || "field").trim();
+  return "Enter " + value.charAt(0).toLowerCase() + value.slice(1);
 }
 
 function elementTone(primitive: string | undefined, tokens: typeof designTokens) {
