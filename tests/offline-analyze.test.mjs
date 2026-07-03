@@ -53,6 +53,28 @@ function assertGeneratedTsxSyntax(code, label) {
   assert.deepEqual(errors, [], `${label} generated TSX should parse`);
 }
 
+function assertNoGeneratedStarterSlop(code, label) {
+  const blockedPatterns = [
+    /sampleData/,
+    /sampleCollections/,
+    /sampleSectionData/,
+    /sample-screenshot/,
+    /\bsample-(?:nav|stat|chart|activity|actions|brand|form|email|password|oauth|recovery)\b/,
+    /Sample rows:/,
+    /Sample cards:/,
+    /Sample metrics:/,
+    /Sample table columns:/,
+    /Sample chart values:/,
+    /placeholder (?:content|copy)/i,
+    /Sample card content/,
+    /Replace sample/i,
+  ];
+
+  for (const pattern of blockedPatterns) {
+    assert.doesNotMatch(code, pattern, `${label} should avoid ${pattern}`);
+  }
+}
+
 function createSyntheticScreenshot(width, height) {
   const data = new Uint8ClampedArray(width * height * 4);
 
@@ -1073,8 +1095,10 @@ test("lookupKnownSampleByInspection resolves sample run assets by perceptual sig
 
   assert.ok(exact);
   assert.match(exact.summary, /Admin dashboard/i);
-  assert.match(exact.generatedCode, /Sample run signal identifies this region/);
+  assert.match(exact.generatedCode, /Position and repeated links identify/);
+  assert.doesNotMatch(exact.generatedCode, /Sample run signal/);
   assert.doesNotMatch(exact.generatedCode, /Bundled reference/);
+  assertNoGeneratedStarterSlop(exact.generatedCode, "known sample");
   assert.ok(nearWebp);
   assert.equal(nearWebp.generatedCode, exact.generatedCode);
   assert.equal(unrelated, null);
@@ -1194,16 +1218,16 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /export default function DashboardStarter/);
   assert.doesNotMatch(advanced.generatedCode, /export\s+(?:default\s+)?function\s+Generated[A-Z]/);
   assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
-  assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(advanced.generatedCode, /Implementation pattern: \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
-  assert.match(advanced.generatedCode, /const sampleData/);
-  assert.match(advanced.generatedCode, /const sampleCollections/);
+  assert.match(advanced.generatedCode, /const starterData/);
+  assert.match(advanced.generatedCode, /const starterCollections/);
   assert.match(advanced.generatedCode, /function ScreenHeaderStarter/);
   assert.match(advanced.generatedCode, /function TabSection/);
   assert.match(advanced.generatedCode, /function FormSection/);
   assert.match(advanced.generatedCode, /function GenericSection/);
-  assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
+  assert.match(advanced.generatedCode, /starterData\.screenTitle/);
   assert.match(advanced.generatedCode, /handoff-ready starter/);
   assert.doesNotMatch(advanced.generatedCode, /import-ready layout/);
   assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
@@ -1225,8 +1249,9 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /renderPrimitiveBody/);
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
-  assert.match(advanced.generatedCode, /Component primitive/);
-  assert.match(advanced.generatedCode, /DetectionGridReference/);
+  assert.match(advanced.generatedCode, /Starter primitive/);
+  assert.match(advanced.generatedCode, /LayoutGridReference/);
+  assertNoGeneratedStarterSlop(advanced.generatedCode, "advanced offline starter");
   assert.match(advanced.generatedCode, /header|side-nav/);
   assert.match(advanced.generatedCode, new RegExp(offlineInspection.designTokens.accent.slice(1), "i"));
   assert.doesNotMatch(advanced.generatedCode, /Rows 1-8, columns 1-12/);
@@ -1255,7 +1280,7 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"primitive": "list-item"/);
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
-  assert.match(advanced.generatedCode, /sampleCollections\.rows/);
+  assert.match(advanced.generatedCode, /starterCollections\.rows/);
   assert.match(advanced.generatedCode, /Replace with a real list item/);
   assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
   assert.match(advanced.generatedCode, /text-line signals shape the export/);
@@ -1281,7 +1306,7 @@ test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold r
   assert.match(advanced.generatedCode, /repeated-grid/);
   assert.match(advanced.generatedCode, /"primitive": "card-grid"/);
   assert.match(advanced.generatedCode, /gridTemplateColumns/);
-  assert.match(advanced.generatedCode, /sampleCollections\.cards/);
+  assert.match(advanced.generatedCode, /starterCollections\.cards/);
   assert.match(advanced.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
   assert.match(advanced.generatedCode, /repeated grid patterns/);
 });
@@ -1306,7 +1331,7 @@ test("buildAdvancedOfflineOverrides renders stat-row patterns as scaffold region
   assert.match(advanced.generatedCode, /stat-row/);
   assert.match(advanced.generatedCode, /KPI cards/);
   assert.match(advanced.generatedCode, /cardCount/);
-  assert.match(advanced.generatedCode, /sampleCollections\.metrics/);
+  assert.match(advanced.generatedCode, /starterCollections\.metrics/);
   assert.match(advanced.generatedCode, /stat rows/);
 });
 
@@ -1357,7 +1382,7 @@ test("buildAdvancedOfflineOverrides renders data-table patterns as scaffold regi
   assert.match(advanced.generatedCode, /<Table className="min-w-\[28rem\] text-xs"/);
   assert.match(advanced.generatedCode, /<TableHeader>/);
   assert.match(advanced.generatedCode, /<TableCell/);
-  assert.match(advanced.generatedCode, /sampleCollections\.tableRows/);
+  assert.match(advanced.generatedCode, /starterCollections\.tableRows/);
   assert.match(advanced.generatedCode, /columnIndex \+ 1/);
   assert.match(advanced.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
   assert.match(advanced.generatedCode, /data tables/);
@@ -1382,7 +1407,7 @@ test("buildAdvancedOfflineOverrides renders chart-series patterns as scaffold re
   assert.match(advanced.summary, /Dashboard/i);
   assert.match(advanced.generatedCode, /chart-series/);
   assert.match(advanced.generatedCode, /bar chart preview/);
-  assert.match(advanced.generatedCode, /sampleCollections\.chartValues/);
+  assert.match(advanced.generatedCode, /starterCollections\.chartValues/);
   assert.match(advanced.generatedCode, /seriesCount/);
   assert.match(advanced.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
   assert.match(advanced.generatedCode, /chart series/);
@@ -1628,7 +1653,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
-  assert.match(regenerated.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
+  assert.match(regenerated.generatedCode, /Implementation pattern: \{shadcnPrimitiveMap\[role\]/);
   assert.match(regenerated.generatedCode, /aria-label="Top navigation"/);
   assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
   assert.match(regenerated.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
@@ -1663,7 +1688,7 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   const regenerated = regenerateArtifactFromDetections(artifact, artifact.detections);
 
   assert.match(regenerated.generatedCode, /const correctedPatterns/);
-  assert.match(regenerated.generatedCode, /const sampleSectionData/);
+  assert.match(regenerated.generatedCode, /const starterSectionData/);
   assert.match(regenerated.generatedCode, /function TabScaffoldSection/);
   assert.match(regenerated.generatedCode, /function FormScaffoldSection/);
   assert.match(regenerated.generatedCode, /function GenericScaffoldSection/);
@@ -1671,8 +1696,9 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   assert.match(regenerated.generatedCode, /const correctedElementById/);
   assert.match(regenerated.generatedCode, /renderCorrectedPrimitive/);
   assert.match(regenerated.generatedCode, /function SectionStateHint/);
-  assert.match(regenerated.generatedCode, /function SectionSampleDataHint/);
-  assert.match(regenerated.generatedCode, /Sample rows: /);
+  assert.match(regenerated.generatedCode, /function SectionStarterDataHint/);
+  assertNoGeneratedStarterSlop(regenerated.generatedCode, "regenerated starter");
+  assert.match(regenerated.generatedCode, /Draft rows: /);
   assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
   assert.match(regenerated.generatedCode, /Repeated list/);
   assert.match(regenerated.generatedCode, /groupedElementIds/);
@@ -1698,7 +1724,7 @@ test("regenerateArtifactFromDetections preserves repeated-grid scaffold groups",
   assert.match(regenerated.generatedCode, /repeatedGrids/);
   assert.match(regenerated.generatedCode, /Detected repeated grid/);
   assert.match(regenerated.generatedCode, /gridTemplateColumns/);
-  assert.match(regenerated.generatedCode, /Sample cards: /);
+  assert.match(regenerated.generatedCode, /Draft cards: /);
   assert.match(regenerated.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
@@ -1721,7 +1747,7 @@ test("regenerateArtifactFromDetections preserves stat-row scaffold groups", () =
   assert.match(regenerated.generatedCode, /statRows/);
   assert.match(regenerated.generatedCode, /Detected stat row/);
   assert.match(regenerated.generatedCode, /Stat row/);
-  assert.match(regenerated.generatedCode, /Sample metrics: /);
+  assert.match(regenerated.generatedCode, /Draft metrics: /);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1769,7 +1795,7 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
   assert.match(regenerated.generatedCode, /from "@\/components\/ui\/table"/);
   assert.match(regenerated.generatedCode, /<Table className="min-w-\[28rem\]"/);
   assert.match(regenerated.generatedCode, /<TableCell/);
-  assert.match(regenerated.generatedCode, /Sample table columns: /);
+  assert.match(regenerated.generatedCode, /Draft table columns: /);
   assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
@@ -1792,7 +1818,7 @@ test("regenerateArtifactFromDetections preserves chart-series scaffold groups", 
   assert.match(regenerated.generatedCode, /charts/);
   assert.match(regenerated.generatedCode, /Detected chart series/);
   assert.match(regenerated.generatedCode, /Chart series/);
-  assert.match(regenerated.generatedCode, /Sample chart values: /);
+  assert.match(regenerated.generatedCode, /Draft chart values: /);
   assert.match(regenerated.generatedCode, /State coverage: include loading, no-data, and metric fetch-error summaries/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });

@@ -515,7 +515,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "empty-state": "Card with centered recovery action",
 };
 
-const sampleSectionData = {
+const starterSectionData = {
   rows: ["Queued review", "Ready for handoff", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
@@ -695,25 +695,25 @@ function GenericScaffoldSection({ section }: { section: StarterSection }) {
         {section.items.map((item) => (
           <PrimitivePreview key={item.id} element={item} />
         ))}
-        <SectionSampleDataHint kind={section.kind} />
+        <SectionStarterDataHint kind={section.kind} />
         <SectionStateHint kind={section.kind} />
       </CardContent>
     </Card>
   );
 }
 
-function SectionSampleDataHint({ kind }: { kind: string }) {
+function SectionStarterDataHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "Sample rows: " + sampleSectionData.rows.join(", "),
-    "repeated-grid": "Sample cards: " + sampleSectionData.cards.join(", "),
-    "stat-row": "Sample metrics: " + sampleSectionData.metrics.join(", "),
-    "data-table": "Sample table columns: " + sampleSectionData.tableColumns.join(", "),
-    "chart-panel": "Sample chart values: " + sampleSectionData.chartValues.join(", "),
+    "repeated-list": "Draft rows: " + starterSectionData.rows.join(", "),
+    "repeated-grid": "Draft cards: " + starterSectionData.cards.join(", "),
+    "stat-row": "Draft metrics: " + starterSectionData.metrics.join(", "),
+    "data-table": "Draft table columns: " + starterSectionData.tableColumns.join(", "),
+    "chart-panel": "Draft chart values: " + starterSectionData.chartValues.join(", "),
   };
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this sample data before connecting the component to a route.
+      {message}. Replace this draft data before connecting the component to a route.
     </p>
   ) : null;
 }
@@ -761,7 +761,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Implementation pattern: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
     </article>
   );

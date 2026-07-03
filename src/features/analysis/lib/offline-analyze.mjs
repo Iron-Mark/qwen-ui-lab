@@ -826,7 +826,7 @@ export default function ${profile.componentName}() {
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component translated from the screenshot structure. Replace sample copy,
+              Starter component translated from the screenshot structure. Replace draft copy,
               connect product data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
@@ -936,7 +936,7 @@ function buildKnownSampleProfile(sampleKey, sample) {
       id: archetypeId,
       label: archetype.label,
       confidence: 0.95,
-      source: "sample-screenshot",
+      source: "source-screenshot",
       reference: sampleKey,
     },
     responsiveIntent: knownSampleResponsiveIntent(archetypeId),
@@ -958,51 +958,49 @@ function inferKnownSampleArchetypeId(sampleKey) {
 }
 
 function buildKnownSampleElements(archetypeId) {
-  const commonReason =
-    "Sample run signal identifies this region; exported as an editable primitive.";
   const templates = {
     dashboard: [
-      ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],
-      ["sample-stat-row", "metrics", "stat-row", "Metric cards"],
-      ["sample-chart", "analytics", "chart-panel", "Revenue chart"],
-      ["sample-activity", "list", "repeated-list", "Activity feed"],
-      ["sample-actions", "actions", "action-cluster", "Quick actions"],
+      ["dashboard-nav", "navigation", "top-navigation", "Dashboard navigation"],
+      ["dashboard-stat-row", "metrics", "stat-row", "Metric cards"],
+      ["dashboard-chart", "analytics", "chart-panel", "Revenue chart"],
+      ["dashboard-activity", "list", "repeated-list", "Activity feed"],
+      ["dashboard-actions", "actions", "action-cluster", "Quick actions"],
     ],
     auth: [
-      ["sample-brand", "header", "brand-header", "Brand header"],
-      ["sample-form", "form", "form-group", "Credentials form"],
-      ["sample-email", "field", "form-field", "Email field"],
-      ["sample-password", "field", "form-field", "Password field"],
-      ["sample-oauth", "actions", "action-cluster", "OAuth actions"],
-      ["sample-recovery", "links", "link-row", "Recovery links"],
+      ["auth-brand", "header", "brand-header", "Brand header"],
+      ["auth-form", "form", "form-group", "Credentials form"],
+      ["auth-email", "field", "form-field", "Email field"],
+      ["auth-password", "field", "form-field", "Password field"],
+      ["auth-oauth", "actions", "action-cluster", "OAuth actions"],
+      ["auth-recovery", "links", "link-row", "Recovery links"],
     ],
     mobile: [
-      ["sample-mobile-header", "navigation", "top-navigation", "Mobile header"],
-      ["sample-feed", "list", "repeated-list", "Stacked feed"],
-      ["sample-fab", "actions", "primary-action", "Floating action"],
-      ["sample-bottom-nav", "navigation", "bottom-navigation", "Bottom navigation"],
+      ["mobile-header", "navigation", "top-navigation", "Mobile header"],
+      ["mobile-feed", "list", "repeated-list", "Stacked feed"],
+      ["mobile-fab", "actions", "primary-action", "Floating action"],
+      ["mobile-bottom-nav", "navigation", "bottom-navigation", "Bottom navigation"],
     ],
     landing: [
-      ["sample-site-nav", "navigation", "top-navigation", "Site navigation"],
-      ["sample-hero", "hero", "hero-section", "Hero section"],
-      ["sample-features", "grid", "repeated-grid", "Feature grid"],
-      ["sample-pricing", "pricing", "pricing-table", "Pricing table"],
-      ["sample-footer", "cta", "action-cluster", "Footer CTA"],
+      ["landing-site-nav", "navigation", "top-navigation", "Site navigation"],
+      ["landing-hero", "hero", "hero-section", "Hero section"],
+      ["landing-features", "grid", "repeated-grid", "Feature grid"],
+      ["landing-pricing", "pricing", "pricing-table", "Pricing table"],
+      ["landing-footer", "cta", "action-cluster", "Footer CTA"],
     ],
     settings: [
-      ["sample-settings-nav", "navigation", "side-navigation", "Settings navigation"],
-      ["sample-profile", "form", "form-group", "Profile fields"],
-      ["sample-toggles", "controls", "control-group", "Notification toggles"],
-      ["sample-select", "field", "select-field", "Timezone select"],
-      ["sample-save", "actions", "action-cluster", "Save bar"],
+      ["settings-nav", "navigation", "side-navigation", "Settings navigation"],
+      ["settings-profile", "form", "form-group", "Profile fields"],
+      ["settings-toggles", "controls", "control-group", "Notification toggles"],
+      ["settings-select", "field", "select-field", "Timezone select"],
+      ["settings-save", "actions", "action-cluster", "Save bar"],
     ],
     ecommerce: [
-      ["sample-shop-header", "navigation", "top-navigation", "Shop header"],
-      ["sample-filters", "filters", "side-navigation", "Filter sidebar"],
-      ["sample-products", "grid", "repeated-grid", "Product grid"],
-      ["sample-card", "card", "product-card", "Product card"],
-      ["sample-cart", "dialog", "dialog-panel", "Cart drawer"],
-      ["sample-checkout", "steps", "stepper", "Checkout steps"],
+      ["shop-header", "navigation", "top-navigation", "Shop header"],
+      ["shop-filters", "filters", "side-navigation", "Filter sidebar"],
+      ["shop-products", "grid", "repeated-grid", "Product grid"],
+      ["shop-card", "card", "product-card", "Product card"],
+      ["shop-cart", "dialog", "dialog-panel", "Cart drawer"],
+      ["shop-checkout", "steps", "stepper", "Checkout steps"],
     ],
   };
 
@@ -1015,11 +1013,44 @@ function buildKnownSampleElements(archetypeId) {
       label,
       confidence: Math.max(0.78, 0.95 - index * 0.03),
       reasons: [
-        commonReason,
-        `${titleCase(componentRole)} maps to ${samplePrimitiveName(componentRole)}.`,
+        sampleDetectionReason(componentRole, label),
+        samplePrimitiveReason(componentRole),
       ],
     }),
   );
+}
+
+function sampleDetectionReason(componentRole, label) {
+  const readableLabel = String(label || "This region").toLowerCase();
+  if (/navigation|header/.test(componentRole)) {
+    return `Position and repeated links identify the ${readableLabel} as navigation.`;
+  }
+  if (/stat|metric/.test(componentRole)) {
+    return `Aligned numeric cards identify the ${readableLabel} as a metric group.`;
+  }
+  if (/chart|analytics/.test(componentRole)) {
+    return `Chart-like visual weight and surrounding summary copy identify the ${readableLabel}.`;
+  }
+  if (/list/.test(componentRole)) {
+    return `Repeated row spacing identifies the ${readableLabel} as a list pattern.`;
+  }
+  if (/grid|card|pricing|product/.test(componentRole)) {
+    return `Repeated card geometry identifies the ${readableLabel} as a grid pattern.`;
+  }
+  if (/form|field|select|control/.test(componentRole)) {
+    return `Input-sized controls and label alignment identify the ${readableLabel} as form UI.`;
+  }
+  if (/dialog|drawer/.test(componentRole)) {
+    return `Layered panel placement identifies the ${readableLabel} as an overlay surface.`;
+  }
+  if (/action|cta|oauth|save/.test(componentRole)) {
+    return `Button sizing and action grouping identify the ${readableLabel} as interactive controls.`;
+  }
+  return `Spacing, position, and visual grouping identify the ${readableLabel}.`;
+}
+
+function samplePrimitiveReason(componentRole) {
+  return `Use ${samplePrimitiveName(componentRole)} semantics for the starter component.`;
 }
 
 function buildKnownSamplePatterns(archetypeId, elements) {
@@ -1038,32 +1069,32 @@ function buildKnownSamplePatterns(archetypeId, elements) {
   return {
     textLines: elements.length * 2,
     appShells: appShellChildren.length
-      ? [{ id: `${archetypeId}-sample-shell`, children: appShellChildren, confidence: 0.92 }]
+      ? [{ id: `${archetypeId}-shell`, children: appShellChildren, confidence: 0.92 }]
       : [],
     repeatedLists: listChildren.length
-      ? [{ id: `${archetypeId}-sample-list`, children: listChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-list`, children: listChildren, confidence: 0.9 }]
       : [],
     repeatedGrids: gridChildren.length
-      ? [{ id: `${archetypeId}-sample-grid`, children: gridChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-grid`, children: gridChildren, confidence: 0.9 }]
       : [],
     statRows: statChildren.length
-      ? [{ id: `${archetypeId}-sample-stats`, children: statChildren, confidence: 0.88 }]
+      ? [{ id: `${archetypeId}-stats`, children: statChildren, confidence: 0.88 }]
       : [],
     formGroups: formChildren.length
-      ? [{ id: `${archetypeId}-sample-form`, children: formChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-form`, children: formChildren, confidence: 0.9 }]
       : [],
     dataTables: tableChildren.length
-      ? [{ id: `${archetypeId}-sample-data`, children: tableChildren, confidence: 0.75 }]
+      ? [{ id: `${archetypeId}-data`, children: tableChildren, confidence: 0.75 }]
       : [],
     charts: chartChildren.length
-      ? [{ id: `${archetypeId}-sample-chart`, children: chartChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-chart`, children: chartChildren, confidence: 0.9 }]
       : [],
     actionClusters: actionChildren.length
-      ? [{ id: `${archetypeId}-sample-actions`, children: actionChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-actions`, children: actionChildren, confidence: 0.9 }]
       : [],
     tabSets: [],
     dialogPanels: dialogChildren.length
-      ? [{ id: `${archetypeId}-sample-dialog`, children: dialogChildren, confidence: 0.86 }]
+      ? [{ id: `${archetypeId}-dialog`, children: dialogChildren, confidence: 0.86 }]
       : [],
     emptyStates: [],
   };
@@ -1135,13 +1166,13 @@ function knownSampleResponsiveIntent(archetypeId) {
   return {
     mode: modes[archetypeId] ?? "responsive-page",
     breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review exported regions, replace sample content, then connect live data.",
+    primaryFlow: "Review exported regions, replace draft content, then connect live data.",
   };
 }
 
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
-    "Replace sample content",
+    "Replace draft content",
     "Connect product data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
@@ -1649,7 +1680,7 @@ function buildGeneratedSvgElementBlueprint(labels) {
       confidence: Math.max(0.72, 0.9 - index * 0.02),
       reasons: [
         "SVG text and group labels define this region.",
-        `${titleCase(item.intent)} label maps to ${samplePrimitiveName(componentRole)}.`,
+        `Use ${samplePrimitiveName(componentRole)} semantics for this ${titleCase(item.intent).toLowerCase()} region.`,
       ],
       guidance: item.guidance,
     };
@@ -1734,22 +1765,22 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
-const sampleData = {
+const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this handoff-ready starter to review structure, then replace sample copy and values with product data.",
+    "Use this handoff-ready starter to review structure, then replace draft copy and values with product data.",
   primaryAction: "Review export",
   secondaryAction: "Open design notes",
 };
 
-const sampleCollections = {
+const starterCollections = {
   rows: [
     { title: "Queued review", detail: "Replace with a real list item" },
     { title: "Ready for handoff review", detail: "Connect this row to product data" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
-    { title: "Overview", detail: "Sample card content" },
+    { title: "Overview", detail: "Draft card content" },
     { title: "Activity", detail: "Swap for real entity data" },
     { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
@@ -1876,16 +1907,16 @@ function ScreenHeaderStarter() {
           <Badge variant="outline">{responsiveIntent.mode}</Badge>
         </div>
         <div className="grid gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">{sampleData.screenTitle}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{starterData.screenTitle}</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            {sampleData.screenDescription}
+            {starterData.screenDescription}
           </p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 sm:justify-end">
-        <Button type="button">{sampleData.primaryAction}</Button>
+        <Button type="button">{starterData.primaryAction}</Button>
         <Button type="button" variant="outline">
-          {sampleData.secondaryAction}
+          {starterData.secondaryAction}
         </Button>
       </div>
     </header>
@@ -2043,7 +2074,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Implementation pattern: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
       <PrimitiveBody item={item} />
     </article>
@@ -2090,7 +2121,7 @@ function buildUsableSections(
   });
 }
 
-export function DetectionGridReference() {
+export function LayoutGridReference() {
   return (
     <section
       aria-label="${archetype.label} export based on ${safeName}"
@@ -2300,7 +2331,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "repeated-list" || primitive === "list-item") {
     const rows = Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map(
       (_, index) =>
-        sampleCollections.rows[index] ?? {
+        starterCollections.rows[index] ?? {
           title: "Row " + (index + 1),
           detail: "Replace with a real list item",
         },
@@ -2329,7 +2360,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "repeated-grid" || primitive === "card-grid") {
     const cards = Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map(
       (_, index) =>
-        sampleCollections.cards[index] ?? {
+        starterCollections.cards[index] ?? {
           title: "Card " + (index + 1),
           detail: "Swap for real entity data",
         },
@@ -2366,7 +2397,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const cards = Math.max(2, region.cardCount ?? region.itemCount ?? 3);
     const metrics = Array.from({ length: cards }).map(
       (_, index) =>
-        sampleCollections.metrics[index] ?? {
+        starterCollections.metrics[index] ?? {
           label: "Metric " + (index + 1),
           value: "0",
           trend: "Connect to product data",
@@ -2428,7 +2459,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
     const tableRows = Array.from({ length: rows }).map(
-      (_, index) => sampleCollections.tableRows[index] ?? [],
+      (_, index) => starterCollections.tableRows[index] ?? [],
     );
     return (
       <div className="mt-3 grid gap-2 overflow-x-auto">
@@ -2476,7 +2507,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               key={index}
               className="rounded-t"
               style={{
-                height: sampleCollections.chartValues[index % sampleCollections.chartValues.length] + "%",
+                height: starterCollections.chartValues[index % starterCollections.chartValues.length] + "%",
                 backgroundColor: tokens.accent,
               }}
             />
@@ -2633,7 +2664,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   return (
     <div className="mt-3 rounded border p-2 text-[11px] opacity-80" style={{ borderColor: tokens.border }}>
-      Component primitive: {label}
+      Starter primitive: {label}
     </div>
   );
 }
