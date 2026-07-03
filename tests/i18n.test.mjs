@@ -86,11 +86,8 @@ test("translateAnalyzeStep maps progress strings", () => {
   );
 });
 
-test("legacy provider progress maps to user-facing analysis copy", () => {
-  assert.equal(
-    translateAnalyzeStep("Checking provider\u2026", uploadFlowZh),
-    "\u51c6\u5907\u5206\u6790\u2026",
-  );
+test("analysis progress labels avoid provider implementation wording", () => {
+  assert.doesNotMatch(translateAnalyzeStepSource, /Checking provider/i);
   assert.doesNotMatch(
     getAnalyzeStepLabels(uploadFlowZh).join(" "),
     /provider|api key|qwen|demo|fallback/i,
@@ -175,18 +172,40 @@ test("en public copy avoids test-runner wording in sample picker labels", () => 
   assert.doesNotMatch(enDictionarySource, /domainUiLaws:\s*"UILaws"/);
 });
 
+test("en sample picker actions use concise sample wording", () => {
+  assert.match(enDictionarySource, /trySampleRun:\s*"Try sample"/);
+  assert.match(enDictionarySource, /samplePathHint:\s*"New here\? Pick a sample, then analyze it\."/);
+  assert.match(enDictionarySource, /toastSampleLoadFailed:\s*"Could not load sample"/);
+  assert.match(enDictionarySource, /Could not load the sample\. Upload your own image instead\./);
+  assert.doesNotMatch(
+    enDictionarySource,
+    /Open sample run|Try a sample run|Pick a sample run|Could not load sample run|Could not load the sample run/,
+  );
+});
+
 test("zh sample picker copy uses sample-run language", () => {
   const sampleRun = "\u6837\u4f8b\u8fd0\u884c";
+  const sample = "\u6837\u4f8b";
   const sampleScreenshot = "\u6837\u4f8b\u622a\u56fe";
   const loadReferenceImage = "\u52a0\u8f7d\u53c2\u8003\u56fe";
 
   assert.match(zhDictionarySource, new RegExp(`sampleRun:\\s*"${sampleRun}"`));
-  assert.match(zhDictionarySource, new RegExp(`trySampleRun:\\s*"\u8bd5\u7528${sampleRun}"`));
+  assert.match(zhDictionarySource, new RegExp(`trySampleRun:\\s*"\u8bd5\u7528${sample}"`));
   assert.match(zhDictionarySource, /loadSampleAria:\s*"\u52a0\u8f7d \{label\} \u5e03\u5c40"/);
   assert.match(zhDictionarySource, /toastSampleLoaded:\s*"\u5df2\u52a0\u8f7d \{label\} \u5e03\u5c40"/);
-  assert.match(zhDictionarySource, new RegExp(`toastSampleLoadFailed:\\s*"\u65e0\u6cd5\u52a0\u8f7d${sampleRun}"`));
+  assert.match(zhDictionarySource, new RegExp(`toastSampleLoadFailed:\\s*"\u65e0\u6cd5\u52a0\u8f7d${sample}"`));
   assert.doesNotMatch(zhDictionarySource, new RegExp(sampleScreenshot));
   assert.doesNotMatch(zhDictionarySource, new RegExp(loadReferenceImage));
+  assert.doesNotMatch(
+    zhDictionarySource,
+    /\u6253\u5f00\u6837\u4f8b\u8fd0\u884c|\u8bd5\u7528\u6837\u4f8b\u8fd0\u884c|\u65e0\u6cd5\u52a0\u8f7d\u6837\u4f8b\u8fd0\u884c/,
+  );
+});
+
+test("share recovery actions use concise sample wording", () => {
+  assert.match(enDictionarySource, /openSampleRun:\s*"Open sample"/);
+  assert.match(zhDictionarySource, /openSampleRun:\s*"\u6253\u5f00\u6837\u4f8b"/);
+  assert.doesNotMatch(enDictionarySource, /openSampleRun:\s*"Open sample run"/);
 });
 
 test("export package preview surfaces review update metrics", () => {

@@ -1412,7 +1412,7 @@ function buildExportPackagePreview(
     {
       path: `src/components/starters/${stem}.recipe.json`,
       label: "Recipe",
-      description: "Primitive map, reviewer updates, and settings for rebuilding the component.",
+      description: "Primitive map, review updates, and settings for rebuilding the component.",
     },
     {
       path: `src/components/starters/${stem}.manifest.json`,

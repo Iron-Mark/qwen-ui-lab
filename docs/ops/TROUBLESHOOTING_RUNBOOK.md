@@ -101,7 +101,7 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ### Symptoms
 
-- "Could not load sample run" toast.
+- "Could not load sample" toast.
 
 ### Actions
 

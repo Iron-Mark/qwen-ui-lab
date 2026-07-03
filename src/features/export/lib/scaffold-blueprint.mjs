@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 export const SCAFFOLD_RECIPE_SCHEMA = "qwen-ui-lab/scaffold-recipe@1";
 export const DEFAULT_REVIEW_UPDATES_BASIS =
-  "Detection boxes and reviewer updates are captured in the recipe JSON.";
+  "Detection boxes and review updates are captured in the recipe JSON.";
 export const DEFAULT_NO_REVIEW_UPDATES =
   "No detection-box updates were included with this component package.";
 
@@ -219,7 +219,7 @@ function buildReviewChecklist({
   const checklist = [
     `Review ${elements.length} detected element${elements.length === 1 ? "" : "s"} against the source screenshot.`,
     "Keep semantic landmarks, visible labels, focus states, and keyboard order while connecting product data.",
-    "Use the recipe JSON to rebuild the starter after reviewer updates.",
+    "Use the recipe JSON to rebuild the starter after review updates.",
   ];
 
   if (regions.length) {

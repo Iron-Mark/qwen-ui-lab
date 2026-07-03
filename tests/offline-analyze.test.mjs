@@ -1989,7 +1989,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.equal(regenerated.detections.quality.correctedElementCount, 2);
   assert.equal(regenerated.detections.quality.excludedElementCount, 1);
-  assert.match(regenerated.detections.quality.strategy, /reviewer-updates-applied/);
+  assert.match(regenerated.detections.quality.strategy, /review-updates-applied/);
 
   const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
   assert.ok(blueprint);

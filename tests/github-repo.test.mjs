@@ -246,7 +246,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   );
   assert.match(
     entries[6].content,
-    /primary-action: box update plus detector evidence; box update marks this detection as intentional; reviewer hid this box from starter sections; low-confidence score 68%\./,
+    /primary-action: box update plus detector evidence; box update marks this detection as intentional; hidden during review, so this box stays out of starter sections; low-confidence score 68%\./,
   );
   assert.match(entries[6].content, /## Review notes/);
   assert.match(entries[6].content, /Keep this detection note with the package when any low-confidence or updated boxes remain/);
@@ -376,7 +376,7 @@ const correctionSummary = {
   "activeElements": 1,
   "appliedEdits": 1,
   "excludedBoxes": 1,
-  "sourceOfTruth": "Reviewer corrections were applied."
+  "sourceOfTruth": "Detection boxes and review updates are captured in the recipe JSON."
 };
 
 const shadcnPrimitiveMap: Record<string, string> = {

@@ -73,7 +73,7 @@ ${RICH_PACKAGE_INTRO}
 ## What this package is
 
 - A React + Tailwind starting point based on the uploaded screenshot.
-- A rebuild recipe that records detected regions, primitive mappings, and reviewer updates.
+- A rebuild recipe that records detected regions, primitive mappings, and review updates.
 - Design and detection notes for integration and verification.
 
 ## What this package still needs
@@ -118,7 +118,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 1. Copy \`src/components/starters/\` into your app.
 2. Add the starter component to the route or page where it belongs.
 3. Replace starter content with real product data.
-4. Keep the recipe JSON during integration so reviewer updates can be compared against the screenshot-derived source.
+4. Keep the recipe JSON during integration so review updates can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
 
@@ -285,7 +285,7 @@ ${boxUpdateNotes}
 
 - Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the rebuild recipe until visual verification is complete.
 - Keep this detection note with the package when any low-confidence or updated boxes remain.
-- Keep hidden boxes in the recipe until the reviewer confirms they are decorative or intentionally out of scope.
+- Keep hidden boxes in the recipe until they are confirmed as decorative or intentionally out of scope.
 
 ## Responsive intent
 
@@ -815,7 +815,7 @@ function fallbackDetectionReasons(item, role) {
   }
 
   if (item?.included === false) {
-    reasons.push("reviewer hid this box from starter sections");
+    reasons.push("hidden during review, so this box stays out of starter sections");
   }
 
   if (typeof confidence === "number") {

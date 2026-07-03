@@ -51,7 +51,7 @@ export function mergeManualCorrectionReasons({
       label: "Hidden from starter",
       evidence:
         source === "regeneration"
-          ? "The reviewer hid this detection, so it stays out of starter sections."
+          ? "This detection was hidden during review, so it stays out of starter sections."
           : "This box stays hidden from starter sections until included again.",
       weight: 0.98,
     });

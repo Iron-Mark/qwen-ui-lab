@@ -53,7 +53,7 @@ export const en = {
     descriptionTrail: "- summary and detected layout only, no source files.",
     backToWorkflow: "Back to workflow",
     sampleRun: "Sample run",
-    openSampleRun: "Open sample run",
+    openSampleRun: "Open sample",
     metadataNotFoundTitle: "Share not found",
     metadataNotFoundDescription:
       "This read-only analysis summary link is missing or expired.",
@@ -65,7 +65,7 @@ export const en = {
       "Create a new share link from the workflow when you need a fresh summary.",
     notFoundRecoveryTitle: "What you can do next",
     notFoundRecoveryWorkflow: "Create a new summary from the workflow.",
-    notFoundRecoverySample: "Open a sample run to inspect the export flow.",
+    notFoundRecoverySample: "Open a sample to inspect the export flow.",
   },
   account: {
     eyebrow: "Profile",
@@ -176,16 +176,16 @@ export const en = {
       "Upload an image up to {maxSize}. Larger files can freeze the browser before preprocessing.",
     errorNoImage: "Choose an image before running analysis.",
     errorSampleLoad:
-      "Could not load the sample run. Upload your own image instead.",
+      "Could not load the sample. Upload your own image instead.",
     failureTitle: "Could not continue",
     loadingTitle: "Preparing preview",
     loadingBody:
       "Reading the screenshot, mapping layout, and preparing the starter component.",
-    trySampleRun: "Try a sample run",
+    trySampleRun: "Try sample",
     loadSampleAria: "Load {label} layout",
     loadSampleButton: "Load sample",
     loading: "Loading...",
-    samplePathHint: "New here? Pick a sample run, then analyze it.",
+    samplePathHint: "New here? Pick a sample, then analyze it.",
     samples: {
       dashboard: {
         label: "Dashboard",
@@ -325,7 +325,7 @@ export const en = {
     toastRestoredSession: "Restored session: {fileName}",
     toastSessionRemoved: "Session removed",
     toastSampleLoaded: "{label} layout loaded",
-    toastSampleLoadFailed: "Could not load sample run",
+    toastSampleLoadFailed: "Could not load sample",
   },
 } as const;
 

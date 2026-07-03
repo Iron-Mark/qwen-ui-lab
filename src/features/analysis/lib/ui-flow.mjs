@@ -226,7 +226,7 @@ function recomputeCorrectedDetections(detections) {
       correctedElementCount: editedCount,
       excludedElementCount: excludedCount,
       strategy: editedCount
-        ? `${detections.quality?.strategy ?? "offline-detection"} + reviewer-updates-applied`
+        ? `${detections.quality?.strategy ?? "offline-detection"} + review-updates-applied`
         : detections.quality?.strategy,
     },
   };
