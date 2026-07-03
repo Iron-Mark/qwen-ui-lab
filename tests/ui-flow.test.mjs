@@ -43,7 +43,7 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
       "Plan",
       "Prepare",
       "Preview",
-      "Export",
+      "Download",
     ],
   );
   assert.ok(

@@ -12,18 +12,18 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
-function exportPanel(page: import("@playwright/test").Page) {
+function packagePanel(page: import("@playwright/test").Page) {
   return page.getByTestId("scaffold-export-panel");
 }
 
-test("/demo preloads dashboard and shows export panel", async ({ page }) => {
+test("/demo preloads dashboard and shows package panel", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/demo");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard layout/i);
-  await expect(exportPanel(page)).toBeVisible({
+  await expect(packagePanel(page)).toBeVisible({
     timeout: 20_000,
   });
   await expect(page.getByTestId("export-package-review")).toBeVisible();
@@ -31,14 +31,14 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await expect(page.getByTestId("ux-law-link-jakob")).toBeVisible();
 });
 
-test("/demo?archetype=auth loads sign-in component export", async ({ page }) => {
+test("/demo?archetype=auth downloads the sign-in component", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/demo?archetype=auth");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/sign in/i);
-  await expect(exportPanel(page)).toBeVisible({ timeout: 30_000 });
+  await expect(packagePanel(page)).toBeVisible({ timeout: 30_000 });
   await expect(
     page.locator("#upload-flow .break-words.font-medium").filter({
       hasText: /auth-reference\.(png|svg)/i,
@@ -63,7 +63,7 @@ test("/demo?archetype=shop maps to ecommerce compliance links", async ({ page })
   await resetE2ESessionStorage(page);
   await page.goto("/demo?archetype=shop");
 
-  await expect(exportPanel(page)).toBeVisible({ timeout: 30_000 });
+  await expect(packagePanel(page)).toBeVisible({ timeout: 30_000 });
   await expect(
     page.locator("#upload-flow .break-words.font-medium").filter({
       hasText: /ecommerce-reference\.(png|svg)/i,

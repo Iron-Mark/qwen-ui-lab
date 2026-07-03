@@ -1,6 +1,6 @@
 # Sample Run Guide
 
-Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample run**: load a guided layout, inspect the detected UI, review the starter component, and export a starter package.
+Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample run**: load a guided layout, inspect the detected UI, review the starter component, and download a starter package.
 
 ```bash
 cd qwen-ui-lab
@@ -20,11 +20,11 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 | 1:00-2:00 | Analysis result | Show the screenshot, detected regions, plan cards, confidence reasons, and editable detection boxes. |
 | 2:00-3:00 | Starter preview | Refresh after edits, compare the screenshot with the starter component, and point out responsive assumptions. |
 | 3:00-4:00 | Download package | Open the package dialog. Review `Files`, `Changes`, and `Guide`; use **Download component** or **Download package**. |
-| 4:00-5:00 | `/design-system` | Browse reusable components, Laws of UX references, preview modes, and snippet export. |
+| 4:00-5:00 | `/design-system` | Browse reusable components, Laws of UX references, preview modes, and snippet downloads. |
 
 ## Sample Routes
 
-| URL | Guided layout | Export filename |
+| URL | Guided layout | Download filename |
 | --- | --- | --- |
 | `/demo` | Dashboard analytics shell | `starter-dashboard.tsx` |
 | `/demo?archetype=auth` | Sign-in card | `starter-auth.tsx` |
@@ -42,11 +42,11 @@ Invalid or missing `archetype` values use the dashboard guided layout.
 3. Run analysis and inspect detected structure.
 4. Edit detection boxes when needed.
 5. Prepare the React + Tailwind preview.
-6. Export the starter package or component file.
+6. Download the starter package or component file.
 
 The local analysis path is the default. It lets the workflow stay usable without upstream credentials while still keeping live Qwen available behind explicit configuration.
 
-## Export Review
+## Package Review
 
 The starter package is meant to be inspectable before download:
 
@@ -59,7 +59,7 @@ The starter package is meant to be inspectable before download:
 
 | Symptom | Likely cause | Fast fix |
 | --- | --- | --- |
-| Export panel does not appear | Browser is still hydrating or the machine is slow | Wait briefly, then refresh and retry the sample route. |
+| Package panel does not appear | Browser is still hydrating or the machine is slow | Wait briefly, then refresh and retry the sample route. |
 | Analysis errors | Unsupported file, oversized image, or live analysis misconfiguration | Use a PNG/JPG/SVG/WebP under the upload limit, or return to local analysis. |
 | Copy fails | Browser clipboard permissions are restricted | Use **Download component** or **Download package**. |
 | Wrong sample appears | Stale route or cached tab | Navigate directly to the desired `/demo?archetype=...` URL. |

@@ -16,7 +16,7 @@ const workflowSteps = [
   { id: "plan", label: "Plan" },
   { id: "generate", label: "Prepare" },
   { id: "preview", label: "Preview" },
-  { id: "export", label: "Export" },
+  { id: "export", label: "Download" },
 ];
 
 const defaultPreviewStats = [

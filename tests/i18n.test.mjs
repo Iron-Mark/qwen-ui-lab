@@ -47,7 +47,7 @@ const uploadFlowZh = {
   stepPlan: "\u8ba1\u5212",
   stepGenerate: "\u51c6\u5907",
   stepPreview: "\u9884\u89c8",
-  stepExport: "\u5bfc\u51fa",
+  stepExport: "\u4e0b\u8f7d",
 };
 
 test("resolveLocale defaults to en and accepts zh", () => {
@@ -112,7 +112,7 @@ test("getFlowStepLabels returns localized step labels", () => {
     getFlowStepLabels(uploadFlowZh)
       .map((step) => step.label)
       .join(","),
-    "\u4e0a\u4f20,\u5206\u6790,\u8ba1\u5212,\u51c6\u5907,\u9884\u89c8,\u5bfc\u51fa",
+    "\u4e0a\u4f20,\u5206\u6790,\u8ba1\u5212,\u51c6\u5907,\u9884\u89c8,\u4e0b\u8f7d",
   );
 });
 
@@ -209,7 +209,7 @@ test("share recovery actions use concise sample wording", () => {
   assert.doesNotMatch(enDictionarySource, /openSampleRun:\s*"Open sample run"/);
 });
 
-test("export package preview surfaces review update metrics", () => {
+test("package review preview surfaces review update metrics", () => {
   assert.match(enDictionarySource, /exportMetricEdits:\s*"Updated"/);
   assert.match(enDictionarySource, /exportMetricExcluded:\s*"Hidden"/);
   assert.match(zhDictionarySource, /exportMetricEdits:\s*"\u66f4\u65b0"/);
@@ -221,7 +221,7 @@ test("export package preview surfaces review update metrics", () => {
   assert.match(uploadFlowSource, /<AlertTitle>\{copy\.exportReadmeCorrections\}<\/AlertTitle>/);
 });
 
-test("export package tabs keep compact product-facing labels", () => {
+test("package review tabs keep compact product-facing labels", () => {
   const enCopyTab = enDictionarySource.match(/exportPackageCopyTab:\s*"([^"]+)"/)?.[1] ?? "";
   const zhCopyTab = zhDictionarySource.match(/exportPackageCopyTab:\s*"([^"]+)"/)?.[1] ?? "";
 

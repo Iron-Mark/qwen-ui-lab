@@ -27,7 +27,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 - Upload screenshots or open a guided sample run
 - Inspect detected structure during review
-- Review and export a starter package
+- Review and download a starter package
 
 ---
 
@@ -61,7 +61,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 - `/design-system` catalogs reusable primitives
 - Search, filters, variant toggles, and preview modes
-- Export snippets for product UI and Laws of UX examples
+- Download snippets for product UI and Laws of UX examples
 
 ---
 

@@ -183,7 +183,7 @@ test("workflow stepper marks unavailable steps as disabled", async ({ page }) =>
       disabled: "true",
     },
     {
-      label: "Export",
+      label: "Download",
       state: "locked",
       current: null,
       disabled: "true",
@@ -191,7 +191,7 @@ test("workflow stepper marks unavailable steps as disabled", async ({ page }) =>
   ]);
 });
 
-test("export package dialog keeps tabs and actions visible on tablet widths", async ({
+test("package review dialog keeps tabs and actions visible on tablet widths", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 789, height: 958 });
@@ -258,7 +258,7 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   });
 });
 
-test("upload → analyze → prepare preview → copy/export smoke flow", async ({
+test("upload -> analyze -> prepare preview -> copy/download smoke flow", async ({
   page,
 }) => {
   await page.goto("/");
@@ -467,7 +467,7 @@ test("upload → analyze → prepare preview → copy/export smoke flow", async 
   ).toHaveCount(0);
 });
 
-test("export package dialog keeps tabs and actions visible on mobile widths", async ({
+test("package review dialog keeps tabs and actions visible on mobile widths", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });

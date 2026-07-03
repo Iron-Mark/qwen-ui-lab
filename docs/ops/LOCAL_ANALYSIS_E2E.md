@@ -71,7 +71,7 @@ End-to-end tests never depend on secrets or external APIs:
 | Route mock | `e2e/helpers/mock-analyze-api.ts` | Forces local-analysis health response; safety net on `/api/analyze-ui` |
 | Shared fixtures | `e2e/fixtures/sample-run-responses.json` | Built from `src/features/analysis/lib/sample-run-fixtures.mjs` - same payloads as runtime |
 | Env scrubbing | `playwright.config.ts` | Strips `DASHSCOPE_API_KEY`, `QWEN_LIVE_ANALYSIS`, etc. from dev server |
-| Clipboard stub | `stubClipboardForE2E()` | Headless Copy/Export works without native clipboard |
+| Clipboard stub | `stubClipboardForE2E()` | Headless copy/download actions work without native clipboard |
 | Unit mocks | `tests/analyze-fallback.test.mjs` | Injects `fetchFn` - same contract without a browser |
 | Live contract (unit) | `tests/analyze-live-contract.test.mjs` | `fetchFn` mocks upstream Qwen JSON -> structured artifact |
 | Live contract (E2E) | `e2e/live-qwen-contract.spec.ts` | `page.route` on health + `/api/analyze-ui` - no API key in CI |

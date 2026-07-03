@@ -139,7 +139,7 @@ export const zh = {
     stepPlan: "规划",
     stepGenerate: "准备",
     stepPreview: "预览",
-    stepExport: "导出",
+    stepExport: "下载",
     progressStepsAria: "截图工作流步骤",
     alertOfflineTitle: "可以开始分析",
     alertOfflineBody: "上传、检测、预览和下载已准备好。",

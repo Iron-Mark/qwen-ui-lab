@@ -55,7 +55,7 @@
     {
       "name": "Analyze screenshot",
       "short_name": "Analyze",
-      "description": "Upload a UI screenshot and export a starter package.",
+      "description": "Upload a UI screenshot and download a starter package.",
       "url": "/#upload-flow",
       "icons": [
         {

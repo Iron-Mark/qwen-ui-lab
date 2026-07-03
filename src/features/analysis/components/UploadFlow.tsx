@@ -805,7 +805,7 @@ function DetectedReferencePreview({
                   data-testid="export-detections-json"
                 >
                   <Download className="size-3.5" aria-hidden />
-                  Export JSON
+                  Download JSON
                 </Button>
               </div>
             </div>

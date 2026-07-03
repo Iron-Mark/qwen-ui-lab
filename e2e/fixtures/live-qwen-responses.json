@@ -41,7 +41,7 @@
         },
         {
           "id": "export",
-          "label": "Export"
+          "label": "Download"
         }
       ],
       "plan": [
@@ -65,7 +65,7 @@
         }
       ],
       "generatedCode": "export default function ContractDashboardStarter() {\n  return (\n    <main data-contract-test aria-label=\"Contract dashboard starter\">\n      <section className=\"grid gap-4 md:grid-cols-3\">\n        <article className=\"rounded-lg border p-4\">Contract metric</article>\n        <article className=\"rounded-lg border p-4\">Contract chart</article>\n        <article className=\"rounded-lg border p-4\">Contract activity</article>\n      </section>\n    </main>\n  );\n}",
-      "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
+      "modeLabel": "Ready for review",
       "summary": "Contract test dashboard shell from contract upstream."
     },
     "provider": {
@@ -88,7 +88,7 @@
         "value": "9"
       }
     ],
-    "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
+    "modeLabel": "Ready for review",
     "summary": "Contract test dashboard shell from contract upstream."
   }
 }

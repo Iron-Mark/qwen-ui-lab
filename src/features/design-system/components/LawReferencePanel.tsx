@@ -3,7 +3,7 @@ import { UI_LAWS, UILAWS_SITE, type UiLawId } from "../data/uilaws";
 import { cn } from "@/lib/utils";
 
 const ROUTE_HINTS: Partial<Record<UiLawId, { label: string; href: string }>> = {
-  fitts: { label: "Design system → Export controls", href: "/design-system" },
+  fitts: { label: "Design system -> Download controls", href: "/design-system" },
   hick: { label: "Dashboard upload flow", href: "/" },
   jakob: { label: "App header navigation", href: "/" },
   consistency: { label: "Atomic catalog", href: "/design-system" },
@@ -40,7 +40,7 @@ export function LawReferencePanel({
           id="law-reference-title"
           className="text-lg font-semibold text-card-foreground"
         >
-          Laws → product map
+          {"Laws -> product map"}
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
           Principles from{" "}
@@ -75,7 +75,7 @@ export function LawReferencePanel({
                   href={hint.href}
                   className="mt-2 inline-flex min-h-11 items-center text-xs font-semibold text-card-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  {hint.label} →
+                  {hint.label} {"->"}
                 </Link>
               ) : null}
             </li>

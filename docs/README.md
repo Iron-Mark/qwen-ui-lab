@@ -26,9 +26,9 @@ An API key alone does not enable upstream calls.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Upload, detect, refine, preview, share, and export workflow. |
+| `/` | Upload, detect, refine, preview, share, and package download workflow. |
 | `/demo` | Sample run flow with `?archetype=auth|mobile|landing|settings|shop`. |
-| `/design-system` | Component catalog, UX-law domains, snippet previews, and snippet export. |
+| `/design-system` | Component catalog, UX-law domains, snippet previews, and snippet downloads. |
 | `/account` | Compatibility redirect to the browser-local profile modal. |
 | `/share/[id]` | Read-only shared summary route. |
 | `/api/health` | Provider mode probe. |

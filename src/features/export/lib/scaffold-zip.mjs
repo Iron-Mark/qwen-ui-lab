@@ -1,5 +1,5 @@
 /**
- * Minimal ZIP writer (stored, no compression) for export packages.
+ * Minimal ZIP writer (stored, no compression) for starter package downloads.
  */
 
 const ENCODER = new TextEncoder();

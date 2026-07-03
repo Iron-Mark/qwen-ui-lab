@@ -49,7 +49,7 @@ For a staging activation checklist and dashboard setup, see `docs/ops/ANALYTICS_
 - `analysis.failed` - analyze failed and fallback path was used.
 - `generate.started` - preview preparation started.
 - `generate.completed` - starter preview is ready.
-- `export.triggered` - copy/export action on starter scaffold.
+- `export.triggered` - copy or download action on starter scaffold.
 
 ### Design System (`/design-system`)
 
@@ -86,7 +86,7 @@ Only these keys are accepted:
 
 - Keep telemetry disabled by default. Only enable in environments that intentionally opt in.
 - Use `status` values from this set: `started`, `completed`, `accepted`, `rejected`, `changed`, `selected`, `view`, `success`, `failed`, `fallback`, `sample_run`, `updated`, `downloaded`.
-- Use `trigger` for explicit user actions (`copy`, `export`) and `step` for funnel stage (`upload`, `analyze`, `generate`).
+- Use `trigger` for explicit user actions (`copy`, `download`, or existing export event values) and `step` for funnel stage (`upload`, `analyze`, `generate`).
 - Route metadata must be path-only (query strings are stripped before dispatch).
 
 ## Key Files
@@ -96,4 +96,4 @@ Only these keys are accepted:
 - `src/features/analysis/components/UploadFlow.tsx` - funnel instrumentation.
 - `src/features/design-system/components/DesignSystemPreview.tsx` - design-system instrumentation.
 - `src/features/design-system/components/ComponentPreviewCard.tsx` - variant and snippet interaction instrumentation.
-- `src/features/export/components/ExportButton.tsx` - centralized copy/export event tracking.
+- `src/features/export/components/ExportButton.tsx` - centralized copy/download event tracking.

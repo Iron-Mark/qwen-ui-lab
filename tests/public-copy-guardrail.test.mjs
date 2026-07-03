@@ -125,10 +125,12 @@ const EXPERIMENT_ARTIFACT_FILES = [
 ];
 
 const COPY_DOWNLOAD_SURFACE_FILES = [
+  "docs/ops/ANALYTICS_TAXONOMY.md",
   "docs/ops/STORYBOOK.md",
   "src/features/design-system/components/catalog.tsx",
   "src/features/design-system/data/uilaws.ts",
   "src/features/design-system/lib/design-system-route.ts",
+  "src/lib/laws-of-ux.ts",
 ];
 
 const EXPORT_RECOVERY_COPY_FILES = [
@@ -154,6 +156,20 @@ const BANNED_PUBLIC_PHRASES = [
   "Export Package",
   "Export packages are intended",
   "starter package export",
+  "export a starter package",
+  "export workflow",
+  "export panel",
+  "export flow",
+  "exported snippets",
+  "exported code",
+  "upload-to-export",
+  "Export controls",
+  "Export complete",
+  "end (export)",
+  "snippet export",
+  "Export snippets",
+  "Upload a UI screenshot and export",
+  "then export a React",
   "copy or export the starter component",
   "export snippets your team",
   "from the export package",
@@ -179,6 +195,7 @@ const BANNED_PUBLIC_PHRASES = [
   "File exported",
   "Export failed",
   "Export ready",
+  "Export JSON",
   "Preparing export...",
   "Copy failed - try Export",
   "导出起始项目包",
@@ -702,6 +719,9 @@ test("public design-system export surfaces use copy/download wording", async () 
     const source = await fs.readFile(path.join(process.cwd(), file), "utf8");
     if (source.includes("copy/export")) {
       violations.push(`${file}: copy/export`);
+    }
+    if (source.includes("Copy/Export")) {
+      violations.push(`${file}: Copy/Export`);
     }
     if (source.includes("Copy or download snippet")) {
       violations.push(`${file}: Copy or download snippet`);

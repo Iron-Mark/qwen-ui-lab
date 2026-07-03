@@ -4,7 +4,7 @@ export const en = {
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
-      "Upload a UI screenshot, inspect the detected structure, then export a React + Tailwind starter package.",
+      "Upload a UI screenshot, inspect the detected structure, then download a React + Tailwind starter package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
     sampleRun: "Sample run",
@@ -18,8 +18,8 @@ export const en = {
     benefitAnalyzeTitle: "Inspect the component",
     benefitAnalyzeBody:
       "Review the React + Tailwind starter alongside the package preview.",
-    benefitDesignLabel: "Export",
-    benefitDesignTitle: "Export the package",
+    benefitDesignLabel: "Download",
+    benefitDesignTitle: "Download the package",
     benefitDesignBody:
       "Review TSX, Design.md, and package files during integration.",
     trustSignalsAria: "Trust signals",
@@ -65,7 +65,7 @@ export const en = {
       "Create a new share link from the workflow when you need a fresh summary.",
     notFoundRecoveryTitle: "What you can do next",
     notFoundRecoveryWorkflow: "Create a new summary from the workflow.",
-    notFoundRecoverySample: "Open a sample to inspect the export flow.",
+    notFoundRecoverySample: "Open a sample to inspect the package review flow.",
   },
   account: {
     eyebrow: "Profile",
@@ -145,19 +145,19 @@ export const en = {
     stepPlan: "Plan",
     stepGenerate: "Prepare",
     stepPreview: "Preview",
-    stepExport: "Export",
+    stepExport: "Download",
     progressStepsAria: "Screenshot workflow steps",
     alertOfflineTitle: "Ready to analyze",
     alertOfflineBody:
-      "Upload, detection, preview, and export are ready.",
+      "Upload, detection, preview, and download are ready.",
     alertOfflineReason: "Reason: {detail}",
     liveFlowLabel: "Screenshot workflow",
     headlineDefault: "Build a component preview",
     headlineFaster: "Turn one screenshot into starter UI",
     subtitleDefault:
-      "Ideal for rapid design reviews: analyze one screenshot, review a starter component, then reuse exported snippets in your next iteration.",
+      "Ideal for rapid design reviews: analyze one screenshot, review a starter component, then reuse downloaded snippets in your next iteration.",
     subtitleFaster:
-      "Upload, analyze, and export reusable React/Tailwind starter components in minutes.",
+      "Upload, analyze, and download reusable React/Tailwind starter components in minutes.",
     modeLocalReady: "Ready to analyze",
     modeQwenReady: "Ready to analyze",
     modeReviewReady: "Ready for review",
@@ -310,7 +310,7 @@ export const en = {
     detectionIncluded: "Included",
     detectionReset: "Reset",
     comparisonPreviewDesc:
-      "Screenshot and component preview are shown side by side; exported code is not executed here.",
+      "Screenshot and component preview are shown side by side; downloaded code is not executed here.",
     comparisonScreenshot: "Screenshot",
     comparisonGeneratedPreview: "Component preview",
     emptyState: "Upload a screenshot and run analysis to see the plan.",

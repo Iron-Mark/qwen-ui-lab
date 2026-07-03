@@ -54,7 +54,7 @@ Notes:
 ## Routes and App Surfaces
 
 - `/` - dashboard + upload/analyze/preview flow.
-- `/design-system` - atomic catalog, domain and level filters, snippet export.
+- `/design-system` - atomic catalog, domain and level filters, snippet downloads.
 - `/design-system/uilaws` - redirects to `/design-system?domain=uilaws`.
 - `/design-system/laws-of-ux` - redirects to `/design-system?domain=laws-of-ux`.
 - `/api/health` - reports provider status and live-analysis readiness.

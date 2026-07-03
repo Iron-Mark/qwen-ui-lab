@@ -2,7 +2,7 @@
 
 Screenshot-to-React workflow for turning UI screenshots into inspectable React + Tailwind starter packages.
 
-The app lets you upload a screenshot, inspect detected UI structure, refine detection boxes, review a starter component preview, and export a starter package with TSX, design notes, tokens, recipe JSON, and detection notes.
+The app lets you upload a screenshot, inspect detected UI structure, refine detection boxes, review a starter component preview, and download a starter package with TSX, design notes, tokens, recipe JSON, and detection notes.
 
 ## Run Locally
 
@@ -26,7 +26,7 @@ Never expose provider secrets through `NEXT_PUBLIC_*` variables.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Upload, detect, refine, preview, share, and export workflow. |
+| `/` | Upload, detect, refine, preview, share, and package download workflow. |
 | `/demo` | Compatibility route for a guided sample run. |
 | `/design-system` | Component catalog with product and UX-law references. |
 | `/account` | Redirects to the browser-local profile modal. |

@@ -61,10 +61,10 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
   assert.match(result.url, /starter-auth\.tsx/);
-  assert.match(decodeURIComponent(result.url), /add the package files from the export panel/);
+  assert.match(decodeURIComponent(result.url), /add the package files from the package panel/);
   assert.doesNotMatch(decodeURIComponent(result.url), /paste package contents manually/);
   assert.match(result.branch, /^qwen-ui-lab-export-/);
-  assert.match(result.instructions, /add the package files from the export panel/);
+  assert.match(result.instructions, /add the package files from the package panel/);
 });
 
 test("repo export helpers redact sensitive description metadata", () => {

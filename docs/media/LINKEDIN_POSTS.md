@@ -24,7 +24,7 @@ The workflow:
 3. Correct detection boxes when needed
 4. Prepare a React/Tailwind starter
 5. Review files, design notes, and detection notes
-6. Export a starter package for source control
+6. Download a starter package for source control
 
 The goal is not a finished app screen.
 The goal is a faster, inspectable starting point.
@@ -89,8 +89,8 @@ Even with better detection, review still matters:
 - sample copy should be replaced with product language
 - responsive assumptions need device testing
 
-qwen-ui-lab treats the export as a starter package for source control.
-The export includes component code, DESIGN.md, recipe JSON, manifest JSON,
+qwen-ui-lab treats the download as a starter package for source control.
+The package includes component code, DESIGN.md, recipe JSON, manifest JSON,
 tokens CSS, and detection notes so the next step is inspectable.
 ```
 

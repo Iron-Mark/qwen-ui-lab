@@ -102,7 +102,7 @@ function MillerExample() {
 }
 
 function SerialPositionExample() {
-  const steps = ["Upload", "Analyze", "Plan", "Preview", "Export"];
+  const steps = ["Upload", "Analyze", "Plan", "Preview", "Download"];
   return (
     <ol className="flex flex-wrap justify-center gap-2">
       {steps.map((step, index) => (
@@ -208,7 +208,7 @@ function DohertyExample() {
 
 function GoalGradientExample() {
   const [step, setStep] = useState(2);
-  const labels = ["Upload", "Analyze", "Plan", "Preview", "Export"];
+  const labels = ["Upload", "Analyze", "Plan", "Preview", "Download"];
   return (
     <div className="space-y-3">
       <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -255,7 +255,7 @@ function TeslerExample() {
         </div>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Default path: upload, review, and export without extra setup.
+          Default path: upload, review, and download without extra setup.
         </p>
       )}
     </div>
@@ -266,7 +266,7 @@ function PeakEndExample() {
   return (
     <div className="space-y-2 text-center text-xs">
       <div className="flex justify-between gap-1">
-        {["Upload", "Analyze", "Preview", "Export complete"].map((label, i) => (
+        {["Upload", "Analyze", "Preview", "Download complete"].map((label, i) => (
           <span
             key={label}
             className={cn(
@@ -279,7 +279,7 @@ function PeakEndExample() {
           </span>
         ))}
       </div>
-      <p className="text-muted-foreground">Peak (analyze) + end (export) shape the memory.</p>
+      <p className="text-muted-foreground">Peak (analyze) + end (download) shape the memory.</p>
     </div>
   );
 }

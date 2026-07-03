@@ -403,7 +403,7 @@ export function ExampleHeader() {
     level: "organism",
     domain: "product",
     name: "Workflow banner",
-    description: "Session status strip for the upload-to-export pipeline.",
+    description: "Session status strip for the upload-to-download pipeline.",
     usage: "Shown near the workflow when a sample or uploaded screenshot is ready to review.",
     sourcePath: "features/home/components/WorkflowBanner.tsx",
     preview: <WorkflowBanner />,
@@ -504,7 +504,7 @@ const uilawsCatalog: AtomicCatalogEntry[] = [
     preview: (
       <LawInformationCard
         title="Design system catalog"
-        description="Atomic previews with export, Prism snippets, and variant toggles."
+        description="Atomic previews with downloads, Prism snippets, and variant toggles."
         href="/design-system"
         principles={["proximity", "consistency", "typography-hierarchy"]}
       />
@@ -515,7 +515,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React export with inspectable detection notes."
+      description="Screenshot-to-React starter with inspectable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />

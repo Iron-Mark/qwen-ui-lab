@@ -11,7 +11,7 @@ Set these production environment variables on the hosting provider:
 | `NEXT_PUBLIC_SITE_URL` | yes | Public HTTPS origin for canonical metadata, sitemap, robots, PWA links, and generated short share URLs |
 | `KV_REST_API_URL` | yes | Durable share links and cluster-wide analyze rate limits |
 | `KV_REST_API_TOKEN` | yes | Server-only Upstash/Vercel KV REST token |
-| `GITHUB_TOKEN` | yes | Server-side Gist/export flow |
+| `GITHUB_TOKEN` | yes | Server-side Gist/package download flow |
 
 Production must also keep these safe defaults:
 

@@ -124,7 +124,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind starter package.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and download a React + Tailwind starter package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -161,7 +161,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       card: "summary_large_image",
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind starter package.",
+        "Upload a UI screenshot, review the detected layout, and download a React + Tailwind starter package.",
       images: [ogImagePath],
     },
     robots: {
@@ -260,7 +260,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Analyze screenshot",
         short_name: "Analyze",
-        description: "Upload a UI screenshot and export a starter package.",
+        description: "Upload a UI screenshot and download a starter package.",
         url: "/#upload-flow",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },

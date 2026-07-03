@@ -7,7 +7,7 @@ export const E2E_HEALTH_JSON = sampleRunFixtures.health;
  * Intercept analyze API routes so E2E never calls Qwen, regardless of .env.local or CI secrets.
  * Health mock means the client skips POST /api/analyze-ui; analyze-ui mock is a safety net.
  */
-/** Headless Chromium often lacks a working clipboard API; stub so Copy/Export succeed. */
+/** Headless Chromium often lacks a working clipboard API; stub so copy/download actions succeed. */
 export async function stubClipboardForE2E(page: Page) {
   await page.addInitScript(() => {
     const writeText = async (value: string) => {

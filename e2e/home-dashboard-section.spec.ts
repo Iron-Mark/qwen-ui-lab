@@ -21,7 +21,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByRole("heading", { name: "Dashboard sample" })).toBeVisible();
   await expect(section.getByText("Sample output")).toBeVisible();
-  await expect(section.getByText("See what an exported starter can look like.")).toBeVisible();
+  await expect(section.getByText("See what a downloaded starter can look like.")).toBeVisible();
   await expect(section.getByRole("link", { name: /load sample/i })).toHaveAttribute(
     "href",
     "/demo#upload-flow",
@@ -42,7 +42,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /download/i })).toBeVisible();
   await expect(dialog.getByTestId("dashboard-sample-dialog-preview")).toBeVisible();
   await expect(dialog.getByRole("link", { name: /load into workflow/i })).toHaveAttribute(
     "href",
@@ -81,7 +81,7 @@ test("dashboard example keeps the heavy preview behind a mobile dialog", async (
   await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /download/i })).toBeVisible();
   await expect(
     dialog.getByRole("link", { name: /load into workflow/i }),
   ).toBeVisible();

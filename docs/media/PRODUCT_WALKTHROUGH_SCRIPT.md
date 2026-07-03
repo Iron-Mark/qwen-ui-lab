@@ -20,7 +20,7 @@ Use this script when recording a short product walkthrough.
 **Screen:** App running, light mode, upload flow visible.
 
 **Voiceover:**
-> "Upload a UI screenshot, inspect the detected structure, and export a React/Tailwind starter package."
+> "Upload a UI screenshot, inspect the detected structure, and download a React/Tailwind starter package."
 
 ### [0:08-0:22] Upload and analyze
 
@@ -41,7 +41,7 @@ Use this script when recording a short product walkthrough.
 **Action:** Turn on Box labels, click one box, then adjust it with arrow keys or the resize handle.
 
 **Voiceover:**
-> "Before export, the detected UI boxes are editable. The inspector shows confidence, geometry, primitive mapping, and why each region was classified."
+> "Before download, the detected UI boxes are editable. The inspector shows confidence, geometry, primitive mapping, and why each region was classified."
 
 ### [0:48-0:56] Download package
 

@@ -81,7 +81,7 @@ const samplePlan = [
   },
   {
     title: "Prepare component",
-    body: "Export a React + Tailwind starter package that matches the sample hierarchy.",
+    body: "Download a React + Tailwind starter package that matches the sample hierarchy.",
     icon: Code2,
   },
   {
@@ -166,7 +166,7 @@ export function DashboardSampleDialog({
                 Dashboard sample
               </h2>
               <p className="mt-1 max-w-xl text-sm leading-6 text-muted-foreground">
-                See what an exported starter can look like.
+                See what a downloaded starter can look like.
               </p>
             </div>
           </div>
@@ -262,7 +262,7 @@ export function DashboardSampleDialog({
                 className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <Download className="size-4" aria-hidden />
-                Export
+                Download
               </TabsTrigger>
             </ResponsiveTabsList>
           </div>

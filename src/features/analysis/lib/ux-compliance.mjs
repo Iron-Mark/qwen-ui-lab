@@ -134,7 +134,7 @@ export function evaluateUxCompliance(artifact) {
     id: "peak-end",
     ...LAW_META["peak-end"],
     status: steps.length >= 4 ? "met" : "partial",
-    rationale: "Workflow should end on Export with a clear success moment.",
+    rationale: "Workflow should end on download with a clear success moment.",
   });
 
   checks.push({

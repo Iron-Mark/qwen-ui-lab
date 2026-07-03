@@ -140,8 +140,8 @@ export function getDesignSystemDomainRouteSocialPreviewImage(
   return {
     routeLabel: "uilaws",
     title: "Build clearer interfaces faster",
-    description: "Explore component examples with stronger hierarchy, affordance, and export flow.",
-    workflow: "Filter UI laws -> Preview component -> Export snippet",
+    description: "Explore component examples with stronger hierarchy, affordance, and snippet downloads.",
+    workflow: "Filter UI laws -> Preview component -> Download snippet",
     background:
       "linear-gradient(135deg, #08061f 0%, #581c87 48%, #111827 100%)",
     accent: "#c4b5fd",

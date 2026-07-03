@@ -78,7 +78,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "The time to acquire a target is a function of the distance to and size of the target.",
     application:
-      "Full-width upload dropzone, min-h-11 header links, and corner-placed Copy/Export controls.",
+      "Full-width upload dropzone, min-h-11 header links, and corner-placed copy/download controls.",
     exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["fitts"],
@@ -137,7 +137,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "People judge an experience by its peak and its end, not the average of every moment.",
     application:
-      "Success banner after analyze and toast on copy/export reinforce a strong finish.",
+      "Success banner after analyze and copy/download toasts reinforce a strong finish.",
     exampleSurface: "upload",
     inAppHref: "/",
   },

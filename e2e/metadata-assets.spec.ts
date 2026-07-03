@@ -110,7 +110,7 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
       json.shortcuts?.some(
         (shortcut) =>
           shortcut.name === "Analyze screenshot" &&
-          shortcut.description === "Upload a UI screenshot and export a starter package.",
+          shortcut.description === "Upload a UI screenshot and download a starter package.",
       ),
     ).toBeTruthy();
     expect(

@@ -77,4 +77,4 @@ Start with these slices in your analytics tool:
   - analytics event names
   - metadata schema/allowlist
   - provider-mode gating
-  - upload, analyze, preview, or export flows
+  - upload, analyze, preview, or download flows
