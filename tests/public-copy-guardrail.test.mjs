@@ -61,6 +61,7 @@ const PUBLIC_COPY_FILES = [
   "src/features/export/lib/scaffold-package.mjs",
   "src/features/export/lib/scaffold-package-docs.mjs",
   "src/features/export/lib/scaffold-blueprint.mjs",
+  "src/features/share/lib/share-result.mjs",
   "src/features/share/components/SharedSummaryCard.tsx",
   "src/features/export/lib/github-gist.mjs",
   "src/features/export/lib/github-repo.mjs",

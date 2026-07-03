@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  buildScaffoldReadme as buildGithubScaffoldReadme,
   buildRepoCompareExport,
   canUseGithubRepoExport,
   getGithubRepoExportConfig,
@@ -64,6 +65,27 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
   assert.doesNotMatch(decodeURIComponent(result.url), /paste package contents manually/);
   assert.match(result.branch, /^qwen-ui-lab-export-/);
   assert.match(result.instructions, /add the package files from the export panel/);
+});
+
+test("repo export helpers redact sensitive description metadata", () => {
+  const description = "From /Users/mark/shot.png with token=ghp_secret and #share=abcdef";
+  const compare = buildRepoCompareExport({
+    owner: "Iron-Mark",
+    repo: "qwen-ui-lab",
+    base: "main",
+    filename: "starter-auth.tsx",
+    description,
+  });
+  const readme = buildGithubScaffoldReadme({
+    filename: "starter-auth.tsx",
+    description,
+  });
+  const combined = `${decodeURIComponent(compare.url)}\n${readme}`;
+
+  assert.doesNotMatch(combined, /\/Users\/mark|ghp_secret|#share=abcdef/);
+  assert.match(combined, /\[local path\]/);
+  assert.match(combined, /token=<redacted>/);
+  assert.match(combined, /#share=<redacted>/);
 });
 
 test("buildScaffoldZipEntries includes readme and sanitized filename", () => {

@@ -75,6 +75,31 @@ test("createGithubGist posts component file and returns gist URL", async () => {
   );
 });
 
+test("createGithubGist redacts sensitive description metadata", async () => {
+  let captured = null;
+  const fetchImpl = async (url, init) => {
+    captured = { url, init };
+    return new Response(
+      JSON.stringify({ id: "abc123", html_url: "https://gist.github.com/user/abc123" }),
+      { status: 201, headers: { "Content-Type": "application/json" } },
+    );
+  };
+
+  const result = await createGithubGist({
+    token: "ghp_test",
+    filename: "starter-dashboard.tsx",
+    description: "From C:\\Users\\Mark\\shot.png with GITHUB_TOKEN=ghp_secret",
+    content: "export function StarterFixture() { return null; }",
+    fetchImpl,
+  });
+
+  assert.equal(result.ok, true);
+  const body = JSON.parse(captured.init.body);
+  assert.doesNotMatch(body.description, /C:\\Users|ghp_secret/);
+  assert.match(body.description, /\[local path\]/);
+  assert.match(body.description, /GITHUB_TOKEN=<redacted>/);
+});
+
 test("createGithubGist surfaces GitHub API errors", async () => {
   const fetchImpl = async () =>
     new Response(JSON.stringify({ message: "Bad credentials" }), {

@@ -1,4 +1,5 @@
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 import {
   DEFAULT_NO_REVIEW_UPDATES,
   DEFAULT_REVIEW_UPDATES_BASIS,
@@ -26,13 +27,14 @@ import {
  */
 export function buildScaffoldZipEntries({ content, filename, description }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
+  const safeDescription = sanitizeExportDescription(description);
   const packageContent = sanitizeExportedComponentMetadata(content);
   const blueprint = extractProductionScaffoldBlueprint(packageContent);
   if (blueprint) {
     return buildProductionScaffoldZipEntries({
       content: packageContent,
       filename: safeFilename,
-      description,
+      description: safeDescription,
       blueprint,
     });
   }
@@ -40,8 +42,14 @@ export function buildScaffoldZipEntries({ content, filename, description }) {
   return buildFallbackScaffoldZipEntries({
     content: packageContent,
     filename: safeFilename,
-    description,
+    description: safeDescription,
   });
+}
+
+function sanitizeExportDescription(description) {
+  if (typeof description !== "string") return description;
+  const redacted = redactSensitiveText(description).trim().slice(0, 256);
+  return redacted || undefined;
 }
 
 function sanitizeExportedComponentMetadata(content) {

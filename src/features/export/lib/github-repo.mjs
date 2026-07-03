@@ -2,6 +2,7 @@
  * Server-side GitHub repo export helpers (compare URL + package download fallback).
  */
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 import {
   buildScaffoldReadme as buildPackageScaffoldReadme,
   DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
@@ -72,13 +73,16 @@ export function buildRepoCompareExport({
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
+  const safeDescription =
+    redactSensitiveText(description).trim().slice(0, 256) ||
+    DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const head = `qwen-ui-lab-export-${Date.now()}`;
   const title = encodeURIComponent("Add screenshot-to-React starter package");
   const body = encodeURIComponent(
     [
       "## Screenshot-to-React starter package",
       "",
-      description,
+      safeDescription,
       "",
       `Add \`${safeFilename}\` from the export package.`,
       "",
@@ -113,9 +117,12 @@ export function buildScaffoldReadme({
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
 }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
+  const safeDescription =
+    redactSensitiveText(description).trim().slice(0, 256) ||
+    DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   return buildPackageScaffoldReadme({
     filename: safeFilename,
-    description,
+    description: safeDescription,
     sourceRepo: DEFAULT_GITHUB_EXPORT_REPO,
   });
 }

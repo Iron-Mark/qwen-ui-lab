@@ -4,6 +4,7 @@
 /** @typedef {{ v: 1; summary: string; stats: Array<{ l: string; v: string }>; mode: string; file: string; detections?: ShareDetectionPayload }} ShareableResultSummary */
 
 import { normalizeReviewStatusLabel } from "../../../lib/product-labels.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 
 export const SHARE_HASH_PREFIX = "share=";
 export const SHARE_SESSION_KEY = "qwen-ui-lab:last-share";
@@ -13,9 +14,9 @@ const MAX_DETECTION_ELEMENTS = 24;
 
 function truncate(input, max) {
   if (typeof input !== "string") return "";
-  const trimmed = input.trim();
+  const trimmed = redactSensitiveText(input).trim();
   if (trimmed.length <= max) return trimmed;
-  return `${trimmed.slice(0, max - 1)}…`;
+  return `${trimmed.slice(0, max - 3)}...`;
 }
 
 /**

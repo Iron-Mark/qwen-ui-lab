@@ -21,6 +21,20 @@ test("normalizeScaffoldExportRequestBody sanitizes export metadata", () => {
   });
 });
 
+test("normalizeScaffoldExportRequestBody redacts sensitive description metadata", () => {
+  const result = normalizeScaffoldExportRequestBody({
+    content: "export const StarterFixture = () => null;",
+    description:
+      "Exported from C:\\Users\\Mark\\shot.png with GITHUB_TOKEN=ghp_secret and #share=abcdef",
+  });
+
+  assert.equal(result.ok, true);
+  assert.doesNotMatch(result.description, /C:\\Users|ghp_secret|#share=abcdef/);
+  assert.match(result.description, /\[local path\]/);
+  assert.match(result.description, /GITHUB_TOKEN=<redacted>/);
+  assert.match(result.description, /#share=<redacted>/);
+});
+
 test("normalizeScaffoldExportRequestBody accepts forced zip mode", () => {
   const result = normalizeScaffoldExportRequestBody({
     content: "export const StarterFixture = () => null;",

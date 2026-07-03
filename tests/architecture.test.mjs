@@ -1733,6 +1733,45 @@ test("product-facing review status labels use the shared sanitizer", async () =>
   assert.deepEqual(violations, []);
 });
 
+test("share and export boundaries use the shared privacy redactor", async () => {
+  const privacyRedactorFile = path.join(process.cwd(), "src", "lib", "privacy-redaction.mjs");
+  const privacyBoundaryFiles = [
+    path.join(process.cwd(), "scripts", "build-reliability-summary.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "github-gist.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "github-repo.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-export-request.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-package.mjs"),
+    path.join(process.cwd(), "src", "features", "share", "lib", "share-result.mjs"),
+  ];
+  const expectedRedactorTerms = [
+    "DASHSCOPE_API_KEY",
+    "GITHUB_TOKEN",
+    "KV_REST_API_TOKEN",
+    "#share=<redacted>",
+    "[local path]",
+  ];
+  const duplicatedPrivacyPattern =
+    /\/(?:[^/\n]*(?:#share=|Users\|home|api[_-]\?key|GITHUB_TOKEN|DASHSCOPE_API_KEY)[^/\n]*)\//i;
+
+  const redactorSource = await readFile(privacyRedactorFile, "utf8");
+  for (const term of expectedRedactorTerms) {
+    assert.ok(redactorSource.includes(term), `${toRepoPath(privacyRedactorFile)} missing ${term}`);
+  }
+
+  const violations = [];
+  for (const file of privacyBoundaryFiles) {
+    const source = await readFile(file, "utf8");
+    if (!source.includes("redactSensitiveText")) {
+      violations.push(`${toRepoPath(file)} does not use redactSensitiveText`);
+    }
+    if (file !== privacyRedactorFile && duplicatedPrivacyPattern.test(source)) {
+      violations.push(`${toRepoPath(file)} duplicates privacy redaction regex`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("export defaults use starter component naming", async () => {
   const exportDefaultFiles = [
     path.join(process.cwd(), "src", "features", "export", "components", "ExportButton.tsx"),

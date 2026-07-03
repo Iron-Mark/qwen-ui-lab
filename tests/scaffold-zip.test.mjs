@@ -174,6 +174,23 @@ export default function StarterComponent() {
   assert.doesNotMatch(tokenCss, /--qwen-generated/);
 });
 
+test("buildScaffoldZipEntries redacts sensitive description metadata in package docs", () => {
+  const entries = buildScaffoldZipEntries({
+    filename: "starter-fixture.tsx",
+    description:
+      "Exported from C:\\Users\\Mark\\shot.png with DASHSCOPE_API_KEY=sk-secret and #share=abcdef",
+    content: "export default function StarterComponent() { return null; }",
+  });
+  const readme = entries.find((entry) => entry.name === "README.md")?.content ?? "";
+  const design = entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "";
+  const combined = `${readme}\n${design}`;
+
+  assert.doesNotMatch(combined, /C:\\Users|sk-secret|#share=abcdef/);
+  assert.match(combined, /\[local path\]/);
+  assert.match(combined, /DASHSCOPE_API_KEY=<redacted>/);
+  assert.match(combined, /#share=<redacted>/);
+});
+
 test("buildScaffoldZipEntries includes design notes for rich starter packages", () => {
   const entries = buildScaffoldZipEntries({
     filename: "dashboard.tsx",
