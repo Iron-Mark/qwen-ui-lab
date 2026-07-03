@@ -826,7 +826,7 @@ export default function ${profile.componentName}() {
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component translated from the screenshot structure. Replace draft copy,
+              Starter component translated from the screenshot structure. Replace starter copy,
               connect product data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
@@ -1166,13 +1166,13 @@ function knownSampleResponsiveIntent(archetypeId) {
   return {
     mode: modes[archetypeId] ?? "responsive-page",
     breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review exported regions, replace draft content, then connect live data.",
+    primaryFlow: "Review exported regions, replace starter content, then connect live data.",
   };
 }
 
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
-    "Replace draft content",
+    "Replace starter content",
     "Connect product data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
@@ -1768,19 +1768,19 @@ const layoutRegions = ${JSON.stringify(regions, null, 2)};
 const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this handoff-ready starter to review structure, then replace draft copy and values with product data.",
+    "Use this starter package to review structure, then replace starter copy and values with product data.",
   primaryAction: "Review export",
   secondaryAction: "Open design notes",
 };
 
 const starterCollections = {
   rows: [
-    { title: "Queued review", detail: "Replace with a real list item" },
-    { title: "Ready for handoff review", detail: "Connect this row to product data" },
+    { title: "Queued review", detail: "Connect this row to product data" },
+    { title: "Ready for integration", detail: "Connect this row to product data" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
-    { title: "Overview", detail: "Draft card content" },
+    { title: "Overview", detail: "Connect this card to product data" },
     { title: "Activity", detail: "Swap for real entity data" },
     { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
@@ -1927,10 +1927,10 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Handoff checklist</CardTitle>
+        <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
           {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
-          {generatedLayoutGrid.columns}-column starter layout for project handoff.
+          {generatedLayoutGrid.columns}-column starter layout for project integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -2019,7 +2019,7 @@ function FormSection({ section }: { section: UsableSectionModel }) {
                 <Label htmlFor="generated-primary-field">Primary field</Label>
                 <Input id="generated-primary-field" placeholder="Enter product data" />
               </div>
-              <Button type="button" className="w-fit">Submit action</Button>
+              <Button type="button" className="w-fit">Save changes</Button>
             </>
           )}
         </form>
@@ -2333,7 +2333,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       (_, index) =>
         starterCollections.rows[index] ?? {
           title: "Row " + (index + 1),
-          detail: "Replace with a real list item",
+          detail: "Connect this row to product data",
         },
     );
     return (
@@ -2436,7 +2436,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             </Label>
             <Input
               id={region.id + "-field-" + (itemIndex + 1)}
-              placeholder="Value or input"
+              placeholder="Enter field value"
               style={{ backgroundColor: tokens.surface }}
             />
           </div>
@@ -2446,7 +2446,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
           style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
         >
-          Submit action
+          Save changes
         </Button>
         <p className="text-[11px] opacity-70">
           State coverage: wire validation errors, pending submit state, and success feedback.
@@ -2615,9 +2615,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
         <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
         <div className="flex items-center gap-2">
-          <Input id={region.id + "-control"} placeholder="User input or action" />
+          <Input id={region.id + "-control"} placeholder="Enter field value" />
           <Button type="button" size="xs" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Apply
+            Save
           </Button>
         </div>
       </div>

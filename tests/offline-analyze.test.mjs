@@ -68,6 +68,9 @@ function assertNoGeneratedStarterSlop(code, label) {
     /placeholder (?:content|copy)/i,
     /Sample card content/,
     /Replace sample/i,
+    /Value or input/,
+    /User input or action/,
+    /Submit action/,
   ];
 
   for (const pattern of blockedPatterns) {
@@ -1228,10 +1231,10 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /function FormSection/);
   assert.match(advanced.generatedCode, /function GenericSection/);
   assert.match(advanced.generatedCode, /starterData\.screenTitle/);
-  assert.match(advanced.generatedCode, /handoff-ready starter/);
+  assert.match(advanced.generatedCode, /starter package/);
   assert.doesNotMatch(advanced.generatedCode, /import-ready layout/);
   assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
-  assert.match(advanced.generatedCode, /Handoff checklist/);
+  assert.match(advanced.generatedCode, /Integration checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
   assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);
   assert.match(advanced.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
@@ -1281,7 +1284,7 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
   assert.match(advanced.generatedCode, /starterCollections\.rows/);
-  assert.match(advanced.generatedCode, /Replace with a real list item/);
+  assert.match(advanced.generatedCode, /Connect this row to product data/);
   assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling/);
   assert.match(advanced.generatedCode, /text-line signals shape the export/);
 });
@@ -1355,7 +1358,7 @@ test("buildAdvancedOfflineOverrides renders form-group patterns as scaffold regi
   assert.match(advanced.generatedCode, /form-group/);
   assert.match(advanced.generatedCode, /<Label htmlFor=/);
   assert.match(advanced.generatedCode, /<Input id=/);
-  assert.match(advanced.generatedCode, /Submit action/);
+  assert.match(advanced.generatedCode, /Save changes/);
   assert.match(advanced.generatedCode, /State coverage: wire validation errors, pending submit state, and success feedback/);
   assert.match(advanced.generatedCode, /form groups/);
 });
@@ -1649,7 +1652,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
   assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
   assert.match(regenerated.generatedCode, /Screenshot starter component/);
-  assert.match(regenerated.generatedCode, /Handoff checklist/);
+  assert.match(regenerated.generatedCode, /Integration checklist/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);

@@ -71,7 +71,7 @@ export function buildQwenVisionRequest({
               "generatedCode must be usable starter TSX, not a sample-run note.",
               "generatedCode should prefer shadcn-style primitives from @/components/ui: Card, Button, Input, Badge, Tabs, Dialog, Select, Table when those match the screenshot.",
               "generatedCode should export a default top-level component plus small named subcomponents for repeated sections.",
-              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and clearly named sample data constants that can be replaced with product data.",
+              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and clearly named starter data constants that can be replaced with product data.",
               "Avoid app-specific sample-run imports unless they are included in generatedCode. Do not leave TODO-only blocks as the main output.",
             ].join("\n"),
           },

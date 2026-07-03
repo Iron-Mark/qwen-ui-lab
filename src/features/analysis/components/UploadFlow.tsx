@@ -1535,7 +1535,7 @@ function buildExportReadmePreview({
     `## ${copy.exportReadmeNext}`,
     "",
     "1. Review detection notes before deleting or merging regions.",
-    "2. Replace sample content with product data.",
+    "2. Replace starter content with product data.",
     "3. Run lint/build after placing the starter component.",
   ].join("\n");
 }

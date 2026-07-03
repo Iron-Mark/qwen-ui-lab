@@ -224,7 +224,7 @@ function buildReviewChecklist({
     );
   }
   if ((patterns.dataTables ?? []).length) {
-    checklist.push("Replace sample table rows with typed data and accessible column headers.");
+    checklist.push("Replace starter table rows with typed data and accessible column headers.");
   }
   if ((patterns.formGroups ?? []).length) {
     checklist.push("Connect form fields to validation, helper text, and submit states.");

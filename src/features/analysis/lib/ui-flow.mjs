@@ -516,7 +516,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
 };
 
 const starterSectionData = {
-  rows: ["Queued review", "Ready for handoff", "Needs QA"],
+  rows: ["Queued review", "Ready for integration", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
   tableColumns: ["Name", "Status", "Value"],
@@ -585,7 +585,7 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Handoff checklist</CardTitle>
+        <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
           Review metadata stays in the exported recipe, while this component keeps the UI structure ready for app integration.
         </CardDescription>

@@ -389,7 +389,7 @@ export function buildDesignMarkdown({
     `Download ${componentFilename} and verify it contains ${componentNames}.`,
     `Download ${DESIGN_MD_FILENAME} and verify component inventory plus detector signals are present.`,
     activeElements.length
-      ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible during handoff.`
+      ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible during integration.`
       : "Compare the starter structure, key controls, and responsive assumptions against the screenshot.",
   ];
 

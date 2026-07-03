@@ -4,10 +4,10 @@ const DEFAULT_REVIEW_BASIS =
 export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
 const EXPORT_PACKAGE_SCHEMA = "qwen-ui-lab/export-package@1";
 const EXPORT_README_TITLE = "Screenshot-to-React starter package";
-const STARTER_BRANCH_INTRO =
-  "Use this as a starter branch: place the files in your app, connect product data, and compare the screen against the uploaded screenshot.";
+const STARTER_PACKAGE_INTRO =
+  "Use this as a starter package: place the files in your app, connect product data, and compare the screen against the uploaded screenshot.";
 const RICH_PACKAGE_INTRO =
-  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter branch that still needs product data and visual parity checks.";
+  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter package that still needs product data and visual parity checks.";
 
 export function buildScaffoldReadme({
   filename,
@@ -18,11 +18,11 @@ export function buildScaffoldReadme({
 
 ${description}
 
-${STARTER_BRANCH_INTRO}
+${STARTER_PACKAGE_INTRO}
 
 ## Files
 
-- \`README.md\` - package overview and handoff checklist
+- \`README.md\` - package overview and integration checklist
 - \`DESIGN.md\` - design notes, review items, and responsive assumptions
 - \`${filename}\` - React + Tailwind starter component
 
@@ -70,7 +70,7 @@ ${RICH_PACKAGE_INTRO}
 
 - A React + Tailwind starting point based on the uploaded screenshot.
 - A rebuild recipe that records detected regions, primitive mappings, and manual edits.
-- Design and detection notes for handoff and verification.
+- Design and detection notes for integration and verification.
 
 ## What this package still needs
 
@@ -95,7 +95,7 @@ ${buildReviewContractMarkdown({ files })}
 - \`${files.recipe}\` - detection recipe, primitive map, and rebuild settings
 - \`${files.manifest}\` - package identity, dependency hints, and quality gates
 - \`${files.tokens}\` - CSS variables derived from the screenshot palette
-- \`${files.detectionSummary}\` - human-readable detection notes, confidence summary, and integration checklist
+- \`${files.detectionSummary}\` - detection notes, confidence summary, and integration checklist
 
 ## Package inventory
 
@@ -109,12 +109,12 @@ ${buildImportReadinessMarkdown({ dependencies, files })}
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
 
-## Handoff checklist
+## Integration checklist
 
 1. Copy \`src/components/starters/\` into your app.
 2. Add the exported component to the route or page where it belongs.
-3. Replace sample content with real product data.
-4. Keep the recipe JSON during handoff so edits can be compared against the screenshot-derived source.
+3. Replace starter content with real product data.
+4. Keep the recipe JSON during integration so edits can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
 
@@ -139,11 +139,11 @@ export function buildFallbackPackageReadme({
 
 ${description}
 
-${STARTER_BRANCH_INTRO}
+${STARTER_PACKAGE_INTRO}
 
 ## What this package is
 
-- A starter component file plus supporting handoff documents.
+- A starter component file plus supporting integration documents.
 - A portable starter for adapting screenshot-inspired UI inside your app.
 - A portable export package with recipe, manifest, tokens, and detection notes.
 
@@ -156,13 +156,13 @@ ${buildReviewContractMarkdown({ files })}
 
 ## What changed from the screenshot
 
-- The exported TSX was wrapped with package metadata for handoff.
-- No detection-box edits were included with this component-only package.
+- The exported TSX was wrapped with package metadata for integration.
+- No detection-box edits were included with this component package.
 - Compare the component against the screenshot before connecting it to a route.
 
 ## Files
 
-- \`README.md\` - package overview and handoff checklist
+- \`README.md\` - package overview and integration checklist
 - \`${designDoc}\` - design notes, review items, and responsive assumptions
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
 - \`${files.recipe}\` - rebuild recipe and package context
@@ -251,7 +251,7 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 - Visible regions were grouped into ${regions.length} layout region${regions.length === 1 ? "" : "s"}.
 - ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
 - Primitive mappings were exported so the component can move toward shadcn-style UI without guessing later.
-- The recipe and manifest keep handoff tied to the screenshot-derived decisions.
+- The recipe and manifest keep integration tied to the screenshot-derived decisions.
 
 ## Confidence summary
 
@@ -388,7 +388,7 @@ ${reviewChecklist}
 
 - Confirm interactive controls have visible labels and keyboard focus.
 - Add real loading, empty, and error states for data-backed sections.
-- Check color contrast after replacing sample content and tokens.
+- Check color contrast after replacing starter content and tokens.
 `;
 }
 
@@ -447,7 +447,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
     qualityGates: [
       "Compare the placed starter against the source screenshot.",
       "Review detection summary, low-confidence regions, and edited boxes.",
-      "Replace sample data and copy with product-owned content.",
+      "Replace starter data and copy with product-owned content.",
       "Add or verify loading, empty, error, and keyboard focus states.",
       "Run app lint/build after placing the starter.",
       "Verify responsive layout at mobile, tablet, and desktop widths.",
@@ -459,7 +459,7 @@ function formatPackageInventory(inventory) {
   const rows = normalizeInventoryRows(inventory);
 
   if (!rows.length) {
-    return "- Inventory unavailable. Verify README.md, DESIGN.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes during handoff.";
+    return "- Inventory unavailable. Verify README.md, DESIGN.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes during integration.";
   }
 
   return [
@@ -492,7 +492,7 @@ function buildQuickImportMarkdown({ files, componentName }) {
     .replace(/\.tsx$/, "")}`;
   const safeComponentName = normalizeComponentName(componentName);
 
-  return `## Project handoff
+  return `## Project integration
 
 \`\`\`tsx
 import ${safeComponentName} from "${importPath}";
@@ -718,7 +718,7 @@ function buildReviewEditNotes(elements) {
   return [
     ...edited.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
-      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry during handoff.`;
+      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry during integration.`;
     }),
     ...excluded.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";

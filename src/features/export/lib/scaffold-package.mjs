@@ -89,12 +89,12 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
       activeElements: 0,
       appliedEdits: 0,
       excludedBoxes: 0,
-      sourceOfTruth: "No detection-box edits were included with this component-only package.",
+      sourceOfTruth: "No detection-box edits were included with this component package.",
     },
     primitiveSummary: [],
     reviewChecklist: [
       "Review spacing, typography, and responsive behavior against the source screenshot.",
-      "Replace sample content with product data.",
+      "Replace starter content with product data.",
       "Run lint/build after placing the component.",
     ],
   };
@@ -137,7 +137,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
       importPath: `@/components/starters/${stem}`,
       dependencies,
       nextSteps: [
-        "Replace sample copy with product content.",
+        "Replace starter copy with product content.",
         "Connect cards, tables, charts, and forms to product data.",
         "Review the detection summary before deleting unused regions.",
       ],

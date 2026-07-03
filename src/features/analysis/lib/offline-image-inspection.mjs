@@ -597,7 +597,7 @@ function summarizeDetectedElements(inspection) {
 function summarizeResponsiveIntent(inspection) {
   const responsive = inspection.layoutTree?.responsive;
   if (!responsive) {
-    return "No responsive intent was inferred; verify mobile, tablet, and desktop breakpoints during handoff.";
+    return "No responsive intent was inferred; verify mobile, tablet, and desktop breakpoints during integration.";
   }
 
   return [

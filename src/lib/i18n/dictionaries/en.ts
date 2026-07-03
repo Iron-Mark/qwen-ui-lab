@@ -21,7 +21,7 @@ export const en = {
     benefitDesignLabel: "Export",
     benefitDesignTitle: "Export the package",
     benefitDesignBody:
-      "Review TSX, Design.md, and package files during handoff.",
+      "Review TSX, Design.md, and package files during integration.",
     trustSignalsAria: "Trust signals",
     keyBenefitsAria: "Key benefits",
   },
@@ -268,7 +268,7 @@ export const en = {
       "Package export downloads these files as an inspectable zip. The direct component download exports only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
-      "Use these notes to review the starter package during project handoff.",
+      "Use these notes to review the starter package during project integration.",
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
@@ -294,8 +294,8 @@ export const en = {
     exportReadmeNoCorrections: "No review changes captured.",
     exportReadmeReviewNotes: "Review notes",
     exportReadmeReviewSummary:
-      "{count} low-confidence element(s) need review during handoff.",
-    exportReadmeReviewClear: "Use the checklist during handoff.",
+      "{count} low-confidence element(s) need review during integration.",
+    exportReadmeReviewClear: "Use the checklist during integration.",
     exportReadmeContains: "What this package contains",
     exportReadmeNext: "Next steps",
     exportCopyAll: "Copy all",

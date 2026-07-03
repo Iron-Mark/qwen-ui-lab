@@ -174,7 +174,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
     "docs/detected-dashboard.detection.md",
   ]);
   assert.match(entries[0].content, /Screenshot-to-React starter package/);
-  assert.match(entries[0].content, /starter branch that still needs product data and visual parity checks/);
+  assert.match(entries[0].content, /starter package that still needs product data and visual parity checks/);
   assert.doesNotMatch(entries[0].content, /final production|production data wiring/);
   assert.match(
     entries[0].content,

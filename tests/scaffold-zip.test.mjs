@@ -80,7 +80,7 @@ export default function StarterComponent() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /No detection-box edits were included with this component-only package/,
+    /No detection-box edits were included with this component package/,
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -92,7 +92,7 @@ export default function StarterComponent() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /Use this as a starter branch/,
+    /Use this as a starter package/,
   );
   assert.doesNotMatch(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -290,7 +290,7 @@ test("export package docs use concrete fallback review guidance", () => {
 
   assert.match(
     readme,
-    /Verify README\.md, DESIGN\.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes during handoff/,
+    /Verify README\.md, DESIGN\.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes during integration/,
   );
   assert.doesNotMatch(readme, /undefined/);
   assert.doesNotMatch(readme, /Inspect the zip entries before import/);
