@@ -1,5 +1,7 @@
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 import {
+  DEFAULT_NO_REVIEW_UPDATES,
+  DEFAULT_REVIEW_UPDATES_BASIS,
   extractProductionScaffoldBlueprint,
   hashContent,
   inferStarterComponentName,
@@ -45,7 +47,7 @@ export function buildScaffoldZipEntries({ content, filename, description }) {
 function sanitizeExportedComponentMetadata(content) {
   return String(content || "").replace(
     /("sourceOfTruth"\s*:\s*")([^"]*)(source\s+of\s+truth|(?:manual|reviewer) corrections)([^"]*)(")/gi,
-    '$1Detection boxes and review edits are captured in the recipe JSON.$5',
+    (_match, start, _before, _trigger, _after, end) => `${start}${DEFAULT_REVIEW_UPDATES_BASIS}${end}`,
   );
 }
 
@@ -89,7 +91,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
       activeElements: 0,
       appliedEdits: 0,
       excludedBoxes: 0,
-      sourceOfTruth: "No detection-box edits were included with this component package.",
+      sourceOfTruth: DEFAULT_NO_REVIEW_UPDATES,
     },
     primitiveSummary: [],
     reviewChecklist: [

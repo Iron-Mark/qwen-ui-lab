@@ -178,7 +178,7 @@ test("zh sample picker copy uses sample-run language", () => {
   assert.doesNotMatch(zhDictionarySource, new RegExp(loadReferenceImage));
 });
 
-test("export package preview surfaces correction metrics", () => {
+test("export package preview surfaces review update metrics", () => {
   assert.match(enDictionarySource, /exportMetricEdits:\s*"Updated"/);
   assert.match(enDictionarySource, /exportMetricExcluded:\s*"Hidden"/);
   assert.match(zhDictionarySource, /exportMetricEdits:\s*"\u66f4\u65b0"/);

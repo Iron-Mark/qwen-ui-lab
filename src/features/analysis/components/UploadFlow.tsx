@@ -725,15 +725,15 @@ function DetectedReferencePreview({
                   Detection review
                 </p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Adjust boxes before regenerating. Your edits guide the next preview.
+                  Adjust boxes before regenerating. Your updates guide the next preview.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Badge variant={qualityStats.reviewCount ? "destructive" : "secondary"}>
                   {qualityStats.reviewCount} review
                 </Badge>
-                <Badge variant="outline">{qualityStats.editedCount} edited</Badge>
-                <Badge variant="outline">{qualityStats.excludedCount} excluded</Badge>
+                <Badge variant="outline">{qualityStats.editedCount} updated</Badge>
+                <Badge variant="outline">{qualityStats.excludedCount} hidden</Badge>
                 <Badge
                   variant="secondary"
                   data-testid="visual-diff-score"
@@ -746,7 +746,7 @@ function DetectedReferencePreview({
 
             <div className="grid gap-2 rounded-lg border border-border/70 bg-muted/20 p-3">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Correction tools
+                Box tools
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -1412,7 +1412,7 @@ function buildExportPackagePreview(
     {
       path: `src/components/starters/${stem}.recipe.json`,
       label: "Recipe",
-      description: "Primitive map, review edits, and settings for rebuilding the component.",
+      description: "Primitive map, reviewer updates, and settings for rebuilding the component.",
     },
     {
       path: `src/components/starters/${stem}.manifest.json`,

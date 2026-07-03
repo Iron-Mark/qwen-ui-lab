@@ -45,7 +45,7 @@ export function SharedSummaryCard({
             icon: CheckCircle2,
           },
           {
-            label: "Edited",
+            label: "Updated",
             value: String(detectionCounts.edited),
             icon: SlidersHorizontal,
           },

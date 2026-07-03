@@ -31,7 +31,7 @@ export function mergeManualCorrectionReasons({
   const correctionReasons = [
     {
       code: "manual-correction",
-      label: "Review edit",
+      label: "Box update",
       evidence: changes.length
         ? `Updated ${changes.join(", ")}; this box now guides ${sourceText}.`
         : `This updated box now guides ${sourceText}.`,
@@ -40,7 +40,7 @@ export function mergeManualCorrectionReasons({
     {
       code: "correction-confidence",
       label: "Review confidence",
-      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the review edit.`,
+      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the box update.`,
       weight: 0.82,
     },
   ];

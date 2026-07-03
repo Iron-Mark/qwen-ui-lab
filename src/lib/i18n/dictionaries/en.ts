@@ -290,8 +290,8 @@ export const en = {
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",
-    exportReadmeCorrections: "Review changes",
-    exportReadmeNoCorrections: "No review changes captured.",
+    exportReadmeCorrections: "Review updates",
+    exportReadmeNoCorrections: "No review updates captured.",
     exportReadmeReviewNotes: "Review notes",
     exportReadmeReviewSummary:
       "{count} low-confidence element(s) need review during integration.",

@@ -238,7 +238,7 @@ test("buildDesignMarkdown synthesizes review evidence for detections without rea
   assert.doesNotMatch(markdown, /No confidence reasons were attached/);
   assert.match(markdown, /Detector medium confidence/);
   assert.match(markdown, /Centered overlay geometry suggests dialog content/);
-  assert.match(markdown, /Reviewer edit guides rebuild/);
+  assert.match(markdown, /Reviewer update guides rebuild/);
   assert.match(markdown, /Reviewer hid this box from starter sections/);
   assert.match(markdown, /Geometry evidence 600x520/);
 });

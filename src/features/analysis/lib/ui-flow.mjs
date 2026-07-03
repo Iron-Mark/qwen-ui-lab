@@ -176,7 +176,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
       value: existingSectionsStat?.value ?? String(activeElements.length),
     },
     {
-      label: "Edited",
+      label: "Updated",
       value: String((correctedDetections.elements ?? []).filter((element) => element.userEdited).length),
     },
     {
@@ -226,7 +226,7 @@ function recomputeCorrectedDetections(detections) {
       correctedElementCount: editedCount,
       excludedElementCount: excludedCount,
       strategy: editedCount
-        ? `${detections.quality?.strategy ?? "offline-detection"} + review-edits-applied`
+        ? `${detections.quality?.strategy ?? "offline-detection"} + reviewer-updates-applied`
         : detections.quality?.strategy,
     },
   };
@@ -350,7 +350,7 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
     excludedBoxes: detections.quality?.excludedElementCount ?? 0,
     sourceOfTruth: detections.quality?.correctedElementCount
-      ? "Reviewer corrections guide this starter."
+      ? "Reviewer updates guide this starter."
       : "Detection boxes guide this starter.",
   };
 
@@ -604,7 +604,7 @@ function ImplementationChecklist() {
           {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
         <p>
-          <span className="block font-medium text-foreground">Review changes</span>
+          <span className="block font-medium text-foreground">Review updates</span>
           {correctionSummary.appliedEdits} updated boxes, {correctionSummary.excludedBoxes} hidden boxes
         </p>
       </CardContent>

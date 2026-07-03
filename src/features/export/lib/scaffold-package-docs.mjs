@@ -1,9 +1,13 @@
+import {
+  DEFAULT_NO_REVIEW_UPDATES,
+  DEFAULT_REVIEW_UPDATES_BASIS,
+} from "./scaffold-blueprint.mjs";
+
 export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
-const DEFAULT_REVIEW_BASIS =
-  "Detection boxes and review edits are captured in the recipe JSON.";
 export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
 const EXPORT_PACKAGE_SCHEMA = "qwen-ui-lab/export-package@1";
 const EXPORT_README_TITLE = "Screenshot-to-React starter package";
+const REVIEW_UPDATES_HEADING = "Review updates";
 const STARTER_PACKAGE_INTRO =
   "Use this as a starter package: place the files in your app, connect product data, and compare the screen against the uploaded screenshot.";
 const RICH_PACKAGE_INTRO =
@@ -57,7 +61,7 @@ export function buildProductionScaffoldReadme({
   const primitiveMappingNoun = `shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"}`;
   const primitiveMappingVerb = primitiveCount === 1 ? "was" : "were";
   const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
-  const correctionSummary = summarizeReviewChanges(blueprint);
+  const updateSummary = summarizeReviewUpdates(blueprint);
   const reviewSummary = summarizeUnresolvedReviewNotes(blueprint);
 
   return `# ${EXPORT_README_TITLE}
@@ -69,7 +73,7 @@ ${RICH_PACKAGE_INTRO}
 ## What this package is
 
 - A React + Tailwind starting point based on the uploaded screenshot.
-- A rebuild recipe that records detected regions, primitive mappings, and review edits.
+- A rebuild recipe that records detected regions, primitive mappings, and reviewer updates.
 - Design and detection notes for integration and verification.
 
 ## What this package still needs
@@ -85,7 +89,7 @@ ${buildReviewContractMarkdown({ files })}
 - ${regionCount} layout region${regionCount === 1 ? "" : "s"} and ${elementCount} detected element${elementCount === 1 ? "" : "s"} were converted into React sections.
 - ${primitiveCount} ${primitiveMappingNoun} ${primitiveMappingVerb} included for verification.
 - Responsive mode: ${responsiveMode}
-- Review changes: ${correctionSummary}
+- ${REVIEW_UPDATES_HEADING}: ${updateSummary}
 - Verification notes: ${reviewSummary}
 
 ## Files
@@ -114,7 +118,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 1. Copy \`src/components/starters/\` into your app.
 2. Add the starter component to the route or page where it belongs.
 3. Replace starter content with real product data.
-4. Keep the recipe JSON during integration so edits can be compared against the screenshot-derived source.
+4. Keep the recipe JSON during integration so reviewer updates can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
 
@@ -157,7 +161,7 @@ ${buildReviewContractMarkdown({ files })}
 ## What changed from the screenshot
 
 - The starter component was packaged with integration metadata.
-- No detection-box edits were included with this component package.
+- ${DEFAULT_NO_REVIEW_UPDATES}
 - Compare the component against the screenshot before connecting it to a route.
 
 ## Files
@@ -229,7 +233,7 @@ export function buildDetectionSummaryMarkdown(blueprint) {
     })
     .join("\n");
   const confidenceSummary = summarizeConfidenceBands([...regions, ...elements]);
-  const reviewEditNotes = buildReviewEditNotes(elements);
+  const boxUpdateNotes = buildBoxUpdateNotes(elements);
   const correctionMetadata = blueprint.correctionSummary;
   const lowConfidenceReviewQueue = buildLowConfidenceReviewQueue([...regions, ...elements]);
   const confidenceReasonSummary = buildConfidenceReasonSummary(elements);
@@ -268,14 +272,14 @@ ${lowConfidenceReviewQueue}
 
 ${confidenceReasonSummary}
 
-## Review changes
+## ${REVIEW_UPDATES_HEADING}
 
 - Active elements: ${correctionMetadata?.activeElements ?? elements.filter((element) => element.included !== false).length}
 - Updated boxes: ${correctionMetadata?.appliedEdits ?? elements.filter((element) => element.userEdited === true).length}
 - Hidden boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
-- Rebuild guide: ${correctionMetadata?.sourceOfTruth ?? DEFAULT_REVIEW_BASIS}
+- Rebuild guide: ${correctionMetadata?.sourceOfTruth ?? DEFAULT_REVIEW_UPDATES_BASIS}
 
-${reviewEditNotes}
+${boxUpdateNotes}
 
 ## Review notes
 
@@ -330,7 +334,7 @@ export function buildPackageDesignMarkdown({
   const reviewChecklist = blueprint?.reviewChecklist?.length
     ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
     : "- Review the starter component against the source screenshot.";
-  const correctionSummary = formatReviewChangesSection(blueprint);
+  const updateSummary = formatReviewUpdatesSection(blueprint);
 
   return `# Design notes
 
@@ -354,9 +358,9 @@ ${description}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Compare mobile, tablet, and desktop layouts against the source screenshot."}
 
-## Review changes
+## ${REVIEW_UPDATES_HEADING}
 
-${correctionSummary}
+${updateSummary}
 
 ${buildReviewContractMarkdown({ files })}
 
@@ -425,7 +429,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
       excludedBoxes: blueprint.correctionSummary?.excludedBoxes ?? 0,
       sourceOfTruth:
         blueprint.correctionSummary?.sourceOfTruth ??
-        DEFAULT_REVIEW_BASIS,
+        DEFAULT_REVIEW_UPDATES_BASIS,
     },
     reviewContract: {
       keepFilesUntilReviewComplete: [
@@ -609,7 +613,7 @@ export function buildTokenCss(tokens) {
 `;
 }
 
-function summarizeReviewChanges(blueprint) {
+function summarizeReviewUpdates(blueprint) {
   const summary = blueprint?.correctionSummary;
   if (summary && typeof summary === "object") {
     const edited = Number(summary.appliedEdits) || 0;
@@ -648,14 +652,14 @@ function summarizeReviewChanges(blueprint) {
   return `${parts.join(", ")} captured in the recipe JSON.`;
 }
 
-function formatReviewChangesSection(blueprint) {
+function formatReviewUpdatesSection(blueprint) {
   const summary = blueprint?.correctionSummary;
   if (!summary || typeof summary !== "object") {
     return [
       "- Active elements: unknown",
       "- Updated boxes: 0",
       "- Hidden boxes: 0",
-      `- Rebuild guide: ${DEFAULT_REVIEW_BASIS}`,
+      `- Rebuild guide: ${DEFAULT_REVIEW_UPDATES_BASIS}`,
     ].join("\n");
   }
 
@@ -665,7 +669,7 @@ function formatReviewChangesSection(blueprint) {
     `- Hidden boxes: ${Number(summary.excludedBoxes) || 0}`,
     `- Rebuild guide: ${
       summary.sourceOfTruth ||
-      DEFAULT_REVIEW_BASIS
+      DEFAULT_REVIEW_UPDATES_BASIS
     }`,
   ].join("\n");
 }
@@ -708,21 +712,21 @@ function summarizeConfidenceBands(items) {
   );
 }
 
-function buildReviewEditNotes(elements) {
+function buildBoxUpdateNotes(elements) {
   const edited = elements.filter((element) => element.userEdited === true);
   const excluded = elements.filter((element) => element.included === false);
   if (!edited.length && !excluded.length) {
-    return "- No review edits were captured for detection boxes in this export.";
+    return "- No box updates were captured for detection boxes in this export.";
   }
 
   return [
     ...edited.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
-      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry during integration.`;
+      return `- Updated ${element.id ?? role}: kept as ${role}; verify geometry during integration.`;
     }),
     ...excluded.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
-      return `- Excluded ${element.id ?? role}: ${role}; confirm it is decorative or intentionally omitted.`;
+      return `- Hidden ${element.id ?? role}: ${role}; confirm it is decorative or intentionally left out.`;
     }),
   ].join("\n");
 }
@@ -765,9 +769,9 @@ function buildConfidenceReasonSummary(elements) {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? `element-${index + 1}`;
       const reasons = detectionReasons(element).slice(0, 3);
       const prefix = element.userEdited
-        ? "review edit plus detector evidence"
+          ? "box update plus detector evidence"
         : element.included === false
-          ? "excluded from starter output"
+          ? "hidden from starter output"
           : "detector evidence";
       const evidence = reasons.length
         ? reasons
@@ -807,7 +811,7 @@ function fallbackDetectionReasons(item, role) {
   const primitive = item?.primitive ?? item?.componentRole ?? item?.kind ?? role;
 
   if (item?.userEdited) {
-    reasons.push("review edit marks this box as intentional");
+    reasons.push("box update marks this detection as intentional");
   }
 
   if (item?.included === false) {

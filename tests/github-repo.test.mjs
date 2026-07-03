@@ -7,6 +7,7 @@ import {
   parseGithubRepoSlug,
 } from "../src/features/export/lib/github-repo.mjs";
 import {
+  DEFAULT_REVIEW_UPDATES_BASIS,
   extractProductionScaffoldBlueprint,
   inferStarterComponentName,
 } from "../src/features/export/lib/scaffold-blueprint.mjs";
@@ -15,6 +16,10 @@ import {
   buildScaffoldPackageFileMap,
   buildScaffoldZipEntries,
 } from "../src/features/export/lib/scaffold-package.mjs";
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 test("canUseGithubRepoExport mirrors gist token detection", () => {
   assert.equal(canUseGithubRepoExport({}), false);
@@ -94,7 +99,7 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
     activeElements: 1,
     appliedEdits: 1,
     excludedBoxes: 1,
-    sourceOfTruth: "Detection boxes and review edits are captured in the recipe JSON.",
+    sourceOfTruth: DEFAULT_REVIEW_UPDATES_BASIS,
   });
   assert.match(blueprint.sourceHash, /^[a-f0-9]{64}$/);
   assert.ok(blueprint.reviewChecklist.some((item) => /table rows/.test(item)));
@@ -178,7 +183,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.doesNotMatch(entries[0].content, /final production|production data wiring/);
   assert.match(
     entries[0].content,
-    /Review changes: 1 updated box, 1 hidden element captured in the recipe JSON\./,
+    /Review updates: 1 updated box, 1 hidden element captured in the recipe JSON\./,
   );
   assert.match(
     entries[0].content,
@@ -187,14 +192,14 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[0].content, /## Package readiness/);
   assert.match(entries[0].content, /Required UI imports: .*@\/components\/ui\/button/);
   assert.match(entries[1].content, /Design notes/);
-  assert.match(entries[1].content, /## Review changes/);
+  assert.match(entries[1].content, /## Review updates/);
   assert.match(entries[1].content, /## Review contract/);
   assert.match(entries[1].content, /## Package readiness/);
   assert.match(entries[1].content, /Updated boxes: 1/);
   assert.match(entries[1].content, /Hidden boxes: 1/);
   assert.match(
     entries[1].content,
-    /Rebuild guide: Detection boxes and review edits are captured in the recipe JSON\./,
+    new RegExp(`Rebuild guide: ${escapeRegExp(DEFAULT_REVIEW_UPDATES_BASIS)}`),
   );
   assert.match(entries[2].content, /StarterComponent/);
   assert.match(entries[5].content, /--starter-accent: #2563eb/);
@@ -208,7 +213,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.match(entries[6].content, /Hidden boxes: 1/);
   assert.match(
     entries[6].content,
-    /Rebuild guide: Detection boxes and review edits are captured in the recipe JSON\./,
+    new RegExp(`Rebuild guide: ${escapeRegExp(DEFAULT_REVIEW_UPDATES_BASIS)}`),
   );
   assert.match(entries[6].content, /## Low-confidence review queue/);
   assert.match(entries[6].content, /element-2: 68% as primary-action/);
@@ -219,12 +224,12 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   );
   assert.match(
     entries[6].content,
-    /primary-action: review edit plus detector evidence; review edit marks this box as intentional; reviewer hid this box from starter sections; low-confidence score 68%\./,
+    /primary-action: box update plus detector evidence; box update marks this detection as intentional; reviewer hid this box from starter sections; low-confidence score 68%\./,
   );
   assert.match(entries[6].content, /## Review notes/);
   assert.match(entries[6].content, /Keep this detection note with the package when any low-confidence or updated boxes remain/);
-  assert.match(entries[6].content, /Edited element-2: kept as primary-action/);
-  assert.match(entries[6].content, /Excluded element-2: primary-action/);
+  assert.match(entries[6].content, /Updated element-2: kept as primary-action/);
+  assert.match(entries[6].content, /Hidden element-2: primary-action/);
 
   const recipe = JSON.parse(entries[3].content);
   assert.equal(recipe.schema, "qwen-ui-lab/scaffold-recipe@1");
@@ -251,7 +256,7 @@ test("buildScaffoldZipEntries creates export package for offline scaffolds", () 
   assert.equal(manifest.corrections.excludedBoxes, 1);
   assert.equal(
     manifest.corrections.sourceOfTruth,
-    "Detection boxes and review edits are captured in the recipe JSON.",
+    DEFAULT_REVIEW_UPDATES_BASIS,
   );
   assert.equal(manifest.files.designDoc, "DESIGN.md");
   assert.equal(manifest.files.recipe, "src/components/starters/detected-dashboard.recipe.json");
@@ -349,7 +354,7 @@ const correctionSummary = {
   "activeElements": 1,
   "appliedEdits": 1,
   "excludedBoxes": 1,
-  "sourceOfTruth": "Reviewer corrections guide this generated starter."
+  "sourceOfTruth": "Reviewer corrections were applied."
 };
 
 const shadcnPrimitiveMap: Record<string, string> = {

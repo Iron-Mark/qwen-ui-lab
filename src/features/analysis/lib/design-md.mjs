@@ -87,7 +87,7 @@ function elementFallbackSignals(element) {
 
   if (element?.userEdited) {
     signals.push({
-      label: "Reviewer edit guides rebuild",
+      label: "Reviewer update guides rebuild",
       weight: 0.2,
     });
   }
@@ -326,7 +326,7 @@ function renderDetectedElements(elements) {
 /**
  * Build deterministic DESIGN.md notes from the current analysis artifact.
  * The algorithm uses detected geometry, primitive snapping, and confidence
- * reasons so the document follows user edits and offline detector results.
+ * reasons so the document follows reviewer updates and offline detector results.
  *
  * @param {{
  *   artifact: {

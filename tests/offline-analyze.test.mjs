@@ -1946,15 +1946,15 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
 
   assert.match(regenerated.generatedCode, /LayoutPreviewStarter/);
   assert.match(regenerated.generatedCode, /const correctionSummary/);
-  assert.match(regenerated.generatedCode, /Review changes/);
-  assert.match(regenerated.generatedCode, /Reviewer corrections guide this starter/);
+  assert.match(regenerated.generatedCode, /Review updates/);
+  assert.match(regenerated.generatedCode, /Reviewer updates guide this starter/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
   assert.match(regenerated.generatedCode, /Button type="button"/);
-  assert.match(regenerated.generatedCode, /Review edit/);
+  assert.match(regenerated.generatedCode, /Box update/);
   assert.match(regenerated.generatedCode, /Review confidence/);
   assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
   assert.equal(
@@ -1962,7 +1962,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
     String(detections.elements.length - 1),
   );
   assert.equal(
-    regenerated.previewStats.find((stat) => stat.label === "Edited").value,
+    regenerated.previewStats.find((stat) => stat.label === "Updated").value,
     "2",
   );
   assert.ok(
@@ -1989,7 +1989,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.equal(regenerated.detections.quality.correctedElementCount, 2);
   assert.equal(regenerated.detections.quality.excludedElementCount, 1);
-  assert.match(regenerated.detections.quality.strategy, /review-edits-applied/);
+  assert.match(regenerated.detections.quality.strategy, /reviewer-updates-applied/);
 
   const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
   assert.ok(blueprint);
@@ -2001,7 +2001,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.ok(blueprint.detectedElements[0].confidence >= 0.72);
   assert.ok(
     blueprint.detectedElements[0].reasons.some((reason) =>
-      /Review edit/.test(reason),
+      /Box update/.test(reason),
     ),
   );
   assert.ok(

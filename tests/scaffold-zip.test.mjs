@@ -6,8 +6,16 @@ import {
   buildPackageDesignMarkdown,
   buildProductionManifest,
 } from "../src/features/export/lib/scaffold-package-docs.mjs";
+import {
+  DEFAULT_NO_REVIEW_UPDATES,
+  DEFAULT_REVIEW_UPDATES_BASIS,
+} from "../src/features/export/lib/scaffold-blueprint.mjs";
 import { buildScaffoldZipEntries } from "../src/features/export/lib/scaffold-package.mjs";
 import { createStoredZip } from "../src/features/export/lib/scaffold-zip.mjs";
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 test("createStoredZip produces a readable zip with README and scaffold", () => {
   const archive = createStoredZip([
@@ -80,7 +88,7 @@ export default function StarterComponent() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /No detection-box edits were included with this component package/,
+    new RegExp(escapeRegExp(DEFAULT_NO_REVIEW_UPDATES)),
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -216,7 +224,7 @@ export default function Dashboard() {
   assert.match(entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "", /Dashboard/);
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
-    /## Review changes/,
+    /## Review updates/,
   );
   assert.match(
     entries.find((entry) => entry.name === "DESIGN.md")?.content ?? "",
@@ -277,11 +285,11 @@ export default function Dashboard() {
 
   assert.equal(
     recipe.correctionSummary.sourceOfTruth,
-    "Detection boxes and review edits are captured in the recipe JSON.",
+    DEFAULT_REVIEW_UPDATES_BASIS,
   );
   assert.doesNotMatch(combinedPackageText, /source of truth/i);
   assert.doesNotMatch(combinedPackageText, /Manual corrections/i);
-  assert.match(combinedPackageText, /Review changes/);
+  assert.match(combinedPackageText, /Review updates/);
 });
 
 test("export package docs use concrete sparse-package review guidance", () => {
