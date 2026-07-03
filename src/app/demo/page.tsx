@@ -16,7 +16,7 @@ export default async function SampleRunPage(props: SampleRunRoutePageProps) {
 
   return (
     <>
-      <StructuredDataScript data={structuredData} />
+      <StructuredDataScript id="sample-run-structured-data" data={structuredData} />
       <SampleRunPageClient sampleRunId={sampleRunId} />
     </>
   );

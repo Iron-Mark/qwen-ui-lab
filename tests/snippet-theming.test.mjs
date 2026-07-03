@@ -63,6 +63,13 @@ test("Brand themes provide syntax overrides in light and dark modes", () => {
   assert.match(source, /:root\.dark\[data-brand="sunset"\][\s\S]*--syntax-regex:/);
 });
 
+test("Global theme tokens set native browser color scheme", () => {
+  const source = readProjectFile("src/app/globals.css");
+
+  assert.match(source, /:root\s*{[\s\S]*color-scheme:\s*light;/);
+  assert.match(source, /\.dark\s*{[\s\S]*color-scheme:\s*dark;/);
+});
+
 test("CodeHighlight assigns Prism language classes in both states", () => {
   const source = readProjectFile("src/features/analysis/components/CodeHighlight.tsx");
 

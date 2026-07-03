@@ -498,11 +498,13 @@ test("sitemap only advertises standalone public routes", async () => {
   assert.equal(routes.includes("/account"), false, "account is a modal redirect, not a sitemap page");
 });
 
-test("root layout delegates theme bootstrap logic to shared helpers", async () => {
+test("root layout renders theme preferences from shared cookie helpers", async () => {
   const file = path.join(process.cwd(), "src", "app", "layout.tsx");
   const source = await readFile(file, "utf8");
   const specifiers = collectModuleSpecifiers(file, source);
   const bannedInlineThemeMarkers = [
+    "createThemeBootstrapScript",
+    "dangerouslySetInnerHTML={{ __html: createThemeBootstrapScript() }}",
     "localStorage.getItem('theme')",
     "localStorage.getItem('brand-theme')",
     "window.matchMedia('(prefers-color-scheme: dark)')",
@@ -514,12 +516,14 @@ test("root layout delegates theme bootstrap logic to shared helpers", async () =
     .map((marker) => `${toRepoPath(file)} contains ${marker}`);
 
   assert.ok(
-    specifiers.includes("@/lib/theme-bootstrap.client"),
-    "src/app/layout.tsx should consume shared theme bootstrap helpers",
+    specifiers.includes("@/lib/theme-preferences"),
+    "src/app/layout.tsx should consume shared theme preference helpers",
   );
   assert.ok(
-    source.includes("createThemeBootstrapScript()"),
-    "src/app/layout.tsx should delegate inline theme script text to createThemeBootstrapScript",
+    source.includes("cookies()") &&
+      source.includes("resolveTheme(") &&
+      source.includes("resolveBrandTheme("),
+    "src/app/layout.tsx should render initial theme from cookie-backed helpers",
   );
   assert.deepEqual(violations, []);
 });
@@ -1859,6 +1863,7 @@ test("source and docs avoid removed compatibility import paths", async () => {
     "@/lib/analytics",
     "@/lib/analytics-event-buffer",
     "@/lib/clipboard",
+    "@/lib/theme-bootstrap.client",
     "@/lib/i18n/use-locale",
     "@/components/providers",
     "@/components/ui/sonner",

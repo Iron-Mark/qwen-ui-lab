@@ -13,7 +13,7 @@ export default function DesignSystemPage() {
 
   return (
     <>
-      <StructuredDataScript data={structuredData} />
+      <StructuredDataScript id="design-system-structured-data" data={structuredData} />
       <DesignSystemPageContent />
     </>
   );

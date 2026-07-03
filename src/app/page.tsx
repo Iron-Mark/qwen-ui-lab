@@ -13,7 +13,7 @@ export default function Home() {
 
   return (
     <main className="relative">
-      <StructuredDataScript data={structuredData} />
+      <StructuredDataScript id="home-structured-data" data={structuredData} />
       <HomePageContent />
     </main>
   );
