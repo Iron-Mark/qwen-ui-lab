@@ -36,7 +36,7 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 | **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide -> mobile boost) |
 | **MIME hint** | Optional small boost (e.g. SVG -> dashboard) |
 | **Pixel signal scan** | `src/features/analysis/lib/offline-image-inspection.mjs` samples canvas pixels, quantizes dominant colors, computes WCAG-style contrast, estimates edge density, and maps active cells on a 12x8 layout grid |
-| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed sample layouts still resolve to curated offline artifacts |
+| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed guided layouts still resolve to curated offline artifacts |
 | **SVG structure scan** | SVG markup contributes viewBox, text labels, shape counts, group counts, and archetype hints even when no raster/provider analysis is available |
 | **Otsu thresholding** | A luminance histogram separates likely foreground from dominant surfaces without a fixed magic threshold |
 | **Band-first regions** | Obvious header, bottom-nav, and side-rail bands are carved before connected components so L-shaped chrome does not collapse into one full-screen region |

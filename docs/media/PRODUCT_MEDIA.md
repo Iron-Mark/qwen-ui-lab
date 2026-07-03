@@ -26,7 +26,7 @@ Recording and slide assets for qwen-ui-lab walkthroughs, product tours, and shor
 
 ### During capture
 
-- [ ] Start on `/demo` when the clip needs a prepared sample result.
+- [ ] Start on `/demo` when the clip needs a guided sample run.
 - [ ] Move the cursor deliberately and pause during transitions.
 - [ ] Show the export package tabs: files, changes, and package copy.
 - [ ] Trigger one archetype swap, such as `/demo?archetype=auth` or `/demo?archetype=shop`, to show variety.
@@ -37,7 +37,7 @@ Recording and slide assets for qwen-ui-lab walkthroughs, product tours, and shor
 
 - [ ] Export at 1080p, 30 fps minimum.
 - [ ] Trim dead air at the start and end.
-- [ ] Add a lower-third with the product URL if publishing publicly; use `/demo` only when the clip starts from the prepared sample run.
+- [ ] Add a lower-third with the product URL if publishing publicly; use `/demo` only when the clip starts from the guided sample run.
 - [ ] Verify the video on a mobile preview; text should still be readable around 390 px width.
 - [ ] Link README and the sample-run guide in the description.
 

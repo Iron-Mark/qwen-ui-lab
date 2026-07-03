@@ -274,7 +274,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Sample run",
         short_name: "Sample",
-        description: "Open a sample layout and review a starter preview.",
+        description: "Open a guided layout and review a starter preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },

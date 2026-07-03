@@ -189,7 +189,7 @@ export const en = {
     loadingBody:
       "Reading the screenshot, mapping layout, and preparing the starter component.",
     trySampleRun: "Try a sample run",
-    loadSampleAria: "Load {label} sample",
+    loadSampleAria: "Load {label} layout",
     loadSampleButton: "Load sample",
     loading: "Loading...",
     samplePathHint: "New here? Pick a sample run, then analyze it.",
@@ -331,7 +331,7 @@ export const en = {
     toastRestoredAnalysis: "Restored analysis session",
     toastRestoredSession: "Restored session: {fileName}",
     toastSessionRemoved: "Session removed",
-    toastSampleLoaded: "{label} sample loaded",
+    toastSampleLoaded: "{label} layout loaded",
     toastSampleLoadFailed: "Could not load sample run",
   },
 } as const;

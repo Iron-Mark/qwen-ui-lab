@@ -22,7 +22,7 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/demo");
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard sample/i);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard layout/i);
   await expect(exportPanel(page)).toBeVisible({
     timeout: 20_000,
   });

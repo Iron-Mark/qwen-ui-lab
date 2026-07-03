@@ -16,7 +16,7 @@ import { normalizeStarterShadcnImports } from "./generated-imports.mjs";
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Sample layouts - exact filename match (normalized). */
+/** Guided layouts - exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
@@ -30,7 +30,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "Dashboard sample layout: landscape admin dashboard.",
+        body: "Dashboard guided layout: landscape admin dashboard.",
       },
       {
         title: "Layout Read",
@@ -83,7 +83,7 @@ export function DashboardStarter() {
     plan: [
       {
         title: "Visual Input",
-        body: "Sign-in sample layout: centered authentication card on a neutral canvas.",
+        body: "Sign-in guided layout: centered authentication card on a neutral canvas.",
       },
       {
         title: "Layout Read",
@@ -141,7 +141,7 @@ export function AuthScreenStarter() {
     plan: [
       {
         title: "Visual Input",
-        body: "Mobile app sample layout: portrait phone frame around 390×844.",
+        body: "Mobile app guided layout: portrait phone frame around 390×844.",
       },
       {
         title: "Layout Read",
@@ -196,7 +196,7 @@ export function MobileShellStarter() {
     plan: [
       {
         title: "Visual Input",
-        body: "Landing page sample layout: wide marketing page around 1440×900.",
+        body: "Landing page guided layout: wide marketing page around 1440×900.",
       },
       {
         title: "Layout Read",
@@ -251,7 +251,7 @@ export function LandingPageStarter() {
     plan: [
       {
         title: "Visual Input",
-        body: "Settings sample layout: desktop layout with left rail.",
+        body: "Settings guided layout: desktop layout with left rail.",
       },
       {
         title: "Layout Read",
@@ -312,7 +312,7 @@ export function SettingsStarter() {
     plan: [
       {
         title: "Visual Input",
-        body: "Shop catalog sample layout: desktop catalog with left filter rail.",
+        body: "Shop catalog guided layout: desktop catalog with left filter rail.",
       },
       {
         title: "Layout Read",

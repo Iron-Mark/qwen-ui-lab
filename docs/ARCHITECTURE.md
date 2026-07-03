@@ -100,6 +100,6 @@ Only three direct docs subfolders are used:
 
 - [README](./README.md) - project overview and commands.
 - [Contributing](./CONTRIBUTING.md) - workflow and PR expectations.
-- [Sample run](./DEMO.md) - prepared layout flow and local-analysis guardrails.
+- [Sample run](./DEMO.md) - guided layout flow and local-analysis guardrails.
 - [Local analysis E2E](./ops/LOCAL_ANALYSIS_E2E.md) - deterministic local-analysis testing contract.
 - [Reliability ops](./ops/RELIABILITY_OPS.md) - checks, thresholds, and response targets.

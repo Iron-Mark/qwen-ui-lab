@@ -1,4 +1,4 @@
-/** Prepared sample layouts for the compatibility sample route and E2E (client-safe). */
+/** Guided layouts for the compatibility sample route and E2E (client-safe). */
 export const SAMPLE_RUNS = [
   {
     id: "dashboard",
@@ -156,7 +156,7 @@ export function getSampleRunById(id) {
 }
 
 /**
- * Suggested export filename for a sample layout id.
+ * Suggested export filename for a guided layout id.
  * @param {string} sampleId
  */
 export function sampleRunExportFilename(sampleId) {

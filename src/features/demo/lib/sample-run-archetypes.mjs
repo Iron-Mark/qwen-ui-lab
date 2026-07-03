@@ -27,7 +27,7 @@ const SAMPLE_LABELS = {
 };
 
 /**
- * Normalize a sample-run route value to a sample layout id.
+ * Normalize a sample-run route value to a guided layout id.
  * @param {string | null | undefined} value
  * @returns {string}
  */

@@ -2104,7 +2104,7 @@ function StarterPreviewPrimitive({
 }
 
 export interface UploadFlowProps {
-  /** Sample layout id (dashboard, auth, mobile, etc.) for the sample-run route. */
+  /** Guided layout id (dashboard, auth, mobile, etc.) for the sample-run route. */
   sampleRunId?: string;
   /** Load sample + run analyze on mount (sample route) */
   autoRunSample?: boolean;

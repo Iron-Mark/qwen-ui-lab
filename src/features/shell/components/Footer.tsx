@@ -30,7 +30,7 @@ const PRODUCT_LINKS = [
   {
     href: "/demo",
     label: "Sample run",
-    tooltip: "Open a prepared layout and review the export package.",
+    tooltip: "Open a guided layout and review the export package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 

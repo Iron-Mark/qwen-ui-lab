@@ -25,7 +25,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 # Local review flow
 
-- Upload screenshots or open a prepared sample result
+- Upload screenshots or open a guided sample run
 - Inspect detected structure during review
 - Review and export a starter package
 
@@ -33,7 +33,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 # Walkthrough beat 1
 
-- Open the sample run; the dashboard sample loads automatically
+- Open the sample run; the dashboard layout loads automatically
 - Review detected sections, controls, and repeated groups
 - Compare screenshot structure against the starter preview
 

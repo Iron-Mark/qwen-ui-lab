@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REFERENCES_DIR = resolve(__dirname, "../../../../public/references");
 
 /**
- * File metadata for a sample layout (size read from disk when omitted).
+ * File metadata for a guided layout (size read from disk when omitted).
  * @param {{ fileName?: string; size?: number }} [options]
  */
 export function getSampleRunFileMetadata({ fileName, size } = {}) {

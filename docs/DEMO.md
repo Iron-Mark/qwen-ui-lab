@@ -1,6 +1,6 @@
 # Sample Run Guide
 
-Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample run**: load a prepared layout, inspect the detected UI, review the starter component, and export a starter package.
+Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample run**: load a guided layout, inspect the detected UI, review the starter component, and export a starter package.
 
 ```bash
 cd qwen-ui-lab
@@ -8,7 +8,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Next.js. Use `/demo` for the preloaded sample run, or `/` for the normal upload workflow.
+Open the local URL printed by Next.js. Use `/demo` for the guided sample run, or `/` for the normal upload workflow.
 
 Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYSIS=true` only when you intentionally want upstream vision calls.
 
@@ -24,7 +24,7 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 
 ## Sample Routes
 
-| URL | Sample layout | Export filename |
+| URL | Guided layout | Export filename |
 | --- | --- | --- |
 | `/demo` | Dashboard analytics shell | `starter-dashboard.tsx` |
 | `/demo?archetype=auth` | Sign-in card | `starter-auth.tsx` |
@@ -33,7 +33,7 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 | `/demo?archetype=settings` | Settings profile | `starter-settings.tsx` |
 | `/demo?archetype=shop` | E-commerce grid | `starter-shop.tsx` |
 
-Invalid or missing `archetype` values use the dashboard sample.
+Invalid or missing `archetype` values use the dashboard guided layout.
 
 ## Main Workflow
 

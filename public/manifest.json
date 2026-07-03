@@ -81,7 +81,7 @@
     {
       "name": "Sample run",
       "short_name": "Sample",
-      "description": "Open a sample layout and review a starter preview.",
+      "description": "Open a guided layout and review a starter preview.",
       "url": "/demo",
       "icons": [
         {

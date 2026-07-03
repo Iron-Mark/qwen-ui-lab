@@ -28,7 +28,7 @@ test("sample picker is visible and loads a sample run", async ({ page }) => {
   await expect(samplePicker.getByTestId("sample-select")).toBeVisible();
   await expectSampleRunOptionCount(page, 8);
   await expect(
-    samplePicker.getByRole("button", { name: /load dashboard sample/i }),
+    samplePicker.getByRole("button", { name: /load dashboard layout/i }),
   ).toBeVisible();
 
   await loadSampleRun(page, "Dashboard");

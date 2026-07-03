@@ -166,7 +166,7 @@ export async function expectSampleRunOptionCount(page: Page, count: number) {
 export async function loadSampleRun(page: Page, label: string) {
   await selectSampleRun(page, label);
   const picker = page.getByTestId("sample-picker");
-  await picker.getByRole("button", { name: new RegExp(`load ${label} sample`, "i") }).click();
+  await picker.getByRole("button", { name: new RegExp(`load ${label} layout`, "i") }).click();
 }
 
 function escapeRegExp(value: string) {

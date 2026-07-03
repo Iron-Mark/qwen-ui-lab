@@ -87,7 +87,7 @@ describe("PWA manifest", () => {
     );
     assert.match(manifestSource, /name:\s*`\$\{SITE_NAME\} - screenshot to React`/);
     assert.equal(sampleShortcut?.name, "Sample run");
-    assert.equal(sampleShortcut?.description, "Open a sample layout and review a starter preview.");
+    assert.equal(sampleShortcut?.description, "Open a guided layout and review a starter preview.");
     assert.ok(screenshotLabels.includes("Sample run workspace"));
     assert.ok(screenshotLabels.includes("Mobile sample workspace"));
 

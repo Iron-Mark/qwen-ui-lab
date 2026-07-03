@@ -2,7 +2,7 @@
 
 ## Completed
 
-- [x] Dashboard sample source - `public/references/dashboard-reference.svg`
+- [x] Dashboard guided layout source - `public/references/dashboard-reference.svg`
 - [x] Visual breakdown - `docs/specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md`
 - [x] Component hierarchy - `docs/specs/DASHBOARD_COMPONENT_HIERARCHY.md`
 - [x] Implementation plan - `docs/specs/DASHBOARD_QWEN_CODE_PLAN.md`

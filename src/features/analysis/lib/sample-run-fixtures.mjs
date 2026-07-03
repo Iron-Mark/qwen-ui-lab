@@ -16,7 +16,7 @@ export const LOCAL_ANALYSIS_HEALTH_RESPONSE = {
 export const SAMPLE_RUN_FILE_NAME = DEFAULT_SAMPLE_RUN.fileName;
 
 /**
- * File metadata for the dashboard sample run (size read from disk when omitted).
+ * File metadata for the dashboard guided layout (size read from disk when omitted).
  * @param {{ size?: number; fileName?: string }} [options]
  */
 export function getSampleRunFile({ size, fileName } = {}) {
