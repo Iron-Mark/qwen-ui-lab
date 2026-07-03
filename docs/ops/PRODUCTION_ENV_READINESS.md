@@ -77,7 +77,7 @@ Before opening the `dev` -> `main` release PR:
 npm run check:full
 npm run test:e2e
 npm run prod:readiness
-npm run deploy:env:demo
+npm run deploy:env:local
 ```
 
 After deployment:
@@ -89,6 +89,6 @@ node scripts/synthetic-health-check.mjs --base-url https://qwen-ui-lab.vercel.ap
 
 To publish smoke results to GitHub, set `SMOKE_GITHUB_REPORT=true` plus `SMOKE_GITHUB_REPOSITORY=owner/repo`. Add `SMOKE_GITHUB_ISSUE=<number>` to comment on an existing issue; otherwise the smoke script creates a new issue.
 
-The app also exposes `/api/readiness` and an in-app Production readiness panel on the home page. Use it to confirm which production-facing features are live and which are intentionally running in fallback mode.
+The app also exposes `/api/readiness` and a developer readiness dialog from the footer. Use those diagnostics to confirm which production-facing features are live and which are intentionally using local analysis.
 
 `npm run validate:prod` is expected to fail until `NEXT_PUBLIC_SITE_URL` or `VERCEL_PROJECT_PRODUCTION_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, and `GITHUB_TOKEN` are configured in the environment being checked.

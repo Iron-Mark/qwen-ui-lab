@@ -4,26 +4,26 @@ This document explains how **qwen-ui-lab** delivers a reliable screenshot-to-Rea
 
 ## Three-layer guarantee
 
-### Layer 1 — Runtime defaults
+### Layer 1 - Runtime defaults
 
 - Live Qwen is **opt-in only** via `QWEN_LIVE_ANALYSIS=true` (or `USE_LIVE_QWEN=1`). An API key alone does **not** enable upstream calls.
 - `GET /api/health` reports `provider: "demo"` and `liveAnalysisEnabled: false` when live mode is off.
-- Server-side analyze route returns a deterministic local-analysis payload when live is disabled (`buildDemoAnalyzeResponse` in `src/features/analysis/lib/qwen-analyze.mjs`).
+- Server-side analyze route returns a deterministic local-analysis payload when live is disabled (`buildLocalAnalyzeResponse` in `src/features/analysis/lib/qwen-analyze.mjs`).
 
-### Layer 2 — Deterministic offline algorithm
+### Layer 2 - Deterministic offline algorithm
 
 When live analysis is disabled, the client **skips** `POST /api/analyze-ui` and builds an artifact locally:
 
 1. `fetchAnalyzeHealth()` reads `/api/health`.
-2. If `liveAnalysisEnabled` is false, `postAnalyzeUi()` calls `resolveAnalyzeOutcome()` with `instantDemo: true`.
+2. If `liveAnalysisEnabled` is false, `postAnalyzeUi()` calls `resolveAnalyzeOutcome()` with `sampleRun: true`.
 3. `buildUiFlowArtifact()` in `src/features/analysis/lib/ui-flow.mjs` delegates to `src/features/analysis/lib/offline-analyze.mjs`:
    - **Canvas pixel inspection** - browser uploads are sampled locally with `getImageData()` to extract palette, contrast, edge density, layout bands, connected regions, design tokens, and dense-cluster risk before any provider call.
    - **SVG structure inspection** - SVG uploads are parsed locally for viewBox, labels, shape counts, groups, and text-based archetype hints before any provider call.
-   - **Known sample registry** — bundled files like `dashboard-reference.svg` get curated content by filename or local visual signature.
-   - **Advanced classifier** — weighted archetype scoring (dashboard, auth, mobile, settings, landing, ecommerce) using filename keywords, MIME hints, and width/height form-factor boosts.
-   - **Confidence summary** — each unknown upload gets a deterministic layout label and confidence score in the artifact summary.
+   - **Known sample registry** - bundled files like `dashboard-reference.svg` get curated content by filename or local visual signature.
+   - **Advanced classifier** - weighted archetype scoring (dashboard, auth, mobile, settings, landing, ecommerce) using filename keywords, MIME hints, and width/height form-factor boosts.
+   - **Confidence summary** - each unknown upload gets a deterministic layout label and confidence score in the artifact summary.
 
-Same input → same output → stable E2E assertions. No ML required.
+Same input -> same output -> stable E2E assertions. No ML required.
 
 ## Advanced offline algorithm
 
@@ -31,24 +31,24 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 
 | Stage | What it does |
 |-------|----------------|
-| **Registry lookup** | Exact match on normalized filename (e.g. `dashboard-reference.svg`) or a close local perceptual signature match → curated plan, stats, and code |
+| **Registry lookup** | Exact match on normalized filename (e.g. `dashboard-reference.svg`) or a close local perceptual signature match -> curated plan, stats, and code |
 | **Archetype scoring** | Weighted keywords per layout type; highest score wins |
-| **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide → mobile boost) |
-| **MIME hint** | Optional small boost (e.g. SVG → dashboard) |
+| **Form-factor boost** | Width/height adds mobile/tablet/desktop signals (e.g. 390px wide -> mobile boost) |
+| **MIME hint** | Optional small boost (e.g. SVG -> dashboard) |
 | **Pixel signal scan** | `src/features/analysis/lib/offline-image-inspection.mjs` samples canvas pixels, quantizes dominant colors, computes WCAG-style contrast, estimates edge density, and maps active cells on a 12x8 layout grid |
-| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed sample screenshots still resolve to curated offline artifacts |
+| **Visual signature** | A tiny luminance average-hash + difference-hash fingerprint helps renamed sample layouts still resolve to curated offline artifacts |
 | **SVG structure scan** | SVG markup contributes viewBox, text labels, shape counts, group counts, and archetype hints even when no raster/provider analysis is available |
 | **Otsu thresholding** | A luminance histogram separates likely foreground from dominant surfaces without a fixed magic threshold |
 | **Band-first regions** | Obvious header, bottom-nav, and side-rail bands are carved before connected components so L-shaped chrome does not collapse into one full-screen region |
 | **Connected regions** | Remaining active grid cells are grouped into deterministic regions and labeled as content panel, media/chart, text/list, or control cluster |
 | **Design tokens** | Local palette and contrast signals produce surface, foreground, accent, accent foreground, muted, border, spacing, and radius recommendations |
 | **Signal-aware output** | Unknown uploads receive `Local Vision Signals`, `Detected Structure`, `Design Tokens`, and `Local Quality Checks` plan cards plus regions/controls/density/contrast preview stats |
-| **Signal-aware code templates** | Unknown inspected uploads seed generated React scaffolds with detected region grids and local design tokens; known samples still use curated per-archetype code |
-| **SVG-aware code templates** | Unknown SVG uploads seed generated scaffolds with parsed labels, local structure stats, and field/action/section guidance |
-| **Confidence** | `0.55–0.98` based on score margin; surfaced in artifact `summary` |
+| **Signal-aware code templates** | Unknown inspected uploads seed starter React scaffolds with detected region grids and local design tokens; known samples still use curated per-archetype code |
+| **SVG-aware code templates** | Unknown SVG uploads seed starter scaffolds with parsed labels, local structure stats, and field/action/section guidance |
+| **Confidence** | `0.55-0.98` based on score margin; surfaced in artifact `summary` |
 
-Example: `pricing-landing-hero.png` → Marketing landing archetype with `GeneratedLanding` code.  
-Example: `dashboard-reference.svg` → registry override with ChartPreview + ActivityList.
+Example: `pricing-landing-hero.png` -> Marketing landing archetype with `LandingPageStarter` code.  
+Example: `dashboard-reference.svg` -> registry override with ChartPreview + ActivityList.
 
 Unit coverage: [`tests/offline-analyze.test.mjs`](../../tests/offline-analyze.test.mjs), including WCAG contrast math and no-provider pixel-signal artifacts.
 
@@ -62,37 +62,37 @@ Reference basis:
 - Region labeling uses a lightweight top-down band pass followed by connected-component analysis on the remaining active layout grid.
 - Target-size guidance follows WCAG target-size checks as a heuristic prompt for manual review; screenshots cannot prove CSS hit-area size by themselves.
 
-### Layer 3 — E2E isolation (Playwright)
+### Layer 3 - E2E isolation (Playwright)
 
 End-to-end tests never depend on secrets or external APIs:
 
 | Mechanism | Location | Purpose |
 |-----------|----------|---------|
-| Route mock | `e2e/helpers/mock-analyze-api.ts` | Forces demo health response; safety net on `/api/analyze-ui` |
-| Shared fixtures | `e2e/fixtures/demo-responses.json` | Generated from `src/features/analysis/lib/demo-fixtures.mjs` — same payloads as runtime |
+| Route mock | `e2e/helpers/mock-analyze-api.ts` | Forces local-analysis health response; safety net on `/api/analyze-ui` |
+| Shared fixtures | `e2e/fixtures/sample-run-responses.json` | Built from `src/features/analysis/lib/sample-run-fixtures.mjs` - same payloads as runtime |
 | Env scrubbing | `playwright.config.ts` | Strips `DASHSCOPE_API_KEY`, `QWEN_LIVE_ANALYSIS`, etc. from dev server |
 | Clipboard stub | `stubClipboardForE2E()` | Headless Copy/Export works without native clipboard |
-| Unit mocks | `tests/analyze-fallback.test.mjs` | Injects `fetchFn` — same contract without a browser |
-| Live contract (unit) | `tests/analyze-live-contract.test.mjs` | `fetchFn` mocks upstream Qwen JSON → structured artifact |
-| Live contract (E2E) | `e2e/live-qwen-contract.spec.ts` | `page.route` on health + `/api/analyze-ui` — no API key in CI |
+| Unit mocks | `tests/analyze-fallback.test.mjs` | Injects `fetchFn` - same contract without a browser |
+| Live contract (unit) | `tests/analyze-live-contract.test.mjs` | `fetchFn` mocks upstream Qwen JSON -> structured artifact |
+| Live contract (E2E) | `e2e/live-qwen-contract.spec.ts` | `page.route` on health + `/api/analyze-ui` - no API key in CI |
 
-Regenerate E2E JSON after changing demo fixtures:
+Regenerate E2E JSON after changing sample-run fixtures:
 
 ```bash
-npm run export:demo-fixtures
+npm run export:sample-run-fixtures
 ```
 
 ## Client analyze flow
 
 ```text
-Upload → GET /api/health
-           ├─ liveAnalysisEnabled: false → buildUiFlowArtifact (instant, no POST)
-           └─ liveAnalysisEnabled: true  → POST /api/analyze-ui → Qwen or fallback
+Upload -> GET /api/health
+           |-- liveAnalysisEnabled: false -> buildUiFlowArtifact (instant, no POST)
+           `-- liveAnalysisEnabled: true  -> POST /api/analyze-ui -> Qwen or fallback
 ```
 
-Contract tests in `e2e/offline-demo-contract.spec.ts` assert that **zero** `POST /api/analyze-ui` requests occur when health returns demo mode.
+Contract tests in `e2e/local-analysis-contract.spec.ts` assert that **zero** `POST /api/analyze-ui` requests occur when health reports local-analysis mode.
 
-Live-path contract tests (`tests/analyze-live-contract.test.mjs`, `e2e/live-qwen-contract.spec.ts`) use shared fixtures in `src/features/analysis/lib/qwen-mock-fixtures.mjs` (exported to `e2e/fixtures/live-qwen-responses.json`). They assert that when live mode is enabled, analyze returns a structured artifact from valid mocked JSON — never real DashScope credentials.
+Live-path contract tests (`tests/analyze-live-contract.test.mjs`, `e2e/live-qwen-contract.spec.ts`) use shared fixtures in `src/features/analysis/lib/qwen-mock-fixtures.mjs` (exported to `e2e/fixtures/live-qwen-responses.json`). They assert that when live mode is enabled, analyze returns a structured artifact from valid mocked JSON - never real DashScope credentials.
 
 Visual baselines live in `e2e/visual-regression.spec.ts`. CI runs this spec on every `main` push (`visual-regression` job in `.github/workflows/ci.yml`); see **[CI.md](./CI.md)**. Create or refresh snapshots with:
 
@@ -107,19 +107,19 @@ npm run test:e2e:visual
 ```bash
 npm run check:full
 npm run test:e2e
-npm run export:demo-fixtures   # if you changed ui-flow or demo-fixtures
+npm run export:sample-run-fixtures   # if you changed ui-flow or sample-run fixtures
 DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 ```
 
 ## What we deliberately avoid
 
-- **MSW** — unnecessary; Node tests inject `fetchFn`, Playwright uses `page.route()`.
-- **HAR replay** of real Qwen responses — brittle and secret-prone.
-- **Paid visual or mock services** — Playwright built-in screenshots suffice for baselines.
+- **MSW** - unnecessary; Node tests inject `fetchFn`, Playwright uses `page.route()`.
+- **HAR replay** of real Qwen responses - brittle and secret-prone.
+- **Paid visual or mock services** - Playwright built-in screenshots suffice for baselines.
 
 ## Related docs
 
-- [CI.md](./CI.md) — GitHub Actions workflows (nightly E2E, visual gate, LCP budget)
-- [DEMO.md](../DEMO.md) — live presentation script
-- [ARCHITECTURE.md](../ARCHITECTURE.md) — full runtime map
-- [POST_LAUNCH.md](./POST_LAUNCH.md) — operator checklist
+- [CI.md](./CI.md) - GitHub Actions workflows (nightly E2E, visual gate, LCP budget)
+- [DEMO.md](../DEMO.md) - sample-run guide
+- [ARCHITECTURE.md](../ARCHITECTURE.md) - full runtime map
+- [POST_LAUNCH.md](./POST_LAUNCH.md) - operator checklist

@@ -90,7 +90,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           Laws of UX compliance
         </h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Heuristic check of this {stage === "generated" ? "component" : "analysis"} against{" "}
+          Review this {stage === "generated" ? "component" : "analysis"} against{" "}
           <a
             href={LAWS_OF_UX_SITE}
             target="_blank"
@@ -99,7 +99,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           >
             lawsofux.com
           </a>{" "}
-          patterns used in qwen-ui-lab.
+          patterns and related UI examples.
         </p>
       </div>
 
@@ -147,7 +147,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           <DialogHeader className="border-b border-border px-4 pt-4 pb-3">
             <DialogTitle>Laws of UX compliance</DialogTitle>
             <DialogDescription id="ux-compliance-dialog-description">
-              {statsLabel} — expand each law for rationale and surface mapping.
+              {statsLabel} — expand each law for rationale and screen mapping.
             </DialogDescription>
           </DialogHeader>
 
@@ -209,7 +209,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           href="/design-system?domain=uilaws"
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          UI Laws manual checklist →
+          UI Laws review checklist →
         </Link>
       </p>
     </section>

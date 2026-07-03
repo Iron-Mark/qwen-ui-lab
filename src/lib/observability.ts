@@ -1,9 +1,13 @@
-export type ProviderMode = "unknown" | "live" | "demo";
+import type { ProviderMode } from "./provider-mode";
+
+export type { ProviderMode } from "./provider-mode";
 
 export interface ObservabilityConfig {
   enabled: boolean;
   analyticsEnabled: boolean;
   errorMonitoringEnabled: boolean;
+  allowInLocalAnalysisMode: boolean;
+  /** @deprecated Use allowInLocalAnalysisMode. Kept for old config consumers. */
   allowInDemoMode: boolean;
   debugLogging: boolean;
 }

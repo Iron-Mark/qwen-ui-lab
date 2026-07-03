@@ -6,8 +6,8 @@
 - [x] Visual breakdown - `docs/specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md`
 - [x] Component hierarchy - `docs/specs/DASHBOARD_COMPONENT_HIERARCHY.md`
 - [x] Implementation plan - `docs/specs/DASHBOARD_QWEN_CODE_PLAN.md`
-- [x] Generated React/Tailwind starter - `experiments/01-dashboard/generated-first-pass.tsx`
-- [x] Reviewed dashboard component - `experiments/01-dashboard/human-refactored-final.tsx`
+- [x] First-pass React/Tailwind starter - `experiments/01-dashboard/first-pass-starter.tsx`
+- [x] Reviewed dashboard component - `experiments/01-dashboard/reviewed-starter.tsx`
 - [x] Before/after screenshot - `docs/media/before-after-comparison.png`
 - [x] Failure notes / limitations - `docs/specs/DASHBOARD_LIMITATIONS.md`
 - [x] README case study - `README.md`
@@ -20,10 +20,10 @@
 - [x] Environment template - `.env.example`
 - [x] Flow unit tests - `tests/ui-flow.test.mjs`
 
-## Manual (requires human action)
+## Follow-Up Tasks
 
 - [ ] Record 30-60 second walkthrough video using `docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md`
-- [ ] Replace `dashboard-reference.svg` with a real product screenshot if desired
+- [ ] Replace `public/references/dashboard-reference.svg` with a real product screenshot if desired
 - [ ] Publish LinkedIn posts on schedule (see `docs/media/LINKEDIN_POSTS.md`)
 - [ ] Present walkthrough deck if needed (open `deck/slides.html` in browser, use arrow keys)
 

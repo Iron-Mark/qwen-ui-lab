@@ -1,14 +1,10 @@
 "use client";
 
-import Link from "next/link";
-
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SharedSummaryCard } from "./SharedSummaryCard";
-import { buttonVariants } from "@/components/ui/button";
-import { localizedHref } from "@/lib/i18n";
 import { useLocale } from "@/lib/i18n/use-locale.client";
 import type { buildShareableSummary } from "../lib/share-result.mjs";
-import { cn } from "@/lib/utils";
+import { ShareSummaryActions } from "./ShareSummaryActions";
 
 type SharePageClientProps = {
   id: string;
@@ -16,7 +12,7 @@ type SharePageClientProps = {
 };
 
 export function SharePageClient({ id, summary }: SharePageClientProps) {
-  const { locale, dict } = useLocale();
+  const { dict } = useLocale();
   const t = dict.share;
   const sharePath = `/share/${id}`;
 
@@ -39,20 +35,7 @@ export function SharePageClient({ id, summary }: SharePageClientProps) {
 
         <SharedSummaryCard summary={summary} />
 
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={localizedHref("/", locale)}
-            className={cn(buttonVariants({ variant: "outline" }), "min-h-11 px-4")}
-          >
-            {t.backToWorkflow}
-          </Link>
-          <Link
-            href={localizedHref("/demo", locale)}
-            className={cn(buttonVariants({ variant: "ghost" }), "min-h-11 px-4")}
-          >
-            {t.sampleReference}
-          </Link>
-        </div>
+        <ShareSummaryActions />
       </div>
     </PageContainer>
   );

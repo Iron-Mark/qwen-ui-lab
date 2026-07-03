@@ -27,7 +27,7 @@ export function normalizeScaffoldExportRequestBody(body) {
   const filename =
     typeof record.filename === "string"
       ? sanitizeScaffoldFilename(record.filename)
-      : "component.tsx";
+      : "starter-component.tsx";
   const description =
     typeof record.description === "string" && record.description.trim()
       ? record.description.trim().slice(0, 256)

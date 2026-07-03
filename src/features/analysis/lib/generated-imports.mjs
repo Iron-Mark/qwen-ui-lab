@@ -32,7 +32,7 @@ const SHADCN_JSX_IMPORTS = {
   TabsTrigger: { path: "@/components/ui/tabs", name: "TabsTrigger" },
 };
 
-export function normalizeGeneratedShadcnImports(code) {
+export function normalizeStarterShadcnImports(code) {
   const source = String(code || "");
   const used = collectUsedShadcnJsx(source);
   if (!used.length) return source;
@@ -59,6 +59,8 @@ export function normalizeGeneratedShadcnImports(code) {
 
   return insertAfterImportBlock(merged.source, missingImports.join("\n"));
 }
+
+export const normalizeGeneratedShadcnImports = normalizeStarterShadcnImports;
 
 function collectUsedShadcnJsx(source) {
   return [

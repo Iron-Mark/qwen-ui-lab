@@ -16,8 +16,6 @@ import {
   Clock3,
   LogOut,
   Mail,
-  Monitor,
-  ShieldCheck,
   UserRound,
 } from "lucide-react";
 
@@ -28,7 +26,7 @@ type AccountProfilePanelProps = {
 export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
   const { dict } = useLocale();
   const t = dict.account;
-  const { auth, guestLabel, savedByLabel, signedIn, setDisplayName, sendMagicLinkStub, confirmMagicLink, signOut } =
+  const { auth, guestLabel, savedByLabel, signedIn, setDisplayName, saveContactLabel, confirmContactLabel, signOut } =
     useAuth();
   const { toast } = useToast();
   const [displayNameInput, setDisplayNameInput] = useState(
@@ -46,23 +44,23 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
     }
   }
 
-  function handleMagicLinkRequest(event: React.FormEvent) {
+  function handleContactLabelRequest(event: React.FormEvent) {
     event.preventDefault();
-    const result = sendMagicLinkStub(emailInput);
+    const result = saveContactLabel(emailInput);
     if (!result.ok) {
       setEmailError(t.errorInvalidEmail);
       toast(t.errorInvalidEmail, "error");
       return;
     }
     setEmailError("");
-    toast(t.toastMagicLinkStub, "default");
+    toast(t.toastContactLabelReady, "default");
   }
 
-  function handleConfirmMagicLink() {
-    const next = confirmMagicLink();
+  function handleConfirmContactLabel() {
+    const next = confirmContactLabel();
     if (next.mode === "named" && next.displayName) {
       setDisplayNameInput(next.displayName);
-      toast(interpolate(t.toastMagicLinkConfirmed, { name: next.displayName }), "success");
+      toast(interpolate(t.toastContactLabelConfirmed, { name: next.displayName }), "success");
     }
   }
 
@@ -74,7 +72,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
     toast(t.toastSignedOut, "default");
   }
 
-  const pendingMagicLink = auth.mode === "magic-link-pending";
+  const pendingContactLabel = auth.mode === "contact-label-pending";
   const visibleName = savedByLabel || guestLabel;
   const modeLabel = signedIn ? t.modeNamed : t.modeGuest;
   const showSavedName = signedIn && visibleName !== modeLabel;
@@ -177,27 +175,11 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
           </div>
         </form>
 
-        <div className="grid gap-3 border-t border-border/70 bg-muted/20 p-5 text-sm sm:grid-cols-2">
-          <div className="flex gap-3">
-            <Monitor className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-            <div>
-              <p className="font-medium text-foreground">{t.storedInTitle}</p>
-              <p className="mt-1 text-muted-foreground">{t.storedInBody}</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-            <div>
-              <p className="font-medium text-foreground">{t.notAccountTitle}</p>
-              <p className="mt-1 text-muted-foreground">{t.notAccountBody}</p>
-            </div>
-          </div>
-        </div>
       </section>
 
       <details
         className="group rounded-2xl border border-border/70 bg-card shadow-sm"
-        open={pendingMagicLink || undefined}
+        open={pendingContactLabel || undefined}
       >
         <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 outline-none transition hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
           <span className="flex min-w-0 items-center gap-3">
@@ -206,10 +188,10 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-semibold text-foreground">
-                {t.magicLinkTitle}
+                {t.contactLabelTitle}
               </span>
               <span className="block text-sm leading-5 text-muted-foreground">
-                {t.magicLinkDesc}
+                {t.contactLabelDesc}
               </span>
             </span>
           </span>
@@ -219,7 +201,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
           />
         </summary>
         <div className="border-t border-border/70 px-5 py-5">
-          <form className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={handleMagicLinkRequest}>
+          <form className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={handleContactLabelRequest}>
             <div className="space-y-2">
               <Label htmlFor="account-email">{t.emailLabel}</Label>
               <Input
@@ -250,31 +232,31 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
             <Button
               type="submit"
               variant="outline"
-              data-testid="account-magic-link-send"
+              data-testid="account-contact-label-save"
               className="min-h-12 px-4"
             >
-              {t.sendMagicLink}
+              {t.saveContactLabel}
             </Button>
           </form>
-          {pendingMagicLink && auth.email ? (
+          {pendingContactLabel && auth.email ? (
             <div
               className="mt-4 rounded-2xl border border-primary/25 bg-primary/10 p-4 text-sm"
-              data-testid="account-magic-link-pending"
+              data-testid="account-contact-label-pending"
             >
               <p className="flex items-center gap-2 font-semibold text-foreground">
                 <Clock3 className="size-4 text-primary" aria-hidden="true" />
-                {t.magicLinkPendingTitle}
+                {t.contactLabelPendingTitle}
               </p>
               <p className="mt-1 leading-5 text-muted-foreground">
-                {interpolate(t.magicLinkPendingBody, { email: auth.email })}
+                {interpolate(t.contactLabelPendingBody, { email: auth.email })}
               </p>
               <Button
                 type="button"
                 className="mt-3 min-h-11 px-4"
-                data-testid="account-magic-link-confirm"
-                onClick={handleConfirmMagicLink}
+                data-testid="account-contact-label-confirm"
+                onClick={handleConfirmContactLabel}
               >
-                {t.confirmMagicLink}
+                {t.confirmContactLabel}
               </Button>
             </div>
           ) : null}

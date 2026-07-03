@@ -5,14 +5,14 @@ import {
   AUTH_SESSION_KEY,
   GUEST_LABEL,
   clearAuthState,
-  confirmMagicLinkStub,
+  confirmContactLabel,
   deriveDisplayNameFromEmail,
   getSavedByLabel,
   isSignedIn,
   isValidEmail,
   loadAuthState,
   normalizeDisplayName,
-  requestMagicLink,
+  requestContactLabel,
   setDisplayName,
 } from "../src/features/account/lib/auth.mjs";
 
@@ -57,34 +57,52 @@ test("empty display name clears auth back to guest", () => {
   assert.equal(storage.getItem(AUTH_SESSION_KEY), null);
 });
 
-test("requestMagicLink stub stores pending email without signing in", () => {
+test("requestContactLabel stores a pending contact label without signing in", () => {
   const storage = createMemoryStorage();
-  const result = requestMagicLink("demo@example.com", storage);
+  const result = requestContactLabel("reviewer@example.com", storage);
 
   assert.equal(result.ok, true);
-  assert.equal(result.state.mode, "magic-link-pending");
-  assert.equal(result.state.email, "demo@example.com");
+  assert.equal(result.state.mode, "contact-label-pending");
+  assert.equal(result.state.email, "reviewer@example.com");
   assert.equal(isSignedIn(result.state), false);
 });
 
-test("requestMagicLink rejects invalid email", () => {
+test("requestContactLabel rejects invalid email", () => {
   const storage = createMemoryStorage();
-  const result = requestMagicLink("not-an-email", storage);
+  const result = requestContactLabel("not-an-email", storage);
 
   assert.equal(result.ok, false);
   assert.equal(result.error, "invalid_email");
   assert.deepEqual(loadAuthState(storage), { mode: "guest" });
 });
 
-test("confirmMagicLinkStub completes contact-label sign-in locally", () => {
+test("confirmContactLabel completes contact-label sign-in locally", () => {
   const storage = createMemoryStorage();
-  requestMagicLink("reviewer@example.com", storage);
-  const signedIn = confirmMagicLinkStub(storage);
+  requestContactLabel("reviewer@example.com", storage);
+  const signedIn = confirmContactLabel(storage);
 
   assert.equal(signedIn.mode, "named");
   assert.equal(signedIn.displayName, "reviewer");
   assert.equal(signedIn.email, "reviewer@example.com");
   assert.equal(getSavedByLabel(signedIn), "reviewer");
+});
+
+test("loadAuthState accepts legacy pending contact-label sessions", () => {
+  const storage = createMemoryStorage();
+  storage.setItem(
+    AUTH_SESSION_KEY,
+    JSON.stringify({ mode: "magic-link-pending", email: "legacy.label@example.com" }),
+  );
+
+  const pending = loadAuthState(storage);
+  assert.equal(pending.mode, "contact-label-pending");
+  assert.equal(pending.email, "legacy.label@example.com");
+
+  const signedIn = confirmContactLabel(storage);
+
+  assert.equal(signedIn.mode, "named");
+  assert.equal(signedIn.displayName, "legacy.label");
+  assert.equal(signedIn.email, "legacy.label@example.com");
 });
 
 test("clearAuthState removes persisted auth", () => {
@@ -102,13 +120,13 @@ test("normalizeDisplayName trims and caps length", () => {
   assert.equal(normalizeDisplayName(""), null);
 });
 
-test("isValidEmail accepts common demo addresses", () => {
+test("isValidEmail accepts common contact-label addresses", () => {
   assert.equal(isValidEmail("you@example.com"), true);
   assert.equal(isValidEmail("bad@"), false);
 });
 
 test("deriveDisplayNameFromEmail uses local part", () => {
-  assert.equal(deriveDisplayNameFromEmail("demo.user@example.com"), "demo.user");
+  assert.equal(deriveDisplayNameFromEmail("reviewer.user@example.com"), "reviewer.user");
 });
 
 test("saveAuthState ignores malformed stored payloads", () => {

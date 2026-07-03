@@ -7,8 +7,10 @@
 
 export const AUTH_SESSION_KEY = "qwen-ui-lab:auth";
 export const GUEST_LABEL = "Guest";
+const LEGACY_PENDING_MODE = "magic-link-pending";
+const CONTACT_LABEL_PENDING_MODE = "contact-label-pending";
 
-/** @typedef {"guest" | "named" | "magic-link-pending"} AuthMode */
+/** @typedef {"guest" | "named" | "contact-label-pending"} AuthMode */
 
 /**
  * @typedef {object} AuthState
@@ -51,7 +53,12 @@ export function loadAuthState(storage = null) {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return GUEST_STATE;
     const mode = parsed.mode;
-    if (mode !== "guest" && mode !== "named" && mode !== "magic-link-pending") {
+    if (
+      mode !== "guest" &&
+      mode !== "named" &&
+      mode !== CONTACT_LABEL_PENDING_MODE &&
+      mode !== LEGACY_PENDING_MODE
+    ) {
       return GUEST_STATE;
     }
     const displayName = normalizeDisplayName(parsed.displayName);
@@ -60,9 +67,16 @@ export function loadAuthState(storage = null) {
         ? parsed.email.trim().toLowerCase()
         : undefined;
     if (mode === "named" && !displayName) return GUEST_STATE;
-    if (mode === "magic-link-pending" && !email) return GUEST_STATE;
+    if (
+      (mode === CONTACT_LABEL_PENDING_MODE || mode === LEGACY_PENDING_MODE) &&
+      !email
+    ) {
+      return GUEST_STATE;
+    }
+    const normalizedMode =
+      mode === LEGACY_PENDING_MODE ? CONTACT_LABEL_PENDING_MODE : mode;
     return {
-      mode,
+      mode: normalizedMode,
       ...(displayName ? { displayName } : {}),
       ...(email ? { email } : {}),
     };
@@ -113,13 +127,13 @@ export function setDisplayName(name, storage = null) {
  * @param {Storage | null | undefined} [storage]
  * @returns {{ ok: true, state: AuthState } | { ok: false, error: string }}
  */
-export function requestMagicLink(email, storage = null) {
+export function requestContactLabel(email, storage = null) {
   const normalized = String(email ?? "").trim().toLowerCase();
   if (!isValidEmail(normalized)) {
     return { ok: false, error: "invalid_email" };
   }
   const state = saveAuthState(
-    { mode: "magic-link-pending", email: normalized },
+    { mode: CONTACT_LABEL_PENDING_MODE, email: normalized },
     storage,
   );
   return { ok: true, state };
@@ -130,9 +144,9 @@ export function requestMagicLink(email, storage = null) {
  * @param {Storage | null | undefined} [storage]
  * @returns {AuthState}
  */
-export function confirmMagicLinkStub(storage = null) {
+export function confirmContactLabel(storage = null) {
   const current = loadAuthState(storage);
-  if (current.mode !== "magic-link-pending" || !current.email) {
+  if (current.mode !== CONTACT_LABEL_PENDING_MODE || !current.email) {
     return current;
   }
   const displayName = deriveDisplayNameFromEmail(current.email);

@@ -11,7 +11,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { ComponentPreviewCard } from "./ComponentPreviewCard";
 import { ObservabilityErrorBoundary } from "@/components/providers/ObservabilityErrorBoundary";
-import { Search } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import {
   filterCatalog,
   type AtomicLevel,
@@ -25,6 +25,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
+import { useToast } from "@/components/providers/Toast";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { interpolate, localizedHref } from "@/lib/i18n";
 import { useLocale } from "@/lib/i18n/use-locale.client";
@@ -51,6 +52,7 @@ import {
   CollectionPill,
   ComponentLevelPill,
 } from "./DesignSystemMetaPills";
+import { downloadCatalogSnippets } from "../lib/export-snippets.client";
 
 /** Desktop keeps the catalog picker fixed-height while preview content scrolls with the page. */
 const DESKTOP_CATALOG_GRID_CLASS =
@@ -75,6 +77,7 @@ export function DesignSystemPreview() {
   const t = dict.designSystem;
   const observability = useObservability();
   const { mode } = useProviderMode();
+  const { toast } = useToast();
 
   const domains = useMemo(
     (): { id: CatalogDomain | "all"; label: string }[] => [
@@ -243,6 +246,19 @@ export function DesignSystemPreview() {
     setSelectedId(filtered[nextIndex]?.id ?? filtered[0]?.id ?? null);
   }, [effectiveSelectedId, filtered]);
 
+  const exportVisibleSnippets = useCallback(() => {
+    if (!filtered.length) return;
+    downloadCatalogSnippets(filtered);
+    analytics.track(AnalyticsEvent.DesignSystemSnippetsDownloaded, {
+      source: "design_system_export_all",
+      domain: domainFilter,
+      level: levelFilter,
+      totalVisible: filtered.length,
+      status: "downloaded",
+    });
+    toast(t.snippetsDownloaded, "success");
+  }, [analytics, domainFilter, filtered, levelFilter, t.snippetsDownloaded, toast]);
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
         const target = event.target as HTMLElement | null;
@@ -381,6 +397,16 @@ export function DesignSystemPreview() {
               /
             </kbd>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 shrink-0 gap-2"
+            disabled={!filtered.length}
+            onClick={exportVisibleSnippets}
+          >
+            <Download className="size-4" aria-hidden="true" />
+            <span>{t.exportAll}</span>
+          </Button>
         </div>
 
         <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">

@@ -56,7 +56,7 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 
 export function RepoExportButton({
   text,
-  filename = "component.tsx",
+  filename = "starter-component.tsx",
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
@@ -142,7 +142,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened. Add your generated component and open a PR.",
+            "Compare view opened. Add your starter component and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {

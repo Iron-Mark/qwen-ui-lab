@@ -50,7 +50,7 @@ export function NotFoundClient() {
               className={cn(buttonVariants({ size: "lg" }), "min-h-11 gap-2 px-5")}
             >
               <Home className="size-4" aria-hidden />
-              {t.backDashboard}
+              {t.backToWorkflow}
             </Link>
             <Link
               href={localizedHref("/design-system", locale)}
@@ -74,7 +74,7 @@ export function NotFoundClient() {
             {t.suggestedPages}
           </div>
           <div className="mt-4 grid gap-2">
-            {[t.backDashboard, t.designSystem].map((label) => (
+            {[t.backToWorkflow, t.designSystem].map((label) => (
               <div
                 key={label}
                 className="flex min-h-11 items-center justify-between rounded-lg border border-border/70 bg-background/70 px-3 text-sm font-medium text-card-foreground"

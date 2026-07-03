@@ -56,12 +56,12 @@ test("resolveAnalyzeOutcome falls back when API key is missing", () => {
 
   assert.equal(outcome.providerState, "fallback");
   assert.equal(outcome.message, FALLBACK_BANNER_MISSING);
-  assert.match(outcome.detail, /DASHSCOPE_API_KEY/);
+  assert.equal(outcome.detail, "Local analysis prepared the preview.");
   assert.equal(outcome.artifact.file.name, sampleFile.name);
   assert.equal(outcome.artifact.modeLabel, "Ready to analyze");
-  assert.ok(outcome.artifact.generatedCode.includes("GeneratedDashboard"));
+  assert.ok(outcome.artifact.generatedCode.includes("DashboardStarter"));
   assert.equal(outcome.artifact.previewStats.length, 4);
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("resolveAnalyzeOutcome marks local analysis for missing key flag", () => {
@@ -69,10 +69,10 @@ test("resolveAnalyzeOutcome marks local analysis for missing key flag", () => {
     file: sampleFile,
     responseOk: false,
     payload: { ok: false, code: "missing_qwen_api_key" },
-    instantDemo: true,
+    sampleRun: true,
   });
 
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("resolveAnalyzeOutcome falls back on auth and invalid JSON errors", () => {
@@ -112,18 +112,43 @@ test("resolveAnalyzeOutcome falls back on network and timeout errors", () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /timed out/);
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared the preview after the analysis request could not finish.",
+  );
   assert.equal(outcome.artifact.previewStats.length, 4);
+});
+
+test("resolveAnalyzeOutcome maps upload-read errors to plain user copy", () => {
+  const outcome = resolveAnalyzeOutcome({
+    file: sampleFile,
+    fetchError: "Could not read the uploaded image.",
+  });
+
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared a preview after the uploaded image could not be read.",
+  );
 });
 
 test("fallbackReasonFromPayload maps known server codes", () => {
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_network_error" }),
-    /Could not reach the Qwen API/,
+    /live analysis could not be reached/,
   );
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_request_failed" }),
-    /Live analysis was unavailable/,
+    /live service was not reachable/,
+  );
+});
+
+test("fallbackReasonFromPayload keeps raw provider messages out of user copy", () => {
+  assert.equal(
+    fallbackReasonFromPayload({
+      code: "unknown_error",
+      message: "Incorrect API key provided.",
+    }),
+    "Local analysis prepared the preview.",
   );
 });
 
@@ -181,7 +206,7 @@ test("postAnalyzeUi skips analyze route when live analysis is disabled", async (
 
   assert.equal(analyzeCalled, false);
   assert.equal(outcome.providerState, "fallback");
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
   assert.equal(outcome.code, "live_analysis_disabled");
   assert.equal(outcome.artifact.modeLabel, "Ready to analyze");
 });
@@ -211,7 +236,7 @@ test("postAnalyzeUi falls back on non-JSON responses", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /non-JSON response/);
+  assert.match(outcome.detail, /unreadable response/);
 });
 
 test("postAnalyzeUi falls back when fetch throws", async () => {
@@ -223,7 +248,10 @@ test("postAnalyzeUi falls back when fetch throws", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /Failed to fetch/);
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared the preview after the analysis request could not finish.",
+  );
 });
 
 test("analyzeUiImageWithQwen reports missing API key", async () => {
@@ -240,7 +268,7 @@ test("analyzeUiImageWithQwen reports missing API key", async () => {
   assert.equal(result.status, 503);
 });
 
-test("analyzeUiImageWithQwen returns demo mock when key is set but live is disabled", async () => {
+test("analyzeUiImageWithQwen returns local analysis when key is set but live is disabled", async () => {
   let fetchCalled = false;
   const result = await analyzeUiImageWithQwen({
     imageDataUrl: "data:image/png;base64,abc",
@@ -256,16 +284,18 @@ test("analyzeUiImageWithQwen returns demo mock when key is set but live is disab
 
   assert.equal(fetchCalled, false);
   assert.equal(result.ok, true);
+  assert.equal(result.sampleRun, true);
   assert.equal(result.demo, true);
   assert.equal(result.artifact.modeLabel, "Ready to analyze");
 });
 
-test("resolveAnalyzeOutcome treats server demo payload as instant offline", () => {
+test("resolveAnalyzeOutcome treats server local payload as sample run", () => {
   const outcome = resolveAnalyzeOutcome({
     file: sampleFile,
     responseOk: true,
     payload: {
       ok: true,
+      sampleRun: true,
       demo: true,
       artifact: { file: { name: sampleFile.name }, modeLabel: "Ready to analyze" },
       provider: { model: "demo" },
@@ -273,7 +303,7 @@ test("resolveAnalyzeOutcome treats server demo payload as instant offline", () =
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("analyzeUiImageWithQwen reports auth failures from Qwen", async () => {

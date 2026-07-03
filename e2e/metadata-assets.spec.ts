@@ -34,11 +34,11 @@ test("home head exposes crawler and install metadata", async ({ page }) => {
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    /opengraph-image/,
+    /\/social\/home-social-preview-1200x630\.png$/,
   );
   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
     "content",
-    /twitter-image|opengraph-image/,
+    /\/social\/home-social-preview-1200x630\.png$/,
   );
 });
 

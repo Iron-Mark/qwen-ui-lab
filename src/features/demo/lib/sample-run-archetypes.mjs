@@ -1,5 +1,5 @@
-/** Query param values accepted by `/demo?archetype=`. */
-export const SAMPLE_REFERENCE_QUERY_VALUES = [
+/** Public query values accepted by the compatibility sample-run route. */
+export const SAMPLE_RUN_QUERY_VALUES = [
   "dashboard",
   "auth",
   "mobile",
@@ -27,11 +27,11 @@ const SAMPLE_LABELS = {
 };
 
 /**
- * Normalize `/demo?archetype=` to a sample screenshot id.
+ * Normalize a sample-run route value to a sample layout id.
  * @param {string | null | undefined} value
  * @returns {string}
  */
-export function resolveSampleReferenceId(value) {
+export function resolveSampleRunId(value) {
   const key = String(value ?? "dashboard")
     .trim()
     .toLowerCase();
@@ -39,9 +39,9 @@ export function resolveSampleReferenceId(value) {
 }
 
 /**
- * Human label for sample screenshot chip / hero copy.
+ * Human label for sample run chip / hero copy.
  * @param {string} sampleId
  */
-export function sampleReferenceLabel(sampleId) {
+export function sampleRunLabel(sampleId) {
   return SAMPLE_LABELS[sampleId] ?? SAMPLE_LABELS.dashboard;
 }

@@ -1,10 +1,10 @@
 import {
   clearAuthState as clearAuthStateWithStorage,
-  confirmMagicLinkStub as confirmMagicLinkStubWithStorage,
+  confirmContactLabel as confirmContactLabelWithStorage,
   getSavedByLabel as getSavedByLabelFromState,
   isSignedIn as isSignedInState,
   loadAuthState as loadAuthStateFromStorage,
-  requestMagicLink as requestMagicLinkWithStorage,
+  requestContactLabel as requestContactLabelWithStorage,
   setDisplayName as setDisplayNameWithStorage,
 } from "./auth.mjs";
 
@@ -28,12 +28,12 @@ export function setDisplayName(name) {
   return setDisplayNameWithStorage(name, getSessionStorage());
 }
 
-export function requestMagicLink(email) {
-  return requestMagicLinkWithStorage(email, getSessionStorage());
+export function requestContactLabel(email) {
+  return requestContactLabelWithStorage(email, getSessionStorage());
 }
 
-export function confirmMagicLinkStub() {
-  return confirmMagicLinkStubWithStorage(getSessionStorage());
+export function confirmContactLabel() {
+  return confirmContactLabelWithStorage(getSessionStorage());
 }
 
 export function getSavedByLabel(state = loadAuthState()) {

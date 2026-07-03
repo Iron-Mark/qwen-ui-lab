@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
-/** Mirrors app sessionStorage keys — keep in sync with UI code. */
+/** Mirrors app sessionStorage keys - keep in sync with UI code. */
 export const SAMPLE_USED_SESSION_KEY = "qwen-ui-lab:upload-sample-used";
 export const AUTH_SESSION_KEY = "qwen-ui-lab:auth";
 export const SESSION_HISTORY_KEY = "qwen-ui-lab:sessions";
@@ -13,7 +13,7 @@ const E2E_SESSION_KEYS = [
 const E2E_LOCAL_KEYS = [SESSION_HISTORY_KEY] as const;
 
 /**
- * Clears demo session keys once (not on every reload).
+ * Clears sample-run session keys once (not on every reload).
  * addInitScript would re-run on reload and break "once per session" assertions.
  */
 export async function resetE2ESessionStorage(page: Page) {
@@ -129,15 +129,15 @@ export async function waitForUploadFlowReady(page: Page, timeoutMs = 20_000) {
   await expect(page.locator('input[type="file"]')).toBeAttached({ timeout: timeoutMs });
 }
 
-export function demoModeSnackbar(page: Page): Locator {
+export function analyzerReadySnackbar(page: Page): Locator {
   return page
     .getByRole("status")
     .filter({ hasText: /analyzer ready/i })
     .first();
 }
 
-/** Load a bundled reference from the upload-flow sample picker. */
-export async function selectBundledSample(page: Page, label: string) {
+/** Load a sample run from the upload-flow sample picker. */
+export async function selectSampleRun(page: Page, label: string) {
   const picker = page.getByTestId("sample-picker");
   await expect(picker).toBeVisible();
   const trigger = picker.getByTestId("sample-select");
@@ -152,8 +152,8 @@ export async function selectBundledSample(page: Page, label: string) {
   await expect(trigger).toContainText(label);
 }
 
-/** Count bundled references in the shadcn-style sample picker popup. */
-export async function expectBundledSampleOptionCount(page: Page, count: number) {
+/** Count sample runs in the shadcn-style sample picker popup. */
+export async function expectSampleRunOptionCount(page: Page, count: number) {
   const picker = page.getByTestId("sample-picker");
   await expect(picker).toBeVisible();
   await picker.getByTestId("sample-select").click();
@@ -162,9 +162,9 @@ export async function expectBundledSampleOptionCount(page: Page, count: number) 
   await page.keyboard.press("Escape");
 }
 
-/** Load a bundled reference from the upload-flow sample picker. */
-export async function loadBundledSample(page: Page, label: string) {
-  await selectBundledSample(page, label);
+/** Load a sample run from the upload-flow sample picker. */
+export async function loadSampleRun(page: Page, label: string) {
+  await selectSampleRun(page, label);
   const picker = page.getByTestId("sample-picker");
   await picker.getByRole("button", { name: new RegExp(`load ${label} sample`, "i") }).click();
 }
@@ -176,7 +176,7 @@ function escapeRegExp(value: string) {
 /** Combined analyze CTA (experiment may use "now" suffix). */
 export function primaryAnalyzeButton(page: Page): Locator {
   return page.getByRole("button", {
-    name: /analyze & generate(?:\s+now|\s+preview)?|generate preview|regenerate preview/i,
+    name: /analyze(?:\s+now)?|analyze & prepare preview|prepare preview|refresh preview/i,
   });
 }
 

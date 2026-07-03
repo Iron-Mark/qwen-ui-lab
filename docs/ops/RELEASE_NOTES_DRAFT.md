@@ -8,16 +8,19 @@ Patch hardening release in progress for production readiness and branch governan
 
 ### In progress
 
-- Added explicit production env readiness docs for required KV, Gist, demo-safe live, and optional Sentry configuration.
+- Added explicit production env readiness docs for required KV, Gist, local-analysis live gating, and optional Sentry configuration.
 - Added `--env-file` support to `scripts/validate-prod-env.mjs` so private production env files can be validated locally without printing secret values.
 - Added `npm run prod:readiness` as the production env gate alias.
 - Protected `dev` against force pushes and branch deletion while keeping it lightweight for normal integration work.
+- Reframed account/profile internals around browser-local contact labels and preserved legacy pending-session compatibility.
+- Tightened product copy across offline/PWA, SEO, export metadata, and Chinese dictionary surfaces so public flows stay workflow-first.
+- Hardened PWA production E2E startup to launch Next directly through Node and added regression coverage for the no-shell path.
 
 ## qwen-ui-lab v0.4.1
 
 Release date: 2026-06-21
 
-Patch release for upload safety and CI runtime reliability. This release keeps the public demo behavior unchanged while preventing oversized analysis uploads from reaching expensive client/server paths and moving GitHub Actions onto the Node 24 action/runtime line.
+Patch release for upload safety and CI runtime reliability. This release keeps public local-analysis behavior unchanged while preventing oversized analysis uploads from reaching expensive client/server paths and moving GitHub Actions onto the Node 24 action/runtime line.
 
 ### Fixes and hardening
 
@@ -41,8 +44,8 @@ Patch release for upload safety and CI runtime reliability. This release keeps t
 - Release-prep verification on `0.4.1`:
   - `npm run check:full` - lint, unit tests, docs validation, and production build passed.
   - `npm run test:e2e` - 55 Playwright tests passed.
-  - `npm run doctor` - passed in offline demo mode.
-  - `npm run deploy:env:demo` - passed.
+  - `npm run doctor` - passed in local-analysis mode.
+  - `npm run deploy:env:local` - passed.
   - `git diff --check` - passed.
 
 ### Versioning
@@ -64,14 +67,14 @@ Minor release for richer no-provider image understanding. Unknown screenshot upl
 - Added deterministic design-token recommendations for surface, foreground, accent, muted, border, spacing, and radius values.
 - Expanded fallback artifacts with `Detected Structure` and `Design Tokens` plan cards.
 - Updated preview stats for inspected unknown uploads to emphasize regions, controls, density, and contrast.
-- Preserved demo-safe behavior: live Qwen analysis remains opt-in and provider failures still fall back to local analysis.
+- Preserved local-analysis-safe behavior: live Qwen analysis remains opt-in and provider failures still fall back to local analysis.
 
 ### Verification snapshot
 
 - `npm audit --omit=dev --audit-level=high` - passed.
 - `npm run check:full` - lint, unit tests, docs validation, and production build passed.
 - `npm run test:e2e` - 54 Playwright tests passed.
-- `npm run doctor` - passed; live Qwen env vars are intentionally unset for offline demo mode.
+- `npm run doctor` - passed; live Qwen env vars are intentionally unset for local-analysis mode.
 - `git diff --check` - passed.
 
 ### Versioning
@@ -104,7 +107,7 @@ Patch release that supersedes `v0.2.0` by fixing the post-merge production depen
 
 Release date: 2026-06-20
 
-Minor release for a stronger no-provider analysis path. The app still defaults to demo-safe mode, but unknown screenshot uploads now get local image signals instead of relying only on filename and dimensions.
+Minor release for a stronger no-provider analysis path. The app still defaults to local-analysis mode, but unknown screenshot uploads now get local image signals instead of relying only on filename and dimensions.
 
 ### Highlights
 
@@ -118,7 +121,7 @@ Minor release for a stronger no-provider analysis path. The app still defaults t
 
 - `npm run check:full` - lint, unit tests, docs validation, and production build passed.
 - `npx tsc --noEmit` - passed.
-- `npm run export:demo-fixtures` - regenerated fixtures; no content changes required.
+- `npm run export:sample-run-fixtures` - regenerated fixtures; no content changes required.
 - `npm run test:e2e:pr-smoke` - 9 Playwright smoke tests passed across mobile, a11y, and mocked live-provider flows.
 
 ### Versioning
@@ -129,7 +132,7 @@ Minor release for a stronger no-provider analysis path. The app still defaults t
 
 ## Maintenance checkpoint - 2026-06-10
 
-This checkpoint keeps the public demo stable after branch consolidation. Production remains demo-safe by default: live Qwen analysis is still opt-in, and the public Vercel deployment currently reports `provider=demo`.
+This checkpoint keeps the public app stable after branch consolidation. Production remains local-analysis safe by default, and live Qwen analysis is still opt-in.
 
 ### Repository and CI cleanup
 
@@ -152,42 +155,42 @@ This checkpoint keeps the public demo stable after branch consolidation. Product
 ### Current production readiness
 
 - Vercel deployment is Ready and aliased to `https://qwen-ui-lab.vercel.app`.
-- Vercel CLI reports no project environment variables configured. That is acceptable for the public offline demo, but `npm run validate:prod` fails until production KV and server-side `GITHUB_TOKEN` are added.
+- Vercel CLI reports no project environment variables configured. That is acceptable for public local analysis, but `npm run validate:prod` fails until production KV and server-side `GITHUB_TOKEN` are added.
 - `npm run validate:prod:preview` passes with warnings that KV and Gist export fall back to in-memory/manual behavior.
 
 ## qwen-ui-lab v0.1.1
 
 Release date: 2026-06-03
 
-Patch release on `main` after `v0.1.0`. Demo-safe by default — **live Qwen analysis remains opt-in** (`QWEN_LIVE_ANALYSIS` unset for public demo).
+Patch release on `main` after `v0.1.0`. Local-analysis safe by default - **live Qwen analysis remains opt-in** (`QWEN_LIVE_ANALYSIS` unset for the public app).
 
 ### Highlights
 
-- Demo tour reliability: synchronous Sonner mount so the offline snackbar fires in e2e and live demos.
+- Sample-run reliability: synchronous Sonner mount so the offline snackbar fires in E2E and live walkthroughs.
 - Upload flow polish: merged Analyze + Preview CTA, clearer disabled states, sample CTA hidden after first use.
 - Home route LCP: dashboard shell in initial HTML; deferred non-critical client bundles (offline analyze unchanged).
 - UX compliance: compact summary row opens a scrollable dialog with accordion law panels.
 - Layout consistency: shared `PageContainer` gutters across header, footer, dashboard, design-system, and 404.
 - Theme switcher shows brand primary swatches beside palette labels.
-- Operator docs: `docs/ops/POST_LAUNCH.md` for post-launch demo-safe operations.
+- Operator docs: `docs/ops/POST_LAUNCH.md` for post-launch local-analysis operations.
 
 ### Fixes since v0.1.0
 
 - Design-system excess scroll whitespace; unified preview toolbar in `ComponentPreviewCard`.
-- Mobile demo snackbar placement, timing, and once-per-session copy.
+- Mobile local-analysis snackbar placement, timing, and once-per-session copy.
 - Sticky headers and scroll-to-preview on design-system lab.
 
 ### UX, performance, and accessibility
 
 - Accordion primitive for collapsible UX law references.
 - E2E coverage for UX compliance dialog (open, law names, Escape close).
-- Lighthouse perf tooling and CI budgets unchanged; demo deploy lane still `deploy:env:demo`.
+- Lighthouse perf tooling and CI budgets unchanged; local-analysis validation continues to use `deploy:env:local`.
 
 ### API and runtime behavior
 
-- `GET /api/health` still reports `demo` unless `QWEN_LIVE_ANALYSIS=true` and API key are set.
+- `GET /api/health` stays in local-analysis mode unless `QWEN_LIVE_ANALYSIS=true` and API key are set.
 - `POST /api/analyze-ui` unchanged; instant offline path when live analysis is disabled.
-- **No live API enablement in this release** — production demo stays offline.
+- **No live API enablement in this release** - production stays local-analysis first.
 
 ### Verification snapshot
 
@@ -203,7 +206,7 @@ Validated against current project scripts:
 
 - No migration steps from `v0.1.0`.
 - No breaking route or API changes.
-- Operators: keep `QWEN_LIVE_ANALYSIS` unset on the public demo; see `docs/ops/POST_LAUNCH.md`.
+- Operators: keep `QWEN_LIVE_ANALYSIS` unset on the public app; see `docs/ops/POST_LAUNCH.md`.
 
 ---
 
@@ -214,7 +217,7 @@ Release date: 2026-06-03
 ### Highlights
 
 - Initial public baseline of `qwen-ui-lab` with Next.js App Router and TypeScript.
-- Screenshot-to-UI workflow with offline demo mode by default and optional live Qwen analysis.
+- Screenshot-to-UI workflow with local-analysis mode by default and optional live Qwen analysis.
 - Atomic design-system catalog with Laws of UX and UI Laws views.
 - Health, analysis, and CSP-report API routes for operations and security telemetry.
 
@@ -222,34 +225,34 @@ Release date: 2026-06-03
 
 - Upload-to-scaffold flow polish with refined preview card and device preview tabs.
 - Sticky design-system preview panel and mobile scroll-to-preview behavior.
-- Session-scoped demo snackbar for offline-tour guidance (no live API required).
+- Session-scoped local-analysis snackbar for offline walkthrough guidance (no live API required).
 - Snippet/code preview theming with tokenized shells, Prism syntax variables, and focus rings.
 - Lighthouse perf tooling and CI performance budgets on home and design-system routes.
-- Demo-safe deploy validation (`deploy:env:demo`); live analysis remains opt-in via `QWEN_LIVE_ANALYSIS`.
+- Local-analysis deploy validation (`deploy:env:local`); live analysis remains opt-in via `QWEN_LIVE_ANALYSIS`.
 
 ### User-facing features
 
-- Upload + analyze flow at `/` with generated preview and local session history.
+- Upload + analyze flow at `/` with starter preview and local session history.
 - Design-system browsing and snippet export at `/design-system`.
 - Domain views at `/design-system/laws-of-ux` and `/design-system/uilaws`.
 - Theme-aware chart rendering and branded not-found UX.
 
 ### API and runtime behavior
 
-- `GET /api/health` reports provider mode (`demo` or `qwen`) and live-analysis availability.
+- `GET /api/health` reports provider mode and live-analysis availability.
 - `POST /api/analyze-ui` validates payloads and returns typed error codes for invalid input and upstream failures.
 - `POST /api/security/csp-report` accepts CSP report-only payloads and returns `204`.
-- Demo mode remains default unless both API key and live-analysis flag are enabled.
+- Local-analysis mode remains default unless both API key and live-analysis flag are enabled.
 
 ### Release package summary
 
 - **Runtime surface:** app routes (`/`, `/design-system`, domain redirects), API routes (`/api/health`, `/api/analyze-ui`, `/api/security/csp-report`), and production metadata routes (`robots.txt`, `sitemap.xml`).
-- **Operational lane:** demo-safe deploy policy (`deploy:env:demo`), optional live gate (`deploy:env:live`), and post-deploy smoke script/workflow.
+- **Operational lane:** local-analysis deploy policy (`deploy:env:local`), optional live gate (`deploy:env:live`), and post-deploy smoke script/workflow.
 - **Quality gates:** lint, unit tests, build, dependency/secrets scanning, link/perf/assets audits in CI.
 - **Docs bundle:** release/process/deploy/rollback/runbook docs aligned with current scripts and workflows.
 
 ### Known operational notes
 
 - `.env.local` contains local secrets and must not be bundled into release artifacts.
-- Live Qwen usage depends on external quota/network health; demo mode remains the fallback path.
+- Live Qwen usage depends on external quota/network health; local analysis remains the fallback path.
 - CI workflows are present under `.github/workflows`; release notes and README references should point to existing files only.

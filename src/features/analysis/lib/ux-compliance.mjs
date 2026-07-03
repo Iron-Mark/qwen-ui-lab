@@ -1,12 +1,12 @@
 /**
- * Heuristic compliance mapping for analyze/generate scaffolds vs Laws of UX.
+ * Heuristic compliance mapping for analysis and starter scaffolds vs Laws of UX.
  * @typedef {'met' | 'partial' | 'review'} ComplianceStatus
  * @typedef {'upload-flow' | 'dashboard' | 'scaffold' | 'catalog'} ComplianceSurface
  * @typedef {import('../../../lib/laws-of-ux').LawOfUxId} LawOfUxId
  */
 
 import { classifyLayoutArchetype, lookupKnownSample } from "./offline-analyze.mjs";
-import { getReferenceSampleByFileName } from "./reference-samples.data.mjs";
+import { getSampleRunByFileName } from "./reference-samples.data.mjs";
 
 /** Priority laws to surface per detected UI archetype. */
 export const ARCHETYPE_HIGHLIGHT_LAWS = {
@@ -32,7 +32,7 @@ export function lawOfUxCatalogHref(lawId) {
 export function inferArchetypeIdFromArtifact(artifact) {
   if (!artifact?.file?.name) return "dashboard";
   if (lookupKnownSample(artifact.file.name)) {
-    return getReferenceSampleByFileName(artifact.file.name).id;
+    return getSampleRunByFileName(artifact.file.name).id;
   }
   const { archetypeId } = classifyLayoutArchetype(artifact.file);
   return archetypeId;

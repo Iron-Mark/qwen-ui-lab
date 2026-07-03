@@ -4,7 +4,7 @@ import {
   prepareLiveQwenContractPage,
 } from "./helpers/mock-live-qwen-api";
 import {
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
 } from "./helpers/e2e-ui";
@@ -31,7 +31,7 @@ test("live mode POSTs /api/analyze-ui and renders mocked Qwen artifact", async (
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();

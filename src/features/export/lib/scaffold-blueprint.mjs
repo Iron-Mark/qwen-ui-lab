@@ -36,7 +36,7 @@ export function extractProductionScaffoldBlueprint(content) {
     schema: SCAFFOLD_RECIPE_SCHEMA,
     generator: "offline-detection",
     sourceHash: hashContent(source),
-    componentName: inferGeneratedComponentName(source),
+    componentName: inferStarterComponentName(source),
     designTokens: designTokens ?? {},
     screenIntent: screenIntent ?? null,
     responsiveIntent: responsiveIntent ?? null,
@@ -61,7 +61,7 @@ function normalizeCorrectionSummary(correctionSummary, detectedElements) {
     activeElements: elements.filter((element) => element.included !== false).length,
     appliedEdits: elements.filter((element) => element.userEdited === true).length,
     excludedBoxes: elements.filter((element) => element.included === false).length,
-    sourceOfTruth: "Detection boxes are the source of truth for this regenerated scaffold.",
+    sourceOfTruth: "Detection boxes and review edits are captured in the recipe JSON.",
   };
 
   if (!correctionSummary || typeof correctionSummary !== "object") {
@@ -81,24 +81,34 @@ function normalizeCorrectionSummary(correctionSummary, detectedElements) {
       typeof correctionSummary.excludedBoxes === "number"
         ? correctionSummary.excludedBoxes
         : fallback.excludedBoxes,
-    sourceOfTruth:
-      typeof correctionSummary.sourceOfTruth === "string" &&
-      correctionSummary.sourceOfTruth.trim()
-        ? correctionSummary.sourceOfTruth
-        : fallback.sourceOfTruth,
+    sourceOfTruth: normalizeReviewBasisText(correctionSummary.sourceOfTruth, fallback.sourceOfTruth),
   };
+}
+
+function normalizeReviewBasisText(value, fallback) {
+  if (typeof value !== "string" || !value.trim()) return fallback;
+  const trimmed = value.trim();
+  const staleReviewBasisPattern = new RegExp(
+    ["source\\s+of\\s+truth", "(?:manual|reviewer)\\s+corrections"].join("|"),
+    "i",
+  );
+  return staleReviewBasisPattern.test(trimmed)
+    ? fallback
+    : trimmed;
 }
 
 export function hashContent(content) {
   return createHash("sha256").update(String(content || "")).digest("hex");
 }
 
-export function inferGeneratedComponentName(source) {
+export function inferStarterComponentName(source) {
   const defaultMatch = /export\s+default\s+function\s+([A-Za-z_$][\w$]*)/.exec(source);
   if (defaultMatch) return defaultMatch[1];
   const namedMatch = /export\s+function\s+([A-Za-z_$][\w$]*)/.exec(source);
-  return namedMatch?.[1] ?? "GeneratedComponent";
+  return namedMatch?.[1] ?? "StarterComponent";
 }
+
+export const inferGeneratedComponentName = inferStarterComponentName;
 
 function readJsonConst(source, name) {
   const raw = readConstLiteral(source, name);
@@ -204,13 +214,13 @@ function buildReviewChecklist({
   const patterns = detectedPatterns ?? {};
   const checklist = [
     `Review ${elements.length} detected element${elements.length === 1 ? "" : "s"} against the source screenshot.`,
-    "Keep semantic landmarks, visible labels, focus states, and keyboard order while wiring real data.",
-    "Use the recipe JSON as the deterministic source for future correction/regeneration.",
+    "Keep semantic landmarks, visible labels, focus states, and keyboard order while connecting product data.",
+    "Use the recipe JSON to rebuild the starter after review edits.",
   ];
 
   if (regions.length) {
     checklist.push(
-      `Validate ${regions.length} generated layout region${regions.length === 1 ? "" : "s"} before deleting or merging sections.`,
+      `Validate ${regions.length} starter layout region${regions.length === 1 ? "" : "s"} before deleting or merging sections.`,
     );
   }
   if ((patterns.dataTables ?? []).length) {
@@ -223,11 +233,11 @@ function buildReviewChecklist({
     checklist.push("Move dialog regions into real Dialog components with focus management.");
   }
   if ((patterns.charts ?? []).length) {
-    checklist.push("Replace chart placeholders with chart data, labels, and text summaries.");
+    checklist.push("Connect chart regions to real chart data, labels, and text summaries.");
   }
   if (Object.keys(primitiveSummary?.primitives ?? {}).length === 0) {
     checklist.push(
-      "No primitive summary was available; verify imports, controls, and semantic wrappers before import.",
+      "No primitive summary was available; verify imports, controls, and semantic wrappers during review.",
     );
   }
 

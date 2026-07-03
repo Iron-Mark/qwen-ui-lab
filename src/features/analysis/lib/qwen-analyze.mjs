@@ -27,9 +27,10 @@ export function buildAnalyzeHealthResponse(env = process.env) {
   };
 }
 
-export function buildDemoAnalyzeResponse({ fileName, fileType, fileSize }) {
+export function buildLocalAnalyzeResponse({ fileName, fileType, fileSize }) {
   return {
     ok: true,
+    sampleRun: true,
     demo: true,
     artifact: buildUiFlowArtifact(
       { name: fileName, type: fileType, size: fileSize },
@@ -67,11 +68,11 @@ export function buildQwenVisionRequest({
               "Return JSON with keys: summary, plan, generatedCode, previewStats.",
               "plan must be an array of {title, body}.",
               "previewStats must be an array of {label, value}.",
-              "generatedCode must be production-usable TSX, not a demo note.",
+              "generatedCode must be usable starter TSX, not a sample-run note.",
               "generatedCode should prefer shadcn-style primitives from @/components/ui: Card, Button, Input, Badge, Tabs, Dialog, Select, Table when those match the screenshot.",
               "generatedCode should export a default top-level component plus small named subcomponents for repeated sections.",
-              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and placeholder data arrays that can be replaced by real data.",
-              "Avoid app-specific demo imports unless they are included in generatedCode. Do not leave TODO-only blocks as the main output.",
+              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and clearly named sample data constants that can be replaced with product data.",
+              "Avoid app-specific sample-run imports unless they are included in generatedCode. Do not leave TODO-only blocks as the main output.",
             ].join("\n"),
           },
           {
@@ -118,7 +119,7 @@ export async function analyzeUiImageWithQwen({
   }
 
   if (!isLiveQwenAnalysisEnabled(env)) {
-    return buildDemoAnalyzeResponse({ fileName, fileType, fileSize });
+    return buildLocalAnalyzeResponse({ fileName, fileType, fileSize });
   }
 
   const endpoint = `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
@@ -235,7 +236,7 @@ function normalizeQwenAnalysis(value) {
     generatedCode:
       typeof value?.generatedCode === "string"
         ? value.generatedCode
-        : "export function GeneratedDashboard() { return null; }",
+        : "export function DashboardStarter() { return null; }",
     previewStats: normalizeCards(value?.previewStats),
   };
 }

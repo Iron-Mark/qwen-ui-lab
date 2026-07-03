@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { buildProductionReadiness } from "../src/features/ops/lib/production-readiness.mjs";
 import { handleReadinessGet } from "../src/features/ops/lib/readiness-api.mjs";
+import { getProviderModeLabel } from "../src/lib/provider-mode.ts";
 
 test("production readiness reports local-analysis fallbacks without secrets", () => {
   const readiness = buildProductionReadiness({});
@@ -11,7 +14,7 @@ test("production readiness reports local-analysis fallbacks without secrets", ()
   assert.equal(readiness.provider, "demo");
   assert.equal(readiness.shareStorage, "memory");
   assert.equal(readiness.durableShareLinks, false);
-  assert.equal(readiness.checks.find((check) => check.id === "demo-fallback")?.status, "ready");
+  assert.equal(readiness.checks.find((check) => check.id === "local-analysis")?.status, "ready");
   assert.equal(readiness.checks.find((check) => check.id === "share-storage")?.status, "fallback");
   assert.equal(readiness.checks.find((check) => check.id === "public-site-url")?.status, "fallback");
   assert.equal(readiness.hasQwenApiKey, false);
@@ -73,4 +76,22 @@ test("readiness API returns JSON payload", async () => {
   const body = await response.json();
   assert.equal(body.ok, true);
   assert.ok(Array.isArray(body.checks));
+});
+
+test("readiness panel labels provider modes for people, not raw enums", () => {
+  const source = readFileSync(
+    join(process.cwd(), "src/features/ops/components/ProductionReadinessPanel.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /getProviderModeLabel\(payload\.provider\)/);
+  assert.doesNotMatch(source, /Analysis:\s*\$\{payload\.provider\}/);
+});
+
+test("provider mode labels hide compatibility enum names from UI copy", () => {
+  assert.equal(getProviderModeLabel("demo"), "Local analysis");
+  assert.equal(getProviderModeLabel("live"), "Live Qwen");
+  assert.equal(getProviderModeLabel("qwen"), "Live Qwen");
+  assert.equal(getProviderModeLabel("unknown"), "Checking");
+  assert.equal(getProviderModeLabel(null), "Checking");
 });

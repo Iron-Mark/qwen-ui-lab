@@ -73,10 +73,10 @@ export function buildRepoCompareExport({
 }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
   const head = `qwen-ui-lab-export-${Date.now()}`;
-  const title = encodeURIComponent("Add screenshot UI starter package");
+  const title = encodeURIComponent("Add screenshot-to-React starter package");
   const body = encodeURIComponent(
     [
-      "## Screenshot UI starter package",
+      "## Screenshot-to-React starter package",
       "",
       description,
       "",
@@ -84,7 +84,7 @@ export function buildRepoCompareExport({
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,
-      `2. Add \`${safeFilename}\` with the generated UI package.`,
+      `2. Add \`${safeFilename}\` with the starter UI package.`,
       "3. Open a pull request.",
       "",
       "---",

@@ -8,6 +8,7 @@ import { join } from "node:path";
 
 const PUBLIC_ROOT = "public";
 const MAX_BYTES = 2 * 1024 * 1024;
+const CANDIDATE_ONLY_DIRS = new Set(["generated-assets"]);
 
 /** Static files that must exist under public/ (layout + PWA). */
 const REQUIRED_PUBLIC_PATHS = [
@@ -52,12 +53,17 @@ if (!existsSync(PUBLIC_ROOT)) {
   fail(`${PUBLIC_ROOT} directory missing`);
 }
 
+const skippedCandidateDirs = [];
 const stack = [PUBLIC_ROOT];
 while (stack.length) {
   const dir = stack.pop();
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (dir === PUBLIC_ROOT && CANDIDATE_ONLY_DIRS.has(entry.name)) {
+        skippedCandidateDirs.push(entry.name);
+        continue;
+      }
       stack.push(full);
       continue;
     }
@@ -102,4 +108,11 @@ console.log(`Service worker cache: ${cacheMatch[1]}`);
 console.log(
   `Checked ${REQUIRED_PUBLIC_PATHS.length} required assets and ${(manifest.icons ?? []).length} manifest icon entries`,
 );
+if (skippedCandidateDirs.length > 0) {
+  console.log(
+    `Skipped candidate-only asset dirs: ${skippedCandidateDirs
+      .map((name) => `${PUBLIC_ROOT}/${name}`)
+      .join(", ")}`,
+  );
+}
 console.log("Asset validation passed");

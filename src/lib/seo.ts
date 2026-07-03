@@ -2,7 +2,7 @@ import type { Metadata, MetadataRoute, Viewport } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
-export const SITE_TAGLINE = "Screenshot to React workflow";
+export const SITE_TAGLINE = "Screenshot to React workspace";
 export const SITE_PITCH =
   "Turn UI screenshots into inspectable React + Tailwind export packages.";
 export const DEFAULT_OG_IMAGE =
@@ -134,7 +134,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       "Qwen UI Lab",
       "UI structure detection",
       "screenshot to component",
-      "React Tailwind generator",
+      "React Tailwind starter package",
       "design system export",
     ],
     alternates: {
@@ -207,7 +207,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
     name: `${SITE_NAME} - screenshot to React`,
     short_name: SITE_NAME,
     description:
-      "Screenshot-to-React workflow with reviewable export packages.",
+      "Screenshot-to-React workflow with inspectable starter packages.",
     start_url: "/",
     scope: "/",
     lang: "en-US",
@@ -274,7 +274,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Sample run",
         short_name: "Sample",
-        description: "Open a sample layout and generate a component preview.",
+        description: "Open a sample layout and review a starter preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -285,14 +285,14 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         sizes: "1440x900",
         type: "image/png",
         form_factor: "wide",
-        label: "Dashboard sample run",
+        label: "Sample run workspace",
       },
       {
         src: "/references/mobile-reference.png",
         sizes: "390x844",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile app sample run",
+        label: "Mobile sample workspace",
       },
     ],
     launch_handler: {
@@ -431,7 +431,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Screenshot-to-React tool for converting UI screenshots into reviewable React/Tailwind export packages.",
+            "Screenshot-to-React tool for converting UI screenshots into inspectable React/Tailwind starter packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,

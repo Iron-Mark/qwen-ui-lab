@@ -1,6 +1,6 @@
 # Troubleshooting and Runbook
 
-Operational runbook for local development, demo prep, and common incidents.
+Operational runbook for local development, sample-run prep, and common incidents.
 
 For alert thresholds, synthetic-check usage, and response-time targets, see `docs/ops/RELIABILITY_OPS.md`.
 
@@ -19,12 +19,12 @@ For alert thresholds, synthetic-check usage, and response-time targets, see `doc
 4. Confirm current mode:
    - `GET /api/health` should report `provider: "demo"` unless live toggle is enabled.
 
-## Incident: Analyze is not using live Qwen
+## Incident: Live provider is not active
 
 ### Symptoms
 
-- Badge or banner indicates demo/offline mode.
-- Analyze completes instantly with fallback messaging.
+- Developer diagnostics indicate local-analysis mode.
+- Analysis completes instantly with a local artifact.
 - `/api/health` returns `liveAnalysisEnabled: false`.
 
 ### Likely Causes
@@ -48,11 +48,11 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 3. Re-check `GET /api/health`.
 4. Run `npm run doctor` and confirm live checks.
 
-## Incident: Analyze call fails or falls back unexpectedly
+## Incident: Live analysis call fails and returns local analysis
 
 ### Symptoms
 
-- Error toast, then demo fallback artifact.
+- Error toast, then a local-analysis artifact.
 - Response from `/api/analyze-ui` with `qwen_network_error`, `qwen_request_failed`, or `invalid_qwen_json`.
 - HTTP **429** with `rate_limit_exceeded` during live preview rehearsal (rapid Analyze clicks).
 
@@ -65,8 +65,8 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
    - image MIME type
    - file size <= 4 MB (larger files are rejected in the browser before analysis starts)
 4. Retry with a smaller image to avoid payload pressure.
-5. Use demo mode for presentation continuity while investigating.
-6. For **429 rate_limit_exceeded**: wait for `Retry-After` seconds or raise `ANALYZE_UI_RATE_LIMIT_MAX` on Preview only (see `docs/ops/LIVE_QWEN_ROLLOUT.md`). Demo mode is never rate-limited on this route.
+5. Use local-analysis mode for workflow continuity while investigating.
+6. For **429 rate_limit_exceeded**: wait for `Retry-After` seconds or raise `ANALYZE_UI_RATE_LIMIT_MAX` on Preview only (see `docs/ops/LIVE_QWEN_ROLLOUT.md`). Local-analysis mode is never rate-limited on this route.
 
 ## Incident: `npm run doctor` fails
 
@@ -80,7 +80,7 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 4. If API ping fails:
    - verify live mode variables and external connectivity.
 5. If you do not need live provider now:
-   - unset live toggles and continue in demo mode.
+   - unset live toggles and continue in local-analysis mode.
 
 ## Incident: E2E failures in CI/local
 
@@ -97,11 +97,11 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 3. Verify helper mocks are active in `e2e/helpers/mock-analyze-api.ts`.
 4. Ensure tests do not rely on external API timing.
 
-## Incident: Sample screenshot does not load
+## Incident: Sample run does not load
 
 ### Symptoms
 
-- "Could not load sample screenshot" toast.
+- "Could not load sample run" toast.
 
 ### Actions
 
@@ -138,9 +138,9 @@ Then hard-refresh and inspect service worker state.
 When escalating or handing off, include:
 
 - exact failing command and output snippet
-- current mode (`demo` or `live`)
+- current provider mode and live-analysis status
 - `/api/health` response payload
-- whether issue reproduces with sample screenshot and custom upload
+- whether issue reproduces with a sample run and a custom upload
 - what was already tried from this runbook
 
 ## Monitoring-Triggered Incident Flow

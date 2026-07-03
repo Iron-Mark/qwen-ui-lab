@@ -53,7 +53,7 @@ function FunnelDocsPanel() {
       ))}
       <p className="text-sm text-muted-foreground">
         See <code className="rounded bg-muted px-1 text-xs">docs/ops/ANALYTICS_TAXONOMY.md</code> in the
-        repo for the full event list. Enable staging flags from{" "}
+        repo for the full event list. Enable observability flags from{" "}
         <code className="rounded bg-muted px-1 py-0.5 text-xs">.env.example</code> to populate the
         live buffer on this page.
       </p>
@@ -169,13 +169,13 @@ export function AnalyticsDashboardClient({ liveDashboardEnabled }: AnalyticsDash
     <PageContainer className="space-y-8 py-8">
       <header className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Internal · staging
+          Private diagnostics
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">Analytics dashboard</h1>
         <p className="max-w-2xl text-muted-foreground">
           {liveDashboardEnabled
             ? "Live view of allowlisted client events buffered in this browser. Local analysis events stay suppressed unless explicitly allowed."
-            : "Documentation-only view. Client analytics are disabled until observability env flags are set."}
+            : "Setup guide view. Client analytics stay disabled until observability flags are enabled."}
         </p>
       </header>
 

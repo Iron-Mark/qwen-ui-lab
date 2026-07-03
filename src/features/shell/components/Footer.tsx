@@ -37,13 +37,13 @@ const PRODUCT_LINKS = [
 const RESOURCE_LINKS = [
   {
     href: "https://github.com/qwenlm/qwen3-vl",
-    label: "Qwen3-VL",
-    tooltip: "Open the vision model project used for live analysis.",
+    label: "Vision model",
+    tooltip: "Open the Qwen3-VL project used when live analysis is enabled.",
   },
   {
     href: "https://qwenlm.github.io/qwen-code-docs/en/users/overview/",
-    label: "Qwen Code",
-    tooltip: "Read the Qwen Code docs for generated React output.",
+    label: "Code docs",
+    tooltip: "Read the Qwen Code docs for implementation context.",
   },
   {
     href: "https://github.com/Iron-Mark/qwen-ui-lab",
@@ -203,7 +203,7 @@ export function Footer() {
               </Link>
             </FooterTooltip>
             <p className="mt-2 hidden max-w-sm text-sm leading-5 text-muted-foreground sm:block">
-              Create reviewable React + Tailwind export packages from
+              Create inspectable React + Tailwind starter packages from
               screenshot analysis.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">

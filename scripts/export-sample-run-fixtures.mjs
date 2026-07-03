@@ -3,11 +3,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  DEMO_HEALTH_RESPONSE,
-  buildDemoAnalyzeUiErrorResponse,
-  buildDemoArtifactForFile,
-  getSampleReferenceFile,
-} from "../src/features/analysis/lib/demo-fixtures.mjs";
+  LOCAL_ANALYSIS_HEALTH_RESPONSE,
+  buildLocalAnalyzeUiErrorResponse,
+  buildSampleRunAnalyzeUiSuccessResponse,
+  buildSampleRunArtifactForFile,
+  getSampleRunFile,
+} from "../src/features/analysis/lib/sample-run-fixtures.mjs";
 import {
   LIVE_QWEN_HEALTH_RESPONSE,
   MOCK_QWEN_ANALYSIS_JSON,
@@ -16,15 +17,16 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = resolve(__dirname, "../e2e/fixtures");
-const outFile = resolve(outDir, "demo-responses.json");
+const outFile = resolve(outDir, "sample-run-responses.json");
 const liveOutFile = resolve(outDir, "live-qwen-responses.json");
 
-const sampleFile = getSampleReferenceFile();
-const sampleArtifact = buildDemoArtifactForFile(sampleFile);
+const sampleFile = getSampleRunFile();
+const sampleArtifact = buildSampleRunArtifactForFile(sampleFile);
 
 const payload = {
-  health: DEMO_HEALTH_RESPONSE,
-  analyzeUiError: buildDemoAnalyzeUiErrorResponse(),
+  health: LOCAL_ANALYSIS_HEALTH_RESPONSE,
+  analyzeUiError: buildLocalAnalyzeUiErrorResponse(),
+  analyzeUiSuccess: buildSampleRunAnalyzeUiSuccessResponse(sampleFile),
   sampleFile,
   sampleArtifact: {
     planTitles: sampleArtifact.plan.map((section) => section.title),

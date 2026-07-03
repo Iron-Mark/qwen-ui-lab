@@ -1,13 +1,13 @@
 import { downloadTextFile } from "@/lib/clipboard.client";
 import type { AtomicCatalogEntry } from "../data/catalog-types";
-import { buildCatalogBundle } from "./export-bundle";
+import { buildCatalogSnippets } from "./export-snippets";
 
-export function downloadCatalogBundle(
+export function downloadCatalogSnippets(
   entries: AtomicCatalogEntry[],
-  filename = "qwen-ui-lab-design-system-bundle.tsx",
+  filename = "qwen-ui-lab-design-system-snippets.tsx",
 ) {
   downloadTextFile(
-    buildCatalogBundle(entries),
+    buildCatalogSnippets(entries),
     filename,
     "text/plain;charset=utf-8",
   );

@@ -34,16 +34,16 @@ Use `dev` for day-to-day work. When `dev` is ready, open the release PR into `ma
 
 Runs a **fast subset** of Playwright specs on every pull request:
 
-- `e2e/mobile.spec.ts` — mobile viewport flows
-- `e2e/a11y.spec.ts` — accessibility checks
-- `e2e/live-qwen-contract.spec.ts` — live-path contract (mocked JSON, no API key)
-- `e2e/upload-flow.spec.ts` — upload size guard and sample-picker flow
+- `e2e/mobile.spec.ts` - mobile viewport flows
+- `e2e/a11y.spec.ts` - accessibility checks
+- `e2e/live-qwen-contract.spec.ts` - live-path contract (mocked JSON, no API key)
+- `e2e/upload-flow.spec.ts` - upload size guard and sample-picker flow
 
 **Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, docs links, build).
 
-**Strict on PRs:** set repository variable **`PR_E2E_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables** to fail the job on test errors and block merge (same pattern as `PERF_LCP_STRICT` for the LCP budget).
+**Strict on PRs:** set repository variable **`PR_E2E_STRICT`** to `true` under **Settings -> Secrets and variables -> Actions -> Variables** to fail the job on test errors and block merge (same pattern as `PERF_LCP_STRICT` for the LCP budget).
 
-**Strict on manual run:** **Actions → PR E2E Smoke → Run workflow** always fails the workflow on test errors (useful before merge or when debugging CI).
+**Strict on manual run:** **Actions -> PR E2E Smoke -> Run workflow** always fails the workflow on test errors (useful before merge or when debugging CI).
 
 | Setting | Default | Notes |
 |---------|---------|-------|
@@ -77,7 +77,7 @@ npm run test:e2e:visual
 
 Runs the complete Playwright suite with `CI=1` (production build + `next start`, offline mocks, one retry). On failure, `test-results/` artifacts are uploaded for 14 days.
 
-Manual run: **Actions → E2E Nightly → Run workflow**.
+Manual run: **Actions -> E2E Nightly -> Run workflow**.
 
 Local equivalent:
 
@@ -129,7 +129,7 @@ node scripts/perf-lcp-budget.mjs --strict --url https://qwen-ui-lab.vercel.app
 
 Reports are written to `.perf/lighthouse-lcp-budget.json` (gitignored). CI uploads this file when present.
 
-To make production LCP breaches block CI without changing workflow YAML, set repository variable **`PERF_LCP_STRICT`** to `true` under **Settings → Secrets and variables → Actions → Variables**.
+To make production LCP breaches block CI without changing workflow YAML, set repository variable **`PERF_LCP_STRICT`** to `true` under **Settings -> Secrets and variables -> Actions -> Variables**.
 
 ## Related scripts
 
@@ -145,6 +145,6 @@ To make production LCP breaches block CI without changing workflow YAML, set rep
 
 ## See also
 
-- [OFFLINE_DEMO_E2E.md](./OFFLINE_DEMO_E2E.md) — offline E2E strategy and snapshot workflow
-- [PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md) — deploy env gates and smoke hooks
-- [RELIABILITY_OPS.md](./RELIABILITY_OPS.md) — synthetic health and ops playbooks
+- [LOCAL_ANALYSIS_E2E.md](./LOCAL_ANALYSIS_E2E.md) - local-analysis E2E strategy and snapshot workflow
+- [PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md) - deploy env gates and smoke hooks
+- [RELIABILITY_OPS.md](./RELIABILITY_OPS.md) - synthetic health and ops playbooks

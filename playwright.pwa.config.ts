@@ -1,7 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const e2ePort = process.env.E2E_PWA_PORT ?? "3211";
-const e2eBaseUrl = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${e2ePort}`;
+const shouldReuseServer = process.env.PLAYWRIGHT_REUSE_SERVER === "1";
+const e2eBaseUrl = shouldReuseServer
+  ? (process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${e2ePort}`)
+  : `http://127.0.0.1:${e2ePort}`;
 
 /**
  * E2E against a production build (`next build` + `next start`).
@@ -24,7 +27,7 @@ export default defineConfig({
   webServer: {
     command: "npm run start:prod:e2e",
     url: e2eBaseUrl,
-    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === "1",
+    reuseExistingServer: shouldReuseServer,
     timeout: 180_000,
     env: {
       ...process.env,

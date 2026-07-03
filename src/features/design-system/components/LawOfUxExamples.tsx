@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import type { LawOfUxId } from "@/lib/laws-of-ux";
 import { cn } from "@/lib/utils";
 
-function FittsDemo() {
+function FittsExample() {
   return (
     <div className="flex flex-wrap items-end justify-center gap-6">
       <button
@@ -24,10 +24,10 @@ function FittsDemo() {
   );
 }
 
-function HickDemo() {
+function HickExample() {
   const [mode, setMode] = useState<"few" | "many">("few");
   const many = ["PNG", "JPG", "SVG", "WebP", "HEIC", "GIF", "TIFF", "BMP"];
-  const few = ["Analyze", "Generate Preview"];
+  const few = ["Analyze", "Prepare preview"];
 
   return (
     <div className="space-y-3">
@@ -62,7 +62,7 @@ function HickDemo() {
   );
 }
 
-function MillerDemo() {
+function MillerExample() {
   const items = Array.from({ length: 12 }, (_, i) => `Item ${i + 1}`);
   const chunks = [
     items.slice(0, 4),
@@ -83,7 +83,7 @@ function MillerDemo() {
         </ul>
       </div>
       <div>
-        <p className="mb-2 text-xs font-semibold text-accent">Chunked (3×4)</p>
+        <p className="mb-2 text-xs font-semibold text-accent">Chunked (3x4)</p>
         <div className="space-y-2">
           {chunks.map((chunk, index) => (
             <ul
@@ -101,8 +101,8 @@ function MillerDemo() {
   );
 }
 
-function SerialPositionDemo() {
-  const steps = ["Upload", "Analyze", "Plan", "Generate", "Preview", "Export"];
+function SerialPositionExample() {
+  const steps = ["Upload", "Analyze", "Plan", "Preview", "Export"];
   return (
     <ol className="flex flex-wrap justify-center gap-2">
       {steps.map((step, index) => (
@@ -122,7 +122,7 @@ function SerialPositionDemo() {
   );
 }
 
-function VonRestorffDemo() {
+function VonRestorffExample() {
   const rows = ["Stat A", "Stat B", "Stat C", "Stat D"];
   return (
     <ul className="flex flex-wrap justify-center gap-2">
@@ -143,7 +143,7 @@ function VonRestorffDemo() {
   );
 }
 
-function AestheticDemo() {
+function AestheticExample() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="rounded-lg border border-dashed border-border bg-muted/30 p-4 text-center text-xs text-muted-foreground">
@@ -158,7 +158,7 @@ function AestheticDemo() {
   );
 }
 
-function DohertyDemo() {
+function DohertyExample() {
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -195,20 +195,20 @@ function DohertyDemo() {
         Slow response
       </button>
       {pending ? (
-        <span className="w-full text-center text-xs text-muted-foreground">Waiting…</span>
+        <span className="w-full text-center text-xs text-muted-foreground">Waiting...</span>
       ) : null}
       {done ? (
         <span className="w-full text-center text-xs font-semibold text-success">
-          Done — flow continues
+          Done - flow continues
         </span>
       ) : null}
     </div>
   );
 }
 
-function GoalGradientDemo() {
+function GoalGradientExample() {
   const [step, setStep] = useState(2);
-  const labels = ["Upload", "Analyze", "Plan", "Generate", "Export"];
+  const labels = ["Upload", "Analyze", "Plan", "Preview", "Export"];
   return (
     <div className="space-y-3">
       <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -238,7 +238,7 @@ function GoalGradientDemo() {
   );
 }
 
-function TeslerDemo() {
+function TeslerExample() {
   const [advanced, setAdvanced] = useState(false);
   return (
     <div className="mx-auto max-w-xs space-y-3 text-center">
@@ -251,22 +251,22 @@ function TeslerDemo() {
       </button>
       {advanced ? (
         <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-left text-xs text-amber-900 dark:text-amber-100">
-          Live provider setup stays opt-in and outside the default workflow.
+          Advanced setup stays out of the main workflow until a team needs it.
         </div>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Default path: local analysis first, advanced complexity on request.
+          Default path: upload, review, and export without extra setup.
         </p>
       )}
     </div>
   );
 }
 
-function PeakEndDemo() {
+function PeakEndExample() {
   return (
     <div className="space-y-2 text-center text-xs">
       <div className="flex justify-between gap-1">
-        {["Upload", "Analyze", "Generate", "Export ✓"].map((label, i) => (
+        {["Upload", "Analyze", "Preview", "Export complete"].map((label, i) => (
           <span
             key={label}
             className={cn(
@@ -284,20 +284,20 @@ function PeakEndDemo() {
   );
 }
 
-function JakobDemo() {
+function JakobExample() {
   return (
     <nav className="flex justify-center gap-4 rounded-lg border border-border bg-card px-4 py-3 text-sm">
       <span className="font-semibold text-card-foreground">Dashboard</span>
       <span className="text-muted-foreground">Design system</span>
-      <span className="text-muted-foreground">Account ▾</span>
+      <span className="text-muted-foreground">Account</span>
     </nav>
   );
 }
 
-function ParkinsonDemo() {
+function ParkinsonExample() {
   return (
     <ul className="space-y-1 text-xs text-muted-foreground">
-      {["Reading image…", "Preparing analysis…", "Generating preview…"].map((step) => (
+      {["Reading image...", "Preparing analysis...", "Preparing preview..."].map((step) => (
         <li key={step} className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           {step}
@@ -307,11 +307,11 @@ function ParkinsonDemo() {
   );
 }
 
-function ChoiceOverloadDemo() {
-  return <HickDemo />;
+function ChoiceOverloadExample() {
+  return <HickExample />;
 }
 
-function CognitiveLoadDemo() {
+function CognitiveLoadExample() {
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       <div className="rounded border border-danger/30 bg-danger/5 p-2 text-[10px] text-danger">
@@ -324,7 +324,7 @@ function CognitiveLoadDemo() {
   );
 }
 
-function ChunkingDemo() {
+function ChunkingExample() {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       {["atom", "molecule", "organism"].map((tier) => (
@@ -339,25 +339,25 @@ function ChunkingDemo() {
   );
 }
 
-const DEMO_MAP: Record<LawOfUxId, () => ReactNode> = {
-  "aesthetic-usability": AestheticDemo,
-  fitts: FittsDemo,
-  hick: HickDemo,
-  jakob: JakobDemo,
-  miller: MillerDemo,
-  parkinson: ParkinsonDemo,
-  "peak-end": PeakEndDemo,
-  "serial-position": SerialPositionDemo,
-  tesler: TeslerDemo,
-  "von-restorff": VonRestorffDemo,
-  doherty: DohertyDemo,
-  "choice-overload": ChoiceOverloadDemo,
-  "cognitive-load": CognitiveLoadDemo,
-  "goal-gradient": GoalGradientDemo,
-  chunking: ChunkingDemo,
+const EXAMPLE_MAP: Record<LawOfUxId, () => ReactNode> = {
+  "aesthetic-usability": AestheticExample,
+  fitts: FittsExample,
+  hick: HickExample,
+  jakob: JakobExample,
+  miller: MillerExample,
+  parkinson: ParkinsonExample,
+  "peak-end": PeakEndExample,
+  "serial-position": SerialPositionExample,
+  tesler: TeslerExample,
+  "von-restorff": VonRestorffExample,
+  doherty: DohertyExample,
+  "choice-overload": ChoiceOverloadExample,
+  "cognitive-load": CognitiveLoadExample,
+  "goal-gradient": GoalGradientExample,
+  chunking: ChunkingExample,
 };
 
-export function LawOfUxDemo({ lawId }: { lawId: LawOfUxId }) {
-  const Demo = DEMO_MAP[lawId];
-  return Demo ? <Demo /> : null;
+export function LawOfUxExample({ lawId }: { lawId: LawOfUxId }) {
+  const Example = EXAMPLE_MAP[lawId];
+  return Example ? <Example /> : null;
 }

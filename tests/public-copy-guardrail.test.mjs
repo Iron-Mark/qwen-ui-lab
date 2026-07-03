@@ -4,34 +4,119 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const PUBLIC_COPY_FILES = [
+  ".env.example",
   "README.md",
   "docs/README.md",
   "docs/ARCHITECTURE.md",
+  "docs/CONTRIBUTING.md",
   "docs/DEMO.md",
-  "docs/media/MEETUP_MEDIA.md",
+  "docs/media/PRODUCT_MEDIA.md",
+  "docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md",
   "docs/media/LINKEDIN_POSTS.md",
-  "docs/media/MEETUP_SLIDES.marp.md",
-  "docs/ops/OFFLINE_DEMO_E2E.md",
+  "docs/media/PRODUCT_WALKTHROUGH_SLIDES.marp.md",
+  "docs/media/before-after-comparison.svg",
+  "experiments/01-dashboard/first-pass-starter.tsx",
+  "experiments/01-dashboard/reviewed-starter.tsx",
+  "docs/ops/ANALYTICS_TAXONOMY.md",
+  "docs/ops/LIVE_QWEN_ROLLOUT.md",
+  "docs/ops/OAUTH_ROADMAP.md",
+  "docs/ops/LOCAL_ANALYSIS_E2E.md",
+  "docs/ops/SHARE_LINKS.md",
+  "docs/ops/TROUBLESHOOTING_RUNBOOK.md",
+  "docs/ops/ANALYTICS_STAGING_ACTIVATION.md",
+  "docs/ops/PRODUCTION_SETUP_CHECKLIST.md",
+  "docs/specs/PULL_REQUEST_TEMPLATE.md",
+  "docs/specs/ARTIFACT_CHECKLIST.md",
   "public/manifest.json",
   "public/offline.html",
   "src/lib/seo.ts",
+  "src/app/globals.css",
+  "src/features/home/lib/home-route.ts",
+  "src/features/home/components/DashboardSampleDialog.tsx",
+  "src/features/design-system/lib/export-snippets.ts",
+  "src/features/design-system/lib/export-snippets.client.ts",
+  "src/features/design-system/lib/design-system-route.ts",
+  "src/features/design-system/components/LawOfUxCard.tsx",
+  "src/features/design-system/components/LawOfUxExamples.tsx",
   "src/lib/i18n/dictionaries/en.ts",
   "src/lib/i18n/dictionaries/zh.ts",
-  "src/features/demo/components/SampleReferencePageClient.tsx",
-  "src/features/demo/lib/demo-archetypes.mjs",
-  "src/features/demo/lib/demo-route.ts",
+  "src/lib/i18n/translate-analyze-step.mjs",
+  "src/features/demo/components/SampleRunPageClient.tsx",
+  "src/features/demo/lib/sample-run-archetypes.mjs",
+  "src/features/demo/lib/sample-run-route.ts",
+  "src/features/home/components/WorkflowBanner.tsx",
+  "src/features/analytics/components/AnalyticsDashboardClient.tsx",
+  "src/features/analytics/lib/analytics-route.ts",
+  "src/features/analysis/components/UploadFlow.tsx",
+  "src/features/analysis/lib/analyze-outcome.mjs",
   "src/features/analysis/lib/offline-analyze.mjs",
   "src/features/analysis/lib/offline-image-inspection.mjs",
   "src/features/analysis/lib/ui-flow.mjs",
   "src/features/analysis/lib/design-md.mjs",
+  "src/features/analysis/lib/qwen-mock-fixtures.mjs",
   "src/features/export/components/GistExportButton.tsx",
+  "src/features/export/lib/scaffold-package.mjs",
   "src/features/export/lib/scaffold-package-docs.mjs",
   "src/features/export/lib/github-gist.mjs",
   "src/features/export/lib/github-repo.mjs",
+  "src/app/demo/page.tsx",
+];
+
+const CORRUPTION_GUARD_FILES = [
+  "GENERATED_ASSET_PACK.md",
+  "README.md",
+  "docs/README.md",
+  "docs/DEMO.md",
+  "docs/media/PRODUCT_MEDIA.md",
+  "docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md",
+  "docs/media/PRODUCT_WALKTHROUGH_SLIDES.marp.md",
+  "docs/ops/LIVE_QWEN_ROLLOUT.md",
+  "docs/ops/OAUTH_ROADMAP.md",
+  "docs/ops/LOCAL_ANALYSIS_E2E.md",
+  "src/lib/i18n/dictionaries/en.ts",
+  "src/features/export/lib/scaffold-package.mjs",
+  "src/features/export/lib/scaffold-package-docs.mjs",
+  "src/features/analytics/components/AnalyticsDashboardClient.tsx",
+  "tests/architecture.test.mjs",
+  "tests/github-repo.test.mjs",
+  "tests/scaffold-zip.test.mjs",
+];
+
+const LOCAL_PATH_GUARD_FILES = [
+  "GENERATED_ASSET_PACK.md",
+  "README.md",
+  "docs/README.md",
+  "docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md",
+  "docs/ops/LOCAL_ANALYSIS_E2E.md",
+  "docs/ops/PWA.md",
+  "docs/specs/PULL_REQUEST_TEMPLATE.md",
+];
+
+const OPS_PRODUCT_COPY_FILES = [
+  "docs/ops/DEPLOYMENT_CHECKLIST.md",
+  "docs/ops/LIVE_QWEN_ROLLOUT.md",
+  "docs/ops/OAUTH_ROADMAP.md",
+  "docs/ops/POST_LAUNCH.md",
+  "docs/ops/PRODUCTION_DEPLOY_LANE.md",
+  "docs/ops/PRODUCTION_ENV_READINESS.md",
+  "docs/ops/RELEASE_NOTES_DRAFT.md",
+  "docs/ops/ROLLBACK_CHECKLIST.md",
+  "docs/ops/TROUBLESHOOTING_RUNBOOK.md",
+];
+
+const EXPERIMENT_ARTIFACT_FILES = [
+  "experiments/01-dashboard/first-pass-starter.tsx",
+  "experiments/01-dashboard/reviewed-starter.tsx",
 ];
 
 const BANNED_PUBLIC_PHRASES = [
   "Bundle copy",
+  "Bundle identity",
+  "bundleDownloaded",
+  "bundleId",
+  "design system bundle",
+  "export bundle",
+  "export-bundle",
   "bundle copy",
   "qwen-ui-lab export package",
   "Add qwen-ui-lab generated UI package",
@@ -39,76 +124,332 @@ const BANNED_PUBLIC_PHRASES = [
   "GitHub Gist export is not configured",
   "Set GITHUB_TOKEN",
   "sample reference",
+  "preloaded sample screenshot",
   "Sample reference",
+  "finished-screen generator",
   "bundled reference",
   "Bundled reference",
   "bundled screenshot",
   "Bundled screenshot references",
+  "bundled sample",
   "Try a bundled reference",
   "Load reference",
+  "uploaded-reference",
   "Uploaded reference",
   "UI reference",
+  "Original UI reference",
   "SVG reference",
   "Reference image",
+  "reference image",
+  "Qwen UI sample",
+  "screenshot reference",
+  "sample screenshot workflow",
+  "sample analysis",
+  "sample run analysis",
+  "screenshot-to-code",
+  "screenshot to code",
+  "saved screenshot workflow",
+  "Screenshot-to-React sample screenshot",
+  "Screenshot sample",
+  "Saved reference analysis",
+  "Open sample screenshot",
+  "Open dashboard",
+  "zero-click sample result",
+  "Saved dashboard and design system workspace",
+  "\u5df2\u4e0a\u4f20\u53c2\u8003\u56fe",
+  "\u5df2\u4e0a\u4f20\u7684 UI \u53c2\u8003\u56fe",
+  "\u53c2\u8003\u56fe",
+  "\u53c2\u8003\u56fe\u7247",
+  "\u6837\u4f8b\u622a\u56fe",
+  "\u8bd5\u7528\u6837\u4f8b\u622a\u56fe",
+  "\u52a0\u8f7d\u53c2\u8003\u56fe",
   "Fallback content with recovery action",
+  "Fallback medium confidence",
   "Sparse fallback content",
   "Chart card with text fallback",
   "Centered fallback or onboarding",
   "Empty state or onboarding fallback",
   "Production bundle",
   "production-ready bundle",
+  "production-readiness checks",
   "Handoff bundle",
+  "Screenshot UI starter package",
+  "screenshot UI starter package",
+  "Add screenshot UI starter package",
+  "Analysis mode:",
   "final production",
+  "final visual review",
+  "final production components",
+  "human-refactored-final",
+  "AI-generated baseline",
+  "Qwen Code scaffold",
+  "BEFORE human review",
+  "production-quality version",
+  "Refined starter",
+  "Screenshot Starter Refinement",
+  "Before finalizing",
+  "before finalizing any starter component",
+  "Manual (requires human action)",
+  "Plan props, mock data",
+  "Use mock data from local data files",
+  "Mock data is separated",
+  "Typed mock data",
+  "Mock data hardcoded",
+  "mock data files",
+  "Chart placeholder",
+  "Chart Placeholder",
+  "Placeholder text",
+  "Placeholder for charting library",
+  "placeholder for future chart",
+  "placeholder content",
+  "placeholder copy should be replaced",
+  "placeholder data arrays",
+  "placeholder controls",
+  "chart placeholders",
+  "reviewable package",
+  "reviewable starter package",
+  "reviewable export packages",
+  "reviewable React + Tailwind",
+  "reviewable regions",
+  "generated UI should be reviewable",
+  "generated decision",
+  "stays reviewable",
+  "import the files",
+  "files you can import",
+  "before exporting it",
+  "drop-in finished screen",
+  "magic final code",
+  "final scaffold",
+  "review scaffold",
+  "final screenshot clone",
+  "not mysterious",
+  "not a black box",
+  "starter code, not a finished product claim",
+  "generated TSX component",
+  "generated component TSX",
   "production data wiring",
+  "real data wiring",
+  "wire real data",
+  "wiring real data",
+  "Wire real data",
   "production-facing layout",
   "production components",
+  "production-usable TSX",
   "before production",
   "before merge",
   "before treating the component as final",
+  "before generation",
+  "before using the component in an app",
+  "before using it in an app",
+  "before wiring it into an app",
+  "import-ready layout",
+  "Import checklist",
+  "Ready for import review",
+  "Generating preview",
+  "Ship React-ready",
+  "faster path to conversion",
+  "导出前先审查",
+  "使用结果前先检查",
+  "立即分析并生成",
+  "导入前",
+  "导入项目之前",
   "No element-level confidence reasons were exported",
   "exported for manual review",
   "inspect the generated component manually",
   "manual visual review",
+  "manual checklist",
+  "Heuristic check",
+  "patterns used in qwen-ui-lab",
+  "surface mapping",
   "Review the generated code directly",
+  "review-ready layout",
+  "implementation review",
   "validate breakpoints manually",
   "classify the page type manually",
   "Confirm navigation landmarks manually",
   "Verify the layout manually",
   "Inspect the zip entries before import",
+  "Quick import",
+  "Import readiness",
+  "package overview and import checklist",
+  "Run app lint/build after importing",
+  "Run lint/build after importing",
+  "imported component",
+  "source-control review",
+  "same pull request",
+  "with the pull request",
+  "visual review is complete",
+  "reviewed in source control",
+  "source-controlled project files",
   "manual gist paste",
   "paste package contents manually",
+  "manual-scaffold-export",
+  "manual-correction-source-of-truth",
+  "component-only-export",
   "before shipping",
   "Review layout against the original screenshot before shipping",
+  "Review layout against the original screenshot before import",
   "not be merged",
   "Meetup-ready",
-  "local account (demo stub)",
-  "optional email demo",
+  ["local account (", "demo", "stub)"].join(" "),
+  ["optional email", "demo"].join(" "),
+  "stub URL",
+  "Demo/Live mode impact",
+  "Demo/live mode impact",
+  "public demo",
+  "demo target",
+  "demo-safe",
   "Cached app shell",
   "cached screenshot workflow",
+  "export a React component",
   "badgeDemo",
   "oneClickDemo",
+  "instantDemo",
+  "instant_demo",
+  "NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE",
   "trustDemo",
   "tryLiveDemo",
+  "tryBundledReference",
   "backToDemo",
   "modeLocalDemo",
   "statusDemoComplete",
   "toastInstantDemo",
   "toastRestoredDemo",
   "DemoPageClient",
+  "DemoPage",
+  "buildDemoAnalyzeResponse",
   "demoArchetype",
   "demoArchetypeLabel",
   "resolveDemoArchetype",
   "DEMO_ARCHETYPE_QUERY_VALUES",
   "autoRunDemo",
+  "DASHSCOPE_API_KEY is not configured on the server",
+  "Incorrect API key provided",
+  "Live Qwen is disabled",
+  "E2E mock",
+  "app-specific demo imports",
+  "set QWEN_LIVE_ANALYSIS=true",
+  "Could not reach the Qwen API",
+  "Qwen returned text that was not valid analysis JSON",
+  "Qwen returned an empty analysis response",
+  "Qwen analysis was unavailable",
+  "Request timed out after 30 seconds",
+  "Failed to fetch",
+  "Server response was not JSON",
+  "Calling Qwen vision API",
+  "Retrying after transient error",
+  "Qwen3-VL Analysis",
+  "Qwen3-VL UI analysis",
+  "Human Refactor",
+  "Upload a reference",
+  "AI-assisted screenshot-to-React workflow",
+  "AI-assisted UI scaffolding",
+  "AI UI analysis",
+  "AI analysis summary",
+  "AI-ready component catalog",
+  "Dashboard UI reference",
+  "detector dashboard",
+  "qwen-ui-lab dashboard",
+  "Dashboard sample run",
+  "Mobile app sample run",
+  "Generated layout preview",
+  "// Generated",
+  "Generated empty state",
+  "Generated hero",
+  "Generated catalog",
+  "generated preview",
+  "generated scaffold",
+  "generated scaffolds",
+  "See what a generated result looks like",
+  "full generated sample",
+  "Preview the generated dashboard",
+  "generated UI components",
+  "Home dashboard plus screenshot upload",
+  "dashboard reference",
+  "Manual corrections are the source of truth",
+  "Edits become the source of truth",
+  "source of truth",
+  "deterministic regeneration hints",
+  "regeneration metadata",
+  "recipe metadata",
+  "package metadata for engineering review",
+  "before regeneration",
+  "generated region",
+  "generated starter",
+  "generated component.",
+  "generated component from",
+  "generated output",
+  "generated-first-pass.tsx",
+  "Before / After: Screenshot Scaffold Refinement",
+  "component generation",
+  "manual edits and",
+  "Manual corrections",
+  "manual detection-box edits",
+  "Debug labels",
+  "live-provider mode",
+  "Analytics (internal)",
+  "Staging-only funnel",
+  "Internal \u00c2\u00b7 staging",
+  "Internal \u00b7 staging",
+  "Documentation-only view",
+  "Implementation checklist",
 ];
 
 const BANNED_MOJIBAKE_PATTERNS = [
-  { label: "latin-1 mojibake prefix", pattern: /[ÃÂ][\u0080-\uFFFF]/u },
-  { label: "windows-1252 mojibake prefix", pattern: /â[\u0080-\uFFFF]/u },
+  { label: "latin-1 mojibake prefix", pattern: /[\u00c3\u00c2][\u0080-\uFFFF]/u },
+  { label: "windows-1252 mojibake prefix", pattern: /\u00e2[\u0080-\uFFFF]/u },
   { label: "replacement character", pattern: /\uFFFD/u },
 ];
 
-test("public and generated copy avoid stale demo/internal phrasing", async () => {
+const CORRUPTED_DOC_LINK_PATTERNS = [
+  "chetype|New here-|\\?archetype|Try screenshot-to-React workflow",
+  "scaffold-package-chetype",
+  "analytics-funnel-chetype",
+  "design-system-domain=",
+  "/api/share-id=",
+  "localhost:3000/demo",
+  "npm run dev running at localhost",
+  "Open `http://localhost:3000`",
+  "/demo-archetype=",
+  "`-archetype=",
+  "New here-",
+];
+
+const LOCAL_PATH_PATTERNS = [
+  /C:[/\\]Users[/\\]/i,
+  /[/\\]\.codex[/\\]/i,
+  /\bDownloads[/\\]/i,
+  /\bgenerated_images[/\\]/i,
+];
+
+const BANNED_OPS_PRODUCT_PHRASES = [
+  "meetup-safe",
+  "meetup default",
+  "meetup timeline",
+  "meetup script",
+  "Operators running meetups",
+  "demo by default",
+  "provider mode (`demo` or `qwen`)",
+  "strictest demo",
+  "Demo / offline",
+  "Demo host",
+  "Demo baseline",
+  "demo prep",
+  "demo consumers",
+  "public-demo",
+  "demo vs live",
+  "for the demo",
+  "live presentation script",
+  "production-ready",
+  "home page readiness panel",
+  "Production readiness panel on the home page",
+  "running in fallback mode",
+  "Free tier generous for demos",
+  "forced fallback flow",
+  "sendMagicLinkStub",
+];
+
+test("public and exported copy avoid stale demo/internal phrasing", async () => {
   const violations = [];
 
   for (const file of PUBLIC_COPY_FILES) {
@@ -125,7 +466,7 @@ test("public and generated copy avoid stale demo/internal phrasing", async () =>
   assert.deepEqual(violations, []);
 });
 
-test("public and generated copy avoid mojibake artifacts", async () => {
+test("public and exported copy avoid mojibake artifacts", async () => {
   const violations = [];
 
   for (const file of PUBLIC_COPY_FILES) {
@@ -136,6 +477,107 @@ test("public and generated copy avoid mojibake artifacts", async () => {
       const match = source.match(pattern);
       if (match) {
         violations.push(`${file}: ${label}: ${match[0]}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("experiment artifacts stay ascii and portable", async () => {
+  const violations = [];
+
+  for (const file of EXPERIMENT_ARTIFACT_FILES) {
+    const source = await fs.readFile(path.join(process.cwd(), file), "utf8");
+    const match = source.match(/[^\x00-\x7F]/);
+    if (match) {
+      violations.push(`${file}: ${match[0]}`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("docs and package copy keep archetype links intact", async () => {
+  const violations = [];
+
+  for (const file of CORRUPTION_GUARD_FILES) {
+    const absolutePath = path.join(process.cwd(), file);
+    const source = await fs.readFile(absolutePath, "utf8");
+
+    for (const pattern of CORRUPTED_DOC_LINK_PATTERNS) {
+      if (source.includes(pattern)) {
+        violations.push(`${file}: ${pattern}`);
+      }
+    }
+  }
+
+  const docsReadme = await fs.readFile(path.join(process.cwd(), "docs/README.md"), "utf8");
+  const demoDocs = await fs.readFile(path.join(process.cwd(), "docs/DEMO.md"), "utf8");
+
+  assert.match(docsReadme, /\?archetype=(auth|mobile|landing|settings|shop)/);
+  assert.match(demoDocs, /\/demo\?archetype=auth/);
+  assert.deepEqual(violations, []);
+});
+
+test("shareable docs avoid local machine paths", async () => {
+  const violations = [];
+
+  for (const file of LOCAL_PATH_GUARD_FILES) {
+    const absolutePath = path.join(process.cwd(), file);
+    const source = await fs.readFile(absolutePath, "utf8");
+
+    for (const pattern of LOCAL_PATH_PATTERNS) {
+      const match = source.match(pattern);
+      if (match) {
+        violations.push(`${file}: ${match[0]}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("artifact and walkthrough paths point to existing repo files", async () => {
+  const files = [
+    "docs/specs/ARTIFACT_CHECKLIST.md",
+    "docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md",
+  ];
+  const missing = [];
+
+  for (const file of files) {
+    const source = await fs.readFile(path.join(process.cwd(), file), "utf8");
+    const pathMatches = [...source.matchAll(/`([^`\n]+)`/g)].map((match) => match[1]);
+    const localFilePaths = pathMatches.filter(
+      (value) =>
+        !value.startsWith("/") &&
+        !value.startsWith("http") &&
+        !value.includes("*") &&
+        /\.[a-z0-9]+$/i.test(value),
+    );
+
+    for (const relativePath of localFilePaths) {
+      try {
+        await fs.access(path.join(process.cwd(), relativePath));
+      } catch {
+        missing.push(`${file}: ${relativePath}`);
+      }
+    }
+  }
+
+  assert.deepEqual(missing, []);
+});
+
+test("ops docs use product-first local-analysis wording", async () => {
+  const violations = [];
+
+  for (const file of OPS_PRODUCT_COPY_FILES) {
+    const absolutePath = path.join(process.cwd(), file);
+    const source = await fs.readFile(absolutePath, "utf8");
+
+    for (const phrase of BANNED_OPS_PRODUCT_PHRASES) {
+      if (source.includes(phrase)) {
+        violations.push(`${file}: ${phrase}`);
       }
     }
   }

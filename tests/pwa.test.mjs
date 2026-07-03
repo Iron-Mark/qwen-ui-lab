@@ -83,13 +83,13 @@ describe("PWA manifest", () => {
     assert.equal(manifest.name, "qwen-ui-lab - screenshot to React");
     assert.equal(
       manifest.description,
-      "Screenshot-to-React workflow with reviewable export packages.",
+      "Screenshot-to-React workflow with inspectable starter packages.",
     );
     assert.match(manifestSource, /name:\s*`\$\{SITE_NAME\} - screenshot to React`/);
     assert.equal(sampleShortcut?.name, "Sample run");
-    assert.equal(sampleShortcut?.description, "Open a sample layout and generate a component preview.");
-    assert.ok(screenshotLabels.includes("Dashboard sample run"));
-    assert.ok(screenshotLabels.includes("Mobile app sample run"));
+    assert.equal(sampleShortcut?.description, "Open a sample layout and review a starter preview.");
+    assert.ok(screenshotLabels.includes("Sample run workspace"));
+    assert.ok(screenshotLabels.includes("Mobile sample workspace"));
 
     for (const value of [
       manifest.description,

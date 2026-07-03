@@ -8,13 +8,13 @@ import {
   mergeManualCorrectionReasons,
   summarizeCorrectedElementChanges,
 } from "./detection-corrections.mjs";
-import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
+import { normalizeStarterShadcnImports } from "./generated-imports.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
   { id: "analyze", label: "Analyze" },
   { id: "plan", label: "Plan" },
-  { id: "generate", label: "Generate" },
+  { id: "generate", label: "Prepare" },
   { id: "preview", label: "Preview" },
   { id: "export", label: "Export" },
 ];
@@ -105,7 +105,7 @@ function resolveOfflineContent(file, overrides) {
 
 export function buildUiFlowArtifact(file, overrides = {}) {
   const readableSize = formatFileSize(file.size);
-  const fileName = file.name || "uploaded-reference";
+  const fileName = file.name || "uploaded-screenshot";
   const offline = resolveOfflineContent(file, overrides);
   const detections = buildDetections(file);
 
@@ -113,7 +113,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
   const previewStats = normalizePreviewStats(
     overrides.previewStats || offline.previewStats || defaultPreviewStats,
   );
-  const generatedCode = normalizeGeneratedShadcnImports(
+  const generatedCode = normalizeStarterShadcnImports(
     overrides.generatedCode ||
       offline.generatedCode ||
       createGeneratedCode(fileName),
@@ -164,8 +164,8 @@ export function regenerateArtifactFromDetections(artifact, detections) {
   const existingSectionsStat = artifact.previewStats?.find(
     (stat) => stat.label === "Sections",
   );
-  const generatedCode = normalizeGeneratedShadcnImports(
-    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-reference", {
+  const generatedCode = normalizeStarterShadcnImports(
+    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-screenshot", {
       ...correctedDetections,
       elements: activeElements,
     }),
@@ -226,7 +226,7 @@ function recomputeCorrectedDetections(detections) {
       correctedElementCount: editedCount,
       excludedElementCount: excludedCount,
       strategy: editedCount
-        ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
+        ? `${detections.quality?.strategy ?? "offline-detection"} + review-edits-applied`
         : detections.quality?.strategy,
     },
   };
@@ -310,7 +310,7 @@ function createGeneratedCode(fileName) {
   return `import { StatCard } from "@/features/home/components/StatCard";
 import { RevenueCard } from "@/features/home/components/RevenueCard";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
     <section aria-label="Dashboard export based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
@@ -325,7 +325,7 @@ export function GeneratedDashboard() {
 }
 
 function createGeneratedCodeFromDetections(fileName, detections) {
-  const safeName = String(fileName || "uploaded-reference").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const safeName = String(fileName || "uploaded-screenshot").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   const tokens = normalizeDetectionTokens(detections.designTokens);
   const source = {
     width: Math.max(1, detections.source?.width ?? 1440),
@@ -350,8 +350,8 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
     excludedBoxes: detections.quality?.excludedElementCount ?? 0,
     sourceOfTruth: detections.quality?.correctedElementCount
-      ? "Manual corrections are the source of truth for this regenerated scaffold."
-      : "Detection boxes are the source of truth for this regenerated scaffold.",
+      ? "Reviewer corrections guide this starter."
+      : "Detection boxes guide this starter.",
   };
 
   return `import type { AriaRole } from "react";
@@ -434,7 +434,7 @@ type LayoutRegion = {
   children: string[];
 };
 
-type GeneratedSection = {
+type StarterSection = {
   id: string;
   kind: string;
   primitive: string;
@@ -516,7 +516,7 @@ const shadcnPrimitiveMap: Record<string, string> = {
 };
 
 const sampleSectionData = {
-  rows: ["Queued review", "Ready for import review", "Needs QA"],
+  rows: ["Queued review", "Ready for handoff", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
   tableColumns: ["Name", "Status", "Value"],
@@ -528,7 +528,7 @@ const sampleSectionData = {
   chartValues: [42, 74, 55, 88, 63, 78],
 };
 
-const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
+const starterSections = buildStarterSections(correctedPatterns, correctedElements);
 
 export default function ReviewedScreenshotStarter() {
   return (
@@ -548,16 +548,16 @@ export default function ReviewedScreenshotStarter() {
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Built from {correctionSummary.activeElements} active UI regions with shadcn-style
-              primitives, responsive sections, and semantic landmarks ready for real data wiring.
+              primitives, responsive sections, and semantic landmarks ready for product data integration.
             </p>
           </div>
         </header>
 
         <ImplementationChecklist />
 
-        {generatedSections.length ? (
+        {starterSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
-            {generatedSections.map((section) => (
+            {starterSections.map((section) => (
               <ScaffoldSection key={section.id} section={section} />
             ))}
           </div>
@@ -585,9 +585,9 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Implementation checklist</CardTitle>
+        <CardTitle>Handoff checklist</CardTitle>
         <CardDescription>
-          Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
+          Review metadata stays in the exported recipe, while this component keeps the UI structure ready for app integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
@@ -604,18 +604,15 @@ function ImplementationChecklist() {
           {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
         <p>
-          <span className="block font-medium text-foreground">Applied edits</span>
-          {correctionSummary.appliedEdits} manual edits, {correctionSummary.excludedBoxes} excluded boxes
+          <span className="block font-medium text-foreground">Review changes</span>
+          {correctionSummary.appliedEdits} edited boxes, {correctionSummary.excludedBoxes} omitted boxes
         </p>
-      </CardContent>
-      <CardContent className="border-t pt-4 text-sm text-muted-foreground">
-        {correctionSummary.sourceOfTruth}
       </CardContent>
     </Card>
   );
 }
 
-function ScaffoldSection({ section }: { section: GeneratedSection }) {
+function ScaffoldSection({ section }: { section: StarterSection }) {
   if (section.kind === "tab-set") {
     return <TabScaffoldSection section={section} />;
   }
@@ -627,7 +624,7 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
   return <GenericScaffoldSection section={section} />;
 }
 
-function TabScaffoldSection({ section }: { section: GeneratedSection }) {
+function TabScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -654,7 +651,7 @@ function TabScaffoldSection({ section }: { section: GeneratedSection }) {
   );
 }
 
-function FormScaffoldSection({ section }: { section: GeneratedSection }) {
+function FormScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -682,7 +679,7 @@ function FormScaffoldSection({ section }: { section: GeneratedSection }) {
   );
 }
 
-function GenericScaffoldSection({ section }: { section: GeneratedSection }) {
+function GenericScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -716,14 +713,14 @@ function SectionSampleDataHint({ kind }: { kind: string }) {
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this sample data before using the component in an app.
+      {message}. Replace this sample data before connecting the component to a route.
     </p>
   ) : null;
 }
 
 function SectionStateHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.",
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before connecting product data.",
     "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.",
     "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
     "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.",
@@ -770,10 +767,10 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
   );
 }
 
-function buildGeneratedSections(
+function buildStarterSections(
   patterns: CorrectedPatterns,
   elements: CorrectedElement[],
-): GeneratedSection[] {
+): StarterSection[] {
   const byId = new Map<string, CorrectedElement>(
     elements.map((element) => [element.id, enrichElement(element)] as [string, CorrectedElement]),
   );
@@ -800,7 +797,7 @@ function sectionFromPattern(
   title: string,
   description: string,
   layoutClass: string,
-): GeneratedSection {
+): StarterSection {
   return {
     id: pattern.id,
     kind: primitive,
@@ -822,18 +819,18 @@ function enrichElement(element: CorrectedElement): CorrectedElement {
   };
 }
 
-export function CorrectionGridReference() {
+export function LayoutPreviewStarter() {
   return (
     <section
-      aria-label="Corrected scaffold from ${safeName}"
+      aria-label="Layout starter from ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Corrected screenshot scaffold</p>
+        <p className="text-xs font-medium uppercase">Layout starter</p>
         <h1 className="text-xl font-semibold">${safeName}</h1>
         <p className="text-sm opacity-75">
-          {correctedElements.length} reviewed deterministic elements drive this scaffold.
+          {correctedElements.length} reviewed UI regions shape this starter.
           {" "}
           {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.emptyStates.length} empty states, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
         </p>
@@ -850,7 +847,7 @@ export function CorrectionGridReference() {
           {correctedPatterns.appShells.map((pattern) => (
             <section
               key={pattern.id}
-              aria-label="Detected app shell"
+              aria-label="Application shell"
               className="space-y-2 border p-3"
               style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
             >

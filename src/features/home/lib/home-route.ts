@@ -9,14 +9,14 @@ export const homeRouteSocialPreviewImageAlt =
 
 export function createHomeRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Screenshot to React Workflow",
+    title: "Screenshot to React Workspace",
     description: homeRouteDescription,
     path: "/",
     keywords: [
       "screenshot to React",
       "UI screenshot to React",
       "UI layout detection",
-      "Tailwind component generator",
+      "Tailwind starter package builder",
       "UI detection workflow",
     ],
     ogImage: "/social/home-social-preview-1200x630.png",
@@ -30,17 +30,17 @@ export function createHomeRouteMetadata(): Metadata {
 
 export function getHomeRouteStructuredDataInput() {
   return {
-    title: "Screenshot to React Workflow",
+    title: "Screenshot to React Workspace",
     description: homeRouteDescription,
     path: "/",
     breadcrumbLabel: "Workflow",
-    about: ["UI screenshot analysis", "React component generation", "Design system export"],
+    about: ["UI screenshot analysis", "React starter review", "Design system export"],
     callToAction:
-      "Turn UI screenshots into reviewable React and Tailwind project files.",
+      "Turn UI screenshots into inspectable React and Tailwind project files.",
     additionalGraph: [
       {
         "@type": "SoftwareApplication",
-        name: "qwen-ui-lab dashboard",
+        name: "qwen-ui-lab workspace",
         applicationCategory: "DeveloperApplication",
         operatingSystem: "Web",
         offers: {

@@ -2,7 +2,7 @@
   "id": "/",
   "name": "qwen-ui-lab - screenshot to React",
   "short_name": "qwen-ui-lab",
-  "description": "Screenshot-to-React workflow with reviewable export packages.",
+  "description": "Screenshot-to-React workflow with inspectable starter packages.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-US",
@@ -81,7 +81,7 @@
     {
       "name": "Sample run",
       "short_name": "Sample",
-      "description": "Open a sample layout and generate a component preview.",
+      "description": "Open a sample layout and review a starter preview.",
       "url": "/demo",
       "icons": [
         {
@@ -98,14 +98,14 @@
       "sizes": "1440x900",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard sample run"
+      "label": "Sample run workspace"
     },
     {
       "src": "/references/mobile-reference.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile app sample run"
+      "label": "Mobile sample workspace"
     }
   ],
   "launch_handler": {

@@ -116,7 +116,7 @@ test("pasting an image on the page loads and focuses the upload dropzone", async
   await expect(page.getByTestId("upload-dropzone-button")).toBeFocused();
   await expect(
     page.getByRole("button", {
-      name: /analyze & generate preview|generate preview|regenerate preview/i,
+      name: /analyze & prepare preview|prepare preview|refresh preview/i,
     }),
   ).toBeEnabled({ timeout: 10_000 });
 });
@@ -171,7 +171,7 @@ test("workflow stepper marks unavailable steps as disabled", async ({ page }) =>
       disabled: "true",
     },
     {
-      label: "Generate",
+      label: "Prepare",
       state: "locked",
       current: null,
       disabled: "true",
@@ -208,13 +208,13 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   await page.locator('input[type="file"]').setInputFiles(samplePath);
   await page
     .getByRole("button", {
-      name: /analyze & generate preview|generate preview|regenerate preview/i,
+      name: /analyze & prepare preview|prepare preview|refresh preview/i,
     })
     .click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
-    timeout: 10_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();
 
@@ -258,7 +258,7 @@ test("export package dialog keeps tabs and actions visible on tablet widths", as
   });
 });
 
-test("upload → analyze → generate → copy/export smoke flow", async ({
+test("upload → analyze → prepare preview → copy/export smoke flow", async ({
   page,
 }) => {
   await page.goto("/");
@@ -274,15 +274,15 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await page.locator('input[type="file"]').setInputFiles(samplePath);
 
   const runPipeline = page.getByRole("button", {
-    name: /analyze & generate preview|generate preview|regenerate preview/i,
+    name: /analyze & prepare preview|prepare preview|refresh preview/i,
   });
 
   await expect(runPipeline).toBeEnabled({ timeout: 10_000 });
   await runPipeline.click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
-    timeout: 10_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
   await expect(page.getByTestId("detection-overlay-count")).toContainText(/detected/i);
   const movableDetectionIndex = await page
@@ -336,9 +336,10 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   await firstDetectionBox.click();
   await expect(page.getByTestId("detection-details")).toBeVisible();
   await expect(page.getByTestId("detection-details")).toContainText(/confidence/i);
-  await page.getByTestId("toggle-detector-debug").click();
-  await expect(page.getByTestId("detection-debug-panel")).toContainText(/Geometry/i);
-  await expect(firstDetectionBox.getByTestId("detection-debug-label")).toBeVisible();
+  await expect(page.getByRole("button", { name: /box labels/i })).toBeVisible();
+  await page.getByTestId("toggle-box-labels").click();
+  await expect(page.getByTestId("detection-box-metadata-panel")).toContainText(/Geometry/i);
+  await expect(firstDetectionBox.getByTestId("detection-box-label")).toBeVisible();
   const beforeKeyboardMove = await firstDetectionBox.boundingBox();
   await firstDetectionBox.focus();
   await page.keyboard.press("ArrowRight");
@@ -372,13 +373,13 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   expect(exportedEditedElement.userEdited).toBe(true);
 
   await page.getByRole("button", {
-    name: /generate preview|regenerate preview/i,
+    name: /prepare preview|refresh preview/i,
   }).click();
   await expect(page.getByTestId("generated-comparison-preview")).toBeVisible();
-  await expect(page.getByTestId("generated-mock-element").first()).toBeVisible();
+  await expect(page.getByTestId("generated-preview-element").first()).toBeVisible();
   await expect(
     page.locator(
-      `[data-testid="generated-mock-element"][data-detection-id="${editedDetectionId}"]`,
+      `[data-testid="generated-preview-element"][data-detection-id="${editedDetectionId}"]`,
     ),
   ).toHaveCount(0);
 
@@ -406,7 +407,7 @@ test("upload → analyze → generate → copy/export smoke flow", async ({
   const downloadPromise = page.waitForEvent("download");
   await exportDialog.getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
+  expect(download.suggestedFilename()).toMatch(/starter-.*\.tsx$/);
 
   const designMdDownloadPromise = page.waitForEvent("download");
   await exportDialog.getByTestId("export-design-md").click();
@@ -483,13 +484,13 @@ test("export package dialog keeps tabs and actions visible on mobile widths", as
   await page.locator('input[type="file"]').setInputFiles(samplePath);
   await page
     .getByRole("button", {
-      name: /analyze & generate preview|generate preview|regenerate preview/i,
+      name: /analyze & prepare preview|prepare preview|refresh preview/i,
     })
     .click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
-    timeout: 10_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();
 
@@ -558,7 +559,7 @@ test("oversized uploads are rejected before analysis", async ({ page }) => {
   await expect(page.getByText(/Upload an image up to 4 MB/i)).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: /analyze & generate preview|generate preview|regenerate preview/i,
+      name: /analyze & prepare preview|prepare preview|refresh preview/i,
     }),
   ).toBeDisabled();
 });

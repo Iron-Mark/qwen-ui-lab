@@ -1,6 +1,6 @@
 # Component Hierarchy
 
-> Generated from Qwen3-VL breakdown, refined during human review.
+> Derived from Qwen3-VL breakdown, refined during human review.
 
 ## Final Tree
 
@@ -21,13 +21,13 @@
       </div>
 
       <div grid lg:7>
-        <RevenueCard />          — col-span-4
-        <ChartPreview />         — col-span-3
+        <RevenueCard />          - col-span-4
+        <ChartPreview />         - col-span-3
       </div>
 
       <div grid lg:2>
-        <ActivityList />         — ul/li with avatars
-        <QuickActionsPanel />    — inline card
+        <ActivityList />         - ul/li with avatars
+        <QuickActionsPanel />    - inline card
           <QuickActionButton /> × 4
       </div>
     </DashboardShell>
@@ -49,17 +49,17 @@
 
 | Component | File | Props | State | Accessibility |
 |-----------|------|-------|-------|---------------|
-| `ThemeProvider` | `ThemeProvider.tsx` | children | theme (context) | — |
-| `ThemeToggle` | `ThemeToggle.tsx` | — | reads context | `aria-label` |
-| `Header` | `Header.tsx` | — | — | `<header>` semantic |
-| `Footer` | `Footer.tsx` | — | — | `<footer>`, `<nav>`, `<ul>` |
-| `DashboardShell` | `DashboardShell.tsx` | stats[], revenueData[], activities[], quickActions[] | — | `aria-label` |
-| `WorkflowBanner` | `WorkflowBanner.tsx` | — | — | `<section>`, `<ol>`, `aria-label` |
-| `StatCard` | `StatCard.tsx` | StatCardData | — | `aria-hidden` on trend arrows |
-| `RevenueCard` | `RevenueCard.tsx` | RevenueDataPoint[] | — | `role="meter"`, ARIA value attrs |
-| `ChartPreview` | `ChartPreview.tsx` | — | — | Placeholder text |
-| `ActivityList` | `ActivityList.tsx` | ActivityData[] | — | `<ul>`, `<time>`, `aria-hidden` avatars |
-| `QuickActionButton` | `QuickActionButton.tsx` | QuickActionData | — | `focus-visible`, `type="button"` |
+| `ThemeProvider` | `ThemeProvider.tsx` | children | theme (context) | - |
+| `ThemeToggle` | `ThemeToggle.tsx` | - | reads context | `aria-label` |
+| `Header` | `Header.tsx` | - | - | `<header>` semantic |
+| `Footer` | `Footer.tsx` | - | - | `<footer>`, `<nav>`, `<ul>` |
+| `DashboardShell` | `DashboardShell.tsx` | stats[], revenueData[], activities[], quickActions[] | - | `aria-label` |
+| `WorkflowBanner` | `WorkflowBanner.tsx` | - | - | `<section>`, `<ol>`, `aria-label` |
+| `StatCard` | `StatCard.tsx` | StatCardData | - | `aria-hidden` on trend arrows |
+| `RevenueCard` | `RevenueCard.tsx` | RevenueDataPoint[] | - | `role="meter"`, ARIA value attrs |
+| `ChartPreview` | `ChartPreview.tsx` | - | - | Text summary for chart area |
+| `ActivityList` | `ActivityList.tsx` | ActivityData[] | - | `<ul>`, `<time>`, `aria-hidden` avatars |
+| `QuickActionButton` | `QuickActionButton.tsx` | QuickActionData | - | `focus-visible`, `type="button"` |
 
 ## Data Types
 
@@ -75,24 +75,24 @@ QuickActionData { id, label, icon: "user-plus" | "file-text" | "mail" | "setting
 ```
 src/
   app/
-    layout.tsx          — Root layout, theme script, providers
-    page.tsx            — Dashboard page, imports data
-    globals.css         — Design tokens, transitions, dark mode
+    layout.tsx          - Root layout, theme script, providers
+    page.tsx            - Dashboard page, imports data
+    globals.css         - Design tokens, transitions, dark mode
   components/
-    ThemeProvider.tsx    — Theme context + localStorage
-    ThemeToggle.tsx      — Sun/moon SVG toggle
-    Header.tsx           — Top nav with logo
-    Footer.tsx           — Footer with links
+    ThemeProvider.tsx    - Theme context + localStorage
+    ThemeToggle.tsx      - Sun/moon SVG toggle
+    Header.tsx           - Top nav with logo
+    Footer.tsx           - Footer with links
     dashboard/
-      DashboardShell.tsx — Layout orchestrator
-      StatCard.tsx       — KPI metric card
-      RevenueCard.tsx    — Horizontal bar chart
-      ActivityList.tsx   — Activity feed
-      QuickActionButton.tsx — Action button
-      ChartPreview.tsx   — Chart placeholder
-      WorkflowBanner.tsx — Pipeline visualization
+      DashboardShell.tsx - Layout orchestrator
+      StatCard.tsx       - KPI metric card
+      RevenueCard.tsx    - Horizontal bar chart
+      ActivityList.tsx   - Activity feed
+      QuickActionButton.tsx - Action button
+      ChartPreview.tsx   - Chart summary preview
+      WorkflowBanner.tsx - Pipeline visualization
   data/
-    dashboard-data.ts    — Typed mock data + interfaces
+    dashboard-data.ts    - Typed sample data + interfaces
   lib/
-    cn.ts                — clsx + tailwind-merge utility
+    cn.ts                - clsx + tailwind-merge utility
 ```

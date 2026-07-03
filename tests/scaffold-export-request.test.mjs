@@ -7,15 +7,15 @@ import {
 
 test("normalizeScaffoldExportRequestBody sanitizes export metadata", () => {
   const result = normalizeScaffoldExportRequestBody({
-    content: "export const Demo = () => null;",
-    filename: "../demo/component.tsx",
+    content: "export const StarterFixture = () => null;",
+    filename: "../scratch/starter-fixture.tsx",
     description: ` ${"A".repeat(300)} `,
   });
 
   assert.deepEqual(result, {
     ok: true,
-    content: "export const Demo = () => null;",
-    filename: "component.tsx",
+    content: "export const StarterFixture = () => null;",
+    filename: "starter-fixture.tsx",
     description: "A".repeat(256),
     mode: "auto",
   });
@@ -23,11 +23,12 @@ test("normalizeScaffoldExportRequestBody sanitizes export metadata", () => {
 
 test("normalizeScaffoldExportRequestBody accepts forced zip mode", () => {
   const result = normalizeScaffoldExportRequestBody({
-    content: "export const Demo = () => null;",
+    content: "export const StarterFixture = () => null;",
     mode: "zip",
   });
 
   assert.equal(result.ok, true);
+  assert.equal(result.filename, "starter-component.tsx");
   assert.equal(result.mode, "zip");
 });
 

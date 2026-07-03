@@ -24,11 +24,11 @@ import {
   regenerateArtifactFromDetections,
 } from "../src/features/analysis/lib/ui-flow.mjs";
 import {
-  buildDemoArtifactForFile,
-  getSampleReferenceFile,
-  SAMPLE_REFERENCE_NAME,
-} from "../src/features/analysis/lib/demo-fixtures.mjs";
-import { BUNDLED_REFERENCE_SAMPLES } from "../src/features/analysis/lib/reference-samples.mjs";
+  buildSampleRunArtifactForFile,
+  getSampleRunFile,
+  SAMPLE_RUN_FILE_NAME,
+} from "../src/features/analysis/lib/sample-run-fixtures.mjs";
+import { SAMPLE_RUNS } from "../src/features/analysis/lib/reference-samples.mjs";
 import {
   buildScaffoldZipEntries,
 } from "../src/features/export/lib/scaffold-package.mjs";
@@ -574,8 +574,8 @@ const AUTH_SVG = `<svg width="390" height="844" viewBox="0 0 390 844" xmlns="htt
   </g>
 </svg>`;
 
-test("BUNDLED_REFERENCE_SAMPLES lists all reference samples", () => {
-  const fileNames = BUNDLED_REFERENCE_SAMPLES.map((sample) => sample.fileName);
+test("SAMPLE_RUNS lists all sample run files", () => {
+  const fileNames = SAMPLE_RUNS.map((sample) => sample.fileName);
   assert.deepEqual(fileNames, [
     "dashboard-reference.png",
     "auth-reference.png",
@@ -606,7 +606,7 @@ test("normalizeSampleKey uses basename only", () => {
 });
 
 test("lookupKnownSample returns rich dashboard fixture", () => {
-  const known = lookupKnownSample(SAMPLE_REFERENCE_NAME);
+  const known = lookupKnownSample(SAMPLE_RUN_FILE_NAME);
   assert.ok(known);
   assert.match(known.summary, /Admin dashboard/i);
   assert.equal(known.previewStats[0].value, "6");
@@ -671,7 +671,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known reference samples export as export packages", () => {
+test("known sample run files export as export packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -1048,7 +1048,7 @@ test("inspectSvgDataUrl and preprocessImageDataUrl preserve SVG structure offlin
   assert.equal(preprocessed.svgInspection?.archetypeHints[0].id, "auth");
 });
 
-test("lookupKnownSampleByInspection resolves bundled references by perceptual signature", () => {
+test("lookupKnownSampleByInspection resolves sample run assets by perceptual signature", () => {
   const exact = lookupKnownSampleByInspection({
     imageSignature: {
       method: "luma-a8-d8",
@@ -1073,8 +1073,8 @@ test("lookupKnownSampleByInspection resolves bundled references by perceptual si
 
   assert.ok(exact);
   assert.match(exact.summary, /Admin dashboard/i);
-  assert.match(exact.generatedCode, /Sample screenshot metadata identifies this region/);
-  assert.doesNotMatch(exact.generatedCode, /Bundled reference metadata/);
+  assert.match(exact.generatedCode, /Sample run signal identifies this region/);
+  assert.doesNotMatch(exact.generatedCode, /Bundled reference/);
   assert.ok(nearWebp);
   assert.equal(nearWebp.generatedCode, exact.generatedCode);
   assert.equal(unrelated, null);
@@ -1090,7 +1090,7 @@ test("buildUiFlowArtifact uses known sample registry for auth-reference.svg", ()
   });
 
   assert.match(artifact.summary, /sign-in/i);
-  assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /AuthScreenStarter/);
   assert.equal(artifact.previewStats[1].value, "7");
 });
 
@@ -1170,10 +1170,10 @@ test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
 
   assert.ok(advanced.plan.some((section) => section.title === "Layout Read"));
   assert.match(advanced.summary, /confidence/i);
-  assert.match(advanced.generatedCode, /GeneratedCatalog/);
+  assert.match(advanced.generatedCode, /CatalogStarter/);
 });
 
-test("buildAdvancedOfflineOverrides seeds generated code from offline regions and tokens", () => {
+test("buildAdvancedOfflineOverrides seeds starter code from offline regions and tokens", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
   const advanced = buildAdvancedOfflineOverrides(
     {
@@ -1191,21 +1191,23 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /const detectedElements/);
   assert.match(advanced.generatedCode, /const layoutRegions/);
   assert.match(advanced.generatedCode, /import \{ Badge \} from "@\/components\/ui\/badge"/);
-  assert.match(advanced.generatedCode, /export default function GeneratedDashboard/);
+  assert.match(advanced.generatedCode, /export default function DashboardStarter/);
+  assert.doesNotMatch(advanced.generatedCode, /export\s+(?:default\s+)?function\s+Generated[A-Z]/);
   assert.match(advanced.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(advanced.generatedCode, /Mapped to \{shadcnPrimitiveMap\[role\]/);
   assert.match(advanced.generatedCode, /type DetectionElement/);
   assert.match(advanced.generatedCode, /type UsableSectionModel/);
   assert.match(advanced.generatedCode, /const sampleData/);
   assert.match(advanced.generatedCode, /const sampleCollections/);
-  assert.match(advanced.generatedCode, /function GeneratedScreenHeader/);
+  assert.match(advanced.generatedCode, /function ScreenHeaderStarter/);
   assert.match(advanced.generatedCode, /function TabSection/);
   assert.match(advanced.generatedCode, /function FormSection/);
   assert.match(advanced.generatedCode, /function GenericSection/);
   assert.match(advanced.generatedCode, /sampleData\.screenTitle/);
-  assert.match(advanced.generatedCode, /review-ready layout/);
+  assert.match(advanced.generatedCode, /handoff-ready starter/);
+  assert.doesNotMatch(advanced.generatedCode, /import-ready layout/);
   assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
-  assert.match(advanced.generatedCode, /Implementation checklist/);
+  assert.match(advanced.generatedCode, /Handoff checklist/);
   assert.match(advanced.generatedCode, /CardTitle/);
   assert.match(advanced.generatedCode, /Input id=.*placeholder="Enter product data"/);
   assert.match(advanced.generatedCode, /import \{ Label \} from "@\/components\/ui\/label"/);
@@ -1215,7 +1217,7 @@ test("buildAdvancedOfflineOverrides seeds generated code from offline regions an
   assert.match(advanced.generatedCode, /Screen intent/);
   assert.match(advanced.generatedCode, /sidebar-grid/);
   assert.match(advanced.generatedCode, /app-shell/);
-  assert.match(advanced.generatedCode, /Detected app shell/);
+  assert.match(advanced.generatedCode, /Application shell/);
   assert.match(advanced.generatedCode, /desktop-sidebar-shell/);
   assert.match(advanced.generatedCode, /aria-label="Top navigation"/);
   assert.match(advanced.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
@@ -1484,10 +1486,10 @@ test("buildAdvancedOfflineOverrides renders empty-state patterns as scaffold reg
 });
 
 test("buildUiFlowArtifact uses known sample registry for dashboard-reference.svg", () => {
-  const file = getSampleReferenceFile();
+  const file = getSampleRunFile();
   const artifact = buildUiFlowArtifact(file);
 
-  assert.equal(artifact.file.name, SAMPLE_REFERENCE_NAME);
+  assert.equal(artifact.file.name, SAMPLE_RUN_FILE_NAME);
   assert.match(artifact.summary, /Admin dashboard/i);
   assert.equal(artifact.previewStats[0].value, "6");
   assert.match(artifact.generatedCode, /ChartPreview/);
@@ -1504,7 +1506,7 @@ test("buildUiFlowArtifact uses advanced classifier for unknown uploads", () => {
   });
 
   assert.match(artifact.summary, /Marketing landing/i);
-  assert.match(artifact.generatedCode, /GeneratedLanding/);
+  assert.match(artifact.generatedCode, /LandingPageStarter/);
 });
 
 test("buildUiFlowArtifact uses visual registry match for renamed references", () => {
@@ -1551,15 +1553,15 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   assert.match(artifact.generatedCode, /SVG export/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
-  assert.match(artifact.generatedCode, /GeneratedAuthScreen/);
-  assert.match(artifact.generatedCode, /export default function GeneratedAuthScreen/);
+  assert.match(artifact.generatedCode, /AuthScreenStarter/);
+  assert.match(artifact.generatedCode, /export default function AuthScreenStarter/);
   assert.match(artifact.generatedCode, /const detectedElements: SvgElement\[\]/);
   assert.match(artifact.generatedCode, /const layoutRegions: SvgLayoutRegion\[\]/);
   assert.match(artifact.generatedCode, /const shadcnPrimitiveMap: Record<string, string>/);
 
   const blueprint = extractProductionScaffoldBlueprint(artifact.generatedCode);
   assert.ok(blueprint);
-  assert.equal(blueprint.componentName, "GeneratedAuthScreen");
+  assert.equal(blueprint.componentName, "AuthScreenStarter");
   assert.equal(blueprint.generator, "offline-detection");
   assert.ok(blueprint.detectedElements.length > 0);
   assert.ok(blueprint.layoutRegions.length > 0);
@@ -1622,7 +1624,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
   assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
   assert.match(regenerated.generatedCode, /Screenshot starter component/);
-  assert.match(regenerated.generatedCode, /Implementation checklist/);
+  assert.match(regenerated.generatedCode, /Handoff checklist/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
   assert.match(regenerated.generatedCode, /TabsList/);
@@ -1631,7 +1633,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /variant=\{index === 0 \? "secondary" : "ghost"\}/);
   assert.match(regenerated.generatedCode, /aria-current=\{index === 0 \? "page" : undefined\}/);
   assert.match(regenerated.generatedCode, /appShells/);
-  assert.match(regenerated.generatedCode, /Detected app shell/);
+  assert.match(regenerated.generatedCode, /Application shell/);
   assert.match(regenerated.generatedCode, /App shell/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 
@@ -1913,18 +1915,18 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
 
   const regenerated = regenerateArtifactFromDetections(artifact, detections);
 
-  assert.match(regenerated.generatedCode, /CorrectionGridReference/);
+  assert.match(regenerated.generatedCode, /LayoutPreviewStarter/);
   assert.match(regenerated.generatedCode, /const correctionSummary/);
-  assert.match(regenerated.generatedCode, /Applied edits/);
-  assert.match(regenerated.generatedCode, /Manual corrections are the source of truth/);
+  assert.match(regenerated.generatedCode, /Review changes/);
+  assert.match(regenerated.generatedCode, /Reviewer corrections guide this starter/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
   assert.match(regenerated.generatedCode, /componentRole/);
   assert.match(regenerated.generatedCode, /primitive preview/);
   assert.match(regenerated.generatedCode, /Button type="button"/);
-  assert.match(regenerated.generatedCode, /Manual correction/);
-  assert.match(regenerated.generatedCode, /Correction confidence/);
+  assert.match(regenerated.generatedCode, /Review edit/);
+  assert.match(regenerated.generatedCode, /Review confidence/);
   assert.doesNotMatch(regenerated.generatedCode, new RegExp(detections.elements[1].id));
   assert.equal(
     regenerated.previewStats.find((stat) => stat.label === "Active Elements").value,
@@ -1958,7 +1960,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.equal(regenerated.detections.quality.correctedElementCount, 2);
   assert.equal(regenerated.detections.quality.excludedElementCount, 1);
-  assert.match(regenerated.detections.quality.strategy, /manual-correction-source-of-truth/);
+  assert.match(regenerated.detections.quality.strategy, /review-edits-applied/);
 
   const blueprint = extractProductionScaffoldBlueprint(regenerated.generatedCode);
   assert.ok(blueprint);
@@ -1970,7 +1972,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.ok(blueprint.detectedElements[0].confidence >= 0.72);
   assert.ok(
     blueprint.detectedElements[0].reasons.some((reason) =>
-      /Manual correction/.test(reason),
+      /Review edit/.test(reason),
     ),
   );
   assert.ok(
@@ -1980,7 +1982,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.ok(
     blueprint.reviewChecklist.some((item) =>
-      /deterministic source/.test(item),
+      /rebuild the starter/.test(item),
     ),
   );
   assert.ok(
@@ -1988,8 +1990,8 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
 });
 
-test("buildDemoArtifactForFile matches export fixture shape", () => {
-  const artifact = buildDemoArtifactForFile(getSampleReferenceFile());
+test("buildSampleRunArtifactForFile matches export fixture shape", () => {
+  const artifact = buildSampleRunArtifactForFile(getSampleRunFile());
   assert.deepEqual(
     artifact.plan.map((section) => section.title),
     [

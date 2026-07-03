@@ -50,7 +50,7 @@ test("mergeManualCorrectionReasons replaces stale correction reasons", () => {
   assert.equal(reasons.filter((reason) => reason.code === "manual-correction").length, 1);
   assert.equal(reasons[0].code, "manual-correction");
   assert.match(reasons[0].evidence, /Edited type, geometry/);
-  assert.match(reasons[0].evidence, /source of truth for regeneration/);
+  assert.match(reasons[0].evidence, /guide for the next rebuild/);
   assert.equal(reasons[1].code, "manual-exclusion");
   assert.equal(reasons.at(-1).code, "geometry");
 });

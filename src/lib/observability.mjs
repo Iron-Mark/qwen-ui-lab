@@ -15,6 +15,7 @@ const ALLOWLISTED_ANALYTICS_KEYS = new Set([
   "domain",
   "level",
   "entryId",
+  "sampleId",
   "queryLength",
   "totalVisible",
 ]);
@@ -29,21 +30,24 @@ export function createObservabilityConfig(env = {}) {
   const analyticsEnabled = enabled && envFlag(env.NEXT_PUBLIC_ANALYTICS_ENABLED, false);
   const errorMonitoringEnabled =
     enabled && envFlag(env.NEXT_PUBLIC_ERROR_MONITORING_ENABLED, false);
-  const allowInDemoMode = envFlag(env.NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE, false);
+  const allowInLocalAnalysisMode =
+    envFlag(env.NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS, false) ||
+    envFlag(env.NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE, false);
   const debugLogging = envFlag(env.NEXT_PUBLIC_OBSERVABILITY_DEBUG, false);
 
   return {
     enabled,
     analyticsEnabled,
     errorMonitoringEnabled,
-    allowInDemoMode,
+    allowInLocalAnalysisMode,
+    allowInDemoMode: allowInLocalAnalysisMode,
     debugLogging,
   };
 }
 
 export function shouldTrackInCurrentMode(providerMode, config) {
   if (!config?.enabled) return false;
-  if (providerMode === "demo" && !config.allowInDemoMode) return false;
+  if (providerMode === "demo" && !config.allowInLocalAnalysisMode && !config.allowInDemoMode) return false;
   return true;
 }
 

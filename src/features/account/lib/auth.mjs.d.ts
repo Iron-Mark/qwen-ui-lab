@@ -1,4 +1,4 @@
-export type AuthMode = "guest" | "named" | "magic-link-pending";
+export type AuthMode = "guest" | "named" | "contact-label-pending";
 
 export type AuthState = {
   mode: AuthMode;
@@ -31,12 +31,12 @@ export function setDisplayName(
   storage?: Storage | null,
 ): AuthState;
 
-export function requestMagicLink(
+export function requestContactLabel(
   email: string,
   storage?: Storage | null,
 ): { ok: true; state: AuthState } | { ok: false; error: string };
 
-export function confirmMagicLinkStub(storage?: Storage | null): AuthState;
+export function confirmContactLabel(storage?: Storage | null): AuthState;
 
 export function getSavedByLabel(state?: AuthState): string;
 

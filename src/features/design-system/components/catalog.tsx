@@ -100,7 +100,7 @@ export function ExampleButton() {
     level: "atom",
     domain: "product",
     name: "Badge (shadcn)",
-    description: "Compact status and tier labels — used in catalog cards and provider mode.",
+    description: "Compact status and tier labels for catalog cards, filters, and result metadata.",
     usage: "Import from `@/components/ui/badge`; prefer composing in atoms over raw spans.",
     sourcePath: "components/ui/badge.tsx",
     props: [
@@ -228,7 +228,7 @@ export function ExampleQuickAction() {
     domain: "product",
     name: "Snippet preview",
     description: "Monospace code block with Prism highlighting and optional copy.",
-    usage: "Wrap generated or catalog snippets; use `hideHeader` when a parent supplies copy/export controls.",
+    usage: "Wrap starter or catalog snippets; use `hideHeader` when a parent supplies copy/export controls.",
     sourcePath: "features/analysis/components/SnippetPreview.tsx",
     props: [
       { name: "code", type: "string", description: "Source text to highlight." },
@@ -515,7 +515,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React export with reviewable detection notes."
+      description="Screenshot to React export with inspectable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />
@@ -528,8 +528,8 @@ export function ExampleLawInformationCard() {
     level: "organism",
     domain: "uilaws",
     name: "UI law compliance checklist",
-    description: "Interactive checklist for reviewing generated UI against UX laws.",
-    usage: "Manual review below Generate Preview; extend `items` for project rules.",
+    description: "Interactive checklist for reviewing starter UI against UX laws.",
+    usage: "Manual review below Prepare preview; extend `items` for project rules.",
     sourcePath: "features/design-system/components/UiLawComplianceChecklist.tsx",
     principles: ["fitts", "hick", "jakob", "consistency", "contrast"],
     preview: <UiLawComplianceChecklist />,

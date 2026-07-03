@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub Gist helpers for generated UI package exports.
+ * Server-side GitHub Gist helpers for starter UI package exports.
  */
 
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
@@ -8,14 +8,14 @@ import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Open gist.github.com, create a secret gist, paste the copied component, and save.";
+  "The component is copied. Create a secret gist when you want a shareable GitHub link.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export needs setup before it can create links automatically.",
+      "GitHub Gist export needs setup before automatic links are available.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,

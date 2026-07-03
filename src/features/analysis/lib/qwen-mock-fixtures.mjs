@@ -1,6 +1,6 @@
-import { buildUiFlowArtifact } from "./ui-flow.mjs";
+﻿import { buildUiFlowArtifact } from "./ui-flow.mjs";
 
-/** CI-safe placeholders — never use real DashScope credentials in tests. */
+/** CI-safe placeholders - never use real DashScope credentials in tests. */
 export const MOCK_QWEN_MODEL = "qwen3-vl-plus-mock";
 export const MOCK_QWEN_BASE_URL = "https://mock.qwen.ci/v1";
 export const MOCK_CI_API_KEY = "ci-mock-key-not-real";

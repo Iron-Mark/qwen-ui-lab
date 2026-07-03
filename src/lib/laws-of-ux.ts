@@ -23,7 +23,7 @@ export type LawOfUxId =
   | "goal-gradient"
   | "chunking";
 
-export type LawDemoSurface = "upload" | "dashboard" | "catalog";
+export type LawExampleSurface = "upload" | "dashboard" | "catalog";
 
 export type RelatedUiLawId =
   | "symmetry"
@@ -47,7 +47,7 @@ export interface LawOfUx {
   /** lawsofux.com path segment (trailing slash on site) */
   slug: string;
   application: string;
-  demoSurface: LawDemoSurface;
+  exampleSurface: LawExampleSurface;
   /** Cross-link into this repo */
   inAppHref: string;
   /** Overlap with uilaws.com principles where both apply */
@@ -67,7 +67,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Users often perceive aesthetically pleasing design as design that's more usable.",
     application:
       "Teal accent tokens, rounded cards, and subtle shadows on catalog and dashboard surfaces.",
-    demoSurface: "catalog",
+    exampleSurface: "catalog",
     inAppHref: "/design-system",
     relatedUiLawIds: ["consistency", "color-theory"],
   },
@@ -79,7 +79,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "The time to acquire a target is a function of the distance to and size of the target.",
     application:
       "Full-width upload dropzone, min-h-11 header links, and corner-placed Copy/Export controls.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["fitts"],
   },
@@ -90,8 +90,8 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "The time it takes to make a decision increases with the number and complexity of choices.",
     application:
-      "Upload flow exposes Analyze vs Generate in sequence; catalog filters use a small chip set.",
-    demoSurface: "upload",
+      "Upload flow exposes Analyze vs Prepare preview in sequence; catalog filters use a small chip set.",
+    exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["hick"],
   },
@@ -103,7 +103,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Users spend most of their time on other sites - they expect yours to work the same way.",
     application:
       "Familiar dashboard shell, file upload, and SaaS-style nav in the header.",
-    demoSurface: "dashboard",
+    exampleSurface: "dashboard",
     inAppHref: "/",
     relatedUiLawIds: ["jakob", "consistency"],
   },
@@ -115,7 +115,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "The average person can only keep 7 (plus or minus 2) items in their working memory.",
     application:
       "Plan output is capped to five sections; quick actions show a short shortcut row.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["typography-hierarchy"],
   },
@@ -127,7 +127,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Any task will inflate until all of the available time is spent.",
     application:
       "Analyze step list and progress pulses bound perceived wait time during processing.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
   },
   {
@@ -138,7 +138,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "People judge an experience by its peak and its end, not the average of every moment.",
     application:
       "Success banner after analyze and toast on copy/export reinforce a strong finish.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
   },
   {
@@ -149,7 +149,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Users best remember the first and last items in a series.",
     application:
       "Workflow steps highlight Upload and Export; session history surfaces the latest entry first.",
-    demoSurface: "dashboard",
+    exampleSurface: "dashboard",
     inAppHref: "/",
     relatedUiLawIds: ["continuity"],
   },
@@ -161,7 +161,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "For any system there is a certain amount of complexity which cannot be reduced.",
     application:
       "Provider details stay out of the main workflow so upload, review, and export remain focused.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
   },
   {
@@ -172,7 +172,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "When multiple similar objects are present, the one that differs is most likely to be remembered.",
     application:
       "Accent primary buttons and success states stand out from neutral card chrome.",
-    demoSurface: "catalog",
+    exampleSurface: "catalog",
     inAppHref: "/design-system",
     relatedUiLawIds: ["contrast"],
   },
@@ -184,7 +184,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Productivity soars when computer and user interact at a pace (<400ms) where neither waits.",
     application:
       "Instant offline analyze path and optimistic UI during live requests.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
   },
   {
@@ -195,7 +195,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "People get overwhelmed when presented with too many options (paradox of choice).",
     application:
       "Design-system level filter offers four chips; variant toggles stay per-card.",
-    demoSurface: "catalog",
+    exampleSurface: "catalog",
     inAppHref: "/design-system",
     relatedUiLawIds: ["hick"],
   },
@@ -207,7 +207,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "The amount of mental resources needed to understand and interact with an interface.",
     application:
       "Split view keeps reference and plan side-by-side; snippets collapse behind preview cards.",
-    demoSurface: "upload",
+    exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["white-space", "proximity"],
   },
@@ -218,8 +218,8 @@ export const LAWS_OF_UX: LawOfUx[] = [
     summary:
       "The tendency to approach a goal increases with proximity to the goal.",
     application:
-      "Step chips advance color as Upload -> Analyze -> Generate -> Export progresses.",
-    demoSurface: "upload",
+      "Step chips advance color as Upload -> Analyze -> Preview -> Export progresses.",
+    exampleSurface: "upload",
     inAppHref: "/",
     relatedUiLawIds: ["continuity"],
   },
@@ -231,7 +231,7 @@ export const LAWS_OF_UX: LawOfUx[] = [
       "Individual pieces of information are broken down and grouped into meaningful wholes.",
     application:
       "Atomic catalog tiers (atom/molecule/organism) and plan cards group related analysis.",
-    demoSurface: "catalog",
+    exampleSurface: "catalog",
     inAppHref: "/design-system",
     relatedUiLawIds: ["proximity"],
   },
@@ -245,7 +245,7 @@ export function filterLawsOfUx(query: string) {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return LAWS_OF_UX;
   return LAWS_OF_UX.filter((law) =>
-    [law.name, law.summary, law.application, law.demoSurface]
+    [law.name, law.summary, law.application, law.exampleSurface]
       .join(" ")
       .toLowerCase()
       .includes(normalized),

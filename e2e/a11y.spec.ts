@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { expectNoSeriousA11yViolations } from "./helpers/a11y";
 import {
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForDesignSystemPreview,
@@ -53,14 +53,14 @@ test("design system has no serious a11y violations", async ({ page }) => {
   await expectNoSeriousA11yViolations(page);
 });
 
-test("demo has no serious a11y violations", async ({ page }) => {
+test("sample run route has no serious a11y violations", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/demo");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    /dashboard sample analysis/i,
+    /dashboard sample/i,
   );
   await expect(page.getByTestId("scaffold-export-panel")).toBeVisible({
     timeout: 20_000,
@@ -115,7 +115,7 @@ test("post-analyze state has no serious a11y violations", async ({ page }) => {
   await page.goto("/");
   await waitForUploadFlowReady(page);
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
@@ -124,5 +124,6 @@ test("post-analyze state has no serious a11y violations", async ({ page }) => {
     timeout: 15_000,
   });
 
+  await waitForSonnerToastContrast(page);
   await expectNoSeriousA11yViolations(page);
 });

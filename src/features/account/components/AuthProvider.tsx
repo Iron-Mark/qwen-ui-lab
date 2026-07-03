@@ -10,12 +10,12 @@ import {
 } from "react";
 import {
   clearAuthState,
-  confirmMagicLinkStub,
+  confirmContactLabel as confirmContactLabelClient,
   GUEST_LABEL,
   getSavedByLabel,
   isSignedIn,
   loadAuthState,
-  requestMagicLink,
+  requestContactLabel,
   setDisplayName as persistDisplayName,
 } from "../lib/auth.client.mjs";
 
@@ -28,8 +28,8 @@ interface AuthContextValue {
   savedByLabel: string;
   signedIn: boolean;
   setDisplayName: (name: string) => AuthState;
-  sendMagicLinkStub: (email: string) => { ok: true } | { ok: false; error: string };
-  confirmMagicLink: () => AuthState;
+  saveContactLabel: (email: string) => { ok: true } | { ok: false; error: string };
+  confirmContactLabel: () => AuthState;
   signOut: () => AuthState;
 }
 
@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return next;
   }, []);
 
-  const sendMagicLinkStub = useCallback((email: string) => {
-    const result = requestMagicLink(email);
+  const saveContactLabel = useCallback((email: string) => {
+    const result = requestContactLabel(email);
     if (result.ok) {
       setAuth(result.state);
       return { ok: true as const };
@@ -53,8 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { ok: false as const, error: result.error };
   }, []);
 
-  const confirmMagicLink = useCallback(() => {
-    const next = confirmMagicLinkStub();
+  const confirmContactLabel = useCallback(() => {
+    const next = confirmContactLabelClient();
     setAuth(next);
     return next;
   }, []);
@@ -72,11 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       savedByLabel: getSavedByLabel(auth),
       signedIn: isSignedIn(auth),
       setDisplayName,
-      sendMagicLinkStub,
-      confirmMagicLink,
+      saveContactLabel,
+      confirmContactLabel,
       signOut,
     }),
-    [auth, confirmMagicLink, sendMagicLinkStub, setDisplayName, signOut],
+    [auth, confirmContactLabel, saveContactLabel, setDisplayName, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

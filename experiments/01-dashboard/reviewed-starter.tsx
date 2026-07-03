@@ -1,11 +1,11 @@
 // ============================================================
-// HUMAN-REFACTORED FINAL VERSION
+// REVIEWED STARTER VERSION
 // ============================================================
-// This is the production-quality version after human review.
+// This is the reviewed starter version after component review.
 // The actual compiled components live in src/components/dashboard/.
-// This file is a documentation artifact — excluded from compilation.
+// This file is a documentation artifact - excluded from compilation.
 //
-// Changes from generated-first-pass.tsx:
+// Changes from first-pass-starter.tsx:
 //
 // STRUCTURE
 // - Split monolithic page into 7 focused components
@@ -14,13 +14,13 @@
 // - Added cn() utility (clsx + tailwind-merge)
 //
 // NAMING
-// - "Card" → StatCard, RevenueCard, ActivityList, etc.
-// - Inline data → StatCardData, ActivityData, RevenueDataPoint
+// - "Card" -> StatCard, RevenueCard, ActivityList, etc.
+// - Inline data -> StatCardData, ActivityData, RevenueDataPoint
 // - Added getInitials() helper for avatar logic
 //
 // STYLING
-// - All inline styles → Tailwind CSS classes
-// - Hardcoded colors → CSS custom properties (design tokens)
+// - All inline styles -> Tailwind CSS classes
+// - Hardcoded colors -> CSS custom properties (design tokens)
 // - Added full dark mode support with class-based toggle
 // - Added smooth theme transition (background, border, color)
 // - Added tabular-nums for aligned revenue values
@@ -35,9 +35,9 @@
 // - Trend arrows alongside colors (never color-only indicators)
 //
 // RESPONSIVENESS
-// - Mobile-first grid: 1 → 2 → 4 columns for stats
-// - Revenue + Chart: stacked → 57/43 split on lg
-// - Activity + Quick Actions: stacked → 50/50 on lg
+// - Mobile-first grid: 1 -> 2 -> 4 columns for stats
+// - Revenue + Chart: stacked -> 57/43 split on lg
+// - Activity + Quick Actions: stacked -> 50/50 on lg
 // - Workflow banner wraps naturally with flex-wrap
 //
 // ROBUSTNESS

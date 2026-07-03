@@ -1,30 +1,37 @@
 export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
+const DEFAULT_REVIEW_BASIS =
+  "Detection boxes and review edits are captured in the recipe JSON.";
 export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
-const EXPORT_BUNDLE_SCHEMA = "qwen-ui-lab/export-bundle@1";
+const EXPORT_PACKAGE_SCHEMA = "qwen-ui-lab/export-package@1";
+const EXPORT_README_TITLE = "Screenshot-to-React starter package";
+const STARTER_BRANCH_INTRO =
+  "Use this as a starter branch: place the files in your app, connect product data, and compare the screen against the uploaded screenshot.";
+const RICH_PACKAGE_INTRO =
+  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter branch that still needs product data and visual parity checks.";
 
 export function buildScaffoldReadme({
   filename,
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
 }) {
-  return `# Screenshot UI starter package
+  return `# ${EXPORT_README_TITLE}
 
 ${description}
 
-This export is a reviewable package. Import it into source control, connect real data, and compare the result against the screenshot before using it in an app.
+${STARTER_BRANCH_INTRO}
 
 ## Files
 
-- \`README.md\` - package overview and import checklist
+- \`README.md\` - package overview and handoff checklist
 - \`DESIGN.md\` - design notes, review items, and responsive assumptions
-- \`${filename}\` - generated React + Tailwind component
+- \`${filename}\` - React + Tailwind starter component
 
 ## Next steps
 
 1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
-4. Review the design notes and detection notes before using the component in an app.
+4. Review the design notes and detection notes before connecting the component to a route.
 
 Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
@@ -39,6 +46,10 @@ export function buildProductionScaffoldReadme({
   inventory = [],
   sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
 }) {
+  files = normalizePackageFiles(files);
+  dependencies = normalizeDependencies(dependencies);
+  const designDoc = files.designDoc;
+  componentName = normalizeComponentName(componentName);
   const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
@@ -46,25 +57,25 @@ export function buildProductionScaffoldReadme({
   const primitiveMappingNoun = `shadcn-style primitive mapping${primitiveCount === 1 ? "" : "s"}`;
   const primitiveMappingVerb = primitiveCount === 1 ? "was" : "were";
   const responsiveMode = blueprint?.responsiveIntent?.mode ?? "responsive layout";
-  const correctionSummary = summarizeManualCorrections(blueprint);
+  const correctionSummary = summarizeReviewChanges(blueprint);
   const reviewSummary = summarizeUnresolvedReviewNotes(blueprint);
 
-  return `# Screenshot UI starter package
+  return `# ${EXPORT_README_TITLE}
 
 ${description}
 
-This export package turns the screenshot review into files you can import, compare, and iterate in source control. It is a starter package for review, not final shipped UI.
+${RICH_PACKAGE_INTRO}
 
 ## What this package is
 
-- A generated React + Tailwind starting point based on the reviewed screenshot.
-- A deterministic recipe that records detected regions, primitive mappings, and manual corrections.
-- Design and detection notes intended for code review.
+- A React + Tailwind starting point based on the uploaded screenshot.
+- A rebuild recipe that records detected regions, primitive mappings, and manual edits.
+- Design and detection notes for handoff and verification.
 
-## What this package is not
+## What this package still needs
 
-- It does not include the original screenshot, user data, secrets, or real data wiring.
-- It should not be imported or shipped until visual parity, accessibility, responsive layout, and real data states have been reviewed.
+- It does not include the original screenshot, user data, secrets, or product data adapters.
+- Visual parity, accessibility, responsive layout, and product data states still need verification.
 
 ${buildReviewContractMarkdown({ files })}
 
@@ -72,17 +83,17 @@ ${buildReviewContractMarkdown({ files })}
 
 - Screen intent: ${screenIntent}
 - ${regionCount} layout region${regionCount === 1 ? "" : "s"} and ${elementCount} detected element${elementCount === 1 ? "" : "s"} were converted into React sections.
-- ${primitiveCount} ${primitiveMappingNoun} ${primitiveMappingVerb} included for review.
+- ${primitiveCount} ${primitiveMappingNoun} ${primitiveMappingVerb} included for verification.
 - Responsive mode: ${responsiveMode}
-- Manual corrections: ${correctionSummary}
-- Review notes: ${reviewSummary}
+- Review changes: ${correctionSummary}
+- Verification notes: ${reviewSummary}
 
 ## Files
 
-- \`${files.designDoc}\` - design notes, layout decisions, and review checklist
+- \`${designDoc}\` - design notes, layout decisions, and review checklist
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
-- \`${files.recipe}\` - deterministic detection recipe, primitive map, and regeneration context
-- \`${files.manifest}\` - package identity, dependency hints, and quality gates for review
+- \`${files.recipe}\` - detection recipe, primitive map, and rebuild settings
+- \`${files.manifest}\` - package identity, dependency hints, and quality gates
 - \`${files.tokens}\` - CSS variables derived from the screenshot palette
 - \`${files.detectionSummary}\` - human-readable detection notes, confidence summary, and integration checklist
 
@@ -98,14 +109,14 @@ ${buildImportReadinessMarkdown({ dependencies, files })}
 
 ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") : "- No shadcn dependencies were inferred."}
 
-## Import checklist
+## Handoff checklist
 
-1. Copy \`src/components/generated/\` into your app.
+1. Copy \`src/components/starters/\` into your app.
 2. Add the exported component to the route or page where it belongs.
 3. Replace sample content with real product data.
-4. Keep the recipe JSON during review so edits can be compared against the screenshot-derived source.
+4. Keep the recipe JSON during handoff so edits can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
-6. Run lint/build and verify mobile, tablet, and desktop widths before merging.
+6. Run lint/build and verify mobile, tablet, and desktop widths.
 
 Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
 `;
@@ -119,31 +130,42 @@ export function buildFallbackPackageReadme({
   inventory = [],
   sourceRepo = DEFAULT_EXPORT_SOURCE_REPO,
 }) {
-  return `# Screenshot UI starter package
+  files = normalizePackageFiles(files);
+  dependencies = normalizeDependencies(dependencies);
+  const designDoc = files.designDoc;
+  componentName = normalizeComponentName(componentName);
+
+  return `# ${EXPORT_README_TITLE}
 
 ${description}
 
-This export is a reviewable starter package. Import it into source control, connect real data, and compare the result against the screenshot before using it in an app.
+${STARTER_BRANCH_INTRO}
 
 ## What this package is
 
-- A generated component file plus supporting review documents.
+- A starter component file plus supporting handoff documents.
 - A portable starter for adapting screenshot-inspired UI inside your app.
-- A source-control friendly export package with recipe, manifest, tokens, and detection notes.
+- A portable export package with recipe, manifest, tokens, and detection notes.
 
-## What this package is not
+## What this package still needs
 
-- It is not final shipped UI.
-- It does not include the original screenshot, user data, secrets, or real data wiring.
+- It does not include the original screenshot, user data, secrets, or product data adapters.
+- Visual parity, accessibility, responsive layout, and product data states still need verification.
 
 ${buildReviewContractMarkdown({ files })}
 
+## What changed from the screenshot
+
+- The exported TSX was wrapped with package metadata for handoff.
+- No detection-box edits were included with this component-only package.
+- Compare the component against the screenshot before connecting it to a route.
+
 ## Files
 
-- \`README.md\` - package overview and import checklist
-- \`${files.designDoc}\` - design notes, review items, and responsive assumptions
+- \`README.md\` - package overview and handoff checklist
+- \`${designDoc}\` - design notes, review items, and responsive assumptions
 - \`${files.component}\` - React + Tailwind component entry point (\`${componentName}\`)
-- \`${files.recipe}\` - regeneration recipe and package context
+- \`${files.recipe}\` - rebuild recipe and package context
 - \`${files.manifest}\` - package manifest and quality gates
 - \`${files.tokens}\` - theme token file
 - \`${files.detectionSummary}\` - detection and review notes
@@ -165,7 +187,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
-4. Review \`DESIGN.md\` and the detection notes before using the component in an app.
+4. Review \`DESIGN.md\` and the detection notes before connecting the component to a route.
 5. Verify keyboard order, focus states, responsive behavior, and real empty/loading/error states.
 
 Exported from [qwen-ui-lab](https://github.com/${sourceRepo}).
@@ -176,6 +198,9 @@ export function buildDetectionSummaryMarkdown(blueprint) {
   const regions = blueprint.layoutRegions ?? [];
   const elements = blueprint.detectedElements ?? [];
   const patterns = blueprint.detectedPatterns ?? {};
+  const reviewChecklist = Array.isArray(blueprint.reviewChecklist)
+    ? blueprint.reviewChecklist
+    : [];
   const primitiveLines = Object.entries(blueprint.shadcnPrimitiveMap ?? {})
     .sort(([first], [second]) => first.localeCompare(second))
     .map(([primitive, mapping]) => `- ${primitive}: ${mapping}`)
@@ -204,14 +229,14 @@ export function buildDetectionSummaryMarkdown(blueprint) {
     })
     .join("\n");
   const confidenceSummary = summarizeConfidenceBands([...regions, ...elements]);
-  const manualCorrectionNotes = buildManualCorrectionNotes(elements);
+  const reviewEditNotes = buildReviewEditNotes(elements);
   const correctionMetadata = blueprint.correctionSummary;
   const lowConfidenceReviewQueue = buildLowConfidenceReviewQueue([...regions, ...elements]);
   const confidenceReasonSummary = buildConfidenceReasonSummary(elements);
 
   return `# Detection summary
 
-This file explains how the uploaded screenshot was translated into the generated component. Use it to review confidence, decide which sections need product data, and keep future regeneration deterministic.
+This file explains how the uploaded screenshot was translated into the starter component. Use it to review confidence, decide which sections need product data, and rebuild the starter consistently.
 
 ## Screen intent
 
@@ -226,7 +251,7 @@ ${blueprint.screenIntent?.label ?? "Unknown screen intent"}${
 - Visible regions were grouped into ${regions.length} layout region${regions.length === 1 ? "" : "s"}.
 - ${elements.length} detected element${elements.length === 1 ? "" : "s"} were mapped to component roles.
 - Primitive mappings were exported so the component can move toward shadcn-style UI without guessing later.
-- The recipe and manifest keep the generated output reviewable in source control.
+- The recipe and manifest keep handoff tied to the screenshot-derived decisions.
 
 ## Confidence summary
 
@@ -243,19 +268,19 @@ ${lowConfidenceReviewQueue}
 
 ${confidenceReasonSummary}
 
-## Manual corrections
+## Review changes
 
 - Active elements: ${correctionMetadata?.activeElements ?? elements.filter((element) => element.included !== false).length}
 - Applied edits: ${correctionMetadata?.appliedEdits ?? elements.filter((element) => element.userEdited === true).length}
-- Excluded boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
-- Source of truth: ${correctionMetadata?.sourceOfTruth ?? "Detection boxes are the source of truth for this regenerated scaffold."}
+- Omitted boxes: ${correctionMetadata?.excludedBoxes ?? elements.filter((element) => element.included === false).length}
+- Rebuild guide: ${correctionMetadata?.sourceOfTruth ?? DEFAULT_REVIEW_BASIS}
 
-${manualCorrectionNotes}
+${reviewEditNotes}
 
 ## Review notes
 
-- Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the regeneration source until visual review is complete.
-- Keep this detection note with the package review when any low-confidence or manually edited boxes remain.
+- Treat \`${blueprint.files?.recipe ?? "the recipe JSON"}\` as the rebuild recipe until visual verification is complete.
+- Keep this detection note with the package when any low-confidence or edited boxes remain.
 - Do not delete omitted boxes from the recipe unless the reviewer confirms they are decorative or intentionally out of scope.
 
 ## Responsive intent
@@ -282,7 +307,7 @@ ${elementLines || "- No detected elements were exported."}
 
 ## Integration notes
 
-${blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")}
+${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n") : "- Validate the starter against the source screenshot before connecting product data."}
 `;
 }
 
@@ -293,6 +318,9 @@ export function buildPackageDesignMarkdown({
   blueprint,
   dependencies = [],
 }) {
+  files = normalizePackageFiles(files);
+  dependencies = normalizeDependencies(dependencies);
+  componentName = normalizeComponentName(componentName);
   const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot export";
   const responsiveIntent = blueprint?.responsiveIntent;
   const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
@@ -301,8 +329,8 @@ export function buildPackageDesignMarkdown({
     .join("\n");
   const reviewChecklist = blueprint?.reviewChecklist?.length
     ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
-    : "- Review the generated component against the source screenshot.";
-  const correctionSummary = formatCorrectionSummarySection(blueprint);
+    : "- Review the starter component against the source screenshot.";
+  const correctionSummary = formatReviewChangesSection(blueprint);
 
   return `# Design notes
 
@@ -316,7 +344,7 @@ ${description}
 
 ## Layout decisions
 
-- The generated component is structured as source-controlled project files, not a final screenshot clone.
+- The starter component is structured as portable project files, not a pixel-for-pixel screenshot copy.
 - Repeated regions should remain as small subcomponents when you adapt the code.
 - Token values are isolated in \`${files.tokens}\` so visual tuning can happen without rewriting component structure.
 
@@ -326,7 +354,7 @@ ${description}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Compare mobile, tablet, and desktop layouts against the source screenshot."}
 
-## Correction summary
+## Review changes
 
 ${correctionSummary}
 
@@ -334,12 +362,12 @@ ${buildReviewContractMarkdown({ files })}
 
 ## Primitive mapping
 
-${primitiveMap || "- No shadcn-style primitive map was inferred. Verify imports, controls, and semantic wrappers before import."}
+${primitiveMap || "- No shadcn-style primitive map was inferred. Verify imports, controls, and semantic wrappers during review."}
 
 ## Package contents
 
 - \`${files.component}\` - component source
-- \`${files.recipe}\` - regeneration recipe
+- \`${files.recipe}\` - rebuild recipe
 - \`${files.manifest}\` - package manifest
 - \`${files.tokens}\` - token CSS
 - \`${files.detectionSummary}\` - detection notes
@@ -365,16 +393,26 @@ ${reviewChecklist}
 }
 
 export function buildProductionManifest({ blueprint, dependencies, files, stem }) {
+  files = normalizePackageFiles(files);
+  const designDoc = files.designDoc;
+  const sourceHash =
+    typeof blueprint.sourceHash === "string" && blueprint.sourceHash.trim()
+      ? blueprint.sourceHash.trim()
+      : "unknown-source";
+
   return {
-    schema: EXPORT_BUNDLE_SCHEMA,
-    bundleId: `qwen-${blueprint.sourceHash.slice(0, 12)}`,
+    schema: EXPORT_PACKAGE_SCHEMA,
+    packageId: `qwen-${sourceHash.slice(0, 12)}`,
     generator: blueprint.generator,
-    sourceHash: blueprint.sourceHash,
+    sourceHash,
     component: {
-      name: blueprint.componentName,
-      importPath: `@/components/generated/${stem}`,
+      name: normalizeComponentName(blueprint.componentName),
+      importPath: `@/components/starters/${stem}`,
     },
-    files,
+    files: {
+      ...files,
+      designDoc,
+    },
     dependencies,
     contents: {
       includesOriginalImage: false,
@@ -387,11 +425,11 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
       excludedBoxes: blueprint.correctionSummary?.excludedBoxes ?? 0,
       sourceOfTruth:
         blueprint.correctionSummary?.sourceOfTruth ??
-        "Detection boxes are the source of truth for this regenerated scaffold.",
+        DEFAULT_REVIEW_BASIS,
     },
     reviewContract: {
       keepFilesUntilReviewComplete: [
-        files.designDoc,
+        designDoc,
         files.recipe,
         files.manifest,
         files.detectionSummary,
@@ -400,45 +438,61 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
         "visual parity",
         "keyboard focus",
         "responsive layout",
-        "real data states",
+        "product data states",
         "lint/build",
       ],
       safeToRemoveSupportFilesAfter:
-        "Visual parity, accessibility, responsive layout, and data-state checks are approved.",
+        "Visual parity, accessibility, responsive layout, and product data states are approved.",
     },
     qualityGates: [
-      "Compare the imported component against the source screenshot before merging.",
-      "Review detection summary, low-confidence regions, and manual corrections.",
+      "Compare the placed starter against the source screenshot.",
+      "Review detection summary, low-confidence regions, and edited boxes.",
       "Replace sample data and copy with product-owned content.",
       "Add or verify loading, empty, error, and keyboard focus states.",
-      "Run app lint/build after importing.",
+      "Run app lint/build after placing the starter.",
       "Verify responsive layout at mobile, tablet, and desktop widths.",
     ],
   };
 }
 
 function formatPackageInventory(inventory) {
-  if (!Array.isArray(inventory) || inventory.length === 0) {
-    return "- Inventory unavailable. Verify README.md, DESIGN.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes before import.";
+  const rows = normalizeInventoryRows(inventory);
+
+  if (!rows.length) {
+    return "- Inventory unavailable. Verify README.md, DESIGN.md, component TSX, recipe JSON, manifest JSON, tokens CSS, and detection notes during handoff.";
   }
 
   return [
     "| File | Size | Lines |",
     "| --- | ---: | ---: |",
-    ...inventory.map(
-      (item) =>
-        `| \`${item.path}\` | ${formatBytes(item.bytes)} | ${Number(item.lines) || 0} |`,
-    ),
+    ...rows.map((item) => `| \`${item.path}\` | ${formatBytes(item.bytes)} | ${item.lines} |`),
   ].join("\n");
 }
 
+function normalizeInventoryRows(inventory) {
+  if (!Array.isArray(inventory)) return [];
+
+  return inventory
+    .map((item) => {
+      const path = String(item?.path || "").trim();
+      if (!path) return null;
+      return {
+        path,
+        bytes: Number(item?.bytes) > 0 ? Number(item.bytes) : 0,
+        lines: Number(item?.lines) > 0 ? Math.floor(Number(item.lines)) : 0,
+      };
+    })
+    .filter(Boolean);
+}
+
 function buildQuickImportMarkdown({ files, componentName }) {
+  files = normalizePackageFiles(files);
   const importPath = `@/${String(files.component || "")
     .replace(/^src\//, "")
     .replace(/\.tsx$/, "")}`;
-  const safeComponentName = componentName || "GeneratedComponent";
+  const safeComponentName = normalizeComponentName(componentName);
 
-  return `## Quick import
+  return `## Project handoff
 
 \`\`\`tsx
 import ${safeComponentName} from "${importPath}";
@@ -448,29 +502,72 @@ export default function Screen() {
 }
 \`\`\`
 
-Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the pull request until visual review is complete.`;
+Use this wiring example when placing the starter in your app. Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the starter until visual verification is complete.`;
 }
 
 function buildImportReadinessMarkdown({ dependencies, files }) {
+  files = normalizePackageFiles(files);
+  dependencies = normalizeDependencies(dependencies);
   const dependencyLine = dependencies.length
     ? dependencies.map((item) => `\`${item}\``).join(", ")
-    : "No shadcn component imports were inferred; verify imports and primitive wrappers before import.";
+    : "No shadcn component imports were inferred; verify imports and primitive wrappers during review.";
 
-  return `## Import readiness
+  return `## Package readiness
 
 - Required UI imports: ${dependencyLine}
-- Copy \`${files.component}\`, \`${files.tokens}\`, and the supporting docs into the same pull request.
+- Place \`${files.component}\`, \`${files.tokens}\`, and the supporting docs together in your app.
 - Keep \`${files.recipe}\` and \`${files.manifest}\` until screenshot parity, accessibility, and responsive checks pass.
-- Run lint/build after import and verify mobile, tablet, and desktop widths before merging.`;
+- Run lint/build after placing the starter and verify mobile, tablet, and desktop widths.`;
 }
 
 function buildReviewContractMarkdown({ files }) {
+  files = normalizePackageFiles(files);
+  const designDoc = files.designDoc;
+
   return `## Review contract
 
-- Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the pull request until review is complete.
-- Compare the imported component against the screenshot before merging.
+- Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the starter until verification is complete.
+- Compare the placed component against the screenshot.
 - Verify keyboard focus, labels, responsive layout, and real loading/empty/error states.
-- After approval, keep \`${files.designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
+- After approval, keep \`${designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
+}
+
+function normalizePackageFiles(files) {
+  const component = files?.component || "src/components/starters/starter-component.tsx";
+  const stem = componentStemFromPath(component);
+
+  return {
+    designDoc: files?.designDoc || "DESIGN.md",
+    component,
+    recipe: files?.recipe || `src/components/starters/${stem}.recipe.json`,
+    manifest: files?.manifest || `src/components/starters/${stem}.manifest.json`,
+    tokens: files?.tokens || `src/components/starters/${stem}.tokens.css`,
+    detectionSummary: files?.detectionSummary || `docs/${stem}.detection.md`,
+  };
+}
+
+function componentStemFromPath(component) {
+  const basename = String(component || "starter-component.tsx")
+    .split(/[\\/]/)
+    .filter(Boolean)
+    .pop() ?? "starter-component.tsx";
+  return basename.replace(/\.tsx$/i, "") || "starter-component";
+}
+
+function normalizeComponentName(componentName) {
+  const value = String(componentName || "").trim();
+  return /^[A-Z][A-Za-z0-9_]*$/.test(value) ? value : "StarterComponent";
+}
+
+function normalizeDependencies(dependencies) {
+  if (!Array.isArray(dependencies)) return [];
+  return [
+    ...new Set(
+      dependencies
+        .map((dependency) => String(dependency || "").trim())
+        .filter(Boolean),
+    ),
+  ].sort();
 }
 
 function formatBytes(bytes) {
@@ -495,24 +592,24 @@ export function buildTokenCss(tokens) {
   };
 
   return `:root {
-  --qwen-generated-surface: ${normalized.surface};
-  --qwen-generated-foreground: ${normalized.foreground};
-  --qwen-generated-accent: ${normalized.accent};
-  --qwen-generated-accent-foreground: ${normalized.accentForeground};
-  --qwen-generated-muted: ${normalized.muted};
-  --qwen-generated-border: ${normalized.border};
-  --qwen-generated-radius: ${normalized.radius};
-  --qwen-generated-space: ${normalized.space};
+  --starter-surface: ${normalized.surface};
+  --starter-foreground: ${normalized.foreground};
+  --starter-accent: ${normalized.accent};
+  --starter-accent-foreground: ${normalized.accentForeground};
+  --starter-muted: ${normalized.muted};
+  --starter-border: ${normalized.border};
+  --starter-radius: ${normalized.radius};
+  --starter-space: ${normalized.space};
 }
 
-.qwen-generated-shell {
-  color: var(--qwen-generated-foreground);
-  background: var(--qwen-generated-surface);
+.starter-screen {
+  color: var(--starter-foreground);
+  background: var(--starter-surface);
 }
 `;
 }
 
-function summarizeManualCorrections(blueprint) {
+function summarizeReviewChanges(blueprint) {
   const summary = blueprint?.correctionSummary;
   if (summary && typeof summary === "object") {
     const edited = Number(summary.appliedEdits) || 0;
@@ -551,24 +648,24 @@ function summarizeManualCorrections(blueprint) {
   return `${parts.join(", ")} captured in the recipe JSON.`;
 }
 
-function formatCorrectionSummarySection(blueprint) {
+function formatReviewChangesSection(blueprint) {
   const summary = blueprint?.correctionSummary;
   if (!summary || typeof summary !== "object") {
     return [
       "- Active elements: unknown",
       "- Applied edits: 0",
-      "- Excluded boxes: 0",
-      "- Source of truth: Detection boxes are the source of truth for this regenerated scaffold.",
+      "- Omitted boxes: 0",
+      `- Rebuild guide: ${DEFAULT_REVIEW_BASIS}`,
     ].join("\n");
   }
 
   return [
     `- Active elements: ${Number(summary.activeElements) || 0}`,
     `- Applied edits: ${Number(summary.appliedEdits) || 0}`,
-    `- Excluded boxes: ${Number(summary.excludedBoxes) || 0}`,
-    `- Source of truth: ${
+    `- Omitted boxes: ${Number(summary.excludedBoxes) || 0}`,
+    `- Rebuild guide: ${
       summary.sourceOfTruth ||
-      "Detection boxes are the source of truth for this regenerated scaffold."
+      DEFAULT_REVIEW_BASIS
     }`,
   ].join("\n");
 }
@@ -586,10 +683,10 @@ function summarizeUnresolvedReviewNotes(blueprint) {
     : 0;
 
   if (!lowConfidence) {
-    return `${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before import.`;
+    return `${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} during review.`;
   }
 
-  return `${lowConfidence} low-confidence element${lowConfidence === 1 ? "" : "s"} plus ${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} before import.`;
+  return `${lowConfidence} low-confidence element${lowConfidence === 1 ? "" : "s"} plus ${checklistCount || 1} checklist item${checklistCount === 1 ? "" : "s"} during review.`;
 }
 
 function summarizeConfidenceBands(items) {
@@ -611,17 +708,17 @@ function summarizeConfidenceBands(items) {
   );
 }
 
-function buildManualCorrectionNotes(elements) {
+function buildReviewEditNotes(elements) {
   const edited = elements.filter((element) => element.userEdited === true);
   const excluded = elements.filter((element) => element.included === false);
   if (!edited.length && !excluded.length) {
-    return "- No manual detection-box edits were captured in this export.";
+    return "- No review edits were captured for detection boxes in this export.";
   }
 
   return [
     ...edited.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
-      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry before merging.`;
+      return `- Edited ${element.id ?? role}: kept as ${role}; verify geometry during handoff.`;
     }),
     ...excluded.map((element) => {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? "element";
@@ -668,9 +765,9 @@ function buildConfidenceReasonSummary(elements) {
       const role = element.componentRole ?? element.primitive ?? element.kind ?? `element-${index + 1}`;
       const reasons = detectionReasons(element).slice(0, 3);
       const prefix = element.userEdited
-        ? "manual correction plus detector evidence"
+        ? "review edit plus detector evidence"
         : element.included === false
-          ? "excluded from generated output"
+          ? "excluded from starter output"
           : "detector evidence";
       const evidence = reasons.length
         ? reasons
@@ -680,7 +777,7 @@ function buildConfidenceReasonSummary(elements) {
 
   return reasonLines.length
     ? reasonLines.join("\n")
-    : "- No element-level confidence reasons were available; compare the component with the screenshot before import.";
+    : "- No element-level confidence reasons were available; compare the component with the source screenshot during review.";
 }
 
 function detectionReasons(item) {

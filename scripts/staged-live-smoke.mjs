@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Staged live rollout smoke — expects liveAnalysisEnabled=true on the target deploy.
+ * Staged live rollout smoke - expects liveAnalysisEnabled=true on the target deploy.
  *
  * Usage:
  *   DEPLOY_URL=https://<preview-or-staging> node scripts/staged-live-smoke.mjs
@@ -39,7 +39,7 @@ try {
 
 if (parsedUrl.protocol !== "https:") {
   console.error(
-    "Staged live smoke requires HTTPS. Use a Vercel preview URL (https://…).",
+    "Staged live smoke requires HTTPS. Use a Vercel preview URL (https://...).",
   );
   process.exit(1);
 }
@@ -50,7 +50,7 @@ if (
   process.env.ALLOW_PRODUCTION_LIVE_SMOKE !== "1"
 ) {
   console.error(
-    `Refusing staged live smoke on public demo host (${hostname}). ` +
+    `Refusing staged live smoke on public local-analysis host (${hostname}). ` +
       "Enable live on a Preview deployment first, or set ALLOW_PRODUCTION_LIVE_SMOKE=1 when production is intentionally live.",
   );
   process.exit(1);

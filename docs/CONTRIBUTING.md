@@ -9,7 +9,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open the local URL printed by Next.js. It is usually `http://localhost:3000`, or the next available port if 3000 is busy.
 
 ## Core Commands
 
@@ -53,7 +53,7 @@ Notes:
 
 ## Routes and App Surfaces
 
-- `/` - dashboard + upload/analyze/generate flow.
+- `/` - dashboard + upload/analyze/preview flow.
 - `/design-system` - atomic catalog, domain and level filters, snippet export.
 - `/design-system/uilaws` - redirects to `/design-system?domain=uilaws`.
 - `/design-system/laws-of-ux` - redirects to `/design-system?domain=laws-of-ux`.
@@ -82,7 +82,7 @@ npm run test:e2e
 ## Contribution Scope Guidance
 
 - Keep changes focused and reviewable.
-- Do not silently change provider-mode semantics (demo default + explicit live opt-in).
+- Do not silently change provider-mode semantics (local-analysis default + explicit live opt-in).
 - Update docs when scripts, routes, or behavior change.
 - Prefer extending existing architecture patterns:
   - route shells and API handlers under `src/app`
@@ -101,7 +101,7 @@ npm run test:e2e
    - What changed
    - Why it changed
    - How it was validated
-   - Demo/live mode impact (if any)
+   - Local-analysis/live impact (if any)
 
 Production releases use a separate `dev` -> `main` PR after `dev` is ready. Do not tag or deploy from `dev`.
 

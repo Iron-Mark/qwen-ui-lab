@@ -6,11 +6,11 @@ const NON_REPORTABLE_CODES = new Set([
 
 /**
  * Whether an analyze outcome should be reported as an error (live/staging only).
- * @param {{ providerState?: string; instantDemo?: boolean; code?: string | null }} outcome
+ * @param {{ providerState?: string; sampleRun?: boolean; code?: string | null }} outcome
  */
 export function isReportableAnalyzeFailure(outcome) {
   if (!outcome) return false;
-  if (outcome.instantDemo) return false;
+  if (outcome.sampleRun) return false;
   if (outcome.providerState === "qwen") return false;
   if (outcome.code && NON_REPORTABLE_CODES.has(outcome.code)) return false;
   return outcome.providerState === "fallback" || outcome.code === "fetch_error";

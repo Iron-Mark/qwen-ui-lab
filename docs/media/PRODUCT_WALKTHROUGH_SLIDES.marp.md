@@ -3,12 +3,13 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
+footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 ---
 
 # qwen-ui-lab
 ## Screenshot to React + Tailwind starter package
 
+- Product: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 - Sample run: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo)
 - Repo: [github.com/Iron-Mark/qwen-ui-lab](https://github.com/Iron-Mark/qwen-ui-lab)
 
@@ -22,20 +23,19 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
 
 ---
 
-# Local preview
+# Local review flow
 
-- Public host runs without a provider key
-- Bundled samples analyze and generate instantly
-- `/demo` opens a sample result for walkthroughs
-- Real screenshots still go through the same review flow
+- Upload screenshots or open a prepared sample result
+- Inspect detected structure during review
+- Review and export a starter package
 
 ---
 
 # Walkthrough beat 1
 
-- Open `/demo`; the dashboard sample auto-runs
+- Open the sample run; the dashboard sample loads automatically
 - Review detected sections, controls, and repeated groups
-- Compare screenshot structure against the generated preview
+- Compare screenshot structure against the starter preview
 
 ---
 
@@ -43,7 +43,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
 
 - Inspect confidence reasons
 - Correct detection boxes when needed
-- Regenerate from corrected boxes as the source of truth
+- Refresh from reviewed boxes
 
 ---
 
@@ -65,16 +65,16 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app/demo"
 
 ---
 
-# Live provider mode
+# Optional live analysis
 
 - `DASHSCOPE_API_KEY` plus `QWEN_LIVE_ANALYSIS=true`
 - API key alone does not enable live calls
-- Use local preview for recordings unless provider behavior is the topic
+- Keep local analysis for walkthroughs unless live model behavior is the topic
 
 ---
 
 # Takeaway
 
-- The app does not promise final shipped UI
+- The app does not promise a finished screen
 - It creates an inspectable starter package from a screenshot
-- Faster scaffolding is useful when every generated decision stays reviewable
+- Faster starts are useful when every layout decision stays visible

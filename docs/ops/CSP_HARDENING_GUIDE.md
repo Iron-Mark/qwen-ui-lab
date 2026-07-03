@@ -7,17 +7,17 @@ This project uses a two-track CSP strategy:
 
 ## Current rollout
 
-- Enforced policy (Stage C — **done**): per-request nonce + `strict-dynamic` for scripts; no `unsafe-inline` or `unsafe-eval` in production.
+- Enforced policy (Stage C - **done**): per-request nonce + `strict-dynamic` for scripts; no `unsafe-inline` or `unsafe-eval` in production.
   - Implemented in `src/proxy.ts` (Next.js 16 proxy) + `src/lib/csp.ts`; custom theme bootstrap script in `layout.tsx` receives the nonce via `x-nonce`.
   - `style-src 'unsafe-inline'` remains for Tailwind/runtime styles (Stage D).
 - Enforced policy additionally pins:
   - `frame-src 'none'`
   - `manifest-src 'self'`
   - `worker-src 'self' blob:`
-  - `connect-src 'self' https:` (Stage A — no `ws:` / `wss:`; app uses HTTPS `fetch` only)
-  - `upgrade-insecure-requests` (Stage A — production is HTTPS-only)
+  - `connect-src 'self' https:` (Stage A - no `ws:` / `wss:`; app uses HTTPS `fetch` only)
+  - `upgrade-insecure-requests` (Stage A - production is HTTPS-only)
 - Report-only has staged strictness levels (tests **next** tightenings beyond enforced):
-  - `standard` (default): style without `unsafe-inline` (`'report-sample'` only) — measures Stage D.
+  - `standard` (default): style without `unsafe-inline` (`'report-sample'` only) - measures Stage D.
   - `strict`: also blocks script/style attributes and reports Trusted Types requirements (Stages E/F).
   - Reports violations to `/api/security/csp-report`
 
@@ -27,7 +27,7 @@ This project uses a two-track CSP strategy:
 - **Dynamic rendering required:** Root layout calls `connection()` so Next.js can inject nonces into framework scripts during SSR.
 - **Trade-offs:** Pages are now dynamically rendered (`ƒ` in build output); CDN edge caching of HTML is disabled unless you add nonce-aware caching later. Opengraph/twitter image routes remain static (`○`).
 - **Dev mode:** Proxy adds `'unsafe-eval'` to `script-src` in development (React dev tooling); production omits it (Stage B preserved).
-- **Alternative not used:** Next.js experimental SRI (`experimental.sri`) offers hash-based CSP with static generation — viable for Stage C/D if dynamic rendering cost becomes unacceptable.
+- **Alternative not used:** Next.js experimental SRI (`experimental.sri`) offers hash-based CSP with static generation - viable for Stage C/D if dynamic rendering cost becomes unacceptable.
 
 ## Rollout toggles
 
@@ -46,8 +46,8 @@ This project uses a two-track CSP strategy:
 4. **Reduce noise** from known third-party sources by explicit allowlisting or removal.
 5. **Promote** strict policy from report-only to enforced in stages:
    - Stage A: enforce strict `connect-src` (drop ws/wss if not required). **Done** (v0.1.6 lane).
-   - Stage B: enforce script without `unsafe-eval`. **Done** — e2e rehearsal showed no `eval` violations; inline script noise remains report-only.
-   - Stage C: enforce script without `unsafe-inline` (nonce/hash based). **Done** — nonce + `strict-dynamic` via `src/proxy.ts`; build and PR smoke e2e pass.
+   - Stage B: enforce script without `unsafe-eval`. **Done** - e2e rehearsal showed no `eval` violations; inline script noise remains report-only.
+   - Stage C: enforce script without `unsafe-inline` (nonce/hash based). **Done** - nonce + `strict-dynamic` via `src/proxy.ts`; build and PR smoke e2e pass.
    - Stage D: enforce style without `unsafe-inline` (nonce/hash based).
    - Stage E: enforce `script-src-attr 'none'` and `style-src-attr 'none'`.
    - Stage F: enforce Trusted Types (`require-trusted-types-for 'script'`) after app compatibility work.
@@ -60,7 +60,7 @@ This project uses a two-track CSP strategy:
 
 ## Monitoring report-only violations
 
-Report-only CSP does **not** block scripts or styles for the demo. Use it to learn what a stricter enforce policy would break later.
+Report-only CSP does **not** block scripts or styles for the app. Use it to learn what a stricter enforce policy would break later.
 
 1. **Confirm the route is live** (staging or production build):
    ```bash
@@ -77,8 +77,8 @@ Report-only CSP does **not** block scripts or styles for the demo. Use it to lea
 
 3. **Triage weekly:** group by `violated-directive` and `blocked-uri`; fix first-party issues before changing enforced headers.
 
-4. **Disable report-only temporarily** (e.g. noisy third-party): set `CSP_REPORT_ONLY=false` in the host env — enforced baseline in `next.config.ts` stays demo-safe.
+4. **Disable report-only temporarily** (e.g. noisy third-party): set `CSP_REPORT_ONLY=false` in the host env - enforced baseline in `next.config.ts` stays local-analysis safe.
 
-5. **Do not enforce strict script/style policy** on the public demo until report-only noise is near zero on a rehearsal deploy.
+5. **Do not enforce strict script/style policy** on the public app until report-only noise is near zero on a rehearsal deploy.
 
-See also `docs/ops/POST_LAUNCH.md` (demo operators) and `docs/ops/RELIABILITY_OPS.md` (health/CSP alongside synthetic checks).
+See also `docs/ops/POST_LAUNCH.md` (operators) and `docs/ops/RELIABILITY_OPS.md` (health/CSP alongside synthetic checks).

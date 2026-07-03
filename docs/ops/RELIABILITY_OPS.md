@@ -7,7 +7,7 @@ It extends existing behavior built around `GET /api/health` and complements `doc
 ## Operational Baseline
 
 - Health source of truth: `GET /api/health`
-- CSP report-only sink: `POST /api/security/csp-report` (production report-only header; see `docs/ops/CSP_HARDENING_GUIDE.md` for log monitoring — violations are warn-level, not user-facing errors)
+- CSP report-only sink: `POST /api/security/csp-report` (production report-only header; see `docs/ops/CSP_HARDENING_GUIDE.md` for log monitoring - violations are warn-level, not user-facing errors)
 - Expected healthy payload:
   - `ok: true`
   - `provider: "demo"` or `provider: "qwen"`

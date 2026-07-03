@@ -38,14 +38,14 @@ interface GistSuccessResponse {
 
 const STATUS_LABELS: Record<GistExportStatus, string> = {
   idle: "Export to GitHub Gist",
-  exporting: "Creating gist…",
+  exporting: "Creating gist...",
   success: "Gist created",
-  error: "Gist failed",
+  error: "Gist setup needed",
 };
 
 export function GistExportButton({
   text,
-  filename = "component.tsx",
+  filename = "starter-component.tsx",
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
@@ -74,15 +74,15 @@ export function GistExportButton({
       const gistUrl = fallback?.gistUrl ?? "https://gist.github.com";
       const instructions =
         fallback?.instructions ??
-        "Open gist.github.com, create a secret gist, paste the copied component, and save.";
+        "The component is copied. Create a secret gist when you want a shareable GitHub link.";
 
-      const copyResult = await copy(text, "Code copied for Gist setup");
+      const copyResult = await copy(text, "Component copied for Gist");
       const copied = copyResult.ok;
 
       toast(
         copied
-          ? `Component copied. GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`
-          : `GitHub Gist needs setup before automatic links work. ${instructions} (${gistUrl})`,
+          ? `Component copied. Automatic Gist links need setup first. ${instructions} (${gistUrl})`
+          : `Automatic Gist links need setup first. ${instructions} (${gistUrl})`,
         copied ? "warning" : "error",
       );
 
@@ -148,7 +148,7 @@ export function GistExportButton({
 
       setStatus("success");
       window.open(gistUrl, "_blank", "noopener,noreferrer");
-      toast("Gist created — opened in a new tab", "success");
+      toast("Gist created - opened in a new tab", "success");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,

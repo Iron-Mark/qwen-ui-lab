@@ -80,7 +80,7 @@ const samplePlan = [
     icon: Boxes,
   },
   {
-    title: "Generate component",
+    title: "Prepare component",
     body: "Export a React + Tailwind package that matches the sample hierarchy.",
     icon: Code2,
   },
@@ -166,7 +166,7 @@ export function DashboardSampleDialog({
                 Dashboard sample
               </h2>
               <p className="mt-1 max-w-xl text-sm leading-6 text-muted-foreground">
-                See what a generated result looks like.
+                See what an exported starter can look like.
               </p>
             </div>
           </div>
@@ -185,7 +185,7 @@ export function DashboardSampleDialog({
                 <ArrowRight className="size-4" aria-hidden />
               </TooltipTrigger>
               <TooltipContent side="top">
-                Load the dashboard reference into the analyzer.
+                Load the dashboard sample into the workflow.
               </TooltipContent>
             </Tooltip>
             <Tooltip>
@@ -205,7 +205,7 @@ export function DashboardSampleDialog({
                 Preview
               </TooltipTrigger>
               <TooltipContent side="top">
-                Open the full generated sample without leaving this page.
+                Open the full sample preview without leaving this page.
               </TooltipContent>
             </Tooltip>
           </div>
@@ -225,7 +225,7 @@ export function DashboardSampleDialog({
             Dashboard sample
           </DialogTitle>
           <DialogDescription className="max-w-2xl leading-6">
-            Preview the generated dashboard, inspect the plan, then load it into
+            Preview the dashboard starter, inspect the plan, then load it into
             the workflow.
           </DialogDescription>
         </DialogHeader>

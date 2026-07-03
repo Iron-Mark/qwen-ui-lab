@@ -14,7 +14,7 @@ test("404 page renders zh copy with ?lang=zh", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "页面未找到" })).toBeVisible();
   const notFoundNav = page.getByRole("navigation", { name: "返回已知页面" });
   await expect(
-    notFoundNav.getByRole("link", { name: "返回工作台" }),
+    notFoundNav.getByRole("link", { name: "返回工作流" }),
   ).toHaveAttribute("href", "/?lang=zh");
   await expect(
     notFoundNav.getByRole("link", { name: "设计系统" }),

@@ -13,10 +13,10 @@ import {
 export function WorkflowBanner() {
   const steps = [
     { label: "UI Screenshot", icon: Camera },
-    { label: "Qwen3-VL Analysis", icon: SearchCheck },
+    { label: "Layout Detection", icon: SearchCheck },
     { label: "Component Plan", icon: Sparkles },
     { label: "React Code", icon: Code2 },
-    { label: "Human Refactor", icon: Wrench },
+    { label: "Refine Details", icon: Wrench },
     { label: "Final Component", icon: CheckCircle2 },
   ];
 

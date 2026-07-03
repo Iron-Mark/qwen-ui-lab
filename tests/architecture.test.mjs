@@ -555,6 +555,39 @@ test("non-account features consume account helpers instead of the auth provider 
   assert.deepEqual(violations, []);
 });
 
+test("account feature uses contact-label naming instead of legacy auth helpers", async () => {
+  const accountFeatureFiles = (await collectSourceFiles([
+    "src/features/account",
+  ])).filter((file) => sourceModuleExtensions.includes(path.extname(file)));
+  const staleMarkers = [
+    "requestMagicLink",
+    "sendMagicLinkStub",
+    "confirmMagicLinkStub",
+    "confirmMagicLinkStubWithStorage",
+    "confirmMagicLink",
+    "handleMagicLink",
+    "pendingMagicLink",
+    "toastMagicLink",
+    "account-magic-link",
+    "magicLinkTitle",
+    "magicLinkDesc",
+    "sendMagicLink",
+    "magicLinkPending",
+  ];
+
+  const violations = [];
+  for (const file of accountFeatureFiles) {
+    const source = await readFile(file, "utf8");
+    for (const marker of staleMarkers) {
+      if (source.includes(marker)) {
+        violations.push(`${toRepoPath(file)} contains ${marker}`);
+      }
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("app routes delegate structured-data graph payloads to feature helpers", async () => {
   const appFiles = (await collectSourceFiles(["src/app"])).filter((file) =>
     sourceModuleExtensions.includes(path.extname(file)),
@@ -875,22 +908,22 @@ test("account route delegates metadata search-param parsing to feature helpers",
   assert.deepEqual(violations, []);
 });
 
-test("demo route delegates search-param parsing to feature helpers", async () => {
+test("sample run route delegates search-param parsing to feature helpers", async () => {
   const file = path.join(process.cwd(), "src", "app", "demo", "page.tsx");
   const source = await readFile(file, "utf8");
   const specifiers = collectModuleSpecifiers(file, source);
   const bannedMarkers = [
     "const params = await searchParams",
-    "resolveSampleReferenceRouteId(",
+    "resolveSampleRunRouteId(",
     "Promise<{ archetype?: string }>",
   ];
 
   const violations = [];
-  if (!specifiers.includes("@/features/demo/lib/demo-route")) {
-    violations.push(`${toRepoPath(file)} does not import demo route helpers`);
+  if (!specifiers.includes("@/features/demo/lib/sample-run-route")) {
+    violations.push(`${toRepoPath(file)} does not import sample run route helpers`);
   }
-  if (!source.includes("resolveDemoPageModel(")) {
-    violations.push(`${toRepoPath(file)} does not call resolveDemoPageModel`);
+  if (!source.includes("resolveSampleRunPageModel(")) {
+    violations.push(`${toRepoPath(file)} does not call resolveSampleRunPageModel`);
   }
   for (const marker of bannedMarkers) {
     if (source.includes(marker)) {
@@ -1188,7 +1221,7 @@ test("github gist export helper reuses shared package copy", async () => {
   if (!specifiers.includes("./scaffold-package-docs.mjs")) {
     violations.push(`${toRepoPath(file)} does not import shared package docs`);
   }
-  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot UI starter package"')) {
+  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot-to-React starter package"')) {
     violations.push(`${toRepoPath(file)} duplicates package description copy`);
   }
 
@@ -1512,16 +1545,20 @@ test("share result core remains server-safe", async () => {
   assert.deepEqual(violations, []);
 });
 
-test("sample reference components delegate sample helpers through demo lib", async () => {
-  const demoComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
+test("sample run components delegate sample helpers through demo lib", async () => {
+  const sampleRunComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
     (file) => sourceModuleExtensions.includes(path.extname(file)),
   );
 
   const violations = [];
-  for (const file of demoComponentFiles) {
+  for (const file of sampleRunComponentFiles) {
     const source = await readFile(file, "utf8");
     for (const specifier of collectModuleSpecifiers(file, source)) {
-      if (specifier === "@/features/analysis/lib/demo-archetypes.mjs") {
+      if (
+        specifier === "@/features/analysis/lib/demo-archetypes.mjs" ||
+        specifier === "@/features/demo/lib/demo-archetypes.mjs" ||
+        specifier === "../lib/demo-archetypes.mjs"
+      ) {
         violations.push(`${toRepoPath(file)} imports ${specifier}`);
       }
     }
@@ -1530,18 +1567,18 @@ test("sample reference components delegate sample helpers through demo lib", asy
   assert.deepEqual(violations, []);
 });
 
-test("demo client components do not import route metadata helpers", async () => {
-  const demoComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
+test("sample run client components do not import route metadata helpers", async () => {
+  const sampleRunComponentFiles = (await collectSourceFiles(["src/features/demo/components"])).filter(
     (file) => sourceModuleExtensions.includes(path.extname(file)),
   );
 
   const violations = [];
-  for (const file of demoComponentFiles) {
+  for (const file of sampleRunComponentFiles) {
     const source = await readFile(file, "utf8");
     for (const specifier of collectModuleSpecifiers(file, source)) {
       if (
-        specifier === "../lib/demo-route" ||
-        specifier === "@/features/demo/lib/demo-route"
+        specifier === "../lib/sample-run-route" ||
+        specifier === "@/features/demo/lib/sample-run-route"
       ) {
         violations.push(`${toRepoPath(file)} imports ${specifier}`);
       }
@@ -1655,6 +1692,73 @@ test("shared lib modules use relative imports within shared lib", async () => {
   assert.deepEqual(violations, []);
 });
 
+test("product-facing review status labels use the shared sanitizer", async () => {
+  const sanitizerFile = path.join(process.cwd(), "src", "lib", "product-labels.mjs");
+  const productLabelFiles = [
+    path.join(process.cwd(), "src", "features", "analysis", "components", "UploadFlow.tsx"),
+    path.join(process.cwd(), "src", "features", "analysis", "lib", "design-md.mjs"),
+    path.join(process.cwd(), "src", "features", "share", "lib", "share-result.mjs"),
+  ];
+  const duplicatedInternalLabelPattern =
+    /\/[^/\n]*qwen\|provider\|api key\|fallback\|demo\|mock\|stub[^/\n]*\/i/;
+  const expectedSanitizerTerms = [
+    "qwen",
+    "provider",
+    "api key",
+    "fallback",
+    "demo",
+    "mock",
+    "stub",
+    "meetup",
+    "production-ready",
+    "handoff bundle",
+  ];
+
+  const sanitizerSource = await readFile(sanitizerFile, "utf8");
+  for (const term of expectedSanitizerTerms) {
+    assert.match(sanitizerSource, new RegExp(term.replaceAll("-", "\\-"), "i"));
+  }
+
+  const violations = [];
+  for (const file of productLabelFiles) {
+    const source = await readFile(file, "utf8");
+    if (!source.includes("normalizeReviewStatusLabel")) {
+      violations.push(`${toRepoPath(file)} does not use normalizeReviewStatusLabel`);
+    }
+    if (duplicatedInternalLabelPattern.test(source)) {
+      violations.push(`${toRepoPath(file)} duplicates internal label regex`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
+test("export defaults use starter component naming", async () => {
+  const exportDefaultFiles = [
+    path.join(process.cwd(), "src", "features", "export", "components", "ExportButton.tsx"),
+    path.join(process.cwd(), "src", "features", "export", "components", "GistExportButton.tsx"),
+    path.join(process.cwd(), "src", "features", "export", "components", "RepoExportButton.tsx"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-filename.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-export-request.mjs"),
+    path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-zip.mjs"),
+    path.join(process.cwd(), "src", "features", "analysis", "components", "UploadFlow.tsx"),
+    path.join(process.cwd(), "src", "features", "analysis", "lib", "design-md.mjs"),
+  ];
+
+  const violations = [];
+  for (const file of exportDefaultFiles) {
+    const source = await readFile(file, "utf8");
+    if (!source.includes("starter-component.tsx")) {
+      violations.push(`${toRepoPath(file)} does not use starter-component.tsx`);
+    }
+    if (/=\s*"component\.tsx"|return\s+"component\.tsx"|String\(name\s*\|\|\s*"component\.tsx"/.test(source)) {
+      violations.push(`${toRepoPath(file)} still defaults to component.tsx`);
+    }
+  }
+
+  assert.deepEqual(violations, []);
+});
+
 test("source modules do not contain circular imports", async () => {
   const sourceFiles = (await collectSourceFiles([
     "src/app",
@@ -1682,8 +1786,9 @@ test("source modules do not contain circular imports", async () => {
 
 test("source and docs avoid removed compatibility import paths", async () => {
   const sourceFiles = [
-    ...(await collectSourceFiles(["src", "docs"])),
+    ...(await collectSourceFiles(["src", "docs", "scripts", "e2e"])),
     ...collectFrameworkEntryFiles(),
+    path.join(process.cwd(), "package.json"),
   ];
   const bannedImports = [
     "@/lib/cn",
@@ -1697,12 +1802,38 @@ test("source and docs avoid removed compatibility import paths", async () => {
     "@/features/account/lib/auth",
     "@/features/analytics/lib/analytics-event-buffer",
     "@/features/analysis/lib/demo-archetypes.mjs",
+    "@/features/demo/lib/demo-archetypes.mjs",
     "@/features/analysis/lib/session-history",
     "@/features/design-system/components/AtomicSection",
     "@/features/design-system/data/atomicCatalog",
     "@/features/design-system/data/lawsOfUx",
     "@/features/design-system/lib/laws-of-ux-reference",
+    "@/features/design-system/components/LawOfUxDemos",
     "@/features/shell/components/ProviderModeBadge",
+  ];
+  const bannedRemovedNames = [
+    "export:demo-fixtures",
+    "export-demo-fixtures",
+    "demo-fixtures.mjs",
+    "demo-archetypes.mjs",
+    "demo-responses.json",
+    "demo-route.ts",
+    "offline-demo-contract.spec.ts",
+    "demo-route.spec.ts",
+    "LawOfUxDemos",
+    "LawOfUxDemo",
+    "LawDemoSurface",
+    "demoSurface",
+    "DEMO_MAP",
+    "toggle-detector-debug",
+    "detection-debug-panel",
+    "detection-debug-label",
+    "debugEnabled",
+    "setDebugEnabled",
+    "DebugField",
+    "DEMO_SCRIPT.md",
+    "MEETUP_MEDIA.md",
+    "MEETUP_SLIDES.marp.md",
   ];
 
   const violations = [];
@@ -1711,6 +1842,11 @@ test("source and docs avoid removed compatibility import paths", async () => {
     for (const bannedImport of bannedImports) {
       if (source.includes(`"${bannedImport}"`) || source.includes(`'${bannedImport}'`)) {
         violations.push(`${toRepoPath(file)} imports ${bannedImport}`);
+      }
+    }
+    for (const bannedName of bannedRemovedNames) {
+      if (source.includes(bannedName)) {
+        violations.push(`${toRepoPath(file)} references removed name ${bannedName}`);
       }
     }
   }

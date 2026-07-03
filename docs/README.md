@@ -1,6 +1,6 @@
 # qwen-ui-lab
 
-AI-assisted screenshot-to-React workflow: turn UI screenshots into React and Tailwind starting points you can refine quickly.
+Screenshot-to-React workflow: turn UI screenshots into inspectable React + Tailwind starter packages.
 
 Production: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open the local URL printed by Next.js, usually [http://localhost:3000](http://localhost:3000). If that port is busy, use the alternate port shown in the terminal.
 
 Local analysis is the default. Live Qwen analysis requires both:
 
@@ -26,9 +26,9 @@ An API key alone does not enable upstream calls.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Home dashboard plus screenshot upload, analyze, generate, share, and export flow. |
-| `/demo` | Sample screenshot flow with `?archetype=auth|mobile|landing|settings|shop`. |
-| `/design-system` | Component catalog, UX-law domains, snippet previews, and export bundle. |
+| `/` | Upload, detect, refine, preview, share, and export workflow. |
+| `/demo` | Sample run flow with `?archetype=auth|mobile|landing|settings|shop`. |
+| `/design-system` | Component catalog, UX-law domains, snippet previews, and snippet export. |
 | `/account` | Compatibility redirect to the browser-local profile modal. |
 | `/share/[id]` | Read-only shared summary route. |
 | `/api/health` | Provider mode probe. |
@@ -64,10 +64,12 @@ See [Architecture](./ARCHITECTURE.md) for the folder rules and feature ownership
 | `npm run check` | Lint plus unit tests. |
 | `npm run check:full` | Lint, unit tests, docs link validation, and production build. |
 | `npm run test:e2e` | Playwright smoke tests with offline mocks. |
-| `npm run export:demo-fixtures` | Regenerate E2E demo fixtures from analysis libs. |
+| `npm run export:sample-run-fixtures` | Regenerate E2E sample-run fixtures from analysis libs. |
 | `npm run doctor` | Local environment and optional provider diagnostics. |
-| `npm run deploy:env:demo` | Validate local-analysis deploy env. |
+| `npm run deploy:env:local-analysis` | Validate local-analysis deploy env. |
 | `npm run deploy:env:live` | Validate live-analysis deploy env. |
+
+`npm run deploy:env:local` remains available as a short alias for the local-analysis gate.
 
 ## Local Analysis Default
 
@@ -90,17 +92,17 @@ Core docs:
 | --- | --- |
 | [Architecture](./ARCHITECTURE.md) | Feature colocation and component boundaries. |
 | [Contributing](./CONTRIBUTING.md) | Workflow, checks, and PR expectations. |
-| [Sample screenshot](./DEMO.md) | Sample flow and troubleshooting table. |
+| [Sample run](./DEMO.md) | Prepared-layout flow and troubleshooting table. |
 | [Agent notes](./AGENTS.md) | Repository-specific agent guidance. |
 
 Media docs:
 
 | Doc | Topic |
 | --- | --- |
-| [Presentation media kit](./media/MEETUP_MEDIA.md) | Recording and slide export checklist. |
-| [Sample script](./media/DEMO_SCRIPT.md) | Short video script and backup screenshot order. |
+| [Product media kit](./media/PRODUCT_MEDIA.md) | Recording and slide export checklist. |
+| [Product walkthrough script](./media/PRODUCT_WALKTHROUGH_SCRIPT.md) | Short video script and backup screenshot order. |
 | [LinkedIn posts](./media/LINKEDIN_POSTS.md) | Social copy drafts. |
-| [Slide source](./media/MEETUP_SLIDES.marp.md) | Marp slide source. |
+| [Slide source](./media/PRODUCT_WALKTHROUGH_SLIDES.marp.md) | Marp slide source. |
 
 Operations docs:
 
@@ -111,7 +113,7 @@ Operations docs:
 | [Production deploy lane](./ops/PRODUCTION_DEPLOY_LANE.md) | Local-analysis deploy policy. |
 | [Production env readiness](./ops/PRODUCTION_ENV_READINESS.md) | Required production envs and validation commands. |
 | [Live Qwen rollout](./ops/LIVE_QWEN_ROLLOUT.md) | Live-analysis rehearsal and rollback. |
-| [Offline E2E](./ops/OFFLINE_DEMO_E2E.md) | Deterministic local-analysis test contract. |
+| [Local analysis E2E](./ops/LOCAL_ANALYSIS_E2E.md) | Deterministic local-analysis test contract. |
 | [Observability](./ops/OBSERVABILITY.md) | Error and event monitoring. |
 | [Analytics taxonomy](./ops/ANALYTICS_TAXONOMY.md) | Privacy-safe funnel events. |
 | [Analytics staging](./ops/ANALYTICS_STAGING_ACTIVATION.md) | Staging telemetry activation. |

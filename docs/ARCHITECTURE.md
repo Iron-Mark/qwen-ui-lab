@@ -21,7 +21,7 @@ src/features/
   account/          browser-local profile modal and session state
   analysis/         upload flow, image preprocess, offline/Qwen analysis, UX compliance
   analytics/        internal analytics dashboard
-  demo/             sample screenshot route shell
+  demo/             sample run route shell
   design-system/    catalog UI/registry, laws data, catalog filters
   export/           copy/download/Gist/repo export UI and server helpers
   home/             home hero, dashboard widgets, charts, dashboard data
@@ -63,7 +63,7 @@ src/lib/
 - Feature `lib` and `data` modules must not import component modules.
 - Feature `data` folders hold plain data/types; JSX registries belong under the owning feature's `components` boundary.
 - Domain data lives with the feature that owns it, for example `src/features/home/data` and `src/features/design-system/data`.
-- Generated component examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
+- Starter component examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
 
 ## Component-Driven Conventions
 
@@ -100,6 +100,6 @@ Only three direct docs subfolders are used:
 
 - [README](./README.md) - project overview and commands.
 - [Contributing](./CONTRIBUTING.md) - workflow and PR expectations.
-- [Sample screenshot](./DEMO.md) - sample screenshot flow and local-analysis guardrails.
-- [Offline E2E](./ops/OFFLINE_DEMO_E2E.md) - deterministic local-analysis testing contract.
+- [Sample run](./DEMO.md) - prepared layout flow and local-analysis guardrails.
+- [Local analysis E2E](./ops/LOCAL_ANALYSIS_E2E.md) - deterministic local-analysis testing contract.
 - [Reliability ops](./ops/RELIABILITY_OPS.md) - checks, thresholds, and response targets.

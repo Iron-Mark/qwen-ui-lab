@@ -45,7 +45,7 @@ test("gist export API reports unavailable when token is missing", async () => {
     });
 
     const response = await handleGistExportPost(
-      jsonRequest({ content: "export const Demo = () => null;" }),
+      jsonRequest({ content: "export const StarterFixture = () => null;" }),
     );
     assert.equal(response.status, 503);
 
@@ -66,9 +66,9 @@ test("repo export API falls back to zip when GitHub export is unavailable", asyn
 
     const response = await handleRepoExportPost(
       jsonRequest({
-        content: "export const Demo = () => null;",
-        filename: "../generated-demo.tsx",
-        description: "Demo export",
+        content: "export const StarterFixture = () => null;",
+        filename: "../starter-fixture.tsx",
+        description: "Starter export",
       }),
     );
 
@@ -86,9 +86,9 @@ test("repo export API can force package zip when GitHub export is configured", a
   await withGithubEnv("ghp_test", async () => {
     const response = await handleRepoExportPost(
       jsonRequest({
-        content: "export const Demo = () => null;",
-        filename: "generated-demo.tsx",
-        description: "Demo export",
+        content: "export const StarterFixture = () => null;",
+        filename: "starter-fixture.tsx",
+        description: "Starter export",
         mode: "zip",
       }),
     );

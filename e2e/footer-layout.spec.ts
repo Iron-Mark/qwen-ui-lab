@@ -13,7 +13,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await footer.scrollIntoViewIfNeeded();
   await expect(footer).toBeVisible();
 
-  await expect(footer.locator('img[src="/icons/icon.svg"]')).toHaveCount(1);
+  await expect(footer.locator('a[href="/"] img').first()).toBeVisible();
   await expect(footer.getByText("React + Tailwind package")).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
@@ -35,7 +35,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   const websiteIconLink = footer.locator('a[aria-label="Website"]');
   await expect(websiteIconLink).toHaveAttribute("href", "https://marksiazon.dev");
 
-  await footer.getByRole("link", { name: "Dashboard" }).hover();
+  await footer.getByRole("link", { name: "Workflow" }).hover();
   await expect(
     page.getByText("Return to your workspace and continue building from the uploaded screenshots."),
   ).toBeVisible();

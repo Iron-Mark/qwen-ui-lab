@@ -30,8 +30,8 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Browser, OS, Node version, and mode (demo/live).
-      placeholder: Windows 11, Chrome 125, Node 24, demo mode
+      description: Browser, OS, Node version, and mode (local-analysis/live).
+      placeholder: Windows 11, Chrome 125, Node 24, local-analysis mode
     validations:
       required: true
   - type: textarea

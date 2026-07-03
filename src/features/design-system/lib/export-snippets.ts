@@ -1,9 +1,9 @@
 import type { AtomicCatalogEntry } from "../data/catalog-types";
 
-export function buildCatalogBundle(entries: AtomicCatalogEntry[]) {
-  const header = `// qwen-ui-lab design system bundle
-// Generated ${new Date().toISOString()}
-// ${entries.length} components\n\n`;
+export function buildCatalogSnippets(entries: AtomicCatalogEntry[]) {
+  const header = `// qwen-ui-lab design system snippets
+// Exported ${new Date().toISOString()}
+// ${entries.length} snippets\n\n`;
 
   const body = entries
     .map(

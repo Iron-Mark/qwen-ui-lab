@@ -8,7 +8,7 @@ Use this script when recording a short product walkthrough.
 
 - Screen resolution: 1920x1080
 - Browser: Chrome, no bookmarks bar, clean window
-- App: `npm run dev` running at localhost:3000
+- App: local dev server or deployed preview open in the browser
 - Have slides ready as backup
 
 ---
@@ -29,16 +29,16 @@ Use this script when recording a short product walkthrough.
 **Voiceover:**
 > "The browser accepts a screenshot, previews it, and turns it into a structured component plan."
 
-### [0:22-0:35] Generate preview
+### [0:22-0:35] Prepare preview
 
-**Action:** Click Generate Preview. Show the generated scaffold, side-by-side preview, and visual match badge.
+**Action:** Click Prepare preview. Show the starter component, side-by-side preview, and visual match badge.
 
 **Voiceover:**
-> "The app creates a local preview and keeps the workflow usable even when live analysis is not enabled."
+> "The app creates a local preview, so the review flow stays usable without extra setup."
 
 ### [0:35-0:48] Show detector controls
 
-**Action:** Turn on detector debug, click one box, then adjust it with arrow keys or the resize handle.
+**Action:** Turn on Box labels, click one box, then adjust it with arrow keys or the resize handle.
 
 **Voiceover:**
 > "Before export, the detected UI boxes are editable. The inspector shows confidence, geometry, primitive mapping, and why each region was classified."
@@ -48,14 +48,14 @@ Use this script when recording a short product walkthrough.
 **Action:** Open the export package panel.
 
 **Voiceover:**
-> "The export includes generated TSX, design notes, detection JSON, and package metadata for engineering review."
+> "The export includes starter component TSX, design notes, detection JSON, and a package manifest for engineering review."
 
-### [0:56-1:08] Show the generated preview
+### [0:56-1:08] Show the starter preview
 
 **Action:** Show the preview and switch themes.
 
 **Voiceover:**
-> "The generated starter keeps the structure clear: responsive grids, accessible controls, and reusable sections."
+> "The starter output keeps the structure clear: responsive grids, accessible controls, and reusable sections."
 
 ### [1:08-1:15] Closing
 
@@ -68,21 +68,22 @@ Use this script when recording a short product walkthrough.
 
 ## Backup: Static Screenshot Sequence
 
-If live recording fails, use these 6 screenshots in order:
+If live recording fails, use these 7 screenshots in order:
 
-1. **Original UI reference** - `public/references/dashboard-reference.svg`
+1. **Source screenshot** - `public/references/dashboard-reference.svg`
 2. **Visual breakdown** - `docs/specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md` (screenshot)
 3. **Implementation plan** - `docs/specs/DASHBOARD_QWEN_CODE_PLAN.md` (screenshot)
-4. **Generated first-pass** - `experiments/01-dashboard/generated-first-pass.tsx` in VS Code
-5. **Refined preview** - App running in browser
-6. **Before/after** - `docs/media/before-after-comparison.svg`
+4. **First-pass starter** - `experiments/01-dashboard/first-pass-starter.tsx` in VS Code
+5. **Reviewed starter** - `experiments/01-dashboard/reviewed-starter.tsx` in VS Code
+6. **Refined preview** - App running in browser
+7. **Before/after** - `docs/media/before-after-comparison.png`
 
 ## Advanced Feature Cutaways
 
 - Load **Dense dashboard** to stress test overlapping dashboard cards, charts, and table rows.
 - Load **Repeated list** to stress test repeated row detection and action clusters.
-- Use **Debug** in the detector dashboard to show confidence reasons and primitive snapping.
-- Use **Export package** to show the complete artifact exported without API secrets.
+- Use **Box labels** in the detector panel to show confidence reasons and primitive snapping.
+- Use **Export package** to show the complete artifact exported without exposing credentials.
 
 ---
 

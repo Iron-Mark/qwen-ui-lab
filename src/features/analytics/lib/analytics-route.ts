@@ -12,9 +12,9 @@ function getServerObservabilityEnv() {
 export function createAnalyticsRouteMetadata(): Metadata {
   return {
     ...createRouteMetadata({
-      title: "Analytics (internal)",
+      title: "Analytics diagnostics",
       description:
-        "Staging-only funnel metrics reference and optional local event buffer when observability is enabled.",
+        "Private funnel metrics reference and optional local event buffer when observability is enabled.",
       path: "/admin/analytics",
       keywords: ["analytics", "funnel metrics", "observability"],
     }),

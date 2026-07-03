@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import {
-  demoModeSnackbar,
+  analyzerReadySnackbar,
   designSystemTierButton,
   waitForDesignSystemPreview,
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
 } from "./helpers/e2e-ui";
@@ -85,7 +85,7 @@ test("runs deterministic local analysis flow", async ({ page }) => {
 
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
 
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
@@ -103,11 +103,13 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
-  await expect(page.getByText(/Generated component/i)).toBeVisible();
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
   await expect(complianceTrigger).toBeVisible();
@@ -125,7 +127,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   const dashboardDownloadPromise = page.waitForEvent("download");
   await exportDialog.getByRole("button", { name: /download component/i }).click();
   const dashboardDownload = await dashboardDownloadPromise;
-  expect(dashboardDownload.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
+  expect(dashboardDownload.suggestedFilename()).toMatch(/starter-.*\.tsx$/);
 
   await page.goto("/design-system", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await expect(page.getByRole("searchbox", { name: /search catalog/i })).toBeVisible({
@@ -146,7 +148,7 @@ test("does not show startup implementation notice", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
 
-  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
+  await expect(analyzerReadySnackbar(page)).toBeHidden({ timeout: 5_000 });
 });
 
 test("design system desktop has no excess document scroll", async ({ browser }) => {

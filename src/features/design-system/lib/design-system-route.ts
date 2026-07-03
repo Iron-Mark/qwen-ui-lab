@@ -16,12 +16,12 @@ const designSystemDomainRouteSocialPreviewImageAlt: Record<DesignSystemDomain, s
 
 export function createDesignSystemRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Design System Playground",
+    title: "Design System Catalog",
     description:
       "Browse reusable UI snippets, UX-law patterns, and export-ready examples for screenshot-to-React work.",
     path: "/design-system",
     keywords: [
-      "Design system playground",
+      "Design system catalog",
       "atomic design components",
       "UX law references",
       "copy and export snippets",
@@ -40,9 +40,9 @@ export function createDesignSystemRouteMetadata(): Metadata {
 
 export function getDesignSystemRouteStructuredDataInput() {
   return {
-    title: "Design System Playground",
+    title: "Design System Catalog",
     description:
-      "Explore an AI-ready component catalog with atomic patterns, UX-law references, and instant copy/export snippets for faster delivery.",
+      "Explore a workflow-ready component catalog with atomic patterns, UX-law references, and instant copy/export snippets for faster delivery.",
     path: "/design-system",
     breadcrumbLabel: "Design System",
     about: ["Atomic design", "UI pattern libraries", "UX laws"],

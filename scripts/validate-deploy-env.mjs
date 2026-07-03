@@ -4,10 +4,11 @@ import { canUseLiveQwen, getQwenConfig, isLiveQwenAnalysisEnabled } from "../src
 
 const args = process.argv.slice(2);
 const targetArg = args.find((arg) => arg.startsWith("--target="));
-const target = (targetArg ? targetArg.split("=")[1] : "demo").toLowerCase();
+const rawTarget = (targetArg ? targetArg.split("=")[1] : "local").toLowerCase();
+const target = rawTarget === "local-analysis" ? "local" : rawTarget;
 
-if (!["demo", "live"].includes(target)) {
-  console.error("Invalid --target value. Use --target=demo or --target=live.");
+if (!["local", "demo", "live"].includes(target)) {
+  console.error("Invalid --target value. Use --target=local or --target=live.");
   process.exit(1);
 }
 
@@ -34,7 +35,7 @@ function checkUrl(raw, label) {
 
 checkUrl(process.env.QWEN_BASE_URL, "QWEN_BASE_URL");
 
-if (target === "demo") {
+if (target === "local" || target === "demo") {
   if (isLiveRequested) {
     failures.push(
       "Local-analysis deploy target forbids live upstream calls. Unset QWEN_LIVE_ANALYSIS / USE_LIVE_QWEN.",
@@ -70,7 +71,7 @@ if (!config.ok && target === "live") {
   failures.push("Live deploy target has no usable Qwen config.");
 }
 
-console.log(`Deploy env validation target: ${target === "demo" ? "local-analysis" : target}`);
+console.log(`Deploy env validation target: ${target === "live" ? "live" : "local-analysis"}`);
 console.log(`- Live analysis requested: ${isLiveRequested ? "yes" : "no"}`);
 console.log(`- API key configured: ${config.ok ? "yes" : "no"}`);
 console.log(`- Live calls executable: ${canUseLiveQwen() ? "yes" : "no"}`);

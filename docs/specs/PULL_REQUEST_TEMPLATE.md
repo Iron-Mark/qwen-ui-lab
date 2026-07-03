@@ -12,10 +12,10 @@
 - [ ] `npm run test:e2e` (when UI/runtime behavior changes)
 - [ ] Docs updated (README/CONTRIBUTING/release docs) when needed
 
-## Demo/Live mode impact
+## Local Analysis / Live Impact
 
 - [ ] No impact
-- [ ] Demo mode behavior changed
+- [ ] Local-analysis or sample-run behavior changed
 - [ ] Live mode behavior changed
 - Notes:
 

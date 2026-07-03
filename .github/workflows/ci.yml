@@ -68,8 +68,8 @@ jobs:
       - name: Validate docs links
         run: npm run validate:docs
 
-      - name: Validate deploy env defaults (demo target)
-        run: npm run deploy:env:demo
+      - name: Validate deploy env defaults (local-analysis target)
+        run: npm run deploy:env:local
 
       - name: Build
         run: npm run build

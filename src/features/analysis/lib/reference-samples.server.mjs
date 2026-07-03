@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  DEFAULT_REFERENCE_SAMPLE,
-  getReferenceSampleByFileName,
+  DEFAULT_SAMPLE_RUN,
+  getSampleRunByFileName,
   inferReferenceMimeType,
 } from "./reference-samples.data.mjs";
 
@@ -11,13 +11,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REFERENCES_DIR = resolve(__dirname, "../../../../public/references");
 
 /**
- * File metadata for a sample screenshot (size read from disk when omitted).
+ * File metadata for a sample layout (size read from disk when omitted).
  * @param {{ fileName?: string; size?: number }} [options]
  */
-export function getBundledReferenceFile({ fileName, size } = {}) {
+export function getSampleRunFileMetadata({ fileName, size } = {}) {
   const sample = fileName
-    ? getReferenceSampleByFileName(fileName)
-    : DEFAULT_REFERENCE_SAMPLE;
+    ? getSampleRunByFileName(fileName)
+    : DEFAULT_SAMPLE_RUN;
 
   const resolvedSize =
     size ?? readFileSync(resolve(REFERENCES_DIR, sample.fileName)).length;

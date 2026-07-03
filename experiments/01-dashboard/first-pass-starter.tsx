@@ -1,9 +1,8 @@
 // ============================================================
-// GENERATED FIRST-PASS SCAFFOLD (AI-generated baseline)
+// FIRST-PASS STARTER
 // ============================================================
-// This file represents the raw output from Qwen Code scaffold
-// generation (Prompt 5) BEFORE human review and refactoring.
-// This is a documentation artifact — excluded from compilation.
+// This file represents the initial starter before component review.
+// This is a documentation artifact - excluded from compilation.
 //
 // Known issues in this version:
 // - Generic component naming ("Card" instead of "StatCard")
@@ -69,7 +68,7 @@ export default function DashboardPage() {
               {stat.value}
             </p>
             <p style={{ color: stat.up ? "green" : "red", fontSize: "12px", marginTop: "8px" }}>
-              {stat.up ? "↑" : "↓"} {stat.change} vs last month
+              {stat.up ? "Up" : "Down"} {stat.change} vs last month
             </p>
           </div>
         ))}
@@ -162,16 +161,16 @@ export default function DashboardPage() {
           <p style={{ fontSize: "13px", color: "#71717a" }}>Common tasks and shortcuts</p>
           <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
             <button style={{ padding: "8px 16px", border: "1px solid #e4e4e7", borderRadius: "8px", background: "#fff", cursor: "pointer" }}>
-              ➕ Add User
+              Add User
             </button>
             <button style={{ padding: "8px 16px", border: "1px solid #e4e4e7", borderRadius: "8px", background: "#fff", cursor: "pointer" }}>
-              📄 Create Report
+              Create Report
             </button>
             <button style={{ padding: "8px 16px", border: "1px solid #e4e4e7", borderRadius: "8px", background: "#fff", cursor: "pointer" }}>
-              ✉️ Send Invoice
+              Send Invoice
             </button>
             <button style={{ padding: "8px 16px", border: "1px solid #e4e4e7", borderRadius: "8px", background: "#fff", cursor: "pointer" }}>
-              ⚙️ View Settings
+              View Settings
             </button>
           </div>
         </div>

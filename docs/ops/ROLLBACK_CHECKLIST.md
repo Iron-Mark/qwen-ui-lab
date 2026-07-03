@@ -25,7 +25,7 @@ Use this when a release introduces regression, downtime, or unacceptable risk.
 ## 4) Verify recovery
 
 - [ ] `GET /api/health` returns `ok: true`.
-- [ ] `/` loads and Analyze works in fallback demo mode at minimum.
+- [ ] `/` loads and Analyze works in local-analysis mode at minimum.
 - [ ] `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws` load successfully.
 - [ ] Critical smoke checks pass with no new high-severity errors.
 - [ ] Run: `DEPLOY_URL=<rollback-url> npm run smoke:deploy`
@@ -33,7 +33,7 @@ Use this when a release introduces regression, downtime, or unacceptable risk.
 
 ## 5) Roll-forward guard before unfreeze
 
-- [ ] Confirm `npm run deploy:env:demo` passes on release branch before re-opening deploys.
+- [ ] Confirm `npm run deploy:env:local` passes on release branch before re-opening deploys.
 - [ ] If re-enabling live mode, verify `npm run deploy:env:live` passes in release pipeline env.
 
 ## 6) Closeout

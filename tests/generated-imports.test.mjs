@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { normalizeGeneratedShadcnImports } from "../src/features/analysis/lib/generated-imports.mjs";
+import {
+  normalizeGeneratedShadcnImports,
+  normalizeStarterShadcnImports,
+} from "../src/features/analysis/lib/generated-imports.mjs";
 import { buildUiFlowArtifact } from "../src/features/analysis/lib/ui-flow.mjs";
 
-test("normalizeGeneratedShadcnImports adds imports for known JSX primitives", () => {
-  const normalized = normalizeGeneratedShadcnImports(`export default function GeneratedSettings() {
+test("normalizeStarterShadcnImports adds imports for known JSX primitives", () => {
+  const normalized = normalizeStarterShadcnImports(`export default function SettingsStarter() {
   return (
     <Card>
       <CardHeader>
@@ -33,10 +36,10 @@ test("normalizeGeneratedShadcnImports adds imports for known JSX primitives", ()
   assert.match(normalized, /import \{ Label \} from "@\/components\/ui\/label";/);
 });
 
-test("normalizeGeneratedShadcnImports merges missing specifiers into existing imports", () => {
-  const normalized = normalizeGeneratedShadcnImports(`import { Card } from "@/components/ui/card";
+test("normalizeStarterShadcnImports merges missing specifiers into existing imports", () => {
+  const normalized = normalizeStarterShadcnImports(`import { Card } from "@/components/ui/card";
 
-export default function GeneratedCard() {
+export default function CardStarter() {
   return (
     <Card>
       <CardHeader>
@@ -58,10 +61,10 @@ export default function GeneratedCard() {
   assert.equal([...normalized.matchAll(/\bCard\b/g)].length, 3);
 });
 
-test("normalizeGeneratedShadcnImports treats type-only imports as unavailable for JSX", () => {
-  const normalized = normalizeGeneratedShadcnImports(`import type { Button } from "@/components/ui/button";
+test("normalizeStarterShadcnImports treats type-only imports as unavailable for JSX", () => {
+  const normalized = normalizeStarterShadcnImports(`import type { Button } from "@/components/ui/button";
 
-export default function GeneratedAction() {
+export default function ActionStarter() {
   return <Button type="button">Save</Button>;
 }
 `);
@@ -72,12 +75,12 @@ export default function GeneratedAction() {
   );
 });
 
-test("normalizeGeneratedShadcnImports leaves one blank line after inserted imports", () => {
-  const normalized = normalizeGeneratedShadcnImports(`type Props = {
+test("normalizeStarterShadcnImports leaves one blank line after inserted imports", () => {
+  const normalized = normalizeStarterShadcnImports(`type Props = {
   label: string;
 };
 
-export default function GeneratedAction(props: Props) {
+export default function ActionStarter(props: Props) {
   return <Button type="button">{props.label}</Button>;
 }
 `);
@@ -89,8 +92,8 @@ export default function GeneratedAction(props: Props) {
   assert.doesNotMatch(normalized, /button";\n\n\ntype Props =/);
 });
 
-test("normalizeGeneratedShadcnImports adds imports for table primitives", () => {
-  const normalized = normalizeGeneratedShadcnImports(`export default function GeneratedTable() {
+test("normalizeStarterShadcnImports adds imports for table primitives", () => {
+  const normalized = normalizeStarterShadcnImports(`export default function TableStarter() {
   return (
     <Table>
       <TableHeader>
@@ -114,11 +117,22 @@ test("normalizeGeneratedShadcnImports adds imports for table primitives", () => 
   );
 });
 
-test("buildUiFlowArtifact normalizes override generated imports", () => {
+test("legacy normalizeGeneratedShadcnImports export delegates to starter normalizer", () => {
+  assert.equal(
+    normalizeGeneratedShadcnImports(`export default function ButtonStarter() {
+  return <Button type="button">Save</Button>;
+}`),
+    normalizeStarterShadcnImports(`export default function ButtonStarter() {
+  return <Button type="button">Save</Button>;
+}`),
+  );
+});
+
+test("buildUiFlowArtifact normalizes override starter imports", () => {
   const artifact = buildUiFlowArtifact(
     { name: "manual.tsx", type: "image/png", size: 1024, width: 800, height: 600 },
     {
-      generatedCode: `export default function ManualGenerated() {
+      generatedCode: `export default function ManualStarter() {
   return <Button type="button">Save</Button>;
 }`,
     },

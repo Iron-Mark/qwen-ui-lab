@@ -45,7 +45,7 @@ export function buildProductionReadiness(env = process.env) {
 
   const checks = [
     createCheck({
-      id: "demo-fallback",
+      id: "local-analysis",
       label: "Local analysis mode",
       status: "ready",
       active: health.provider === "demo",

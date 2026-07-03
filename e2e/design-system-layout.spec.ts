@@ -267,7 +267,7 @@ test("design system selected preview avoids duplicate page actions", async ({
   await expect(
     previewPanel.getByRole("toolbar", { name: "Preview panel actions" }),
   ).toHaveCount(0);
-  await expect(previewPanel.getByText("Back to dashboard demo")).toHaveCount(0);
+  await expect(previewPanel.getByText("Back to workflow")).toHaveCount(0);
   await expect(previewPanel.getByText("Export all snippets")).toHaveCount(0);
   await expect(
     previewPanel.getByText("Try screenshot-to-React workflow"),

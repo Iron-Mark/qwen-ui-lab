@@ -57,6 +57,31 @@ test("analyzeUiImageWithQwen returns structured artifact when upstream mock retu
   assert.equal(result.provider.baseUrl, MOCK_QWEN_BASE_URL);
 });
 
+test("analyzeUiImageWithQwen defaults missing upstream code to a starter component", async () => {
+  const result = await analyzeUiImageWithQwen({
+    imageDataUrl: "data:image/png;base64,abc",
+    fileName: sampleFile.name,
+    fileType: sampleFile.type,
+    fileSize: sampleFile.size,
+    env: buildMockLiveQwenEnv(),
+    fetchFn: async () =>
+      new Response(
+        JSON.stringify(
+          buildMockQwenChatCompletionResponse({
+            summary: "Missing code contract.",
+            plan: [],
+            previewStats: [],
+          }),
+        ),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.artifact.generatedCode, /DashboardStarter/);
+  assert.doesNotMatch(result.artifact.generatedCode, /GeneratedDashboard/);
+});
+
 test("postAnalyzeUi calls analyze-ui when health reports live mode and maps success artifact", async () => {
   let analyzePosts = 0;
   const routePayload = buildMockLiveAnalyzeUiRouteResponse(sampleFile);
@@ -84,7 +109,7 @@ test("postAnalyzeUi calls analyze-ui when health reports live mode and maps succ
 
   assert.equal(analyzePosts, 1);
   assert.equal(outcome.providerState, "qwen");
-  assert.equal(outcome.instantDemo, false);
+  assert.equal(outcome.sampleRun, false);
   assert.match(outcome.message, /qwen3-vl-plus-mock/);
   assert.equal(outcome.artifact.plan[0].title, "Contract Layout Read");
   assert.match(outcome.artifact.generatedCode, /MockedQwenDashboard/);

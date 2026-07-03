@@ -39,13 +39,13 @@ interface ExportButtonProps {
 const LABELS: Record<ExportButtonVariant, Record<CopyStatus, string>> = {
   copy: {
     idle: "Copy",
-    copying: "Copying…",
+    copying: "Copying...",
     success: "Copied",
     error: "Failed",
   },
   export: {
     idle: "Export",
-    copying: "Exporting…",
+    copying: "Exporting...",
     success: "Exported",
     error: "Failed",
   },
@@ -78,7 +78,7 @@ export function ExportButton({
   text,
   variant = "copy",
   label,
-  filename = "component.tsx",
+  filename = "starter-component.tsx",
   overlay = false,
   showToast = true,
   className,

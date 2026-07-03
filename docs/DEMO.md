@@ -1,6 +1,6 @@
-# Sample Screenshot Guide
+# Sample Run Guide
 
-Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample screenshot**: load a prepared screenshot, inspect the detected UI, review the generated component, and export a starter package.
+Use this guide when you want to inspect the screenshot-to-React workflow without uploading a new image first. The `/demo` route remains available for compatibility, but the product story is a **sample run**: load a prepared layout, inspect the detected UI, review the starter component, and export a starter package.
 
 ```bash
 cd qwen-ui-lab
@@ -8,7 +8,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000/demo](http://localhost:3000/demo) for the preloaded sample screenshot, or [http://localhost:3000](http://localhost:3000) for the normal upload workflow.
+Open the local URL printed by Next.js. Use `/demo` for the preloaded sample run, or `/` for the normal upload workflow.
 
 Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYSIS=true` only when you intentionally want upstream vision calls.
 
@@ -16,44 +16,44 @@ Live Qwen analysis is opt-in. Set both `DASHSCOPE_API_KEY` and `QWEN_LIVE_ANALYS
 
 | Time | Screen | What to show |
 | --- | --- | --- |
-| 0:00-1:00 | `/demo` | The dashboard sample loads automatically and runs the same analysis pipeline as uploaded screenshots. |
+| 0:00-1:00 | `/demo` | The default sample loads automatically and runs the same analysis pipeline as uploaded screenshots. |
 | 1:00-2:00 | Analysis result | Show the screenshot, detected regions, plan cards, confidence reasons, and editable detection boxes. |
-| 2:00-3:00 | Generated preview | Regenerate after edits, compare the screenshot with the generated component, and point out responsive assumptions. |
-| 3:00-4:00 | Export package | Open the export dialog. Review `Files`, `Changes`, and `Package notes`; use **Download component** or package export actions. |
+| 2:00-3:00 | Starter preview | Refresh after edits, compare the screenshot with the starter component, and point out responsive assumptions. |
+| 3:00-4:00 | Export package | Open the export dialog. Review `Files`, `Changes`, and `Project guide`; use **Download component** or package export actions. |
 | 4:00-5:00 | `/design-system` | Browse reusable components, Laws of UX references, preview modes, and snippet export. |
 
 ## Sample Routes
 
-| URL | Sample screenshot | Export filename |
+| URL | Sample layout | Export filename |
 | --- | --- | --- |
-| `/demo` | Dashboard analytics shell | `generated-dashboard.tsx` |
-| `/demo?archetype=auth` | Sign-in card | `generated-auth.tsx` |
-| `/demo?archetype=mobile` | Mobile app shell | `generated-mobile.tsx` |
-| `/demo?archetype=landing` | Landing and pricing | `generated-landing.tsx` |
-| `/demo?archetype=settings` | Settings profile | `generated-settings.tsx` |
-| `/demo?archetype=shop` | E-commerce grid | `generated-shop.tsx` |
+| `/demo` | Dashboard analytics shell | `starter-dashboard.tsx` |
+| `/demo?archetype=auth` | Sign-in card | `starter-auth.tsx` |
+| `/demo?archetype=mobile` | Mobile app shell | `starter-mobile.tsx` |
+| `/demo?archetype=landing` | Landing and pricing | `starter-landing.tsx` |
+| `/demo?archetype=settings` | Settings profile | `starter-settings.tsx` |
+| `/demo?archetype=shop` | E-commerce grid | `starter-shop.tsx` |
 
 Invalid or missing `archetype` values use the dashboard sample.
 
 ## Main Workflow
 
 1. Start on `/`.
-2. Upload a UI screenshot or load a bundled sample.
+2. Upload a UI screenshot or load a sample run.
 3. Run analysis and inspect detected structure.
 4. Edit detection boxes when needed.
-5. Generate the React + Tailwind preview.
+5. Prepare the React + Tailwind preview.
 6. Export the starter package or component file.
 
 The local analysis path is the default. It lets the workflow stay usable without upstream credentials while still keeping live Qwen available behind explicit configuration.
 
 ## Export Review
 
-The export package is meant to be reviewable before download:
+The export package is meant to be inspectable before download:
 
 - `README.md` explains the starter package and next steps.
 - `DESIGN.md` documents layout, tokens, component inventory, and E2E expectations.
-- The generated TSX component exports one main component plus focused subcomponents.
-- Recipe, manifest, tokens, and detection notes keep regeneration and review metadata outside the rendered component.
+- The starter TSX component exports one main component plus focused subcomponents.
+- Recipe, manifest, tokens, and detection notes keep rebuild settings and review notes outside the rendered component.
 
 ## Troubleshooting
 

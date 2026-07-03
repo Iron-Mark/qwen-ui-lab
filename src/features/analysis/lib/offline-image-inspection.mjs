@@ -597,7 +597,7 @@ function summarizeDetectedElements(inspection) {
 function summarizeResponsiveIntent(inspection) {
   const responsive = inspection.layoutTree?.responsive;
   if (!responsive) {
-    return "No responsive intent was inferred; verify mobile, tablet, and desktop breakpoints before generation.";
+    return "No responsive intent was inferred; verify mobile, tablet, and desktop breakpoints during handoff.";
   }
 
   return [
@@ -649,7 +649,7 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
 
   if (contrast.preferredTextContrast < 4.5) {
     recommendations.push(
-      "Increase foreground/background contrast before using small body text.",
+      "Increase foreground/background contrast for small body text.",
     );
   } else {
     recommendations.push(
@@ -665,26 +665,26 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
 
   if (layout.componentSummary.controls > 8 && visualDensity !== "low") {
     recommendations.push(
-      "Consolidate repeated action controls or split them into grouped toolbars before generating the final scaffold.",
+      "Consolidate repeated action controls or split them into grouped toolbars for the starter component.",
     );
   }
 
   if (visualDensity === "high") {
     recommendations.push(
-      "Group dense regions into clearer sections and add whitespace before generating the review scaffold.",
+      "Group dense regions into clearer sections and add whitespace for the review-ready starter.",
     );
   } else if (!layout.topBand && !layout.bottomBand && !layout.leftRail) {
     recommendations.push(
-      "Confirm navigation landmarks before generation; the local scan did not find a strong header, rail, or bottom navigation band.",
+      "Confirm navigation landmarks during review; the local scan did not find a strong header, rail, or bottom navigation band.",
     );
   } else {
     recommendations.push(
-      "Preserve detected structural bands as semantic landmarks in the generated scaffold.",
+      "Preserve detected structural bands as semantic landmarks in the starter scaffold.",
     );
   }
 
   recommendations.push(
-    `Seed generated components with ${designTokens.spacing} spacing and ${designTokens.accent} as the accent token.`,
+    `Seed starter components with ${designTokens.spacing} spacing and ${designTokens.accent} as the accent token.`,
   );
 
   return recommendations;

@@ -22,8 +22,8 @@ import {
 } from "@/components/ui/select";
 import { interpolate, type UploadFlowDictionary } from "@/lib/i18n";
 import {
-  BUNDLED_REFERENCE_SAMPLES,
-  getReferenceSampleById,
+  SAMPLE_RUNS,
+  getSampleRunById,
 } from "../lib/reference-samples.mjs";
 import { getSampleCopy } from "../lib/sample-copy";
 
@@ -94,13 +94,13 @@ export function SamplePicker({
   selectedSampleId,
   showPathHint = false,
 }: SamplePickerProps) {
-  const selectedSample = getReferenceSampleById(selectedSampleId);
+  const selectedSample = getSampleRunById(selectedSampleId);
   const selectedCopy = getSampleCopy(selectedSample.id, copy);
 
   return (
     <div className="grid min-w-0 gap-2 md:max-w-xl md:flex-1" data-testid="sample-picker">
       <p className="text-xs font-medium text-muted-foreground">
-        {copy.tryBundledReference}
+        {copy.trySampleRun}
       </p>
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row">
         <Select
@@ -113,7 +113,7 @@ export function SamplePicker({
           disabled={disabled}
         >
           <SelectTrigger
-            aria-label={copy.tryBundledReference}
+            aria-label={copy.trySampleRun}
             className="min-h-11 w-full sm:min-w-64"
             data-testid="sample-select"
           >
@@ -136,7 +136,7 @@ export function SamplePicker({
             </SelectValue>
           </SelectTrigger>
           <SelectContent data-testid="sample-select-content">
-            {BUNDLED_REFERENCE_SAMPLES.map((sample) => {
+            {SAMPLE_RUNS.map((sample) => {
               const localized = getSampleCopy(sample.id, copy);
               return (
                 <SelectItem

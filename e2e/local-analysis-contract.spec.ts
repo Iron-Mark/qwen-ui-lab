@@ -5,7 +5,7 @@ import {
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
 import {
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
 } from "./helpers/e2e-ui";
@@ -31,14 +31,14 @@ test("local sample mode skips POST /api/analyze-ui entirely", async ({ page }) =
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated component|Preview ready/i)).toBeVisible({
-    timeout: 15_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 15_000 });
 
   expect(analyzePosts).toHaveLength(0);
 });
@@ -50,13 +50,13 @@ test("sample upload produces deterministic offline artifact content", async ({
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
-    timeout: 15_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 15_000 });
 
   await expect(page.getByText("Layout Read", { exact: true })).toBeVisible();
   await expect(page.getByText("Component Map", { exact: true })).toBeVisible();
@@ -74,13 +74,11 @@ test("local analysis completes when health fetch fails", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("home-marketing-hero")).toBeVisible();
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Generated component|Preview ready|Ready to analyze/i).first(),
-  ).toBeVisible({
-    timeout: 20_000,
-  });
+    page.getByText(/Preview ready - copy or export the starter component/i),
+  ).toBeVisible({ timeout: 20_000 });
 });

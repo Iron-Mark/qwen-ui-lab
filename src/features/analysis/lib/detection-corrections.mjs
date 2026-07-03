@@ -26,12 +26,12 @@ export function mergeManualCorrectionReasons({
 
   const sourceText =
     source === "regeneration"
-      ? "source of truth for regeneration"
-      : "source of truth for regeneration and export";
+      ? "guide for the next rebuild"
+      : "guide for rebuild and export";
   const correctionReasons = [
     {
       code: "manual-correction",
-      label: "Manual correction",
+      label: "Review edit",
       evidence: changes.length
         ? `Edited ${changes.join(", ")}; this box is now the ${sourceText}.`
         : `This edited box is now the ${sourceText}.`,
@@ -39,8 +39,8 @@ export function mergeManualCorrectionReasons({
     },
     {
       code: "correction-confidence",
-      label: "Correction confidence",
-      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the manual edit.`,
+      label: "Review confidence",
+      evidence: `Confidence recomputed to ${Math.round(confidence * 100)}% after the review edit.`,
       weight: 0.82,
     },
   ];
@@ -48,11 +48,11 @@ export function mergeManualCorrectionReasons({
   if (!included) {
     correctionReasons.splice(1, 0, {
       code: "manual-exclusion",
-      label: "Excluded from scaffold",
+      label: "Omitted from starter",
       evidence:
         source === "regeneration"
-          ? "User excluded this detection, so it is omitted from generated sections."
-          : "This box is omitted from generated sections until included again.",
+          ? "User excluded this detection, so it is omitted from starter sections."
+          : "This box is omitted from starter sections until included again.",
       weight: 0.98,
     });
   }

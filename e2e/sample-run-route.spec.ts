@@ -22,7 +22,7 @@ test("/demo preloads dashboard and shows export panel", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/demo");
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard sample analysis/i);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/dashboard sample/i);
   await expect(exportPanel(page)).toBeVisible({
     timeout: 20_000,
   });
@@ -54,7 +54,7 @@ test("/demo?archetype=auth loads sign-in component export", async ({ page }) => 
   await dialog.getByText(/more export options/i).click();
   await dialog.getByRole("button", { name: /download component/i }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("generated-auth.tsx");
+  expect(download.suggestedFilename()).toBe("starter-auth.tsx");
 });
 
 test("/demo?archetype=shop maps to ecommerce compliance links", async ({ page }) => {

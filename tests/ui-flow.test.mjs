@@ -41,7 +41,7 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
       "Upload",
       "Analyze",
       "Plan",
-      "Generate",
+      "Prepare",
       "Preview",
       "Export",
     ],
@@ -49,7 +49,8 @@ test("buildUiFlowArtifact produces the upload to preview workflow", () => {
   assert.ok(
     artifact.plan.some((section) => section.title === "Component Map"),
   );
-  assert.match(artifact.generatedCode, /export default function GeneratedDashboard/);
+  assert.match(artifact.generatedCode, /export default function DashboardStarter/);
+  assert.doesNotMatch(artifact.generatedCode, /export\s+(?:default\s+)?function\s+Generated[A-Z]/);
   assert.match(artifact.generatedCode, /const detectedElements: DetectionElement\[\]/);
   assert.equal(artifact.previewStats.length, 4);
 });
@@ -125,7 +126,8 @@ test("buildQwenVisionRequest uses OpenAI-compatible image_url content", () => {
   assert.equal(request.messages[0].role, "system");
   assert.equal(request.messages[1].role, "user");
   assert.equal(request.messages[1].content[1].type, "image_url");
-  assert.match(request.messages[1].content[0].text, /production-usable TSX/);
+  assert.match(request.messages[1].content[0].text, /usable starter TSX/);
+  assert.match(request.messages[1].content[0].text, /sample-run imports/);
   assert.match(request.messages[1].content[0].text, /shadcn-style primitives/);
   assert.match(request.messages[1].content[0].text, /export a default top-level component/);
   assert.match(request.messages[1].content[0].text, /semantic landmarks/);
@@ -142,7 +144,7 @@ test("parseQwenAnalysisText accepts fenced JSON from the model", () => {
   "plan": [
     {"title": "Layout", "body": "Header and cards"}
   ],
-  "generatedCode": "export function GeneratedDashboard() { return null }",
+  "generatedCode": "export function DashboardStarter() { return null }",
   "previewStats": [
     {"label": "Components", "value": "4"}
   ]
@@ -151,7 +153,7 @@ test("parseQwenAnalysisText accepts fenced JSON from the model", () => {
 
   assert.equal(parsed.summary, "Dashboard shell");
   assert.equal(parsed.plan[0].title, "Layout");
-  assert.match(parsed.generatedCode, /GeneratedDashboard/);
+  assert.match(parsed.generatedCode, /DashboardStarter/);
   assert.equal(parsed.previewStats[0].value, "4");
 });
 

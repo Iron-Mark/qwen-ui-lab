@@ -1,5 +1,5 @@
-/** Sample screenshots for the compatibility sample route and E2E (client-safe). */
-export const BUNDLED_REFERENCE_SAMPLES = [
+/** Prepared sample layouts for the compatibility sample route and E2E (client-safe). */
+export const SAMPLE_RUNS = [
   {
     id: "dashboard",
     label: "Dashboard",
@@ -103,7 +103,7 @@ export const RASTER_REFERENCE_STEMS = [
 ];
 
 /** Default sample for E2E fixtures and backward-compatible helpers. */
-export const DEFAULT_REFERENCE_SAMPLE = BUNDLED_REFERENCE_SAMPLES[0];
+export const DEFAULT_SAMPLE_RUN = SAMPLE_RUNS[0];
 
 /**
  * @param {string} fileName
@@ -119,7 +119,7 @@ export function inferReferenceMimeType(fileName) {
 /**
  * @param {string} fileName
  */
-export function getReferenceSampleStem(fileName) {
+export function getSampleRunFileStem(fileName) {
   const key = String(fileName || "").split(/[/\\]/).pop()?.toLowerCase() ?? "";
   return key.replace(/\.(png|jpe?g|webp|svg)$/i, "");
 }
@@ -127,40 +127,40 @@ export function getReferenceSampleStem(fileName) {
 /**
  * @param {string} fileName
  */
-export function getReferenceSampleByFileName(fileName) {
-  return findReferenceSampleByFileName(fileName) ?? DEFAULT_REFERENCE_SAMPLE;
+export function getSampleRunByFileName(fileName) {
+  return findSampleRunByFileName(fileName) ?? DEFAULT_SAMPLE_RUN;
 }
 
 /**
  * @param {string} fileName
  */
-export function findReferenceSampleByFileName(fileName) {
+export function findSampleRunByFileName(fileName) {
   const key = String(fileName || "").split(/[/\\]/).pop()?.toLowerCase() ?? "";
-  const direct = BUNDLED_REFERENCE_SAMPLES.find((sample) => sample.fileName === key);
+  const direct = SAMPLE_RUNS.find((sample) => sample.fileName === key);
   if (direct) return direct;
 
-  const stem = getReferenceSampleStem(key);
-  return BUNDLED_REFERENCE_SAMPLES.find(
-    (sample) => getReferenceSampleStem(sample.fileName) === stem,
+  const stem = getSampleRunFileStem(key);
+  return SAMPLE_RUNS.find(
+    (sample) => getSampleRunFileStem(sample.fileName) === stem,
   );
 }
 
 /**
  * @param {string} id
  */
-export function getReferenceSampleById(id) {
+export function getSampleRunById(id) {
   return (
-    BUNDLED_REFERENCE_SAMPLES.find((sample) => sample.id === id) ??
-    DEFAULT_REFERENCE_SAMPLE
+    SAMPLE_RUNS.find((sample) => sample.id === id) ??
+    DEFAULT_SAMPLE_RUN
   );
 }
 
 /**
- * Suggested export filename for a sample screenshot id.
+ * Suggested export filename for a sample layout id.
  * @param {string} sampleId
  */
-export function referenceSampleExportFilename(sampleId) {
-  const sample = getReferenceSampleById(sampleId);
+export function sampleRunExportFilename(sampleId) {
+  const sample = getSampleRunById(sampleId);
   const slug = sample.id === "ecommerce" ? "shop" : sample.id;
-  return `generated-${slug}.tsx`;
+  return `starter-${slug}.tsx`;
 }

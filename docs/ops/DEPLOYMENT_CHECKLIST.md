@@ -18,10 +18,10 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 
 ## 2) Deploy env policy validation
 
-- [ ] Validate demo-safe defaults (recommended): `npm run deploy:env:demo`
-- [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, demo-safe live)
+- [ ] Validate local-analysis defaults (recommended): `npm run deploy:env:local`
+- [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, local-analysis live gate)
 - [ ] Production env setup follows [PRODUCTION_ENV_READINESS.md](./PRODUCTION_ENV_READINESS.md).
-- [ ] Current public demo exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and `GITHUB_TOKEN`; this is acceptable only for offline-demo operation where durable share links and server-side Gist export are not required.
+- [ ] Current public-app exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and `GITHUB_TOKEN`; this is acceptable only for local-analysis operation where durable share links and server-side Gist export are not required.
 - [ ] For live rollout only: `npm run deploy:env:live` (see **[docs/ops/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**)
 - [ ] `NEXT_PUBLIC_QWEN_API_KEY` is not set.
 - [ ] Runtime secrets stay server-only (no `NEXT_PUBLIC_*` prefix for secrets).
@@ -45,7 +45,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 - [ ] Or manual smoke succeeded:
   - [ ] `DEPLOY_URL=<deployed-url> npm run smoke:deploy`
   - [ ] Optional live expectation: `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<deployed-url> npm run smoke:deploy`
-- [ ] `GET /api/health` mode matches rollout intent (demo by default unless explicit live rollout).
+- [ ] `GET /api/health` mode matches rollout intent (local analysis by default unless explicit live rollout).
 - [ ] `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `robots.txt`, and `sitemap.xml` are healthy.
 - [ ] Optional latency probe for sign-off: `node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5`.
 - [ ] Optional production LCP telemetry: `npm run perf:lcp-budget` or CI `Production LCP budget`. This is warn-only by default because live network/CDN variance can spike; set Vercel/GitHub repository variable `PERF_LCP_STRICT=true` only when you want this to block CI.
@@ -54,7 +54,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 
 Use this sequence to rehearse the lane against a staging URL or active local server:
 
-- [ ] `npm run deploy:env:demo`
+- [ ] `npm run deploy:env:local`
 - [ ] `DEPLOY_URL=<staging-or-local-url> npm run smoke:deploy`
 - [ ] `node scripts/synthetic-health-check.mjs --base-url <staging-or-local-url> --attempts 3`
 - [ ] For live rehearsal only (with live env set): `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<url> npm run smoke:deploy`

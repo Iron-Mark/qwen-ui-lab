@@ -21,7 +21,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByRole("heading", { name: "Dashboard sample" })).toBeVisible();
   await expect(section.getByText("Sample output")).toBeVisible();
-  await expect(section.getByText("See what a generated result looks like.")).toBeVisible();
+  await expect(section.getByText("See what an exported starter can look like.")).toBeVisible();
   await expect(section.getByRole("link", { name: /load sample/i })).toHaveAttribute(
     "href",
     "/demo#upload-flow",
@@ -33,7 +33,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await expect(page.getByTestId("mobile-example-output-preview")).toHaveCount(0);
   await expect(page.getByText("Dashboard UI support")).toHaveCount(0);
   await expect(
-    page.getByText(/Generated results appear in the upload flow/i),
+    page.getByText(/Exported starters appear in the upload flow/i),
   ).toHaveCount(0);
 
   await section.getByRole("button", { name: /preview/i }).click();

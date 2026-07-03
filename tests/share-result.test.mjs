@@ -8,6 +8,7 @@ import {
   encodeShareHash,
   decodeShareHash,
   buildShareUrl,
+  normalizeShareModeLabel,
 } from "../src/features/share/lib/share-result.mjs";
 import {
   createShareRecord,
@@ -81,7 +82,7 @@ test("buildShareableSummary omits code and secrets", () => {
   assert.ok(payload);
   assert.equal(payload.summary, sampleArtifact.summary);
   assert.equal(payload.file, "dashboard-reference.svg");
-  assert.equal(payload.mode, "Ready to analyze");
+  assert.equal(payload.mode, "Ready for review");
   assert.deepEqual(payload.stats, [
     { l: "Components", v: "6" },
     { l: "Sections", v: "4" },
@@ -94,6 +95,13 @@ test("buildShareableSummary omits code and secrets", () => {
   assert.equal("reasons" in payload.detections.elements[0], false);
   assert.equal("generatedCode" in payload, false);
   assert.equal("plan" in payload, false);
+});
+
+test("normalizeShareModeLabel keeps provider/internal wording out of shared summaries", () => {
+  assert.equal(normalizeShareModeLabel("Qwen provider: qwen3-vl-plus"), "Analysis summary");
+  assert.equal(normalizeShareModeLabel("Local demo mode"), "Analysis summary");
+  assert.equal(normalizeShareModeLabel("Ready to analyze"), "Ready for review");
+  assert.equal(normalizeShareModeLabel("Responsive dashboard"), "Responsive dashboard");
 });
 
 test("share hash round-trips read-only summary", () => {
@@ -124,6 +132,18 @@ test("decodeShareHash rejects malformed payloads", () => {
   assert.equal(decodeShareHash("#share=not-base64"), null);
   assert.equal(decodeShareHash("#other=abc"), null);
   assert.equal(decodeShareHash(""), null);
+});
+
+test("decodeShareHash normalizes legacy provider mode labels", () => {
+  const hash = encodeShareHash({
+    v: 1,
+    summary: "Shared dashboard summary.",
+    stats: [],
+    mode: "Qwen provider: qwen3-vl-plus",
+    file: "dashboard.png",
+  });
+
+  assert.equal(decodeShareHash(hash)?.mode, "Analysis summary");
 });
 
 test("generateShareId returns alphanumeric ids", () => {

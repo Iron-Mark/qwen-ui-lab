@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { PlayCircle } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/badge";
-import { sampleReferenceLabel } from "../lib/demo-archetypes.mjs";
+import { sampleRunLabel } from "../lib/sample-run-archetypes.mjs";
 
 const UploadFlow = dynamic(
   () => import("@/features/analysis/components/UploadFlow").then((mod) => mod.UploadFlow),
@@ -18,14 +18,14 @@ const UploadFlow = dynamic(
   },
 );
 
-export interface SampleReferencePageClientProps {
-  sampleReferenceId: string;
+export interface SampleRunPageClientProps {
+  sampleRunId: string;
 }
 
-export function SampleReferencePageClient({
-  sampleReferenceId,
-}: SampleReferencePageClientProps) {
-  const label = sampleReferenceLabel(sampleReferenceId);
+export function SampleRunPageClient({
+  sampleRunId,
+}: SampleRunPageClientProps) {
+  const label = sampleRunLabel(sampleRunId);
 
   return (
     <main className="relative">
@@ -39,19 +39,19 @@ export function SampleReferencePageClient({
                 Sample run
               </Badge>
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                {label} sample analysis
+                {label} sample
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Inspect the detected UI and export package using a sample
-                screenshot.
+                Review detected structure, starter preview, and export
+                package from a prepared layout.
               </p>
             </div>
           </div>
         </PageContainer>
       </div>
       <UploadFlow
-        key={sampleReferenceId}
-        sampleReferenceId={sampleReferenceId}
+        key={sampleRunId}
+        sampleRunId={sampleRunId}
         autoRunSample
       />
     </main>

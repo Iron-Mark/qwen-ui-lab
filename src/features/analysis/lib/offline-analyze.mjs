@@ -6,7 +6,7 @@ import {
   buildSvgInspectionPlanSections,
   buildSvgInspectionPreviewStats,
 } from "./offline-svg-inspection.mjs";
-import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
+import { normalizeStarterShadcnImports } from "./generated-imports.mjs";
 
 /**
  * Advanced deterministic offline analysis — no AI, no network.
@@ -16,7 +16,7 @@ import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Sample screenshots — exact filename match (normalized). */
+/** Sample layouts - exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
@@ -30,7 +30,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "Dashboard sample screenshot: landscape admin dashboard layout.",
+        body: "Dashboard sample layout: landscape admin dashboard.",
       },
       {
         title: "Layout Read",
@@ -38,7 +38,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Component Map",
-        body: "Generate Header, WorkflowBanner, StatCard grid, RevenueCard (Recharts), ChartPreview (Chart.js donut), ActivityList, QuickActionButton row, and Footer.",
+        body: "Build Header, WorkflowBanner, StatCard grid, RevenueCard (Recharts), ChartPreview (Chart.js donut), ActivityList, QuickActionButton row, and Footer.",
       },
       {
         title: "Accessibility Pass",
@@ -46,7 +46,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the source screenshot, wire real API data, and swap chart libraries if product standards require it.",
+        body: "Verify spacing against the source screenshot, connect product API data, and swap chart libraries if product standards require it.",
       },
     ],
     generatedCode: `import { StatCard } from "@/features/home/components/StatCard";
@@ -54,7 +54,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 import { ChartPreview } from "@/features/home/components/ChartPreview";
 import { ActivityList } from "@/features/home/components/ActivityList";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
     <section aria-label="Dashboard export">
       <div className="grid gap-4 md:grid-cols-4">
@@ -83,7 +83,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "Sign-in sample screenshot: centered authentication card on a neutral canvas.",
+        body: "Sign-in sample layout: centered authentication card on a neutral canvas.",
       },
       {
         title: "Layout Read",
@@ -91,7 +91,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Component Map",
-        body: "Generate BrandMark, AuthCard, TextField (email), PasswordField, PrimaryButton, OAuthButtonRow (Google/GitHub), and FooterLinks (forgot password, sign up).",
+        body: "Build BrandMark, AuthCard, TextField (email), PasswordField, PrimaryButton, OAuthButtonRow (Google/GitHub), and FooterLinks (forgot password, sign up).",
       },
       {
         title: "Accessibility Pass",
@@ -99,7 +99,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the source screenshot, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
+        body: "Verify spacing against the source screenshot, connect auth provider callbacks, and confirm password visibility toggle behavior.",
       },
     ],
     generatedCode: `import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ import { TextField } from "@/features/account/components/TextField";
 import { PasswordField } from "@/features/account/components/PasswordField";
 import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
-export function GeneratedAuthScreen() {
+export function AuthScreenStarter() {
   return (
     <main aria-label="Auth export" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
@@ -141,7 +141,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "Mobile app sample screenshot: portrait phone frame around 390×844.",
+        body: "Mobile app sample layout: portrait phone frame around 390×844.",
       },
       {
         title: "Layout Read",
@@ -149,7 +149,7 @@ export function GeneratedAuthScreen() {
       },
       {
         title: "Component Map",
-        body: "Generate MobileHeader, StackedCardList (avatar + title + meta), FloatingActionButton, BottomNav (Home/Search/Profile), and SheetDrawer for overflow actions.",
+        body: "Build MobileHeader, StackedCardList (avatar + title + meta), FloatingActionButton, BottomNav (Home/Search/Profile), and SheetDrawer for overflow actions.",
       },
       {
         title: "Accessibility Pass",
@@ -157,7 +157,7 @@ export function GeneratedAuthScreen() {
       },
       {
         title: "Human Review",
-        body: "Verify safe-area insets on iOS, test bottom nav with keyboard open, and wire real navigation routes.",
+        body: "Verify safe-area insets on iOS, test bottom nav with keyboard open, and connect product navigation routes.",
       },
     ],
     generatedCode: `import { MobileHeader } from "@/features/mobile/components/MobileHeader";
@@ -165,7 +165,7 @@ import { StackedCardList } from "@/features/mobile/components/StackedCardList";
 import { FloatingActionButton } from "@/features/mobile/components/FloatingActionButton";
 import { BottomNav } from "@/features/mobile/components/BottomNav";
 
-export function GeneratedMobileShell() {
+export function MobileShellStarter() {
   return (
     <div aria-label="Mobile export" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
@@ -196,7 +196,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "Landing page sample screenshot: wide marketing page around 1440×900.",
+        body: "Landing page sample layout: wide marketing page around 1440×900.",
       },
       {
         title: "Layout Read",
@@ -204,7 +204,7 @@ export function GeneratedMobileShell() {
       },
       {
         title: "Component Map",
-        body: "Generate SiteNav, HeroSection, FeatureGrid (icon + title + copy), TestimonialRow, PricingTable (Free/Pro/Enterprise), and FooterCTA with newsletter slot.",
+        body: "Build SiteNav, HeroSection, FeatureGrid (icon + title + copy), TestimonialRow, PricingTable (Free/Pro/Enterprise), and FooterCTA with newsletter slot.",
       },
       {
         title: "Accessibility Pass",
@@ -221,13 +221,13 @@ import { TestimonialRow } from "@/features/landing/components/TestimonialRow";
 import { PricingTable } from "@/features/landing/components/PricingTable";
 import { FooterCTA } from "@/features/landing/components/FooterCTA";
 
-export function GeneratedLanding() {
+export function LandingPageStarter() {
   return (
     <>
       <SiteNav logo="qwen-ui-lab" links={["Features", "Pricing", "Docs"]} />
       <HeroSection
         aria-label="Landing hero"
-        headline="Ship UI faster with AI-assisted scaffolding"
+        headline="Ship UI faster from screenshots"
         primaryCta="Start free"
         secondaryCta="View sample"
       />
@@ -251,7 +251,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "Settings sample screenshot: desktop layout with left rail.",
+        body: "Settings sample layout: desktop layout with left rail.",
       },
       {
         title: "Layout Read",
@@ -259,7 +259,7 @@ export function GeneratedLanding() {
       },
       {
         title: "Component Map",
-        body: "Generate SettingsNav, FormSection (Profile), TextField group, ToggleRow (email/push alerts), SelectField (timezone), and SaveBar with dirty-state handling.",
+        body: "Build SettingsNav, FormSection (Profile), TextField group, ToggleRow (email/push alerts), SelectField (timezone), and SaveBar with dirty-state handling.",
       },
       {
         title: "Accessibility Pass",
@@ -275,7 +275,7 @@ import { FormSection } from "@/features/settings/components/FormSection";
 import { ToggleRow } from "@/features/settings/components/ToggleRow";
 import { SaveBar } from "@/features/settings/components/SaveBar";
 
-export function GeneratedSettings() {
+export function SettingsStarter() {
   return (
     <section aria-label="Settings export" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
@@ -312,7 +312,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "Shop catalog sample screenshot: desktop catalog with left filter rail.",
+        body: "Shop catalog sample layout: desktop catalog with left filter rail.",
       },
       {
         title: "Layout Read",
@@ -320,7 +320,7 @@ export function GeneratedSettings() {
       },
       {
         title: "Component Map",
-        body: "Generate ShopHeader (search + cart), FilterSidebar, ProductGrid, ProductCard (image, title, price, Add CTA), CartDrawer, and CheckoutStepper.",
+        body: "Build ShopHeader (search + cart), FilterSidebar, ProductGrid, ProductCard (image, title, price, Add CTA), CartDrawer, and CheckoutStepper.",
       },
       {
         title: "Accessibility Pass",
@@ -337,7 +337,7 @@ import { ProductGrid } from "@/features/catalog/components/ProductGrid";
 import { ProductCard } from "@/features/catalog/components/ProductCard";
 import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
-export function GeneratedCatalog() {
+export function CatalogStarter() {
   return (
     <div aria-label="Catalog export" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
@@ -591,14 +591,14 @@ const KNOWN_SIGNATURE_MAX_DISTANCE = 12;
 const HEX_BIT_COUNTS = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
 
 const GENERATED_COMPONENT_NAMES = {
-  auth: "GeneratedAuthScreen",
-  dashboard: "GeneratedDashboard",
-  ecommerce: "GeneratedCatalog",
-  landing: "GeneratedLanding",
-  modal: "GeneratedDialogOverlay",
-  mobile: "GeneratedMobileShell",
-  settings: "GeneratedSettings",
-  empty: "GeneratedEmptyState",
+  auth: "AuthScreenStarter",
+  dashboard: "DashboardStarter",
+  ecommerce: "CatalogStarter",
+  landing: "LandingPageStarter",
+  modal: "DialogOverlayStarter",
+  mobile: "MobileShellStarter",
+  settings: "SettingsStarter",
+  empty: "EmptyStateStarter",
 };
 
 const GENERATED_REGION_TONES = {
@@ -763,7 +763,7 @@ function buildProductionKnownSample(sampleKey) {
 function buildKnownSampleGeneratedCode(sampleKey, sample) {
   const profile = buildKnownSampleProfile(sampleKey, sample);
 
-  return normalizeGeneratedShadcnImports(`import type { AriaRole } from "react";
+  return normalizeStarterShadcnImports(`import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -827,7 +827,7 @@ export default function ${profile.componentName}() {
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               Starter component translated from the screenshot structure. Replace sample copy,
-              connect real data, and keep the recipe JSON beside this component during review.
+              connect product data, and keep the recipe JSON beside this component during review.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -959,7 +959,7 @@ function inferKnownSampleArchetypeId(sampleKey) {
 
 function buildKnownSampleElements(archetypeId) {
   const commonReason =
-    "Sample screenshot metadata identifies this region; exported as an editable primitive.";
+    "Sample run signal identifies this region; exported as an editable primitive.";
   const templates = {
     dashboard: [
       ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],
@@ -1074,7 +1074,7 @@ function buildKnownSamplePrimitiveMap(elements) {
     "action-cluster": "Button group inside Card footer",
     "bottom-navigation": "semantic nav with Button icon controls",
     "brand-header": "Card header with logo and heading",
-    "chart-panel": "Card with chart placeholder and text summary",
+    "chart-panel": "Card with chart summary and text fallback",
     "control-group": "fieldset with switch-style controls",
     "dialog-panel": "Dialog or Sheet surface with focus management",
     "form-field": "Input with label, helper text, and validation slot",
@@ -1142,7 +1142,7 @@ function knownSampleResponsiveIntent(archetypeId) {
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
     "Replace sample content",
-    "Wire real data",
+    "Connect product data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
 }
@@ -1311,7 +1311,7 @@ function buildGeneratedCode(fileName, archetype, inspection, svgInspection) {
       return `import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-export function GeneratedAuthScreen() {
+export function AuthScreenStarter() {
   return (
     <main aria-label="Auth export based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
@@ -1323,7 +1323,7 @@ export function GeneratedAuthScreen() {
   );
 }`;
     case "mobile":
-      return `export function GeneratedMobileShell() {
+      return `export function MobileShellStarter() {
   return (
     <div aria-label="Mobile export based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
@@ -1333,7 +1333,7 @@ export function GeneratedAuthScreen() {
   );
 }`;
     case "settings":
-      return `export function GeneratedSettings() {
+      return `export function SettingsStarter() {
   return (
     <section aria-label="Settings export based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
@@ -1342,7 +1342,7 @@ export function GeneratedAuthScreen() {
   );
 }`;
     case "modal":
-      return `export function GeneratedDialogOverlay() {
+      return `export function DialogOverlayStarter() {
   return (
     <Dialog defaultOpen>
       <DialogContent className="max-w-lg">
@@ -1361,30 +1361,30 @@ export function GeneratedAuthScreen() {
       return `import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-export function GeneratedEmptyState() {
+export function EmptyStateStarter() {
   return (
-    <main aria-label="Generated empty state" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Empty-state starter" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
-        <p className="text-sm text-muted-foreground">Connect real data, upload a source, or create the first item.</p>
+        <p className="text-sm text-muted-foreground">Connect product data, upload a source, or create the first item.</p>
         <Button type="button" className="mx-auto mt-2">Start now</Button>
       </Card>
     </main>
   );
 }`;
     case "landing":
-      return `export function GeneratedLanding() {
+      return `export function LandingPageStarter() {
   return (
     <>
-      <section aria-label="Generated hero" className="py-16 text-center">{/* hero */}</section>
+      <section aria-label="Hero starter" className="py-16 text-center">{/* hero */}</section>
       <section aria-label="Features" className="grid gap-6 md:grid-cols-3">{/* features */}</section>
     </>
   );
 }`;
     case "ecommerce":
-      return `export function GeneratedCatalog() {
+      return `export function CatalogStarter() {
   return (
-    <div aria-label="Generated catalog" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Catalog starter" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -1394,7 +1394,7 @@ export function GeneratedEmptyState() {
       return `import { StatCard } from "@/features/home/components/StatCard";
 import { RevenueCard } from "@/features/home/components/RevenueCard";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
     <section aria-label="Dashboard export based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
@@ -1500,7 +1500,7 @@ export default function ${componentName}() {
             </h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
-              {svgStructure.textCount} labels were parsed into reviewable regions.
+              {svgStructure.textCount} labels were grouped into semantic UI regions.
             </p>
           </div>
           <dl className="grid gap-3 text-sm sm:grid-cols-3">
@@ -1693,7 +1693,7 @@ function buildGeneratedSvgResponsiveBlueprint(svgInspection) {
   return {
     mode: portrait ? "svg-mobile-stack" : "svg-responsive-grid",
     breakpoints: portrait ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review SVG labels as semantic regions, then replace placeholder controls with product data.",
+    primaryFlow: "Review SVG labels as semantic regions, then connect sample controls to product data.",
   };
 }
 
@@ -1737,7 +1737,7 @@ const layoutRegions = ${JSON.stringify(regions, null, 2)};
 const sampleData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this generated starter as a review-ready layout, then replace sample copy and values with product data.",
+    "Use this handoff-ready starter to review structure, then replace sample copy and values with product data.",
   primaryAction: "Review export",
   secondaryAction: "Open design notes",
 };
@@ -1745,11 +1745,11 @@ const sampleData = {
 const sampleCollections = {
   rows: [
     { title: "Queued review", detail: "Replace with a real list item" },
-    { title: "Ready for import review", detail: "Connect this row to product data" },
+    { title: "Ready for handoff review", detail: "Connect this row to product data" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
-    { title: "Overview", detail: "Card content placeholder" },
+    { title: "Overview", detail: "Sample card content" },
     { title: "Activity", detail: "Swap for real entity data" },
     { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
@@ -1853,7 +1853,7 @@ export default function ${componentName}() {
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
-        <GeneratedScreenHeader />
+        <ScreenHeaderStarter />
 
         <ImplementationChecklist />
 
@@ -1867,7 +1867,7 @@ export default function ${componentName}() {
   );
 }
 
-function GeneratedScreenHeader() {
+function ScreenHeaderStarter() {
   return (
     <header className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
       <div className="grid gap-2">
@@ -1896,10 +1896,10 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Implementation checklist</CardTitle>
+        <CardTitle>Handoff checklist</CardTitle>
         <CardDescription>
           {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
-          {generatedLayoutGrid.columns}-column starter layout for implementation review.
+          {generatedLayoutGrid.columns}-column starter layout for project handoff.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -2073,7 +2073,7 @@ function buildUsableSections(
       id: region.id || "section-" + (index + 1),
       primitive,
       title: region.label || formatPrimitiveLabel(primitive),
-      guidance: region.guidance || "Connect this generated region to real data and copy.",
+      guidance: region.guidance || "Connect this starter section to product data and copy.",
       layoutClass: /grid|stat-row|repeated-grid/.test(primitive)
         ? "grid gap-3 sm:grid-cols-2"
         : /action-cluster/.test(primitive)
@@ -2101,7 +2101,7 @@ export function DetectionGridReference() {
         <p className="text-xs font-medium uppercase">Screenshot export</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
-          {detectedElements.length} UI elements were detected before component generation.
+          {detectedElements.length} UI elements were detected before starter preview review.
           {" "}
           {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the export.
         </p>
@@ -2115,7 +2115,7 @@ export function DetectionGridReference() {
 
       {detectedPatterns.appShells.length ? (
         <section
-          aria-label="Detected app shell"
+          aria-label="Application shell"
           className="grid gap-3 border p-3"
           style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
         >
@@ -2320,7 +2320,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </ul>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.
+          State coverage: add loading skeletons, empty copy, and row-level error handling before connecting product data.
         </p>
       </div>
     );
@@ -3125,7 +3125,7 @@ function titleCase(value) {
 }
 
 function escapeGeneratedString(value) {
-  return String(value || "uploaded-reference")
+  return String(value || "uploaded-screenshot")
     .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"');
 }
@@ -3144,7 +3144,7 @@ function escapeGeneratedString(value) {
  * @param {{ readableSize: string; dimensionLine: string | null }} context
  */
 export function buildAdvancedOfflineOverrides(file, context) {
-  const fileName = file.name || "uploaded-reference";
+  const fileName = file.name || "uploaded-screenshot";
   const { archetype, confidence, formFactor } = classifyLayoutArchetype(file);
   const componentList = archetype.components.join(", ");
   const svgInspection = resolveSvgInspection(file);
@@ -3174,7 +3174,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     ...inspectionSections,
     {
       title: "Component Map",
-      body: `Generate ${componentList}.`,
+      body: `Build ${componentList}.`,
     },
     {
       title: "Accessibility Pass",
@@ -3182,7 +3182,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     },
     {
       title: "Human Review",
-      body: "Confirm classification against the screenshot, wire real data, and validate responsive breakpoints.",
+      body: "Confirm classification against the screenshot, connect product data, and validate responsive breakpoints.",
     },
   ];
 
@@ -3202,7 +3202,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
   return {
     plan,
     previewStats,
-    generatedCode: normalizeGeneratedShadcnImports(
+    generatedCode: normalizeStarterShadcnImports(
       buildGeneratedCode(fileName, archetype, file.offlineInspection, svgInspection),
     ),
     summary: buildOfflineSummary({

@@ -24,20 +24,24 @@ test("buildGithubGistUnavailablePayload returns product-facing setup instruction
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export needs setup before it can create links automatically.",
+      "GitHub Gist export needs setup before automatic links are available.",
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "Open gist.github.com, create a secret gist, paste the copied component, and save.",
+        "The component is copied. Create a secret gist when you want a shareable GitHub link.",
     },
   });
+  assert.doesNotMatch(
+    buildGithubGistUnavailablePayload().fallback.instructions,
+    /paste the copied component/i,
+  );
 });
 
 test("sanitizeScaffoldFilename normalizes unsafe names", () => {
-  assert.equal(sanitizeScaffoldFilename("generated-auth.tsx"), "generated-auth.tsx");
+  assert.equal(sanitizeScaffoldFilename("starter-auth.tsx"), "starter-auth.tsx");
   assert.equal(sanitizeScaffoldFilename("../evil/name.tsx"), "name.tsx");
-  assert.equal(sanitizeScaffoldFilename("nested/path/generated.tsx"), "generated.tsx");
-  assert.equal(sanitizeScaffoldFilename(""), "component.tsx");
+  assert.equal(sanitizeScaffoldFilename("nested/path/starter.tsx"), "starter.tsx");
+  assert.equal(sanitizeScaffoldFilename(""), "starter-component.tsx");
 });
 
 test("createGithubGist posts component file and returns gist URL", async () => {
@@ -52,8 +56,8 @@ test("createGithubGist posts component file and returns gist URL", async () => {
 
   const result = await createGithubGist({
     token: "ghp_test",
-    filename: "generated-dashboard.tsx",
-    content: "export function Demo() { return null; }",
+    filename: "starter-dashboard.tsx",
+    content: "export function StarterFixture() { return null; }",
     fetchImpl,
   });
 
@@ -64,10 +68,10 @@ test("createGithubGist posts component file and returns gist URL", async () => {
 
   const body = JSON.parse(captured.init.body);
   assert.equal(body.public, false);
-  assert.equal(body.description, "Screenshot UI starter package");
+  assert.equal(body.description, "Screenshot-to-React starter package");
   assert.equal(
-    body.files["generated-dashboard.tsx"].content,
-    "export function Demo() { return null; }",
+    body.files["starter-dashboard.tsx"].content,
+    "export function StarterFixture() { return null; }",
   );
 });
 
@@ -80,7 +84,7 @@ test("createGithubGist surfaces GitHub API errors", async () => {
 
   const result = await createGithubGist({
     token: "invalid",
-    filename: "component.tsx",
+    filename: "starter-component.tsx",
     content: "const x = 1",
     fetchImpl,
   });
