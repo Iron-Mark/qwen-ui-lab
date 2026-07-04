@@ -63,7 +63,7 @@ src/lib/
 - Feature `lib` and `data` modules must not import component modules.
 - Feature `data` folders hold plain data/types; JSX registries belong under the owning feature's `components` boundary.
 - Domain data lives with the feature that owns it, for example `src/features/home/data` and `src/features/design-system/data`.
-- Starter component examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
+- Component draft examples use feature paths, not the old `atoms/molecules/organisms` tier paths.
 
 ## Component-Driven Conventions
 

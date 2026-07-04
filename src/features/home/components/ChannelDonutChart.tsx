@@ -19,12 +19,14 @@ interface ChannelDonutChartProps {
   data: ChannelMixPoint[];
   theme?: ChartThemeMode;
   className?: string;
+  ariaLabel?: string;
 }
 
 export const ChannelDonutChart = memo(function ChannelDonutChart({
   data,
   theme = "light",
   className,
+  ariaLabel = "Traffic channel mix donut chart",
 }: ChannelDonutChartProps) {
   const colors = useMemo(
     () => getChartColorsFromDocument(theme) ?? getChartColors(theme),
@@ -89,7 +91,7 @@ export const ChannelDonutChart = memo(function ChannelDonutChart({
     <div
       className={className}
       role="img"
-      aria-label="Traffic channel mix donut chart"
+      aria-label={ariaLabel}
     >
       <div className="h-40 rounded-xl border border-border/70 bg-background/70 p-2">
         <Doughnut data={chartData} options={options} />

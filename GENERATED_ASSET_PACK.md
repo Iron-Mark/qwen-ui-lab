@@ -2,7 +2,7 @@
 
 This file collects generated replacement candidates created from the final `QUI` violet hex-badge style references supplied by the user.
 
-The brand icons, social previews, and docs comparison graphic from this pack were wired into the app/docs. The actual sample references still use the repository's deterministic SVG sources under `public/references/`, restyled to the final violet `QUI` direction and rasterized through `npm run generate:reference-rasters`. A second AI-generated sample-reference candidate set now lives under `public/generated-assets/references/` for review only; it is not wired into runtime sample selection.
+The brand icons, social previews, and docs comparison graphic from this pack were wired into the app/docs. The actual sample references still use the repository's deterministic SVG sources under `public/references/`, restyled to the final violet `QUI` direction and rasterized through `npm run generate:reference-rasters`. A second image-generator sample-reference candidate set now lives under `public/generated-assets/references/` for review only; it is not wired into runtime sample selection.
 
 ## Style Source
 
@@ -67,10 +67,10 @@ Original untouched generator outputs remain outside the repository and are inten
 
 - The ready files are exact-size PNG candidates for the audited slots.
 - Active reference sample replacements are source-based: use `public/references/*.svg`, `*.png`, and `*.webp`.
-- AI-generated reference sample files under `public/generated-assets/references/` are candidate review images only. Do not wire them into the analyzer/sample picker without a separate visual and test review.
+- Image-generator reference sample files under `public/generated-assets/references/` are candidate review images only. Do not wire them into the analyzer/sample picker without a separate visual and test review.
 - The social previews include embedded text and should be visually checked before replacing generated OG routes.
 - The app icons are opaque rounded-square icon candidates. A true transparent cutout logo was not generated in this pass.
-- The first AI-generated reference screenshots were removed because they looked too artificial for the sample picker/analyzer workflow. The current A007-A014 candidates were regenerated with more source-like UI screenshot prompts and kept separate from active app assets.
+- The first image-generator reference screenshots were removed because they looked too artificial for the sample picker/analyzer workflow. The current A007-A014 candidates were regenerated with more source-like UI screenshot prompts and kept separate from active app assets.
 
 ## Final QA
 

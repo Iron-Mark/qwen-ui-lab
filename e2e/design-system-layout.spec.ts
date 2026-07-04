@@ -342,6 +342,11 @@ test("design system tier filter uses three icon toggles", async ({ page }) => {
     });
     await expect(button).toBeVisible();
     await expect(button.locator("svg")).toHaveCount(1);
+    await expect
+      .poll(() =>
+        button.evaluate((control) => control.getBoundingClientRect().height >= 44),
+      )
+      .toBe(true);
   }
 
   const molecule = tierControls.getByRole("button", {
@@ -528,7 +533,8 @@ test("design system domain filter tabs stay inside their container", async ({
                 box.left >= listBox.left - 1 &&
                 box.right <= listBox.right + 1 &&
                 box.top >= listBox.top - 1 &&
-                box.bottom <= listBox.bottom + 1
+                box.bottom <= listBox.bottom + 1 &&
+                box.height >= 44
               );
             });
 

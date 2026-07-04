@@ -11,7 +11,7 @@ export const ANALYTICS_FUNNEL_SLICES = [
       "generate.completed",
     ],
     breakdown: ["route", "providerState", "status"],
-    purpose: "Detect drop-offs from upload through starter preview.",
+    purpose: "Detect drop-offs from upload through component preview.",
   },
   {
     id: "reliability",

@@ -27,6 +27,16 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await expect(socialIconLinks.nth(0)).toHaveAttribute("aria-label", "GitHub");
   await expect(socialIconLinks.nth(1)).toHaveAttribute("aria-label", "LinkedIn");
   await expect(socialIconLinks.nth(2)).toHaveAttribute("aria-label", "Website");
+  await expect
+    .poll(() =>
+      socialIconLinks.evaluateAll((links) =>
+        links.every((link) => {
+          const { height, width } = link.getBoundingClientRect();
+          return width >= 44 && height >= 44;
+        }),
+      ),
+    )
+    .toBe(true);
 
   const linkedInIconLink = footer.locator('a[aria-label="LinkedIn"]');
   await expect(linkedInIconLink).toHaveAttribute(

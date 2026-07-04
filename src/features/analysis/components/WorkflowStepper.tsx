@@ -46,7 +46,7 @@ export function WorkflowStepper({
               aria-current={isCurrent ? "step" : undefined}
               aria-disabled={isLocked ? true : undefined}
               className={cn(
-                "inline-flex min-h-8 w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors sm:h-7 sm:px-3 sm:text-xs",
+                "inline-flex min-h-11 w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 py-2 text-xs font-medium transition-colors",
                 isCurrent &&
                   "border-foreground bg-foreground text-background shadow-sm",
                 isComplete &&

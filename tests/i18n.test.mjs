@@ -59,13 +59,15 @@ test("resolveLocale defaults to en and accepts zh", () => {
 test("zh package copy avoids merge-gate and stale export wording", () => {
   assert.match(zhDictionarySource, /exportReadmeReviewSummary:\s*".*\u4ea4\u63a5\u65f6/);
   assert.match(zhDictionarySource, /exportReadmeReviewClear:\s*".*\u4ea4\u63a5\u65f6/);
-  assert.match(zhDictionarySource, /React \+ Tailwind \u8d77\u59cb\u9879\u76ee\u5305/);
-  assert.match(zhDictionarySource, /exportPackageTitle:\s*"\u68c0\u89c6\u9879\u76ee\u5305"/);
-  assert.match(zhDictionarySource, /exportPackageCopyIntro:\s*".*\u8d77\u59cb\u9879\u76ee\u5305/);
+  assert.match(zhDictionarySource, /React \+ Tailwind \u5bfc\u51fa\u5305/);
+  assert.match(zhDictionarySource, /exportPackageTitle:\s*"\u68c0\u89c6\u5bfc\u51fa\u5305"/);
+  assert.match(zhDictionarySource, /exportPackageCopyIntro:\s*".*\u5bfc\u51fa\u5305/);
   assert.doesNotMatch(zhDictionarySource, /\u5bfc\u5165\u524d/);
   assert.doesNotMatch(zhDictionarySource, /\u5408\u5e76\u524d/);
   assert.doesNotMatch(zhDictionarySource, /\u68c0\u89c6\u5bfc\u51fa\u9879\u76ee\u5305/);
   assert.doesNotMatch(zhDictionarySource, /React \+ Tailwind \u9879\u76ee\u5305/);
+  assert.doesNotMatch(zhDictionarySource, /\u8d77\u59cb\u9879\u76ee\u5305/);
+  assert.doesNotMatch(zhDictionarySource, /\u8d77\u59cb\u7ec4\u4ef6/);
 });
 
 test("interpolate replaces placeholders", () => {
@@ -228,26 +230,30 @@ test("package review tabs keep compact product-facing labels", () => {
   assert.match(enDictionarySource, /exportPackageCopyTab:\s*"Guide"/);
   assert.ok(enCopyTab.length <= 8);
   assert.ok(zhCopyTab.length <= 4);
-  assert.match(enDictionarySource, /This starter package is created from the screenshot analysis/);
-  assert.match(enDictionarySource, /The starter package includes \{count\} files/);
-  assert.match(enDictionarySource, /Use these notes to review the starter package/);
-  assert.match(enDictionarySource, /generatedScaffold:\s*"Starter component"/);
+  assert.match(enDictionarySource, /This export package is created from the screenshot analysis/);
+  assert.match(enDictionarySource, /The export package includes \{count\} files/);
+  assert.match(enDictionarySource, /Use these notes to review the export package/);
+  assert.match(enDictionarySource, /generatedScaffold:\s*"Component draft"/);
   assert.match(enDictionarySource, /comparisonGeneratedPreview:\s*"Component preview"/);
   assert.match(enDictionarySource, /toastPreviewGenerated:\s*"Preview ready"/);
   assert.match(enDictionarySource, /toastPreviewRegenerated:\s*"Preview refreshed"/);
   assert.doesNotMatch(enDictionarySource, /generatedScaffold:\s*"Generated component"/);
   assert.doesNotMatch(enDictionarySource, /toastPreviewGenerated:\s*"Preview generated"/);
-  assert.doesNotMatch(enDictionarySource, /This export package is created/);
   assert.doesNotMatch(enDictionarySource, /The export now includes/);
   assert.match(zhDictionarySource, /exportPackageCopyTab:\s*"\u6307\u5357"/);
-  assert.match(zhDictionarySource, /generatedScaffold:\s*"\u8d77\u59cb\u7ec4\u4ef6"/);
+  assert.match(zhDictionarySource, /exportPackageDesc:\s*"\u8fd9\u4e2a\u5bfc\u51fa\u5305\u6765\u81ea\u622a\u56fe\u5206\u6790/);
+  assert.match(zhDictionarySource, /exportChangePackage:\s*"\u5bfc\u51fa\u5305\u5305\u542b \{count\} \u4e2a\u6587\u4ef6/);
+  assert.match(zhDictionarySource, /exportPackageCopyIntro:\s*"\u5728\u9879\u76ee\u4ea4\u63a5\u65f6[^"]*\u5bfc\u51fa\u5305/);
+  assert.match(zhDictionarySource, /generatedScaffold:\s*"\u7ec4\u4ef6\u8349\u7a3f"/);
   assert.match(zhDictionarySource, /comparisonGeneratedPreview:\s*"\u7ec4\u4ef6\u9884\u89c8"/);
   assert.match(zhDictionarySource, /toastPreviewGenerated:\s*"\u9884\u89c8\u5df2\u5c31\u7eea"/);
   assert.match(zhDictionarySource, /toastPreviewRegenerated:\s*"\u9884\u89c8\u5df2\u5237\u65b0"/);
-  assert.match(zhDictionarySource, /statusPreviewReady:\s*"\u9884\u89c8\u5c31\u7eea[^"]*\u8d77\u59cb\u7ec4\u4ef6/);
+  assert.match(zhDictionarySource, /statusPreviewReady:\s*"\u9884\u89c8\u5c31\u7eea[^"]*\u7ec4\u4ef6\u8349\u7a3f/);
   assert.doesNotMatch(zhDictionarySource, /\u751f\u6210\u9884\u89c8/);
   assert.doesNotMatch(zhDictionarySource, /\u751f\u6210\u7ec4\u4ef6/);
   assert.doesNotMatch(zhDictionarySource, /\u751f\u6210\u5305/);
+  assert.doesNotMatch(zhDictionarySource, /\u8d77\u59cb\u9879\u76ee\u5305/);
+  assert.doesNotMatch(zhDictionarySource, /\u8d77\u59cb\u7ec4\u4ef6/);
 });
 
 test("upload status copy separates pre-analysis and review-ready states", () => {
@@ -262,7 +268,7 @@ test("upload status copy separates pre-analysis and review-ready states", () => 
   assert.doesNotMatch(enDictionarySource, /Analyze & generate preview/);
   assert.doesNotMatch(enDictionarySource, /Ship React-ready/);
   assert.doesNotMatch(enDictionarySource, /faster path to conversion/);
-  assert.match(enDictionarySource, /headlineFaster:\s*"Turn one screenshot into starter UI"/);
+  assert.match(enDictionarySource, /headlineFaster:\s*"Turn one screenshot into React UI"/);
   assert.match(enDictionarySource, /loadingTitle:\s*"Preparing preview"/);
   assert.match(zhDictionarySource, /modeReviewReady:\s*"\u53ef\u4ee5\u5f00\u59cb\u590d\u6838"/);
   assert.match(zhDictionarySource, /ctaAnalyzeNow:\s*"\u7acb\u5373\u5206\u6790"/);

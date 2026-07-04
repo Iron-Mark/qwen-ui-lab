@@ -42,7 +42,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /download/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
   await expect(dialog.getByTestId("dashboard-sample-dialog-preview")).toBeVisible();
   await expect(dialog.getByRole("link", { name: /load into workflow/i })).toHaveAttribute(
     "href",
@@ -81,7 +81,7 @@ test("dashboard example keeps the heavy preview behind a mobile dialog", async (
   await expect(dialog.getByRole("tab", { name: /preview/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /plan/i })).toBeVisible();
   await expect(dialog.getByRole("tab", { name: /detected ui/i })).toBeVisible();
-  await expect(dialog.getByRole("tab", { name: /download/i })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: /export/i })).toBeVisible();
   await expect(
     dialog.getByRole("link", { name: /load into workflow/i }),
   ).toBeVisible();
@@ -121,4 +121,44 @@ test("dashboard example keeps the heavy preview behind a mobile dialog", async (
     tablistInside: true,
     footerInside: true,
   });
+});
+
+test("dashboard example preserves locale when loading the sample", async ({ page }) => {
+  await resetE2ESessionStorage(page);
+  await page.goto("/?lang=zh");
+
+  await expect
+    .poll(
+      async () => {
+        await page.mouse.wheel(0, 700);
+        await page.waitForTimeout(100);
+        return page.getByTestId("example-output-section").count();
+      },
+      { timeout: 15_000 },
+    )
+    .toBeGreaterThan(0);
+
+  const section = page.getByTestId("example-output-section");
+  await section.scrollIntoViewIfNeeded();
+  await expect(section.getByText("\u6837\u4f8b\u8f93\u51fa")).toBeVisible();
+  await expect(
+    section.getByRole("heading", { name: "\u4eea\u8868\u76d8\u6837\u4f8b" }),
+  ).toBeVisible();
+  await expect(
+    section.getByRole("link", { name: "\u52a0\u8f7d\u6837\u4f8b" }),
+  ).toHaveAttribute(
+    "href",
+    "/demo?lang=zh#upload-flow",
+  );
+
+  await section.getByRole("button", { name: "\u9884\u89c8" }).click();
+  const dialog = page.getByTestId("dashboard-sample-dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("\u622a\u56fe \u2192 \u8ba1\u5212 \u2192 React")).toBeVisible();
+  await expect(dialog.getByText("UI \u622a\u56fe")).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: "\u8ba1\u5212" })).toBeVisible();
+  await expect(dialog.getByRole("tab", { name: "\u5bfc\u51fa" })).toBeVisible();
+  await expect(
+    dialog.getByRole("link", { name: "\u52a0\u8f7d\u5230\u5de5\u4f5c\u6d41" }),
+  ).toHaveAttribute("href", "/demo?lang=zh#upload-flow");
 });

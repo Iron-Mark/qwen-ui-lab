@@ -28,6 +28,15 @@ const SAMPLE_RUN_FIXTURE_PATH = resolve(
   "../e2e/fixtures/sample-run-responses.json",
 );
 
+const STALE_SAMPLE_OUTPUT_PHRASES = [
+  /product API data/i,
+  /product data/i,
+  /connect live data/i,
+  /binding live data/i,
+  /live record\b/i,
+  /your data source/i,
+];
+
 test("raster archetypes ship PNG + WebP assets on disk", () => {
   for (const stem of RASTER_REFERENCE_STEMS) {
     const pngPath = resolve(REFERENCES_DIR, `${stem}.png`);
@@ -106,6 +115,13 @@ test("exported E2E sample-run fixture matches source builders", () => {
   assert.equal(fixture.analyzeUiSuccess.demo, true);
   assert.equal(fixture.analyzeUiSuccess.artifact.modeLabel, "Ready to analyze");
   assert.equal(fixture.analyzeUiSuccess.provider.model, "demo");
+  for (const phrase of STALE_SAMPLE_OUTPUT_PHRASES) {
+    assert.doesNotMatch(
+      fixture.analyzeUiSuccess.artifact.generatedCode,
+      phrase,
+      `sample-run fixture generated code should avoid ${phrase}`,
+    );
+  }
   assert.deepEqual(fixture.sampleArtifact, {
     planTitles: sampleArtifact.plan.map((section) => section.title),
     previewStats: sampleArtifact.previewStats,

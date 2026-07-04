@@ -47,6 +47,8 @@ describe("PWA manifest", () => {
     assert.ok(manifest.background_color);
     assert.equal(manifest.lang, "en-US");
     assert.deepEqual(manifest.display_override, ["standalone", "browser"]);
+    assert.deepEqual(manifest.categories, ["productivity", "utilities", "design"]);
+    assert.ok(!manifest.categories.includes("developer"));
 
     const pngIcons = (manifest.icons ?? []).filter(
       (icon) => icon.type === "image/png" && icon.sizes !== "any",
@@ -83,11 +85,11 @@ describe("PWA manifest", () => {
     assert.equal(manifest.name, "qwen-ui-lab - screenshot to React");
     assert.equal(
       manifest.description,
-      "Screenshot-to-React workflow with inspectable starter packages.",
+      "Screenshot-to-React workflow with inspectable export packages.",
     );
     assert.match(manifestSource, /name:\s*`\$\{SITE_NAME\} - screenshot to React`/);
     assert.equal(sampleShortcut?.name, "Sample run");
-    assert.equal(sampleShortcut?.description, "Open a guided layout and review a starter preview.");
+    assert.equal(sampleShortcut?.description, "Open a guided layout and review a component preview.");
     assert.ok(screenshotLabels.includes("Dashboard layout workspace"));
     assert.ok(screenshotLabels.includes("Mobile layout workspace"));
 
@@ -185,7 +187,7 @@ describe("service worker shell", () => {
     assert.match(offline, /Offline - qwen-ui-lab/);
     assert.match(offline, /Saved workspace/);
     assert.match(offline, /Open workflow/);
-    assert.match(offline, /Open saved example/);
+    assert.match(offline, /Open sample/);
     assert.match(offline, /sharing and uncached assets/);
     assert.doesNotMatch(offline, /live analysis|live links/i);
     assert.doesNotMatch(offline, /\u00e2/);

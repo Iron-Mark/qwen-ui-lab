@@ -39,6 +39,11 @@ const statusLabels: Record<ReadinessCheck["status"], string> = {
   missing: "Missing",
 };
 
+const shareStorageLabels: Record<ReadinessPayload["shareStorage"], string> = {
+  kv: "Durable links",
+  memory: "Temporary links",
+};
+
 function statusBadgeVariant(status: ReadinessCheck["status"]) {
   if (status === "ready") return "secondary" as const;
   if (status === "missing") return "destructive" as const;
@@ -108,10 +113,10 @@ export function ProductionReadinessPanel({
           </div>
           <p className="text-xs text-muted-foreground">
             {payload
-              ? `${statusSummary}. Analysis: ${getProviderModeLabel(payload.provider)}. Sharing: ${payload.shareStorage}.`
+              ? `${statusSummary}. Analysis: ${getProviderModeLabel(payload.provider)}. Sharing: ${shareStorageLabels[payload.shareStorage]}.`
               : loading
-                ? "Checking runtime feature status."
-                : "Could not load runtime feature status."}
+                ? "Checking service status."
+                : "Could not load service status."}
           </p>
         </div>
         <Button

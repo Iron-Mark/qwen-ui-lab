@@ -213,7 +213,7 @@ test("package review dialog keeps tabs and actions visible on tablet widths", as
     .click();
 
   await expect(
-    page.getByText(/Preview ready - copy or download the starter component/i),
+    page.getByText(/Preview ready - copy or download the component draft/i),
   ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();
@@ -281,7 +281,7 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
   await runPipeline.click();
 
   await expect(
-    page.getByText(/Preview ready - copy or download the starter component/i),
+    page.getByText(/Preview ready - copy or download the component draft/i),
   ).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/Live preview/i)).toBeVisible();
   await expect(page.getByTestId("detection-overlay-count")).toContainText(/detected/i);
@@ -489,7 +489,7 @@ test("package review dialog keeps tabs and actions visible on mobile widths", as
     .click();
 
   await expect(
-    page.getByText(/Preview ready - copy or download the starter component/i),
+    page.getByText(/Preview ready - copy or download the component draft/i),
   ).toBeVisible({ timeout: 10_000 });
 
   await page.getByTestId("export-package-review").click();

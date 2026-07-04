@@ -135,7 +135,7 @@ export function Header() {
             width={36}
             height={36}
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
-            fetchPriority="low"
+            priority
           />
           <HeaderBrandCopy title={brandTitle} subtitle={brandSubtitle} />
         </Link>
@@ -293,7 +293,7 @@ function HeaderBrandCopyLayer({
     >
       <p
         data-testid={current ? "header-brand-title" : undefined}
-        className="truncate text-lg font-bold leading-5 text-card-foreground transition-colors"
+        className="truncate text-lg font-bold leading-5 text-foreground transition-colors"
       >
         {copy.title}
       </p>

@@ -665,7 +665,7 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
 
   if (layout.componentSummary.controls > 8 && visualDensity !== "low") {
     recommendations.push(
-      "Consolidate repeated action controls or split them into grouped toolbars for the starter component.",
+      "Consolidate repeated action controls or split them into grouped toolbars for the component draft.",
     );
   }
 
@@ -684,7 +684,7 @@ function buildRecommendations({ contrast, layout, visualDensity, designTokens })
   }
 
   recommendations.push(
-    `Seed starter components with ${designTokens.spacing} spacing and ${designTokens.accent} as the accent token.`,
+    `Seed component drafts with ${designTokens.spacing} spacing and ${designTokens.accent} as the accent token.`,
   );
 
   return recommendations;

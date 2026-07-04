@@ -7,7 +7,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 ---
 
 # qwen-ui-lab
-## Screenshot to React + Tailwind starter package
+## Screenshot to React + Tailwind export package
 
 - Product: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 - Sample run: [qwen-ui-lab.vercel.app/demo](https://qwen-ui-lab.vercel.app/demo)
@@ -18,8 +18,8 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 # Problem
 
 - UI screenshots are easy to collect
-- Component structure, states, and starter package files take longer
-- Goal: compress screenshot-to-starter-package review into minutes
+- Component structure, states, and export package files take longer
+- Goal: compress screenshot-to-export-package review into minutes
 
 ---
 
@@ -27,7 +27,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 - Upload screenshots or open a guided sample run
 - Inspect detected structure during review
-- Review and download a starter package
+- Review and download an export package
 
 ---
 
@@ -35,7 +35,7 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 
 - Open the sample run; the dashboard layout loads automatically
 - Review detected sections, controls, and repeated groups
-- Compare screenshot structure against the starter preview
+- Compare screenshot structure against the component preview
 
 ---
 
@@ -76,5 +76,5 @@ footer: "qwen-ui-lab - qwen-ui-lab.vercel.app"
 # Takeaway
 
 - The app does not promise a finished screen
-- It creates an inspectable starter package from a screenshot
+- It creates an inspectable export package from a screenshot
 - Faster starts are useful when every layout decision stays visible

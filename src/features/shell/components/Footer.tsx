@@ -30,7 +30,7 @@ const PRODUCT_LINKS = [
   {
     href: "/demo",
     label: "Sample run",
-    tooltip: "Open a guided layout and review the starter package.",
+    tooltip: "Open a guided layout and review the export package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
@@ -197,13 +197,13 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    React + Tailwind starter package
+                    React + Tailwind export package
                   </span>
                 </span>
               </Link>
             </FooterTooltip>
             <p className="mt-2 hidden max-w-sm text-sm leading-5 text-muted-foreground sm:block">
-              Create inspectable React + Tailwind starter packages from
+              Create inspectable React + Tailwind export packages from
               screenshot analysis.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -214,7 +214,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="inline-flex size-10 items-center justify-center rounded-lg border border-border/70 bg-background/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="inline-flex size-11 items-center justify-center rounded-lg border border-border/70 bg-background/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <Icon className="size-4" aria-hidden />
                   </a>
@@ -236,7 +236,7 @@ export function Footer() {
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs text-muted-foreground sm:mt-4 sm:gap-3 sm:pt-3">
           <p className="max-[420px]:sr-only">
             &copy; 2026 {SITE_NAME}. Built for practical React+Tailwind
-            starter packages.
+            export packages.
           </p>
           <FooterTooltip content="Open Mark's portfolio and project work.">
             <a

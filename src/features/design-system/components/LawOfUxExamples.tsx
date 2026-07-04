@@ -37,8 +37,9 @@ function HickExample() {
             key={value}
             type="button"
             onClick={() => setMode(value)}
+            aria-pressed={mode === value}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs font-semibold",
+              "min-h-11 rounded-full border px-3 py-2 text-xs font-semibold",
               mode === value
                 ? "border-accent bg-accent text-accent-foreground"
                 : "border-border bg-background text-muted-foreground",
@@ -183,14 +184,14 @@ function DohertyExample() {
       <button
         type="button"
         onClick={runInstant}
-        className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+        className="min-h-11 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
       >
         &lt;400ms feedback
       </button>
       <button
         type="button"
         onClick={runSlow}
-        className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-card-foreground"
+        className="min-h-11 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-card-foreground"
       >
         Slow response
       </button>
@@ -211,9 +212,16 @@ function GoalGradientExample() {
   const labels = ["Upload", "Analyze", "Plan", "Preview", "Download"];
   return (
     <div className="space-y-3">
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
+      <div
+        className="h-2 overflow-hidden rounded-full bg-muted"
+        role="progressbar"
+        aria-label="Workflow progress"
+        aria-valuemin={1}
+        aria-valuemax={labels.length}
+        aria-valuenow={step + 1}
+      >
         <div
-          className="h-full bg-accent transition-all duration-300"
+          className="h-full bg-accent transition-[width] duration-300 motion-reduce:transition-none"
           style={{ width: `${((step + 1) / labels.length) * 100}%` }}
         />
       </div>
@@ -223,10 +231,11 @@ function GoalGradientExample() {
             key={label}
             type="button"
             onClick={() => setStep(index)}
+            aria-pressed={index <= step}
             className={cn(
-              "rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+              "min-h-11 rounded-full border px-3 py-2 text-xs font-semibold",
               index <= step
-                ? "border-accent bg-accent/10 text-accent"
+                ? "border-accent bg-accent text-accent-foreground"
                 : "border-border text-muted-foreground",
             )}
           >
@@ -245,7 +254,8 @@ function TeslerExample() {
       <button
         type="button"
         onClick={() => setAdvanced((value) => !value)}
-        className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
+        aria-expanded={advanced}
+        className="min-h-11 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground"
       >
         {advanced ? "Hide" : "Show"} advanced settings
       </button>
@@ -299,7 +309,7 @@ function ParkinsonExample() {
     <ul className="space-y-1 text-xs text-muted-foreground">
       {["Reading image...", "Preparing analysis...", "Preparing preview..."].map((step) => (
         <li key={step} className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" aria-hidden="true" />
           {step}
         </li>
       ))}

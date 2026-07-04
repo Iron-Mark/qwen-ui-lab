@@ -15,6 +15,10 @@ const designSystemPreviewSource = readFileSync(
   join("src", "features", "design-system", "components", "DesignSystemPreview.tsx"),
   "utf8",
 );
+const designSystemCatalogSource = readFileSync(
+  join("src", "features", "design-system", "components", "catalog.tsx"),
+  "utf8",
+);
 const analyticsSource = readFileSync(
   join("src", "lib", "analytics.client.ts"),
   "utf8",
@@ -56,4 +60,10 @@ test("design-system page wires export-all snippets action", () => {
     analyticsSource,
     /DesignSystemSnippetsDownloaded: "design_system\.snippets_downloaded"/,
   );
+});
+
+test("design-system export button example uses component-specific download copy", () => {
+  assert.match(designSystemCatalogSource, /label: "Download component"/);
+  assert.match(designSystemCatalogSource, /label="Download component"/);
+  assert.doesNotMatch(designSystemCatalogSource, /label: "Download",/);
 });

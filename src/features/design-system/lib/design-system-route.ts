@@ -18,7 +18,7 @@ export function createDesignSystemRouteMetadata(): Metadata {
   return createRouteMetadata({
     title: "Design System Catalog",
     description:
-      "Browse reusable UI snippets, UX-law patterns, and starter examples for screenshot-to-React work.",
+      "Browse reusable UI snippets, UX-law patterns, and component examples for screenshot-to-React work.",
     path: "/design-system",
     keywords: [
       "Design system catalog",
@@ -34,7 +34,7 @@ export function createDesignSystemRouteMetadata(): Metadata {
       "/social/design-system-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab design system growth snippets",
     shareSnippet:
-      "Browse reusable UI patterns and starter snippets from the qwen-ui-lab design system.",
+      "Browse reusable UI patterns and component snippets from the qwen-ui-lab design system.",
   });
 }
 
@@ -70,7 +70,7 @@ export function getDesignSystemRouteSocialPreviewImage() {
     eyebrow: "qwen-ui-lab / design system",
     badge: "Component catalog",
     title: "Reusable UI patterns for shipping",
-    description: "Browse primitives, UX references, and starter snippets in one workspace.",
+    description: "Browse primitives, UX references, and component snippets in one workspace.",
     workflow: "Filter catalog -> Preview component -> Copy code",
     background:
       "linear-gradient(135deg, #08061f 0%, #24144f 48%, #0f172a 100%)",

@@ -1,6 +1,6 @@
 # LinkedIn content series - qwen-ui-lab
 
-Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates an inspectable screenshot-to-React starter package. It is not a finished app screen.
+Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates an inspectable screenshot-to-React export package. It is not a finished app screen.
 
 ---
 
@@ -16,7 +16,7 @@ Turning a UI screenshot into usable React code should not start from a blank fil
 I built qwen-ui-lab to test a focused workflow:
 
 Input: UI screenshot
-Output: inspectable React + Tailwind starter package
+Output: inspectable React + Tailwind export package
 
 The workflow:
 1. Upload a screenshot
@@ -24,7 +24,7 @@ The workflow:
 3. Correct detection boxes when needed
 4. Prepare a React/Tailwind starter
 5. Review files, design notes, and detection notes
-6. Download a starter package for source control
+6. Download an export package for source control
 
 The goal is not a finished app screen.
 The goal is a faster, inspectable starting point.
@@ -60,12 +60,12 @@ The local detector in qwen-ui-lab looks for practical UI signals:
 The app then explains why it detected each element:
 geometry, spacing, alignment, repetition, visual weight, and affordance.
 
-That matters because starter UI should show what changed and why.
+That matters because a component draft should show what changed and why.
 ```
 
 **Closing:**
 
-> Good starter UI begins with explainable structure.
+> Good component drafts begin with explainable structure.
 
 **Image:** Detected UI boxes with confidence reasons
 
@@ -89,7 +89,7 @@ Even with better detection, review still matters:
 - sample copy should be replaced with product language
 - responsive assumptions need device testing
 
-qwen-ui-lab treats the download as a starter package for source control.
+qwen-ui-lab treats the download as an export package for source control.
 The package includes component code, DESIGN.md, recipe JSON, manifest JSON,
 tokens CSS, and detection notes so the next step is inspectable.
 ```
@@ -106,7 +106,7 @@ tokens CSS, and detection notes so the next step is inspectable.
 
 **Hook:**
 
-Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind starter package.
+Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind export package.
 
 **Body:**
 
@@ -117,8 +117,8 @@ What qwen-ui-lab now supports:
 - offline-safe detection for common UI structures
 - confidence reasons per detected element
 - editable detection boxes before rebuilding
-- side-by-side screenshot and starter preview
-- starter package with files and review notes
+- side-by-side screenshot and component preview
+- export package with files and review notes
 - design system catalog with reusable snippets
 - PWA, metadata, 404, and release checks
 
@@ -130,7 +130,7 @@ It is a transparent pipeline where every layout decision stays visible.
 
 > Faster starts are useful when they keep the human in control.
 
-**Image:** Side-by-side screenshot versus starter preview
+**Image:** Side-by-side screenshot versus component preview
 
 ---
 

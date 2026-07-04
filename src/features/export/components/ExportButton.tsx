@@ -21,6 +21,11 @@ import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
+import {
+  EXPORT_ACTION_BUTTON_BASE_CLASS,
+  EXPORT_ACTION_BUTTON_ERROR_CLASS,
+  EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+} from "../lib/export-action-button-styles";
 
 export type ExportButtonVariant = "copy" | "export";
 
@@ -190,12 +195,10 @@ export function ExportButton({
       aria-label={ariaLabel}
       aria-busy={isBusy}
       className={cn(
-        "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
+        EXPORT_ACTION_BUTTON_BASE_CLASS,
         overlay && "absolute left-3 top-3 z-20",
-        effectiveStatus === "success" &&
-          "border-success/40 bg-success/10 text-success hover:bg-success/10",
-        effectiveStatus === "error" &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/10",
+        effectiveStatus === "success" && EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+        effectiveStatus === "error" && EXPORT_ACTION_BUTTON_ERROR_CLASS,
         className,
       )}
     >

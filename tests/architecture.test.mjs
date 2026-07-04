@@ -1250,14 +1250,14 @@ test("github gist export helper reuses shared package copy", async () => {
   if (!specifiers.includes("./scaffold-package-docs.mjs")) {
     violations.push(`${toRepoPath(file)} does not import shared package docs`);
   }
-  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot-to-React starter package"')) {
+  if (source.includes('const DEFAULT_EXPORT_PACKAGE_DESCRIPTION = "Screenshot-to-React export package"')) {
     violations.push(`${toRepoPath(file)} duplicates package description copy`);
   }
 
   assert.deepEqual(violations, []);
 });
 
-test("starter package helpers use neutral filename sanitizing", async () => {
+test("export package helpers use neutral filename sanitizing", async () => {
   const files = [
     path.join(process.cwd(), "src", "features", "export", "lib", "github-repo.mjs"),
     path.join(process.cwd(), "src", "features", "export", "lib", "scaffold-package.mjs"),
@@ -1801,7 +1801,7 @@ test("share and export boundaries use the shared privacy redactor", async () => 
   assert.deepEqual(violations, []);
 });
 
-test("export defaults use starter component naming", async () => {
+test("export defaults use component draft naming", async () => {
   const exportDefaultFiles = [
     path.join(process.cwd(), "src", "features", "export", "components", "ExportButton.tsx"),
     path.join(process.cwd(), "src", "features", "export", "components", "GistExportButton.tsx"),

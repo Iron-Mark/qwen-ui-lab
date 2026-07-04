@@ -161,7 +161,7 @@ export function PwaInstallBanner() {
           {hasDeferredPrompt ? (
             <button
               type="button"
-              className={cn(buttonVariants({ variant: "default", size: "sm" }), "h-8 px-2.5")}
+              className={cn(buttonVariants({ variant: "default", size: "sm" }), "min-h-11 px-3")}
               onClick={() => void install()}
             >
               Install
@@ -169,7 +169,7 @@ export function PwaInstallBanner() {
           ) : null}
           <button
             type="button"
-            className={cn(buttonVariants({ variant: "ghost", size: "icon-lg" }), "h-9 w-9")}
+            className={buttonVariants({ variant: "ghost", size: "icon-lg" })}
             title="Dismiss"
             aria-label="Dismiss install banner"
             onClick={dismiss}

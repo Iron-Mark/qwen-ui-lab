@@ -59,11 +59,11 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
   await primaryAnalyzeButton(page).click();
 
   await expect(
-    page.getByText(/Preview ready - copy or download the starter component/i),
+    page.getByText(/Preview ready - copy or download the component draft/i),
   ).toBeVisible({ timeout: 15_000 });
 
   const scaffoldCard = page
-    .getByText("Starter component", { exact: true })
+    .getByText("Component draft", { exact: true })
     .locator("xpath=ancestor::div[contains(@class,'group/card')][1]");
   await expect(scaffoldCard).toHaveScreenshot("post-analyze-scaffold-panel.png", {
     maxDiffPixelRatio: 0.03,
@@ -92,7 +92,7 @@ for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
     await primaryAnalyzeButton(page).click();
 
     await expect(
-      page.getByText(/Preview ready - copy or download the starter component/i),
+      page.getByText(/Preview ready - copy or download the component draft/i),
     ).toBeVisible({ timeout: 15_000 });
 
     const summaryCard = page

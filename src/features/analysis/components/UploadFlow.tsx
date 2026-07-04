@@ -1520,7 +1520,7 @@ function buildExportReadmePreview({
   reviewSummary: string;
 }) {
   return [
-    "# Screenshot-to-React starter package",
+    "# Screenshot-to-React export package",
     "",
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
@@ -1535,8 +1535,8 @@ function buildExportReadmePreview({
     `## ${copy.exportReadmeNext}`,
     "",
     "1. Review detection notes before deleting or merging regions.",
-    "2. Replace starter content with product data.",
-    "3. Run lint/build after placing the starter component.",
+    "2. Wire component content to app data.",
+    "3. Run lint/build after placing the component.",
   ].join("\n");
 }
 
@@ -1861,7 +1861,7 @@ function ExportPackageReviewDialog({
               <GistExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="Screenshot-to-React starter package"
+                description="Screenshot-to-React export package"
                 analyticsSource="upload_flow"
                 analyticsFeature="starter_component"
                 className="sm:w-auto"
@@ -1869,7 +1869,7 @@ function ExportPackageReviewDialog({
               <RepoExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="Screenshot-to-React starter package"
+                description="Screenshot-to-React export package"
                 label={copy.exportRepoInstructions}
                 className="min-h-11 sm:w-auto"
                 analyticsSource="upload_flow"
@@ -1881,7 +1881,7 @@ function ExportPackageReviewDialog({
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
-              description="Screenshot-to-React starter package"
+              description="Screenshot-to-React export package"
               label={copy.exportDownloadPackage}
               exportMode="zip"
               testId="export-package-download"

@@ -85,9 +85,9 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     sourceHash: hashContent(content),
     componentName: inferStarterComponentName(content),
     designTokens: {},
-    screenIntent: { label: "Screenshot starter", confidence: 0.5 },
+    screenIntent: { label: "Screenshot component draft", confidence: 0.5 },
     responsiveIntent: {
-      mode: "responsive starter",
+      mode: "responsive component draft",
       breakpoints: ["mobile", "tablet", "desktop"],
       primaryFlow: "Compare the component with the source screenshot during review.",
     },
@@ -104,7 +104,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     primitiveSummary: [],
     reviewChecklist: [
       "Review spacing, typography, and responsive behavior against the source screenshot.",
-      "Replace starter content with app data.",
+      "Wire component content to app data.",
       "Run lint/build after placing the component.",
     ],
   };
@@ -147,7 +147,7 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
       importPath: `@/components/starters/${stem}`,
       dependencies,
       nextSteps: [
-        "Replace starter copy with product content.",
+        "Wire component content to app-specific content.",
         "Wire cards, tables, charts, and forms to app data.",
         "Review the detection summary before deleting unused regions.",
       ],
@@ -243,7 +243,7 @@ function inferPrimitiveMapFromImports(content) {
   return Object.fromEntries(
     [...new Set(imports)].sort().map((name) => [
       name,
-      `Imported shadcn-style ${name} primitive in the starter component.`,
+      `Imported shadcn-style ${name} primitive in the component draft.`,
     ]),
   );
 }

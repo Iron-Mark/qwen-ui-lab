@@ -39,15 +39,16 @@ export function DeveloperReadinessDialog() {
           align="end"
           className="max-w-64 text-balance text-center leading-5"
         >
-          Review provider, sharing, and export configuration.
+          Review analyzer, sharing, export, and metadata checks.
         </TooltipContent>
       </Tooltip>
 
       <DialogContent className="flex max-h-[min(88vh,44rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
         <DialogHeader className="border-b border-border px-4 pt-4 pb-3">
-          <DialogTitle>Runtime status</DialogTitle>
+          <DialogTitle>Service status</DialogTitle>
           <DialogDescription>
-            Configuration checks for analysis, sharing, exports, and public metadata.
+            Developer-only checks for the services behind analysis, sharing,
+            exports, and public metadata.
           </DialogDescription>
         </DialogHeader>
         <div className="themed-scrollbar min-h-0 flex-1 overflow-y-auto p-4">

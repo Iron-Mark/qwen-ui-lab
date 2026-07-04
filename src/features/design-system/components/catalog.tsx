@@ -179,9 +179,14 @@ export function ExampleThemeToggle() {
       },
       {
         id: "export",
-        label: "Download",
+        label: "Download component",
         preview: (
-          <ExportButton text="const x = 1;" variant="export" filename="snippet.tsx" />
+          <ExportButton
+            text="const x = 1;"
+            variant="export"
+            label="Download component"
+            filename="snippet.tsx"
+          />
         ),
       },
     ],
@@ -528,7 +533,7 @@ export function ExampleLawInformationCard() {
     level: "organism",
     domain: "uilaws",
     name: "UI law compliance checklist",
-    description: "Interactive checklist for reviewing starter UI against UX laws.",
+    description: "Interactive checklist for reviewing component drafts against UX laws.",
     usage: "Manual review below Prepare preview; extend `items` for project rules.",
     sourcePath: "features/design-system/components/UiLawComplianceChecklist.tsx",
     principles: ["fitts", "hick", "jakob", "consistency", "contrast"],

@@ -34,6 +34,35 @@ import {
 } from "../src/features/export/lib/scaffold-package.mjs";
 import { extractProductionScaffoldBlueprint } from "../src/features/export/lib/scaffold-blueprint.mjs";
 
+const GENERATED_STARTER_SLOP_PATTERNS = [
+  /sampleData/,
+  /sampleCollections/,
+  /sampleSectionData/,
+  /sample-screenshot/,
+  /\bsample-(?:nav|stat|chart|activity|actions|brand|form|email|password|oauth|recovery)\b/,
+  /Sample rows:/,
+  /Sample cards:/,
+  /Sample metrics:/,
+  /Sample table columns:/,
+  /Sample chart values:/,
+  /placeholder (?:content|copy)/i,
+  /Sample card content/,
+  /Replace sample/i,
+  /Value or input/,
+  /User input or action/,
+  /Submit action/,
+  /product API data/i,
+  /product data/i,
+  /connect live data/i,
+  /binding live data/i,
+  /live record\b/i,
+  /your data source/i,
+  /sample controls/i,
+  /starter values/i,
+  /product-owned content/i,
+  /product content/i,
+];
+
 function assertGeneratedTsxSyntax(code, label) {
   const result = ts.transpileModule(code, {
     fileName: `${label}.tsx`,
@@ -54,26 +83,7 @@ function assertGeneratedTsxSyntax(code, label) {
 }
 
 function assertNoGeneratedStarterSlop(code, label) {
-  const blockedPatterns = [
-    /sampleData/,
-    /sampleCollections/,
-    /sampleSectionData/,
-    /sample-screenshot/,
-    /\bsample-(?:nav|stat|chart|activity|actions|brand|form|email|password|oauth|recovery)\b/,
-    /Sample rows:/,
-    /Sample cards:/,
-    /Sample metrics:/,
-    /Sample table columns:/,
-    /Sample chart values:/,
-    /placeholder (?:content|copy)/i,
-    /Sample card content/,
-    /Replace sample/i,
-    /Value or input/,
-    /User input or action/,
-    /Submit action/,
-  ];
-
-  for (const pattern of blockedPatterns) {
+  for (const pattern of GENERATED_STARTER_SLOP_PATTERNS) {
     assert.doesNotMatch(code, pattern, `${label} should avoid ${pattern}`);
   }
 }
@@ -696,7 +706,7 @@ test("lookupKnownSample returns rich ecommerce fixture", () => {
   assert.match(known.plan[2].body, /FilterSidebar/);
 });
 
-test("known sample run files export as starter packages", () => {
+test("known sample run files export as export packages", () => {
   const names = [
     "dashboard-reference.png",
     "auth-reference.svg",
@@ -1200,7 +1210,7 @@ test("buildAdvancedOfflineOverrides includes confidence in summary", () => {
   assert.match(advanced.generatedCode, /CatalogStarter/);
 });
 
-test("buildAdvancedOfflineOverrides seeds starter code from offline regions and tokens", () => {
+test("buildAdvancedOfflineOverrides seeds component draft code from offline regions and tokens", () => {
   const offlineInspection = inspectImageDataPixels(createSyntheticScreenshot(120, 80));
   const advanced = buildAdvancedOfflineOverrides(
     {
@@ -1231,7 +1241,7 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /function FormSection/);
   assert.match(advanced.generatedCode, /function GenericSection/);
   assert.match(advanced.generatedCode, /starterData\.screenTitle/);
-  assert.match(advanced.generatedCode, /starter package/);
+  assert.match(advanced.generatedCode, /component draft/);
   assert.doesNotMatch(advanced.generatedCode, /import-ready layout/);
   assert.doesNotMatch(advanced.generatedCode, /production-facing layout/);
   assert.match(advanced.generatedCode, /Integration checklist/);
@@ -1255,7 +1265,7 @@ test("buildAdvancedOfflineOverrides seeds starter code from offline regions and 
   assert.match(advanced.generatedCode, /renderPrimitiveBody/);
   assert.match(advanced.generatedCode, /componentRole/);
   assert.match(advanced.generatedCode, /top-navigation|side-navigation|form-field|primary-action/);
-  assert.match(advanced.generatedCode, /Starter primitive/);
+  assert.match(advanced.generatedCode, /Mapped primitive/);
   assert.match(advanced.generatedCode, /LayoutGridReference/);
   assertNoGeneratedStarterSlop(advanced.generatedCode, "advanced offline starter");
   assert.match(advanced.generatedCode, /header|side-nav/);
@@ -1287,9 +1297,9 @@ test("buildAdvancedOfflineOverrides renders repeated-list patterns as scaffold r
   assert.match(advanced.generatedCode, /"componentRole": "list-row"/);
   assert.match(advanced.generatedCode, /region\.kind === "repeated-list"/);
   assert.match(advanced.generatedCode, /starterCollections\.rows/);
-  assert.match(advanced.generatedCode, /Bind this row to your data source/);
-  assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data/);
-  assert.match(advanced.generatedCode, /text-line signals shape the starter/);
+  assert.match(advanced.generatedCode, /Bind this row to app data/);
+  assert.match(advanced.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data/);
+  assert.match(advanced.generatedCode, /text-line signals shape the component draft/);
 });
 
 test("buildAdvancedOfflineOverrides renders repeated-grid patterns as scaffold regions", () => {
@@ -1589,7 +1599,7 @@ test("buildUiFlowArtifact uses local SVG structure for unknown vector uploads", 
   );
   assert.match(artifact.generatedCode, /const svgLabels/);
   assert.match(artifact.generatedCode, /const svgStructure/);
-  assert.match(artifact.generatedCode, /SVG starter/);
+  assert.match(artifact.generatedCode, /SVG component draft/);
   assert.match(artifact.generatedCode, /Email/);
   assert.match(artifact.generatedCode, /Password/);
   assert.match(artifact.generatedCode, /AuthScreenStarter/);
@@ -1662,7 +1672,7 @@ test("regenerateArtifactFromDetections preserves app-shell scaffold groups", () 
   assert.match(regenerated.generatedCode, /const correctedElements = detectedElements/);
   assert.match(regenerated.generatedCode, /const detectedPatterns: CorrectedPatterns/);
   assert.match(regenerated.generatedCode, /const layoutRegions: LayoutRegion\[\]/);
-  assert.match(regenerated.generatedCode, /Screenshot starter component/);
+  assert.match(regenerated.generatedCode, /Screenshot component draft/);
   assert.match(regenerated.generatedCode, /Integration checklist/);
   assert.match(regenerated.generatedCode, /const shadcnPrimitiveMap/);
   assert.match(regenerated.generatedCode, /CardTitle/);
@@ -1712,8 +1722,8 @@ test("regenerateArtifactFromDetections preserves repeated-list scaffold groups",
   assert.match(regenerated.generatedCode, /function SectionStateHint/);
   assert.match(regenerated.generatedCode, /function SectionStarterDataHint/);
   assertNoGeneratedStarterSlop(regenerated.generatedCode, "regenerated starter");
-  assert.match(regenerated.generatedCode, /Starter rows: /);
-  assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data/);
+  assert.match(regenerated.generatedCode, /Rows: /);
+  assert.match(regenerated.generatedCode, /State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data/);
   assert.match(regenerated.generatedCode, /Repeated list/);
   assert.match(regenerated.generatedCode, /groupedElementIds/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
@@ -1738,7 +1748,7 @@ test("regenerateArtifactFromDetections preserves repeated-grid scaffold groups",
   assert.match(regenerated.generatedCode, /repeatedGrids/);
   assert.match(regenerated.generatedCode, /Detected repeated grid/);
   assert.match(regenerated.generatedCode, /gridTemplateColumns/);
-  assert.match(regenerated.generatedCode, /Starter cards: /);
+  assert.match(regenerated.generatedCode, /Cards: /);
   assert.match(regenerated.generatedCode, /State coverage: include loading cards, empty grid messaging, and unavailable-state handling/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
@@ -1761,7 +1771,7 @@ test("regenerateArtifactFromDetections preserves stat-row scaffold groups", () =
   assert.match(regenerated.generatedCode, /statRows/);
   assert.match(regenerated.generatedCode, /Detected stat row/);
   assert.match(regenerated.generatedCode, /Stat row/);
-  assert.match(regenerated.generatedCode, /Starter metrics: /);
+  assert.match(regenerated.generatedCode, /Metrics: /);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
 
@@ -1814,7 +1824,7 @@ test("regenerateArtifactFromDetections preserves data-table scaffold groups", ()
   assert.match(regenerated.generatedCode, /starterSectionData\.tableColumns/);
   assert.match(regenerated.generatedCode, /"Account", "Status", "Value", "Owner"/);
   assert.doesNotMatch(regenerated.generatedCode, />Cell</);
-  assert.match(regenerated.generatedCode, /Starter table columns: /);
+  assert.match(regenerated.generatedCode, /Table columns: /);
   assert.match(regenerated.generatedCode, /State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
@@ -1837,7 +1847,7 @@ test("regenerateArtifactFromDetections preserves chart-series scaffold groups", 
   assert.match(regenerated.generatedCode, /charts/);
   assert.match(regenerated.generatedCode, /Detected chart series/);
   assert.match(regenerated.generatedCode, /Chart series/);
-  assert.match(regenerated.generatedCode, /Starter chart values: /);
+  assert.match(regenerated.generatedCode, /Chart values: /);
   assert.match(regenerated.generatedCode, /State coverage: include loading, no-data, and request-error summaries/);
   assert.match(regenerated.generatedCode, REGENERATED_PATTERN_SUMMARY_RE);
 });
@@ -1968,7 +1978,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   assert.match(regenerated.generatedCode, /LayoutPreviewStarter/);
   assert.match(regenerated.generatedCode, /const correctionSummary/);
   assert.match(regenerated.generatedCode, /Review updates/);
-  assert.match(regenerated.generatedCode, /Reviewer updates guide this starter/);
+  assert.match(regenerated.generatedCode, /Reviewer updates guide this component draft/);
   assert.match(regenerated.generatedCode, /const screenIntent/);
   assert.match(regenerated.generatedCode, /Screen intent/);
   assert.match(regenerated.generatedCode, /field-or-action/);
@@ -2032,7 +2042,7 @@ test("regenerateArtifactFromDetections uses corrected active elements", () => {
   );
   assert.ok(
     blueprint.reviewChecklist.some((item) =>
-      /rebuild the starter/.test(item),
+      /rebuild the component draft/.test(item),
     ),
   );
   assert.ok(

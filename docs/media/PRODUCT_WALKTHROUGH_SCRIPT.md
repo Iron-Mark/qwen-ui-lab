@@ -20,7 +20,7 @@ Use this script when recording a short product walkthrough.
 **Screen:** App running, light mode, upload flow visible.
 
 **Voiceover:**
-> "Upload a UI screenshot, inspect the detected structure, and download a React/Tailwind starter package."
+> "Upload a UI screenshot, inspect the detected structure, and download a React/Tailwind export package."
 
 ### [0:08-0:22] Upload and analyze
 
@@ -31,7 +31,7 @@ Use this script when recording a short product walkthrough.
 
 ### [0:22-0:35] Prepare preview
 
-**Action:** Click Prepare preview. Show the starter component, side-by-side preview, and visual match badge.
+**Action:** Click Prepare preview. Show the component draft, side-by-side preview, and visual match badge.
 
 **Voiceover:**
 > "The app creates a local preview, so the review flow stays usable without extra setup."
@@ -48,14 +48,14 @@ Use this script when recording a short product walkthrough.
 **Action:** Open the package download panel.
 
 **Voiceover:**
-> "The package includes starter component TSX, design notes, detection JSON, and a manifest for engineering review."
+> "The package includes component draft TSX, design notes, detection JSON, and a manifest for engineering review."
 
-### [0:56-1:08] Show the starter preview
+### [0:56-1:08] Show the component preview
 
 **Action:** Show the preview and switch themes.
 
 **Voiceover:**
-> "The starter output keeps the structure clear: responsive grids, accessible controls, and reusable sections."
+> "The component draft keeps the structure clear: responsive grids, accessible controls, and reusable sections."
 
 ### [1:08-1:15] Closing
 

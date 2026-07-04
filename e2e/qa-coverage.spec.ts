@@ -241,7 +241,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
   await expect(
-    page.getByText(/Preview ready - copy or download the starter component/i),
+    page.getByText(/Preview ready - copy or download the component draft/i),
   ).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
@@ -269,7 +269,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   const snippetDownloadPromise = page.waitForEvent("download");
   await page
     .getByRole("region", { name: /button \(shadcn\) snippet/i })
-    .getByRole("button", { name: /export code/i })
+    .getByRole("button", { name: /download component/i })
     .click();
   const snippetDownload = await snippetDownloadPromise;
   expect(snippetDownload.suggestedFilename()).toMatch(/button.*\.tsx$/i);
@@ -495,7 +495,16 @@ test.describe("marketing surfaces", () => {
     await expect(page.getByTestId("pwa-install-banner")).toBeVisible({
       timeout: 5_000,
     });
-    await page.getByRole("button", { name: /dismiss install banner/i }).click();
+    const dismissButton = page.getByRole("button", { name: /dismiss install banner/i });
+    await expect
+      .poll(() =>
+        dismissButton.evaluate((button) => {
+          const { height, width } = button.getBoundingClientRect();
+          return width >= 44 && height >= 44;
+        }),
+      )
+      .toBe(true);
+    await dismissButton.click();
     await expect(page.getByTestId("pwa-install-banner")).toBeHidden();
   });
 });

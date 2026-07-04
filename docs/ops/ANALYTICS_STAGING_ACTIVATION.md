@@ -44,7 +44,7 @@ Start with these slices in your analytics tool:
 
 - **Filter**: `eventName in [upload.selected, analysis.started, analysis.completed, generate.completed]`
 - **Breakdown**: `route`, `providerState`, `status`
-- **Use**: detect drop-offs from upload to starter preview.
+- **Use**: detect drop-offs from upload to component preview.
 
 ### B. Fallback and Reliability Signals
 

@@ -106,7 +106,7 @@ export const UI_LAWS: UiLaw[] = [
     name: "Rule of Thirds",
     summary: "Key elements along a 3×3 grid feel more balanced.",
     application:
-      "Hero upload zone and side-by-side reference vs starter preview.",
+      "Hero upload zone and side-by-side screenshot vs component preview.",
   },
   {
     id: "color-theory",

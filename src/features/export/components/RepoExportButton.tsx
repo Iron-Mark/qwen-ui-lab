@@ -11,6 +11,11 @@ import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
 import {
+  EXPORT_ACTION_BUTTON_BASE_CLASS,
+  EXPORT_ACTION_BUTTON_ERROR_CLASS,
+  EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+} from "../lib/export-action-button-styles";
+import {
   DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   SCAFFOLD_ZIP_FILENAME,
 } from "../lib/export-package-constants.mjs";
@@ -143,7 +148,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened. Add your starter component and open a PR.",
+            "Compare view opened. Add your component draft and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -212,11 +217,9 @@ export function RepoExportButton({
       aria-busy={status === "exporting"}
       data-testid={testId}
       className={cn(
-        "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
-        status === "success" &&
-          "border-success/40 bg-success/10 text-success hover:bg-success/10",
-        status === "error" &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/10",
+        EXPORT_ACTION_BUTTON_BASE_CLASS,
+        status === "success" && EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+        status === "error" && EXPORT_ACTION_BUTTON_ERROR_CLASS,
         className,
       )}
     >

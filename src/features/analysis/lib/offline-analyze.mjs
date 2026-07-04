@@ -46,7 +46,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the source screenshot, connect product API data, and swap chart libraries if product standards require it.",
+        body: "Verify spacing against the source screenshot, wire app data, and swap chart libraries if the implementation requires it.",
       },
     ],
     generatedCode: `import { StatCard } from "@/features/home/components/StatCard";
@@ -56,7 +56,7 @@ import { ActivityList } from "@/features/home/components/ActivityList";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard starter">
+    <section aria-label="Dashboard component draft">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -110,7 +110,7 @@ import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
 export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth starter" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth component draft" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -167,7 +167,7 @@ import { BottomNav } from "@/features/mobile/components/BottomNav";
 
 export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile starter" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile component draft" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -277,7 +277,7 @@ import { SaveBar } from "@/features/settings/components/SaveBar";
 
 export function SettingsStarter() {
   return (
-    <section aria-label="Settings starter" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings component draft" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -339,7 +339,7 @@ import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
 export function CatalogStarter() {
   return (
-    <div aria-label="Catalog starter" className="min-h-dvh bg-background">
+    <div aria-label="Catalog component draft" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -814,20 +814,20 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="${profile.label} starter"
+      aria-label="${profile.label} component draft"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Starter</Badge>
+            <Badge variant="secondary">Component draft</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component translated from the screenshot structure. Replace starter copy,
-              bind app data, and keep the recipe JSON beside this component during review.
+              Screenshot structure mapped into a React component draft. Review the content,
+              wire app data, and keep the recipe JSON beside this component during integration.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1050,7 +1050,7 @@ function sampleDetectionReason(componentRole, label) {
 }
 
 function samplePrimitiveReason(componentRole) {
-  return `Use ${samplePrimitiveName(componentRole)} semantics for the starter component.`;
+  return `Use ${samplePrimitiveName(componentRole)} semantics for the component draft.`;
 }
 
 function buildKnownSamplePatterns(archetypeId, elements) {
@@ -1166,14 +1166,14 @@ function knownSampleResponsiveIntent(archetypeId) {
   return {
     mode: modes[archetypeId] ?? "responsive-page",
     breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review starter regions, replace starter content, then connect live data.",
+    primaryFlow: "Review detected regions, then wire app data and polish states.",
   };
 }
 
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
-    "Replace starter content",
-    "Bind app data",
+    "Review content",
+    "Wire app data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
 }
@@ -1344,7 +1344,7 @@ import { Card } from "@/components/ui/card";
 
 export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth starter based on ${safeName}">
+    <main aria-label="Auth component draft based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
         <h1 className="text-xl font-semibold">Sign in</h1>
         {/* Email + password fields */}
@@ -1356,7 +1356,7 @@ export function AuthScreenStarter() {
     case "mobile":
       return `export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile starter based on ${safeName}" className="flex min-h-dvh flex-col">
+    <div aria-label="Mobile component draft based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
       <main className="flex-1 space-y-3 p-4">{/* stacked cards */}</main>
       <nav aria-label="Primary" className="border-t p-2">{/* bottom nav */}</nav>
@@ -1366,7 +1366,7 @@ export function AuthScreenStarter() {
     case "settings":
       return `export function SettingsStarter() {
   return (
-    <section aria-label="Settings starter based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <section aria-label="Settings component draft based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
@@ -1394,10 +1394,10 @@ import { Card } from "@/components/ui/card";
 
 export function EmptyStateStarter() {
   return (
-    <main aria-label="Empty-state starter" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Empty-state component draft" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
-        <p className="text-sm text-muted-foreground">Bind app data, upload a source, or create the first item.</p>
+        <p className="text-sm text-muted-foreground">Wire app data, upload a source, or create the first item.</p>
         <Button type="button" className="mx-auto mt-2">Start now</Button>
       </Card>
     </main>
@@ -1407,7 +1407,7 @@ export function EmptyStateStarter() {
       return `export function LandingPageStarter() {
   return (
     <>
-      <section aria-label="Hero starter" className="py-16 text-center">{/* hero */}</section>
+      <section aria-label="Hero component draft" className="py-16 text-center">{/* hero */}</section>
       <section aria-label="Features" className="grid gap-6 md:grid-cols-3">{/* features */}</section>
     </>
   );
@@ -1415,7 +1415,7 @@ export function EmptyStateStarter() {
     case "ecommerce":
       return `export function CatalogStarter() {
   return (
-    <div aria-label="Catalog starter" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Catalog component draft" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -1427,7 +1427,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard starter based on ${safeName}">
+    <section aria-label="Dashboard component draft based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -1516,13 +1516,13 @@ const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap
 export default function ${componentName}() {
   return (
     <main
-      aria-label="${archetype.label} starter based on ${safeName}"
+      aria-label="${archetype.label} component draft based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">SVG starter</Badge>
+            <Badge variant="secondary">SVG component draft</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1658,7 +1658,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} starter.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} component draft.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1724,7 +1724,7 @@ function buildGeneratedSvgResponsiveBlueprint(svgInspection) {
   return {
     mode: portrait ? "svg-mobile-stack" : "svg-responsive-grid",
     breakpoints: portrait ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review SVG labels as semantic regions, then bind sample controls to app data.",
+    primaryFlow: "Review SVG labels as semantic regions, then bind detected controls to app data.",
   };
 }
 
@@ -1768,15 +1768,15 @@ const layoutRegions = ${JSON.stringify(regions, null, 2)};
 const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this starter package to review structure, then replace starter values with your app data.",
-  primaryAction: "Review starter",
+    "Use this component draft to review structure, then wire the content to app data.",
+  primaryAction: "Review layout",
   secondaryAction: "Open design notes",
 };
 
 const starterCollections = {
   rows: [
-    { title: "Queued review", detail: "Bind this row to your data source" },
-    { title: "Ready for integration", detail: "Replace with a live record" },
+    { title: "Queued review", detail: "Bind this row to app data" },
+    { title: "Ready for integration", detail: "Replace with an app record" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
@@ -1882,7 +1882,7 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="${archetype.label} starter from ${safeName}"
+      aria-label="${archetype.label} component draft from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -1932,7 +1932,7 @@ function ImplementationChecklist() {
         <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
           {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
-          {generatedLayoutGrid.columns}-column starter layout for project integration.
+          {generatedLayoutGrid.columns}-column component draft for project integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -2110,7 +2110,7 @@ function buildUsableSections(
       id: region.id || "section-" + (index + 1),
       primitive,
       title: region.label || formatPrimitiveLabel(primitive),
-      guidance: region.guidance || "Bind this starter section to app data and final copy.",
+      guidance: region.guidance || "Bind this component section to app data and final copy.",
       layoutClass: /grid|stat-row|repeated-grid/.test(primitive)
         ? "grid gap-3 sm:grid-cols-2"
         : /action-cluster/.test(primitive)
@@ -2130,17 +2130,17 @@ function buildUsableSections(
 export function LayoutGridReference() {
   return (
     <section
-      aria-label="${archetype.label} starter based on ${safeName}"
+      aria-label="${archetype.label} component draft based on ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Screenshot starter</p>
+        <p className="text-xs font-medium uppercase">Screenshot component draft</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
-          {detectedElements.length} UI elements were detected before starter preview review.
+          {detectedElements.length} UI elements were detected before component preview review.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the starter.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the component draft.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
@@ -2339,7 +2339,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       (_, index) =>
         starterCollections.rows[index] ?? {
           title: "Row " + (index + 1),
-          detail: "Bind this row to your data source",
+          detail: "Bind this row to app data",
         },
     );
     return (
@@ -2357,7 +2357,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </ul>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data.
+          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data.
         </p>
       </div>
     );
@@ -2676,7 +2676,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   return (
     <div className="mt-3 rounded border p-2 text-[11px] opacity-80" style={{ borderColor: tokens.border }}>
-      Starter primitive: {label}
+      Mapped primitive: {label}
     </div>
   );
 }
@@ -3237,7 +3237,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     },
     {
       title: "Human Review",
-      body: "Confirm classification against the screenshot, bind app data, and validate responsive breakpoints.",
+      body: "Confirm classification against the screenshot, wire app data, and validate responsive breakpoints.",
     },
   ];
 

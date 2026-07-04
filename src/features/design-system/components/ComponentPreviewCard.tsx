@@ -196,7 +196,7 @@ export function ComponentPreviewCard({
                 <dt className="font-mono font-medium text-card-foreground">{prop.name}</dt>
                 <dd className="text-muted-foreground">
                   <span className="font-mono text-[0.7rem]">{prop.type}</span>
-                  {" — "}
+                  {" - "}
                   {prop.description}
                 </dd>
               </div>
@@ -254,7 +254,7 @@ export function ComponentPreviewCard({
                           status: "selected",
                         });
                       }}
-                      className="h-8 rounded-full px-3 text-[0.7rem]"
+                      className="min-h-11 rounded-full px-3 text-xs"
                     >
                       {variant.label}
                     </Button>
@@ -272,13 +272,13 @@ export function ComponentPreviewCard({
                 >
                   <TabsList
                     aria-label="Preview device mode"
-                    className="h-9 rounded-full border border-border/70 bg-background/90 p-0.5 shadow-sm"
+                    className="min-h-11 rounded-full border border-border/70 bg-background/90 p-0.5 shadow-sm"
                   >
                     {PREVIEW_MODE_OPTIONS.map(({ value, label, Icon }) => (
                       <TabsTrigger
                         key={value}
                         value={value}
-                        className="h-8 w-8 rounded-full p-0 hover:bg-muted/80 data-active:bg-muted data-active:text-foreground"
+                        className="size-11 min-h-11 rounded-full p-0 hover:bg-muted/80 data-active:bg-muted data-active:text-foreground"
                         aria-label={label}
                         title={label}
                       >

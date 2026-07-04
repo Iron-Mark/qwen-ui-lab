@@ -4,7 +4,7 @@ export const en = {
     badgeOffline: "Local preview",
     title: "Turn screenshots into editable React",
     subtitle:
-      "Upload a UI screenshot, inspect the detected structure, then download a React + Tailwind starter package.",
+      "Upload a UI screenshot, inspect the detected structure, then download a React + Tailwind export package.",
     ctaPrimary: "Start workflow",
     ctaSecondary: "Browse components",
     sampleRun: "Sample run",
@@ -17,7 +17,7 @@ export const en = {
     benefitAnalyzeLabel: "Preview",
     benefitAnalyzeTitle: "Inspect the component",
     benefitAnalyzeBody:
-      "Review the React + Tailwind starter alongside the package preview.",
+      "Review the React + Tailwind component draft alongside the package preview.",
     benefitDesignLabel: "Download",
     benefitDesignTitle: "Download the package",
     benefitDesignBody:
@@ -66,6 +66,81 @@ export const en = {
     notFoundRecoveryTitle: "What you can do next",
     notFoundRecoveryWorkflow: "Create a new summary from the workflow.",
     notFoundRecoverySample: "Open a sample to inspect the package review flow.",
+  },
+  dashboardSample: {
+    launcherEyebrow: "Sample output",
+    title: "Dashboard sample",
+    launcherDescription: "See what a downloaded component draft can look like.",
+    loadSample: "Load sample",
+    loadSampleTooltip: "Load the dashboard sample into the workflow.",
+    preview: "Preview",
+    previewTooltip: "Open the full sample preview without leaving this page.",
+    dialogEyebrow: "Sample preview",
+    dialogDescription:
+      "Preview the dashboard component draft, inspect the plan, then load it into the workflow.",
+    sectionsAria: "Dashboard sample sections",
+    tabPreview: "Preview",
+    tabPlan: "Plan",
+    tabDetected: "Detected UI",
+    tabDownload: "Export",
+    close: "Close",
+    loadIntoWorkflow: "Load into workflow",
+    planCaptureTitle: "Capture layout",
+    planCaptureBody:
+      "Map the dashboard shell into sections, metric cards, charts, activity, and actions.",
+    planDetectTitle: "Detect primitives",
+    planDetectBody:
+      "Snap repeated regions to cards, badges, chart containers, avatar rows, and buttons.",
+    planPrepareTitle: "Prepare component",
+    planPrepareBody:
+      "Download a React + Tailwind export package that matches the sample hierarchy.",
+    planRefineTitle: "Refine output",
+    planRefineBody:
+      "Use editable boxes and confidence reasons before copying or downloading code.",
+    stepLabel: "Step {count}",
+    detectedMetricCards: "Metric cards",
+    detectedMetricCardsBody:
+      "Repeated KPI cards with title, value, and change indicators.",
+    detectedChartRegions: "Chart regions",
+    detectedChartRegionsBody:
+      "Revenue bars plus channel mix visualization containers.",
+    detectedActivityFeed: "Activity feed",
+    detectedActivityFeedBody:
+      "Avatar, name, event summary, and timestamp rhythm.",
+    detectedActionControls: "Action controls",
+    detectedActionControlsBody:
+      "Icon-leading buttons grouped as quick shortcuts.",
+    exportComponentTitle: "React component",
+    exportComponentBody:
+      "Dashboard component with reusable cards, charts, and action groups.",
+    exportTailwindTitle: "Tailwind styling",
+    exportTailwindBody:
+      "Token-based spacing, surfaces, borders, and responsive grids.",
+    exportDownloadTitle: "Workflow export",
+    exportDownloadBody: "Copy TSX or download the package from the workflow.",
+    workflowAria: "Workflow pipeline",
+    workflowTitle: "Screenshot \u2192 Plan \u2192 React",
+    workflowStepScreenshot: "UI screenshot",
+    workflowStepDetection: "Layout detection",
+    workflowStepPlan: "Component plan",
+    workflowStepCode: "React code",
+    workflowStepRefine: "Refine details",
+    workflowStepFinal: "Final component",
+    revenueTitle: "Revenue overview",
+    revenueDescription: "Monthly revenue trend",
+    revenueValueAria: "{month}: ${value}",
+    chartTitle: "Performance chart",
+    chartDescription: "Weekly sessions and channel mix",
+    trafficMix: "Traffic mix",
+    performanceChartAria: "Weekly session performance line chart",
+    performanceTooltipLabel: "Sessions",
+    channelChartAria: "Traffic channel mix donut chart",
+    activityTitle: "Recent activity",
+    activityDescription: "Latest user interactions",
+    activityEmpty: "No recent activity.",
+    quickActionsTitle: "Quick Actions",
+    quickActionsDescription: "Common tasks and shortcuts",
+    chartError: "Chart preview failed to render.",
   },
   account: {
     eyebrow: "Profile",
@@ -153,11 +228,11 @@ export const en = {
     alertOfflineReason: "Reason: {detail}",
     liveFlowLabel: "Screenshot workflow",
     headlineDefault: "Build a component preview",
-    headlineFaster: "Turn one screenshot into starter UI",
+    headlineFaster: "Turn one screenshot into React UI",
     subtitleDefault:
-      "Ideal for rapid design reviews: analyze one screenshot, review a starter component, then reuse downloaded snippets in your next iteration.",
+      "Ideal for rapid design reviews: analyze one screenshot, review a component draft, then reuse downloaded snippets in your next iteration.",
     subtitleFaster:
-      "Upload, analyze, and download reusable React/Tailwind starter components in minutes.",
+      "Upload, analyze, and download reusable React/Tailwind component drafts in minutes.",
     modeLocalReady: "Ready to analyze",
     modeQwenReady: "Ready to analyze",
     modeReviewReady: "Ready for review",
@@ -180,7 +255,7 @@ export const en = {
     failureTitle: "Could not continue",
     loadingTitle: "Preparing preview",
     loadingBody:
-      "Reading the screenshot, mapping layout, and preparing the starter component.",
+      "Reading the screenshot, mapping layout, and preparing the component draft.",
     trySampleRun: "Try sample",
     loadSampleAria: "Load {label} layout",
     loadSampleButton: "Load sample",
@@ -226,11 +301,11 @@ export const en = {
     ctaAnalyzePreview: "Analyze & prepare preview",
     progressLabel: "{step} ({percent}%)",
     statusQwenComplete:
-      "Analysis complete - open the preview to see the starter component.",
+      "Analysis complete - open the preview to see the component draft.",
     statusAnalysisComplete:
-      "Analysis complete - open the preview to see the starter component.",
+      "Analysis complete - open the preview to see the component draft.",
     statusPreviewReady:
-      "Preview ready - copy or download the starter component from the panel on the right.",
+      "Preview ready - copy or download the component draft from the panel on the right.",
     analysisOutputLabel: "Analysis output (screenshot on the left)",
     copyShareLink: "Copy share link",
     copyShortShareLink: "Copy short share link",
@@ -245,14 +320,14 @@ export const en = {
     defaultScreenshotName: "screenshot",
     exportScaffold: "Download component",
     exportScaffoldDesc:
-      "Review the starter files, then copy code, download the component, or download the package.",
+      "Review the package files, then copy code, download the component, or download the package.",
     exportReviewPackage: "Review package",
     exportPackageReady: "Download package",
     exportPackageReadyDesc:
       "Preview the files, screenshot changes, and package summary before downloading.",
     exportPackageTitle: "Review package",
     exportPackageDesc:
-      "This starter package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
+      "This export package is created from the screenshot analysis. It keeps the component, recipe, manifest, tokens, and detection notes together.",
     exportPackageFilesLabel: "files",
     exportPackageFilesTab: "Files",
     exportPackageChangesTab: "Changes",
@@ -261,7 +336,7 @@ export const en = {
       "Download package saves these files as an inspectable zip. Download component saves only the TSX file.",
     exportPackageChangesIntro: "What changed from the uploaded screenshot:",
     exportPackageCopyIntro:
-      "Use these notes to review the starter package during project integration.",
+      "Use these notes to review the export package during project integration.",
     exportMetricFiles: "Files",
     exportMetricRegions: "Regions",
     exportMetricPrimitives: "Primitives",
@@ -279,7 +354,7 @@ export const en = {
     exportChangeCorrections:
       "{edited} updated boxes and {excluded} hidden boxes are captured in the recipe.",
     exportChangePackage:
-      "The starter package includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
+      "The export package includes {count} files: design notes, component, recipe, manifest, tokens, and detection notes.",
     exportReadmeIntent: "Screen intent",
     exportReadmeComponent: "Entry component",
     exportReadmeResponsive: "Responsive mode",
@@ -302,7 +377,7 @@ export const en = {
     toastDesignDocExported: "Design.md downloaded",
     toastPackageDownloaded: "Package downloaded",
     exportGenerateHint: "Prepare preview to see live stats alongside the snippet.",
-    generatedScaffold: "Starter component",
+    generatedScaffold: "Component draft",
     livePreview: "Live preview",
     detectionDetails: "Detection details",
     detectionElementType: "Element type",
@@ -356,6 +431,10 @@ export type ShareDictionary = {
   [K in keyof (typeof en)["share"]]: string;
 };
 
+export type DashboardSampleDictionary = {
+  [K in keyof (typeof en)["dashboardSample"]]: string;
+};
+
 export type AccountDictionary = {
   [K in keyof (typeof en)["account"]]: string;
 };
@@ -369,6 +448,7 @@ export type Dictionary = {
   header: HeaderDictionary;
   notFound: NotFoundDictionary;
   share: ShareDictionary;
+  dashboardSample: DashboardSampleDictionary;
   account: AccountDictionary;
   designSystem: DesignSystemDictionary;
   uploadFlow: UploadFlowDictionary;

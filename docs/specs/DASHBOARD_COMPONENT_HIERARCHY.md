@@ -92,7 +92,7 @@ src/
       ChartPreview.tsx   - Chart summary preview
       WorkflowBanner.tsx - Pipeline visualization
   data/
-    dashboard-data.ts    - Typed sample data + interfaces
+    dashboard-data.ts    - Typed example data + interfaces
   lib/
     cn.ts                - clsx + tailwind-merge utility
 ```

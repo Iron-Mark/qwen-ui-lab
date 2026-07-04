@@ -1,6 +1,6 @@
 # qwen-ui-lab
 
-Screenshot-to-React workflow: turn UI screenshots into inspectable React + Tailwind starter packages.
+Screenshot-to-React workflow: turn UI screenshots into inspectable React + Tailwind export packages.
 
 Production: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 

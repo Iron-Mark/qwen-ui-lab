@@ -231,7 +231,7 @@ For local dev: Mailpit/Mailhog SMTP on `localhost:1025` - same pattern as share-
 |-------|----------------------------|----------------|
 | Unit | Keep `tests/auth.test.mjs` for browser-local profile | Add adapter mocks |
 | E2E | `e2e/account.spec.ts` unchanged | Separate tagged spec or mocked OAuth |
-| Contract | N/A | Smoke: `GET /api/auth/session` returns 401 when logged out |
+| Contract | Not applicable | Smoke: `GET /api/auth/session` returns 401 when logged out |
 
 ---
 

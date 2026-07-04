@@ -29,9 +29,22 @@ const PUBLIC_COPY_FILES = [
   "docs/ops/STORYBOOK.md",
   "docs/specs/PULL_REQUEST_TEMPLATE.md",
   "docs/specs/ARTIFACT_CHECKLIST.md",
+  "docs/specs/UI_TO_COMPONENT_SKILL.md",
+  "docs/specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md",
+  "docs/specs/DASHBOARD_COMPONENT_HIERARCHY.md",
+  "docs/specs/DASHBOARD_QWEN_CODE_PLAN.md",
+  "docs/specs/DASHBOARD_REVIEW_NOTES.md",
+  "docs/specs/DASHBOARD_LIMITATIONS.md",
   "public/manifest.json",
   "public/offline.html",
+  "public/references/auth-reference.svg",
+  "public/references/dashboard-reference.svg",
+  "public/references/ecommerce-reference.svg",
   "public/references/landing-reference.svg",
+  "public/references/mobile-reference.svg",
+  "public/references/settings-reference.svg",
+  "public/references/stress-dashboard-reference.svg",
+  "public/references/stress-list-reference.svg",
   "src/lib/seo.ts",
   "src/app/globals.css",
   "src/features/home/lib/home-route.ts",
@@ -172,9 +185,15 @@ const BANNED_PUBLIC_PHRASES = [
   "Export snippets",
   "Upload a UI screenshot and export",
   "then export a React",
-  "copy or export the starter component",
+  "Starter component",
+  "starter component",
+  "starter preview",
+  "starter UI",
+  "starter output",
+  "starter snippets",
+  "starter examples",
+  "copy or export the component draft",
   "export snippets your team",
-  "from the export package",
   "Add qwen-ui-lab generated UI package",
   "Gist export unavailable",
   "GitHub Gist export is not configured",
@@ -248,7 +267,6 @@ const BANNED_PUBLIC_PHRASES = [
   "export-ready files",
   "export-ready snippets",
   "export-ready groups",
-  "Screenshot export",
   "Dashboard export based",
   "Dashboard / analytics export",
   "Auth export",
@@ -307,10 +325,6 @@ const BANNED_PUBLIC_PHRASES = [
   "No layout regions were exported",
   "No detected elements were exported",
   "No low-confidence regions or elements were exported",
-  "React export package",
-  "portable export package",
-  "Unzip this export package",
-  "This export package is created",
   "The export now includes",
   "responsive export",
   "shape the export",
@@ -335,6 +349,7 @@ const BANNED_PUBLIC_PHRASES = [
   "\u8bd5\u7528\u6837\u4f8b\u622a\u56fe",
   "\u52a0\u8f7d\u53c2\u8003\u56fe",
   "React + Tailwind \u9879\u76ee\u5305",
+  "\u8d77\u59cb\u7ec4\u4ef6",
   "\u52a0\u8f7d {label} \u6837\u4f8b",
   "\u5df2\u52a0\u8f7d {label} \u6837\u4f8b",
   "Fallback content with recovery action",
@@ -350,6 +365,7 @@ const BANNED_PUBLIC_PHRASES = [
   "Handoff bundle",
   "handoff checklist",
   "Handoff checklist",
+  "sample data",
   "sample data constants",
   "text fallback",
   "unavailable-item fallbacks",
@@ -371,6 +387,7 @@ const BANNED_PUBLIC_PHRASES = [
   "AI-generated baseline",
   "Qwen Code scaffold",
   "MockedQwenDashboard",
+  "AI-generated",
   "Ship UI faster with AI",
   "AI assisted scaffolding",
   "assisted scaffolding",
@@ -386,7 +403,7 @@ const BANNED_PUBLIC_PHRASES = [
   "Refined starter",
   "Screenshot Starter Refinement",
   "Before finalizing",
-  "before finalizing any starter component",
+  "before finalizing any component draft",
   "Manual (requires human action)",
   "manual edits",
   "exported TSX",
@@ -398,6 +415,7 @@ const BANNED_PUBLIC_PHRASES = [
   "After approval",
   "are approved",
   "Plan props, mock data",
+  "mock data",
   "Use mock data from local data files",
   "Mock data is separated",
   "Typed mock data",
@@ -429,6 +447,10 @@ const BANNED_PUBLIC_PHRASES = [
   "final scaffold",
   "review scaffold",
   "final screenshot clone",
+  "product data",
+  "product API data",
+  "product content",
+  "product-owned content",
   "not mysterious",
   "not a black box",
   "starter code, not a finished product claim",
@@ -452,6 +474,7 @@ const BANNED_PUBLIC_PHRASES = [
   "import-ready layout",
   "Import checklist",
   "Ready for import review",
+  "Package readiness",
   "Generating preview",
   "Ship React-ready",
   "faster path to conversion",
@@ -524,6 +547,9 @@ const BANNED_PUBLIC_PHRASES = [
   "toastRestoredDemo",
   "DemoPageClient",
   "DemoPage",
+  "A component draft file plus supporting integration documents.",
+  "A portable starter for adapting screenshot-inspired UI inside your app.",
+  "A portable starter package with recipe, manifest, tokens, and detection notes.",
   "buildDemoAnalyzeResponse",
   "demoArchetype",
   "demoArchetypeLabel",
@@ -838,6 +864,18 @@ test("artifact and walkthrough paths point to existing repo files", async () => 
   }
 
   assert.deepEqual(missing, []);
+});
+
+test("all spec markdown files are covered by public copy guardrails", async () => {
+  const specsDir = path.join(process.cwd(), "docs", "specs");
+  const entries = await fs.readdir(specsDir, { withFileTypes: true });
+  const specFiles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+    .map((entry) => `docs/specs/${entry.name}`)
+    .sort();
+  const guardedSpecFiles = PUBLIC_COPY_FILES.filter((file) => file.startsWith("docs/specs/")).sort();
+
+  assert.deepEqual(guardedSpecFiles, specFiles);
 });
 
 test("ops docs use product-first local-analysis wording", async () => {

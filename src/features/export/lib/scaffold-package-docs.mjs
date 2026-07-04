@@ -6,12 +6,12 @@ import {
 export const DEFAULT_EXPORT_SOURCE_REPO = "Iron-Mark/qwen-ui-lab";
 export { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./export-package-constants.mjs";
 const STARTER_PACKAGE_SCHEMA = "qwen-ui-lab/starter-package@1";
-const EXPORT_README_TITLE = "Screenshot-to-React starter package";
+const EXPORT_README_TITLE = "Screenshot-to-React export package";
 const REVIEW_UPDATES_HEADING = "Review updates";
 const STARTER_PACKAGE_INTRO =
-  "Use this as a starter package: place the files in your app, wire app data, and compare the screen against the uploaded screenshot.";
+  "Use this as an export package: place the files in your app, wire app data, and compare the screen against the uploaded screenshot.";
 const RICH_PACKAGE_INTRO =
-  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as a starter package that still needs app data wiring and visual parity checks.";
+  "This package turns the screenshot analysis into files you can compare, adapt, and iterate in your app. Treat it as an export package that still needs app data wiring and visual parity checks.";
 
 export function buildScaffoldReadme({
   filename,
@@ -28,11 +28,11 @@ ${STARTER_PACKAGE_INTRO}
 
 - \`README.md\` - package overview and integration checklist
 - \`DESIGN.md\` - design notes, review items, and responsive assumptions
-- \`${filename}\` - React + Tailwind starter component
+- \`${filename}\` - React + Tailwind component draft
 
 ## Next steps
 
-1. Unzip this starter package into your app.
+1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review the design notes and detection notes before connecting the component to a route.
@@ -54,7 +54,7 @@ export function buildProductionScaffoldReadme({
   dependencies = normalizeDependencies(dependencies);
   const designDoc = files.designDoc;
   componentName = normalizeComponentName(componentName);
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot component draft";
   const regionCount = blueprint?.layoutRegions?.length ?? 0;
   const elementCount = blueprint?.detectedElements?.length ?? 0;
   const primitiveCount = Object.keys(blueprint?.shadcnPrimitiveMap ?? {}).length;
@@ -116,8 +116,8 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 ## Integration checklist
 
 1. Copy \`src/components/starters/\` into your app.
-2. Add the starter component to the route or page where it belongs.
-3. Replace starter content with real app data.
+2. Add the component to the route or page where it belongs.
+3. Wire component content to app data.
 4. Keep the recipe JSON during integration so review updates can be compared against the screenshot-derived source.
 5. Verify keyboard order, visible focus, labels, empty/loading/error states, and color contrast.
 6. Run lint/build and verify mobile, tablet, and desktop widths.
@@ -147,9 +147,9 @@ ${STARTER_PACKAGE_INTRO}
 
 ## What this package is
 
-- A starter component file plus supporting integration documents.
-- A portable starter for adapting screenshot-inspired UI inside your app.
-- A portable starter package with recipe, manifest, tokens, and detection notes.
+- A React component file plus supporting integration documents.
+- A portable starting point for adapting screenshot-inspired UI inside your app.
+- A package with recipe, manifest, tokens, and detection notes for review.
 
 ## What this package still needs
 
@@ -160,7 +160,7 @@ ${buildReviewContractMarkdown({ files })}
 
 ## What changed from the screenshot
 
-- The starter component was packaged with integration metadata.
+- The component draft was packaged with integration metadata.
 - ${DEFAULT_NO_REVIEW_UPDATES}
 - Compare the component against the screenshot before connecting it to a route.
 
@@ -188,7 +188,7 @@ ${dependencies.length ? dependencies.map((item) => `- \`${item}\``).join("\n") :
 
 ## Next steps
 
-1. Unzip this starter package into your app.
+1. Unzip this export package into your app.
 2. Install any missing dependencies referenced by the component.
 3. Adjust imports and routes to match your project structure.
 4. Review \`DESIGN.md\` and the detection notes before connecting the component to a route.
@@ -240,7 +240,7 @@ export function buildDetectionSummaryMarkdown(blueprint) {
 
   return `# Detection summary
 
-This file explains how the uploaded screenshot was translated into the starter component. Use it to review confidence, decide which sections need app data, and rebuild the starter consistently.
+This file explains how the uploaded screenshot was translated into the component draft. Use it to review confidence, decide which sections need app data, and rebuild the component consistently.
 
 ## Screen intent
 
@@ -311,12 +311,12 @@ ${elementLines || "- No detected elements were captured."}
 
 ## Integration notes
 
-${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n") : "- Validate the starter against the source screenshot before wiring app data."}
+${reviewChecklist.length ? reviewChecklist.map((item) => `- ${item}`).join("\n") : "- Validate the component draft against the source screenshot before wiring app data."}
 `;
 }
 
 export function buildPackageDesignMarkdown({
-  description = "React starter package",
+  description = "React export package",
   files,
   componentName,
   blueprint,
@@ -325,7 +325,7 @@ export function buildPackageDesignMarkdown({
   files = normalizePackageFiles(files);
   dependencies = normalizeDependencies(dependencies);
   componentName = normalizeComponentName(componentName);
-  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot starter";
+  const screenIntent = blueprint?.screenIntent?.label ?? "Screenshot component draft";
   const responsiveIntent = blueprint?.responsiveIntent;
   const primitiveMap = Object.entries(blueprint?.shadcnPrimitiveMap ?? {})
     .sort(([first], [second]) => first.localeCompare(second))
@@ -333,7 +333,7 @@ export function buildPackageDesignMarkdown({
     .join("\n");
   const reviewChecklist = blueprint?.reviewChecklist?.length
     ? blueprint.reviewChecklist.map((item) => `- ${item}`).join("\n")
-    : "- Review the starter component against the source screenshot.";
+    : "- Review the component draft against the source screenshot.";
   const updateSummary = formatReviewUpdatesSection(blueprint);
 
   return `# Design notes
@@ -348,13 +348,13 @@ ${description}
 
 ## Layout decisions
 
-- The starter component is structured as portable project files, not a pixel-for-pixel screenshot copy.
+- The component draft is structured as portable project files, not a pixel-for-pixel screenshot copy.
 - Repeated regions should remain as small subcomponents when you adapt the code.
 - Token values are isolated in \`${files.tokens}\` so visual tuning can happen without rewriting component structure.
 
 ## Responsive assumptions
 
-- Mode: ${responsiveIntent?.mode ?? "responsive starter"}
+- Mode: ${responsiveIntent?.mode ?? "responsive component draft"}
 - Breakpoints: ${(responsiveIntent?.breakpoints ?? ["mobile", "tablet", "desktop"]).join(", ")}
 - Primary flow: ${responsiveIntent?.primaryFlow ?? "Compare mobile, tablet, and desktop layouts against the source screenshot."}
 
@@ -392,7 +392,7 @@ ${reviewChecklist}
 
 - Confirm interactive controls have visible labels and keyboard focus.
 - Add real loading, empty, and error states for data-backed sections.
-- Check color contrast after replacing starter content and tokens.
+- Check color contrast after updating component content and tokens.
 `;
 }
 
@@ -406,7 +406,7 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
 
   return {
     schema: STARTER_PACKAGE_SCHEMA,
-    packageId: `qwen-${sourceHash.slice(0, 12)}`,
+    packageId: `starter-${sourceHash.slice(0, 12)}`,
     generator: blueprint.generator,
     sourceHash,
     component: {
@@ -449,11 +449,11 @@ export function buildProductionManifest({ blueprint, dependencies, files, stem }
         "Visual parity, accessibility, responsive layout, and app data states are verified.",
     },
     qualityGates: [
-      "Compare the placed starter against the source screenshot.",
+      "Compare the placed component against the source screenshot.",
       "Review detection summary, low-confidence regions, and updated boxes.",
-      "Replace starter data and copy with product-owned content.",
+      "Wire component content to app-specific content.",
       "Add or verify loading, empty, error, and keyboard focus states.",
-      "Run app lint/build after placing the starter.",
+      "Run app lint/build after placing the component.",
       "Verify responsive layout at mobile, tablet, and desktop widths.",
     ],
   };
@@ -506,7 +506,7 @@ export default function Screen() {
 }
 \`\`\`
 
-Use this wiring example when placing the starter in your app. Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the starter until visual verification is complete.`;
+Use this wiring example when placing the component in your app. Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the component draft until visual verification is complete.`;
 }
 
 function buildImportReadinessMarkdown({ dependencies, files }) {
@@ -516,12 +516,12 @@ function buildImportReadinessMarkdown({ dependencies, files }) {
     ? dependencies.map((item) => `\`${item}\``).join(", ")
     : "No shadcn component imports were inferred; verify imports and primitive wrappers during review.";
 
-  return `## Package readiness
+  return `## Integration checks
 
 - Required UI imports: ${dependencyLine}
 - Place \`${files.component}\`, \`${files.tokens}\`, and the supporting docs together in your app.
 - Keep \`${files.recipe}\` and \`${files.manifest}\` until screenshot parity, accessibility, and responsive checks pass.
-- Run lint/build after placing the starter and verify mobile, tablet, and desktop widths.`;
+- Run lint/build after placing the component and verify mobile, tablet, and desktop widths.`;
 }
 
 function buildReviewContractMarkdown({ files }) {
@@ -530,7 +530,7 @@ function buildReviewContractMarkdown({ files }) {
 
   return `## Review contract
 
-- Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the starter until verification is complete.
+- Keep \`${files.recipe}\`, \`${files.manifest}\`, and \`${files.detectionSummary}\` with the component draft until verification is complete.
 - Compare the placed component against the screenshot.
 - Verify keyboard focus, labels, responsive layout, and real loading/empty/error states.
 - After verification, keep \`${designDoc}\` if it helps future maintenance; support files can be removed once their decisions are captured in app code or tests.`;
@@ -771,7 +771,7 @@ function buildConfidenceReasonSummary(elements) {
       const prefix = element.userEdited
           ? "box update plus detector evidence"
         : element.included === false
-          ? "hidden from starter output"
+          ? "hidden from component draft"
           : "detector evidence";
       const evidence = reasons.length
         ? reasons
@@ -815,7 +815,7 @@ function fallbackDetectionReasons(item, role) {
   }
 
   if (item?.included === false) {
-    reasons.push("hidden during review, so this box stays out of starter sections");
+    reasons.push("hidden during review, so this box stays out of component sections");
   }
 
   if (typeof confidence === "number") {

@@ -2,7 +2,7 @@
   "id": "/",
   "name": "qwen-ui-lab - screenshot to React",
   "short_name": "qwen-ui-lab",
-  "description": "Screenshot-to-React workflow with inspectable starter packages.",
+  "description": "Screenshot-to-React workflow with inspectable export packages.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-US",
@@ -12,7 +12,7 @@
   "orientation": "any",
   "background_color": "#fafafa",
   "theme_color": "#18181b",
-  "categories": ["developer", "productivity", "utilities"],
+  "categories": ["productivity", "utilities", "design"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -55,7 +55,7 @@
     {
       "name": "Analyze screenshot",
       "short_name": "Analyze",
-      "description": "Upload a UI screenshot and download a starter package.",
+      "description": "Upload a UI screenshot and download an export package.",
       "url": "/#upload-flow",
       "icons": [
         {
@@ -81,7 +81,7 @@
     {
       "name": "Sample run",
       "short_name": "Sample",
-      "description": "Open a guided layout and review a starter preview.",
+      "description": "Open a guided layout and review a component preview.",
       "url": "/demo",
       "icons": [
         {

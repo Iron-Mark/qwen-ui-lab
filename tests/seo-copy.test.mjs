@@ -12,20 +12,20 @@ const homeRouteSource = readFileSync(
   "utf8",
 );
 
-test("site metadata keeps starter-package positioning", () => {
-  assert.match(seoSource, /React \+ Tailwind starter packages/);
-  assert.match(seoSource, /React \+ Tailwind starter package/);
-  assert.match(seoSource, /React\/Tailwind starter package download/);
+test("site metadata keeps export-package positioning", () => {
+  assert.match(seoSource, /React \+ Tailwind export packages/);
+  assert.match(seoSource, /React \+ Tailwind export package/);
+  assert.match(seoSource, /React\/Tailwind export package download/);
   assert.match(seoSource, /starter project files/);
-  assert.doesNotMatch(seoSource, /React \+ Tailwind package/);
-  assert.doesNotMatch(seoSource, /React\/Tailwind package/);
+  assert.doesNotMatch(seoSource, /React \+ Tailwind starter package/);
+  assert.doesNotMatch(seoSource, /React\/Tailwind starter package/);
   assert.doesNotMatch(seoSource, /export-ready project files/);
 });
 
-test("home route metadata mirrors starter-package positioning", () => {
-  assert.match(homeRouteSource, /React \+ Tailwind starter package/);
-  assert.match(homeRouteSource, /React\/Tailwind starter package/);
-  assert.match(homeRouteSource, /React \+ Tailwind starter package download/);
-  assert.doesNotMatch(homeRouteSource, /React \+ Tailwind package/);
-  assert.doesNotMatch(homeRouteSource, /React\/Tailwind package/);
+test("home route metadata mirrors export-package positioning", () => {
+  assert.match(homeRouteSource, /React \+ Tailwind export package/);
+  assert.match(homeRouteSource, /React\/Tailwind export package/);
+  assert.match(homeRouteSource, /React \+ Tailwind export package download/);
+  assert.doesNotMatch(homeRouteSource, /React \+ Tailwind starter package/);
+  assert.doesNotMatch(homeRouteSource, /React\/Tailwind starter package/);
 });

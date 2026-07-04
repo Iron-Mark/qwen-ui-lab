@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createExportActionAriaLabel } from "../src/features/export/lib/export-action-labels.mjs";
+import {
+  EXPORT_ACTION_BUTTON_BASE_CLASS,
+  EXPORT_ACTION_BUTTON_ERROR_CLASS,
+  EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+} from "../src/features/export/lib/export-action-button-styles.ts";
 
 test("createExportActionAriaLabel adds context only to generic code actions", () => {
   assert.equal(createExportActionAriaLabel("Copy"), "Copy code");
@@ -23,4 +28,19 @@ test("createExportActionAriaLabel falls back to a useful subject", () => {
   assert.equal(createExportActionAriaLabel(""), "code");
   assert.equal(createExportActionAriaLabel(null, "package"), "package");
   assert.equal(createExportActionAriaLabel(undefined, ""), "code");
+});
+
+test("export action button styles preserve shared interaction states", () => {
+  assert.match(EXPORT_ACTION_BUTTON_BASE_CLASS, /\bmin-h-11\b/);
+  assert.match(EXPORT_ACTION_BUTTON_BASE_CLASS, /\bmin-w-11\b/);
+  assert.match(EXPORT_ACTION_BUTTON_BASE_CLASS, /\btouch-manipulation\b/);
+  assert.ok(
+    EXPORT_ACTION_BUTTON_BASE_CLASS.includes(
+      "transition-[transform,background-color,border-color,color,box-shadow]",
+    ),
+  );
+  assert.match(EXPORT_ACTION_BUTTON_BASE_CLASS, /\bmotion-reduce:transition-none\b/);
+  assert.match(EXPORT_ACTION_BUTTON_BASE_CLASS, /\bmotion-reduce:hover:translate-y-0\b/);
+  assert.match(EXPORT_ACTION_BUTTON_SUCCESS_CLASS, /\bborder-success\/40\b/);
+  assert.match(EXPORT_ACTION_BUTTON_ERROR_CLASS, /\bborder-destructive\/40\b/);
 });

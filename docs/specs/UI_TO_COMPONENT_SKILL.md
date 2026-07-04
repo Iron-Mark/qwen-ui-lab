@@ -22,8 +22,8 @@ Help convert UI screenshots, design sources, and visual descriptions into clean,
 1. Analyze the screenshot, design source, or description.
 2. Identify layout structure, reusable components, and visual hierarchy.
 3. Create a component hierarchy before writing code.
-4. Plan props, sample data, and file structure.
-5. Build small reusable starter components.
+4. Plan props, example data, and file structure.
+5. Build small reusable component drafts.
 6. Review accessibility, responsiveness, naming, and maintainability.
 7. Avoid over-engineering.
 
@@ -33,7 +33,7 @@ Help convert UI screenshots, design sources, and visual descriptions into clean,
 - Use TypeScript.
 - Use Tailwind CSS.
 - Keep components small and composable.
-- Use typed sample data from local data files.
+- Use typed example data from local data files.
 - Avoid unnecessary dependencies.
 - Do not hardcode repeated content.
 - Prefer readable Tailwind grouping.
@@ -43,27 +43,27 @@ Help convert UI screenshots, design sources, and visual descriptions into clean,
 
 During review, check:
 
-- Is the layout responsive-
-- Are components reusable-
-- Are props clean and minimal-
-- Are interactive elements accessible-
-- Are headings structured correctly-
-- Are repeated UI blocks data-driven-
-- Are class names readable-
-- Is the component easy to extend-
+- Is the layout responsive?
+- Are components reusable?
+- Are props clean and minimal?
+- Are interactive elements accessible?
+- Are headings structured correctly?
+- Are repeated UI blocks data-driven?
+- Are class names readable?
+- Is the component easy to extend?
 
 
 ## Source: checklist.md
 
 # UI-to-Component Checklist
 
-Use this while reviewing any starter component.
+Use this while reviewing any component draft.
 
 ## Structure
 
 - [ ] Component hierarchy matches visual layout
 - [ ] Props are typed with TypeScript interfaces
-- [ ] Sample data is separated into a data file
+- [ ] Example data is separated into a data file
 - [ ] No hardcoded repeated content
 
 ## Accessibility

@@ -48,11 +48,11 @@ export function mergeManualCorrectionReasons({
   if (!included) {
     correctionReasons.splice(1, 0, {
       code: "manual-exclusion",
-      label: "Hidden from starter",
+      label: "Hidden from component draft",
       evidence:
         source === "regeneration"
-          ? "This detection was hidden during review, so it stays out of starter sections."
-          : "This box stays hidden from starter sections until included again.",
+          ? "This detection was hidden during review, so it stays out of component sections."
+          : "This box stays hidden from component sections until included again.",
       weight: 0.98,
     });
   }

@@ -56,7 +56,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
     repo: "qwen-ui-lab",
     base: "main",
     filename: "starter-auth.tsx",
-    description: "starter package",
+    description: "export package",
   });
 
   assert.match(result.url, /^https:\/\/github\.com\/Iron-Mark\/qwen-ui-lab\/compare\//);
@@ -64,7 +64,7 @@ test("buildRepoCompareExport returns compare URL and instructions", () => {
   assert.match(decodeURIComponent(result.url), /add the package files from the package panel/);
   assert.doesNotMatch(decodeURIComponent(result.url), /paste package contents manually/);
   assert.match(result.branch, /^qwen-ui-lab-starter-/);
-  assert.match(result.instructions, /create the starter branch/);
+  assert.match(result.instructions, /create a feature branch/);
   assert.match(result.instructions, /add the package files from the package panel/);
   assert.doesNotMatch(result.instructions, /create the export branch/);
 });
@@ -129,7 +129,7 @@ test("extractProductionScaffoldBlueprint reads offline scaffold metadata", () =>
   assert.ok(blueprint.reviewChecklist.some((item) => /table rows/.test(item)));
   assert.ok(
     blueprint.reviewChecklist.some((item) =>
-      /Validate 1 starter layout region before deleting or merging sections\./.test(item),
+      /Validate 1 component-draft layout region before deleting or merging sections\./.test(item),
     ),
   );
   assert.ok(
@@ -185,7 +185,7 @@ test("buildScaffoldPackageFileMap keeps starter package paths consistent", () =>
   });
 });
 
-test("buildScaffoldZipEntries creates starter package for offline scaffolds", () => {
+test("buildScaffoldZipEntries creates export package for offline scaffolds", () => {
   const entries = buildScaffoldZipEntries({
     content: RICH_GENERATED_SCAFFOLD,
     filename: "detected-dashboard.tsx",
@@ -202,8 +202,8 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     "src/components/starters/detected-dashboard.tokens.css",
     "docs/detected-dashboard.detection.md",
   ]);
-  assert.match(entries[0].content, /Screenshot-to-React starter package/);
-  assert.match(entries[0].content, /starter package that still needs app data wiring and visual parity checks/);
+  assert.match(entries[0].content, /Screenshot-to-React export package/);
+  assert.match(entries[0].content, /export package that still needs app data wiring and visual parity checks/);
   assert.doesNotMatch(entries[0].content, /final production|production data wiring/);
   assert.match(
     entries[0].content,
@@ -213,12 +213,12 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
     entries[0].content,
     /Verification notes: 1 low-confidence element plus \d+ checklist items during review\./,
   );
-  assert.match(entries[0].content, /## Package readiness/);
+  assert.match(entries[0].content, /## Integration checks/);
   assert.match(entries[0].content, /Required UI imports: .*@\/components\/ui\/button/);
   assert.match(entries[1].content, /Design notes/);
   assert.match(entries[1].content, /## Review updates/);
   assert.match(entries[1].content, /## Review contract/);
-  assert.match(entries[1].content, /## Package readiness/);
+  assert.match(entries[1].content, /## Integration checks/);
   assert.match(entries[1].content, /Updated boxes: 1/);
   assert.match(entries[1].content, /Hidden boxes: 1/);
   assert.match(
@@ -248,7 +248,7 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
   );
   assert.match(
     entries[6].content,
-    /primary-action: box update plus detector evidence; box update marks this detection as intentional; hidden during review, so this box stays out of starter sections; low-confidence score 68%\./,
+    /primary-action: box update plus detector evidence; box update marks this detection as intentional; hidden during review, so this box stays out of component sections; low-confidence score 68%\./,
   );
   assert.match(entries[6].content, /## Review notes/);
   assert.match(entries[6].content, /Keep this detection note with the package when any low-confidence or updated boxes remain/);
@@ -273,7 +273,7 @@ test("buildScaffoldZipEntries creates starter package for offline scaffolds", ()
 
   const manifest = JSON.parse(entries[4].content);
   assert.equal(manifest.schema, "qwen-ui-lab/starter-package@1");
-  assert.equal(manifest.packageId, `qwen-${manifest.sourceHash.slice(0, 12)}`);
+  assert.equal(manifest.packageId, `starter-${manifest.sourceHash.slice(0, 12)}`);
   assert.equal(manifest.contents.includesOriginalImage, false);
   assert.equal(manifest.contents.includesSecrets, false);
   assert.equal(manifest.corrections.appliedEdits, 1);

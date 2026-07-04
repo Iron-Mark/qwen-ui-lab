@@ -19,7 +19,7 @@ export {
 } from "./scaffold-package.mjs";
 
 export const REPO_EXPORT_COMPARE_INSTRUCTIONS =
-  "Use the compare view: create the starter branch, add the package files from the package panel, and open a pull request.";
+  "Use the compare view: create a feature branch, add the package files from the package panel, and open a pull request.";
 
 /**
  * @param {Record<string, string | undefined>} [env]
@@ -77,10 +77,10 @@ export function buildRepoCompareExport({
     redactSensitiveText(description).trim().slice(0, 256) ||
     DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const head = `qwen-ui-lab-starter-${Date.now()}`;
-  const title = encodeURIComponent("Add screenshot-to-React starter package");
+  const title = encodeURIComponent("Add screenshot-to-React export package");
   const body = encodeURIComponent(
     [
-      "## Screenshot-to-React starter package",
+      "## Screenshot-to-React export package",
       "",
       safeDescription,
       "",
@@ -88,7 +88,7 @@ export function buildRepoCompareExport({
       "",
       "### Steps",
       `1. Create branch \`${head}\` from \`${base}\`.`,
-      `2. Add \`${safeFilename}\` with the starter UI package.`,
+      `2. Add \`${safeFilename}\` with the export package.`,
       "3. Open a pull request.",
       "",
       "---",

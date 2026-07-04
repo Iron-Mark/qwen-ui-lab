@@ -232,7 +232,7 @@ Release date: 2026-06-03
 
 ### User-facing features
 
-- Upload + analyze flow at `/` with starter preview and local session history.
+- Upload + analyze flow at `/` with component preview and local session history.
 - Design-system browsing and snippet downloads at `/design-system`.
 - Domain views at `/design-system/laws-of-ux` and `/design-system/uilaws`.
 - Theme-aware chart rendering and branded not-found UX.

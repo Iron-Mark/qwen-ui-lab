@@ -1,8 +1,8 @@
 # qwen-ui-lab
 
-Screenshot-to-React workflow for turning UI screenshots into inspectable React + Tailwind starter packages.
+Screenshot-to-React workflow for turning UI screenshots into inspectable React + Tailwind export packages.
 
-The app lets you upload a screenshot, inspect detected UI structure, refine detection boxes, review a starter component preview, and download a starter package with TSX, design notes, tokens, recipe JSON, and detection notes.
+The app lets you upload a screenshot, inspect detected UI structure, refine detection boxes, review a component draft preview, and download an export package with TSX, design notes, tokens, recipe JSON, and detection notes.
 
 ## Run Locally
 
@@ -34,11 +34,11 @@ Never expose provider secrets through `NEXT_PUBLIC_*` variables.
 
 ## Download Package
 
-Downloaded packages are intended as inspectable starter packages, not finished screens. A package can include:
+Downloaded packages are intended as inspectable export packages, not finished screens. A package can include:
 
 - `README.md`
 - `DESIGN.md`
-- starter component TSX
+- component draft TSX
 - recipe JSON
 - manifest JSON
 - tokens CSS

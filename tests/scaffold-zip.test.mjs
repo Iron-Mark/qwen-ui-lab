@@ -40,7 +40,7 @@ test("createStoredZip uses starter naming for empty entry names", () => {
   assert.match(text, /starter-component\.tsx/);
 });
 
-test("buildScaffoldZipEntries packages sparse code as a starter package", () => {
+test("buildScaffoldZipEntries packages sparse code as an export package", () => {
   const entries = buildScaffoldZipEntries({
     filename: "starter-fixture.tsx",
     description: "Starter package",
@@ -64,7 +64,7 @@ export default function StarterComponent() {
   ]);
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /Screenshot-to-React starter package/,
+    /Screenshot-to-React export package/,
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -100,11 +100,11 @@ export default function StarterComponent() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /Use this as a starter package/,
+    /Use this as an export package/,
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /Unzip this starter package into your app/,
+    /Unzip this export package into your app/,
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -155,7 +155,7 @@ export default function StarterComponent() {
   );
   assert.match(
     recipe.shadcnPrimitiveMap.button,
-    /starter component/,
+    /component draft/,
   );
   assert.doesNotMatch(
     recipe.shadcnPrimitiveMap.button,
@@ -191,7 +191,7 @@ test("buildScaffoldZipEntries redacts sensitive description metadata in package 
   assert.match(combined, /#share=<redacted>/);
 });
 
-test("buildScaffoldZipEntries includes design notes for rich starter packages", () => {
+test("buildScaffoldZipEntries includes design notes for rich export packages", () => {
   const entries = buildScaffoldZipEntries({
     filename: "dashboard.tsx",
     description: "Dashboard export",
@@ -228,7 +228,7 @@ export default function Dashboard() {
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
-    /## Package readiness/,
+    /## Integration checks/,
   );
   assert.match(
     entries.find((entry) => entry.name === "README.md")?.content ?? "",
@@ -282,7 +282,7 @@ export default function Dashboard() {
   assert.deepEqual(recipe.integration.dependencies, ["@/components/ui/button"]);
 });
 
-test("starter package normalizes legacy correction-source wording", () => {
+test("export package normalizes legacy correction-source wording", () => {
   const entries = buildScaffoldZipEntries({
     filename: "dashboard.tsx",
     description: "Dashboard export",
@@ -309,7 +309,7 @@ export default function Dashboard() {
   assert.match(combinedPackageText, /Review updates/);
 });
 
-test("starter package docs use concrete sparse-package review guidance", () => {
+test("export package docs use concrete sparse-package review guidance", () => {
   const readme = buildFallbackPackageReadme({
     filename: "starter-review.tsx",
     description: "Starter export",
@@ -369,7 +369,7 @@ test("starter package docs use concrete sparse-package review guidance", () => {
   assert.equal(manifest.files.detectionSummary, "docs/starter-review.detection.md");
 });
 
-test("starter package docs tolerate sparse blueprint metadata", () => {
+test("export package docs tolerate sparse blueprint metadata", () => {
   const detectionSummary = buildDetectionSummaryMarkdown({
     files: {
       recipe: "src/components/starters/sparse.recipe.json",
@@ -378,7 +378,7 @@ test("starter package docs tolerate sparse blueprint metadata", () => {
 
   assert.match(
     detectionSummary,
-    /Validate the starter against the source screenshot before wiring app data/,
+    /Validate the component draft against the source screenshot before wiring app data/,
   );
   assert.doesNotMatch(detectionSummary, /undefined/);
 
@@ -395,11 +395,12 @@ test("starter package docs tolerate sparse blueprint metadata", () => {
   });
 
   assert.equal(manifest.sourceHash, "unknown-source");
-  assert.equal(manifest.packageId, "qwen-unknown-sour");
+  assert.equal(manifest.packageId, "starter-unknown-sour");
+  assert.doesNotMatch(manifest.packageId, /^qwen-/);
   assert.equal(manifest.files.designDoc, "DESIGN.md");
 });
 
-test("starter package docs normalize invalid component names", () => {
+test("export package docs normalize invalid component names", () => {
   const readme = buildFallbackPackageReadme({
     description: "Whitespace component export",
     componentName: "   ",
@@ -438,7 +439,7 @@ test("starter package docs normalize invalid component names", () => {
   assert.equal(manifest.component.name, "StarterComponent");
 });
 
-test("starter package docs normalize dependency lists", () => {
+test("export package docs normalize dependency lists", () => {
   const readme = buildFallbackPackageReadme({
     description: "Dependency export",
     componentName: "StarterComponent",
@@ -476,7 +477,7 @@ test("starter package docs normalize dependency lists", () => {
   );
 });
 
-test("starter package docs normalize inventory rows", () => {
+test("export package docs normalize inventory rows", () => {
   const readme = buildFallbackPackageReadme({
     description: "Inventory export",
     componentName: "StarterComponent",

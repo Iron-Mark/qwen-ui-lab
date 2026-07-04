@@ -140,10 +140,10 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
 
   assert.equal(DESIGN_MD_FILENAME, "DESIGN.md");
   assert.match(markdown, /^# DESIGN\.md/);
-  assert.match(markdown, /Starter file: starter-dashboard\.tsx/);
+  assert.match(markdown, /Entry file: starter-dashboard\.tsx/);
   assert.match(markdown, /Package created: 2026-06-22T00:00:00\.000Z/);
   assert.match(markdown, /Review status: Ready for review/);
-  assert.match(markdown, /Starter components: StarterDashboard/);
+  assert.match(markdown, /Component inventory: StarterDashboard/);
   assert.match(markdown, /Average active confidence: 85% \(high\)/);
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);
   assert.match(markdown, /\| Card \| 2 \| 82% \| card-or-panel \| 1 \|/);
@@ -188,17 +188,17 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
-  assert.match(markdown, /Starter components: StarterWireframe/);
+  assert.match(markdown, /Component inventory: StarterWireframe/);
   assert.match(markdown, /No active detection boxes were available/);
   assert.match(markdown, /No design tokens were detected/);
   assert.match(
     markdown,
-    /Compare the starter structure, key controls, and responsive assumptions against the screenshot/,
+    /Compare the component structure, key controls, and responsive assumptions against the screenshot/,
   );
   assert.doesNotMatch(markdown, /manual visual review/);
 });
 
-test("buildDesignMarkdown names missing component inventory as a starter component", () => {
+test("buildDesignMarkdown names missing component inventory clearly", () => {
   const markdown = buildDesignMarkdown({
     artifact: {
       file: { name: "blank.png", type: "image/png", readableSize: "2 KB" },
@@ -207,7 +207,7 @@ test("buildDesignMarkdown names missing component inventory as a starter compone
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
-  assert.match(markdown, /Starter components: Review starter component/);
+  assert.match(markdown, /Component inventory: No exported component detected/);
   assert.doesNotMatch(markdown, /Review starter export/);
 });
 
@@ -253,6 +253,6 @@ test("buildDesignMarkdown synthesizes review evidence for detections without rea
   assert.match(markdown, /Detector medium confidence/);
   assert.match(markdown, /Centered overlay geometry suggests dialog content/);
   assert.match(markdown, /Reviewer update guides rebuild/);
-  assert.match(markdown, /Reviewer hid this box from starter sections/);
+  assert.match(markdown, /Reviewer hid this box from component sections/);
   assert.match(markdown, /Geometry evidence 600x520/);
 });

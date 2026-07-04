@@ -48,8 +48,8 @@ For a staging activation checklist and dashboard setup, see `docs/ops/ANALYTICS_
 - `analysis.completed` - analyze finished (Qwen or local-analysis path).
 - `analysis.failed` - analyze failed and fallback path was used.
 - `generate.started` - preview preparation started.
-- `generate.completed` - starter preview is ready.
-- `export.triggered` - copy or download action on starter scaffold.
+- `generate.completed` - component draft preview is ready.
+- `export.triggered` - copy or download action on the component draft or export package.
 
 ### Design System (`/design-system`)
 

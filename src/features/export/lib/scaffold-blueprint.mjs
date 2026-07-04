@@ -219,16 +219,16 @@ function buildReviewChecklist({
   const checklist = [
     `Review ${elements.length} detected element${elements.length === 1 ? "" : "s"} against the source screenshot.`,
     "Keep semantic landmarks, visible labels, focus states, and keyboard order while wiring app data.",
-    "Use the recipe JSON to rebuild the starter after review updates.",
+    "Use the recipe JSON to rebuild the component draft after review updates.",
   ];
 
   if (regions.length) {
     checklist.push(
-      `Validate ${regions.length} starter layout region${regions.length === 1 ? "" : "s"} before deleting or merging sections.`,
+      `Validate ${regions.length} component-draft layout region${regions.length === 1 ? "" : "s"} before deleting or merging sections.`,
     );
   }
   if ((patterns.dataTables ?? []).length) {
-    checklist.push("Replace starter table rows with typed data and accessible column headers.");
+    checklist.push("Replace placeholder table rows with typed data and accessible column headers.");
   }
   if ((patterns.formGroups ?? []).length) {
     checklist.push("Connect form fields to validation, helper text, and submit states.");

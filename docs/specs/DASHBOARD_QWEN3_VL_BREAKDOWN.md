@@ -146,4 +146,4 @@ This is a zinc/neutral-based palette with green/red semantic accents.
 </App>
 ```
 
-Data should be separated into typed interfaces and sample data files for clean component APIs.
+Data should be separated into typed interfaces and example data files for clean component APIs.

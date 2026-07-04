@@ -94,7 +94,7 @@ function elementFallbackSignals(element) {
 
   if (element?.included === false) {
     signals.push({
-      label: "Reviewer hid this box from starter sections",
+      label: "Reviewer hid this box from component sections",
       weight: 0.18,
     });
   }
@@ -273,7 +273,7 @@ function renderTokens(tokens) {
 
 function renderComponentInventory(components) {
   if (!components.length) {
-    return "No active detection boxes were available. Compare the starter structure against the source screenshot during review.";
+    return "No active detection boxes were available. Compare the component structure against the source screenshot during review.";
   }
 
   return [
@@ -375,7 +375,7 @@ export function buildDesignMarkdown({
       : averageConfidence;
   const layout = layoutBandSummary(artifact, activeElements);
   const componentNames =
-    exportedComponentNames(artifact?.generatedCode).join(", ") || "Review starter component";
+    exportedComponentNames(artifact?.generatedCode).join(", ") || "No exported component detected";
   const excludedCount = allElements.length - activeElements.length;
   const editedCount = allElements.filter((element) => element.userEdited).length;
   const algorithmNotes = [
@@ -391,7 +391,7 @@ export function buildDesignMarkdown({
     `Download ${DESIGN_MD_FILENAME} and verify component inventory plus detector signals are present.`,
     activeElements.length
       ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible during integration.`
-      : "Compare the starter structure, key controls, and responsive assumptions against the screenshot.",
+      : "Compare the component structure, key controls, and responsive assumptions against the screenshot.",
   ];
 
   return [
@@ -405,8 +405,8 @@ export function buildDesignMarkdown({
     `- Source dimensions: ${sourceDimensions(artifact)}`,
     `- Review status: ${normalizeDesignReviewStatus(artifact?.modeLabel)}`,
     `- Package created: ${exportedAt}`,
-    `- Starter file: ${componentFilename}`,
-    `- Starter components: ${componentNames}`,
+    `- Entry file: ${componentFilename}`,
+    `- Component inventory: ${componentNames}`,
     "",
     normalizeLine(artifact?.summary)
       ? `> ${normalizeLine(artifact.summary).replace(/\n/g, "\n> ")}`

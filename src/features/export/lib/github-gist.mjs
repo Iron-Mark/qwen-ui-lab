@@ -1,5 +1,5 @@
 /**
- * Server-side GitHub Gist helpers for starter UI package sharing.
+ * Server-side GitHub Gist helpers for export package sharing.
  */
 
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";

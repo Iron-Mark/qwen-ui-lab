@@ -312,7 +312,7 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 
 export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard starter based on ${fileName}">
+    <section aria-label="Dashboard component draft based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -350,8 +350,8 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
     excludedBoxes: detections.quality?.excludedElementCount ?? 0,
     sourceOfTruth: detections.quality?.correctedElementCount
-      ? "Reviewer updates guide this starter."
-      : "Detection boxes guide this starter.",
+      ? "Reviewer updates guide this component draft."
+      : "Detection boxes guide this component draft.",
   };
 
   return `import type { AriaRole } from "react";
@@ -544,7 +544,7 @@ const starterSections = buildStarterSections(correctedPatterns, correctedElement
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Screenshot starter based on ${safeName}"
+      aria-label="Screenshot component draft based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -555,7 +555,7 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Screenshot starter component
+              Screenshot component draft
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Built from {correctionSummary.activeElements} active UI regions with shadcn-style
@@ -715,23 +715,23 @@ function GenericScaffoldSection({ section }: { section: StarterSection }) {
 
 function SectionStarterDataHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "Starter rows: " + starterSectionData.rows.join(", "),
-    "repeated-grid": "Starter cards: " + starterSectionData.cards.join(", "),
-    "stat-row": "Starter metrics: " + starterSectionData.metrics.join(", "),
-    "data-table": "Starter table columns: " + starterSectionData.tableColumns.join(", "),
-    "chart-panel": "Starter chart values: " + starterSectionData.chartValues.join(", "),
+    "repeated-list": "Rows: " + starterSectionData.rows.join(", "),
+    "repeated-grid": "Cards: " + starterSectionData.cards.join(", "),
+    "stat-row": "Metrics: " + starterSectionData.metrics.join(", "),
+    "data-table": "Table columns: " + starterSectionData.tableColumns.join(", "),
+    "chart-panel": "Chart values: " + starterSectionData.chartValues.join(", "),
   };
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Swap these starter values before wiring the component to a route.
+      {message}. Review this content before wiring the component to a route.
     </p>
   ) : null;
 }
 
 function SectionStateHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before binding live data.",
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data.",
     "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-state handling.",
     "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
     "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.",
@@ -833,15 +833,15 @@ function enrichElement(element: CorrectedElement): CorrectedElement {
 export function LayoutPreviewStarter() {
   return (
     <section
-      aria-label="Layout starter from ${safeName}"
+      aria-label="Layout component draft from ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Layout starter</p>
+        <p className="text-xs font-medium uppercase">Layout component draft</p>
         <h1 className="text-xl font-semibold">${safeName}</h1>
         <p className="text-sm opacity-75">
-          {correctedElements.length} reviewed UI regions shape this starter.
+          {correctedElements.length} reviewed UI regions shape this component draft.
           {" "}
           {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.emptyStates.length} empty states, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
         </p>

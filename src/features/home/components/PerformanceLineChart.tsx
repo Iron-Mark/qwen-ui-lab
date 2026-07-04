@@ -19,12 +19,16 @@ interface PerformanceLineChartProps {
   data: PerformanceDataPoint[];
   theme?: ChartThemeMode;
   className?: string;
+  ariaLabel?: string;
+  tooltipValueLabel?: string;
 }
 
 export const PerformanceLineChart = memo(function PerformanceLineChart({
   data,
   theme = "light",
   className,
+  ariaLabel = "Weekly session performance line chart",
+  tooltipValueLabel = "Sessions",
 }: PerformanceLineChartProps) {
   const colors = useMemo(
     () => getChartColorsFromDocument(theme) ?? getChartColors(theme),
@@ -65,7 +69,7 @@ export const PerformanceLineChart = memo(function PerformanceLineChart({
     <div
       className={className}
       role="img"
-      aria-label="Weekly session performance line chart"
+      aria-label={ariaLabel}
     >
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
@@ -93,7 +97,7 @@ export const PerformanceLineChart = memo(function PerformanceLineChart({
             labelStyle={tooltipLabelStyle}
             formatter={(value) => [
               typeof value === "number" ? value.toLocaleString() : value,
-              "Sessions",
+              tooltipValueLabel,
             ]}
           />
           <Area

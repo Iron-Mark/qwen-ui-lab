@@ -43,8 +43,8 @@ Implemented in [`src/features/analysis/lib/offline-analyze.mjs`](../../src/featu
 | **Connected regions** | Remaining active grid cells are grouped into deterministic regions and labeled as content panel, media/chart, text/list, or control cluster |
 | **Design tokens** | Local palette and contrast signals produce surface, foreground, accent, accent foreground, muted, border, spacing, and radius recommendations |
 | **Signal-aware output** | Unknown uploads receive `Local Vision Signals`, `Detected Structure`, `Design Tokens`, and `Local Quality Checks` plan cards plus regions/controls/density/contrast preview stats |
-| **Signal-aware code templates** | Unknown inspected uploads seed starter React scaffolds with detected region grids and local design tokens; known samples still use curated per-archetype code |
-| **SVG-aware code templates** | Unknown SVG uploads seed starter scaffolds with parsed labels, local structure stats, and field/action/section guidance |
+| **Signal-aware code templates** | Unknown inspected uploads seed React component drafts with detected region grids and local design tokens; known samples still use curated per-archetype code |
+| **SVG-aware code templates** | Unknown SVG uploads seed component drafts with parsed labels, local structure stats, and field/action/section guidance |
 | **Confidence** | `0.55-0.98` based on score margin; surfaced in artifact `summary` |
 
 Example: `pricing-landing-hero.png` -> Marketing landing archetype with `LandingPageStarter` code.  

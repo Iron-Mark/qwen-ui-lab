@@ -423,7 +423,7 @@ export function DesignSystemPreview() {
                   <TabsTrigger
                     key={id}
                     value={id}
-                    className="h-10 min-h-10 min-w-0 overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-1.5 text-[11px] font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:px-2 sm:text-sm"
+                    className="h-11 min-h-11 min-w-0 overflow-hidden text-ellipsis rounded-lg border border-transparent bg-transparent px-1.5 text-[11px] font-medium shadow-none transition-[background-color,border-color,box-shadow,color] data-active:border-border/80 data-active:bg-background data-active:text-foreground data-active:shadow-[0_1px_2px_color-mix(in_oklch,var(--foreground)_16%,transparent),inset_0_1px_0_color-mix(in_oklch,var(--background)_85%,transparent)] dark:data-active:border-white/10 dark:data-active:bg-background/85 sm:px-2 sm:text-sm"
                   >
                     {label}
                   </TabsTrigger>
@@ -471,7 +471,7 @@ export function DesignSystemPreview() {
                       });
                     }}
                     className={cn(
-                      "min-h-10 min-w-0 gap-1.5 rounded-md px-2 text-xs font-medium sm:px-3 sm:text-sm",
+                      "min-h-11 min-w-0 gap-1.5 rounded-md px-2 text-xs font-medium sm:px-3 sm:text-sm",
                       !isAvailable &&
                         "border-border/40 bg-background/20 text-muted-foreground/45 opacity-60",
                     )}

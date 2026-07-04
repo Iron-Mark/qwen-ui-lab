@@ -59,7 +59,7 @@ test("analyzeUiImageWithQwen returns structured artifact when upstream mock retu
   assert.equal(result.provider.baseUrl, MOCK_QWEN_BASE_URL);
 });
 
-test("analyzeUiImageWithQwen defaults missing upstream code to a starter component", async () => {
+test("analyzeUiImageWithQwen defaults missing upstream code to a component draft", async () => {
   const result = await analyzeUiImageWithQwen({
     imageDataUrl: "data:image/png;base64,abc",
     fileName: sampleFile.name,

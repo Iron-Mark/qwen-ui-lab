@@ -72,11 +72,25 @@ test("site header combines theme and brand controls into one appearance menu", a
   });
   await expect(appearanceButton).toBeVisible();
   await expect(appearanceButton).toBeEnabled();
+  await expect
+    .poll(() =>
+      appearanceButton.evaluate((button) => {
+        const { height, width } = button.getBoundingClientRect();
+        return width >= 44 && height >= 44;
+      }),
+    )
+    .toBe(true);
   await appearanceButton.click();
 
   await expect(page.getByText("Brand theme")).toBeVisible();
   await expect(page.getByRole("menuitemradio", { name: /Indigo Studio/i })).toBeVisible();
-  await expect(
-    page.getByRole("menuitem").filter({ hasText: /Switch to (dark|light) mode/i }),
-  ).toBeVisible();
+  const modeMenuItem = page
+    .getByRole("menuitem")
+    .filter({ hasText: /Switch to (dark|light) mode/i });
+  await expect(modeMenuItem).toBeVisible();
+  await expect
+    .poll(() =>
+      modeMenuItem.evaluate((item) => item.getBoundingClientRect().height >= 44),
+    )
+    .toBe(true);
 });

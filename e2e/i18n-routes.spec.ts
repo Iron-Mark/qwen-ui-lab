@@ -14,7 +14,7 @@ test("home workflow renders zh sample layout copy", async ({ page }) => {
 
   const picker = page.getByTestId("sample-picker");
   await expect(picker).toBeVisible();
-  await expect(picker.getByText("\u8bd5\u7528\u6837\u4f8b\u8fd0\u884c")).toBeVisible();
+  await expect(picker.getByText("\u8bd5\u7528\u6837\u4f8b")).toBeVisible();
   await expect(
     picker.getByRole("button", {
       name: "\u52a0\u8f7d \u4eea\u8868\u76d8 \u5e03\u5c40",

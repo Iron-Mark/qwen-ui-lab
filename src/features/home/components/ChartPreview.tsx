@@ -36,11 +36,23 @@ const ChannelDonutChart = dynamic(
 interface ChartPreviewProps {
   performanceData: PerformanceDataPoint[];
   channelMixData: ChannelMixPoint[];
+  title?: string;
+  description?: string;
+  trafficMixLabel?: string;
+  performanceChartAriaLabel?: string;
+  performanceTooltipLabel?: string;
+  channelChartAriaLabel?: string;
 }
 
 export function ChartPreview({
   performanceData,
   channelMixData,
+  title = "Performance chart",
+  description = "Weekly sessions and channel mix",
+  trafficMixLabel = "Traffic mix",
+  performanceChartAriaLabel = "Weekly session performance line chart",
+  performanceTooltipLabel = "Sessions",
+  channelChartAriaLabel = "Traffic channel mix donut chart",
 }: ChartPreviewProps) {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -84,38 +96,42 @@ export function ChartPreview({
   return (
     <div ref={containerRef}>
       <Card>
-      <CardHeader>
-        <CardTitle>Performance Chart</CardTitle>
-        <CardDescription>
-          Weekly sessions (Recharts) and channel mix (Chart.js)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {shouldRenderCharts ? (
-          <>
-            <PerformanceLineChart
-              data={performanceData}
-              theme={theme}
-              className="mb-6"
-            />
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {shouldRenderCharts ? (
+            <>
+              <PerformanceLineChart
+                data={performanceData}
+                theme={theme}
+                className="mb-6"
+                ariaLabel={performanceChartAriaLabel}
+                tooltipValueLabel={performanceTooltipLabel}
+              />
 
-            <Separator className="mb-4" />
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Traffic mix
-            </p>
-            <ChannelDonutChart data={channelMixData} theme={theme} />
-          </>
-        ) : (
-          <>
-            <ChartSkeleton className="mb-6 h-[180px]" />
-            <Separator className="mb-4" />
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Traffic mix
-            </p>
-            <ChartSkeleton className="h-40" />
-          </>
-        )}
-      </CardContent>
+              <Separator className="mb-4" />
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {trafficMixLabel}
+              </p>
+              <ChannelDonutChart
+                data={channelMixData}
+                theme={theme}
+                ariaLabel={channelChartAriaLabel}
+              />
+            </>
+          ) : (
+            <>
+              <ChartSkeleton className="mb-6 h-[180px]" />
+              <Separator className="mb-4" />
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {trafficMixLabel}
+              </p>
+              <ChartSkeleton className="h-40" />
+            </>
+          )}
+        </CardContent>
       </Card>
     </div>
   );
