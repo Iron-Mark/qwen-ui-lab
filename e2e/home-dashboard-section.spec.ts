@@ -21,7 +21,7 @@ test("dashboard example is framed as a compact launcher with dialog preview", as
   await section.scrollIntoViewIfNeeded();
   await expect(section.getByRole("heading", { name: "Dashboard sample" })).toBeVisible();
   await expect(section.getByText("Sample output")).toBeVisible();
-  await expect(section.getByText("See what a downloaded starter can look like.")).toBeVisible();
+  await expect(section.getByText("See what a downloaded component draft can look like.")).toBeVisible();
   await expect(section.getByRole("link", { name: /load sample/i })).toHaveAttribute(
     "href",
     "/demo#upload-flow",
