@@ -14,15 +14,15 @@ test("home head exposes crawler and install metadata", async ({ page }) => {
   await expect(page).toHaveTitle(/qwen-ui-lab/i);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    /React \+ Tailwind starter package/,
+    /React \+ Tailwind export package/,
   );
   await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
     "content",
-    /React \+ Tailwind starter package/,
+    /React \+ Tailwind export package/,
   );
   await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
     "content",
-    /React \+ Tailwind starter package/,
+    /React \+ Tailwind export package/,
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -80,7 +80,7 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
       start_url?: string;
     };
     expect(json.start_url).toBe("/");
-    expect(json.description).toBe("Screenshot-to-React workflow with inspectable starter packages.");
+    expect(json.description).toBe("Screenshot-to-React workflow with inspectable export packages.");
     expect(json.display).toBe("standalone");
     expect(json.display_override).toContain("standalone");
     expect(json.icons?.some((icon) => icon.sizes === "192x192")).toBeTruthy();
@@ -110,14 +110,14 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
       json.shortcuts?.some(
         (shortcut) =>
           shortcut.name === "Analyze screenshot" &&
-          shortcut.description === "Upload a UI screenshot and download a starter package.",
+          shortcut.description === "Upload a UI screenshot and download an export package.",
       ),
     ).toBeTruthy();
     expect(
       json.shortcuts?.some(
         (shortcut) =>
           shortcut.name === "Sample run" &&
-          shortcut.description === "Open a guided layout and review a starter preview.",
+          shortcut.description === "Open a guided layout and review a component preview.",
       ),
     ).toBeTruthy();
   }

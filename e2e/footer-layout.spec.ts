@@ -15,7 +15,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
 
   await expect(footer.locator('a[href="/"] img').first()).toBeVisible();
   await expect(
-    footer.getByRole("link", { name: /qwen-ui-lab React \+ Tailwind starter package/ }),
+    footer.getByRole("link", { name: /qwen-ui-lab React \+ Tailwind export package/ }),
   ).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
