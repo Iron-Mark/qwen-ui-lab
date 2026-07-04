@@ -89,10 +89,23 @@ PASS: Share/export browser smoke completed.
 
 test("sanitizeSummaryText removes local paths and share payloads", () => {
   const sanitized = sanitizeSummaryText(
-    "open C:\\Users\\person\\repo\\file.txt and /home/person/repo/file.txt#share=abc123",
+    "open C:\\Users\\person\\repo\\file.txt and /home/person/repo/file.txt#share=abc123 plus /Users/person/private.png",
   );
 
   assert.doesNotMatch(sanitized, /C:\\Users/);
   assert.doesNotMatch(sanitized, /\/home\/person/);
+  assert.doesNotMatch(sanitized, /\/Users\/person/);
   assert.match(sanitized, /#share=<redacted>/);
+});
+
+test("sanitizeSummaryText redacts common secret assignments", () => {
+  const sanitized = sanitizeSummaryText(
+    "DASHSCOPE_API_KEY=sk-secret token=ghp_secret api_key:abc password=hunter2",
+  );
+
+  assert.doesNotMatch(sanitized, /sk-secret|ghp_secret|abc|hunter2/);
+  assert.match(sanitized, /DASHSCOPE_API_KEY=<redacted>/);
+  assert.match(sanitized, /token=<redacted>/);
+  assert.match(sanitized, /api_key=<redacted>/);
+  assert.match(sanitized, /password=<redacted>/);
 });

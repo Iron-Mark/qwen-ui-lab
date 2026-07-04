@@ -114,7 +114,7 @@ export function SocialPreviewImage({
           border: "1px solid rgba(255,255,255,0.16)",
         }}
       >
-        {["Upload screenshot", "Map UI regions", "Export starter package"].map(
+        {["Upload screenshot", "Map UI regions", "Export package"].map(
           (item, index) => (
             <div
               key={item}

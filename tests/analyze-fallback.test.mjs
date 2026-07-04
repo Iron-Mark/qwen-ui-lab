@@ -14,6 +14,7 @@ import {
   canUseLiveQwen,
   isLiveQwenAnalysisEnabled,
 } from "../src/features/analysis/lib/qwen-analyze.mjs";
+import { REMOTE_ANALYSIS_COPY } from "../src/features/analysis/lib/analysis-copy.mjs";
 
 const sampleFile = {
   name: "dashboard-reference.png",
@@ -39,7 +40,8 @@ test("resolveAnalyzeOutcome returns Qwen artifact on success", () => {
 
   assert.equal(outcome.providerState, "qwen");
   assert.equal(outcome.artifact, qwenArtifact);
-  assert.match(outcome.message, /qwen3-vl-plus/);
+  assert.equal(outcome.message, REMOTE_ANALYSIS_COPY.complete);
+  assert.doesNotMatch(outcome.message, /qwen|configured model/i);
   assert.equal(outcome.detail, null);
 });
 
@@ -56,12 +58,12 @@ test("resolveAnalyzeOutcome falls back when API key is missing", () => {
 
   assert.equal(outcome.providerState, "fallback");
   assert.equal(outcome.message, FALLBACK_BANNER_MISSING);
-  assert.match(outcome.detail, /DASHSCOPE_API_KEY/);
+  assert.equal(outcome.detail, "Local analysis prepared the preview.");
   assert.equal(outcome.artifact.file.name, sampleFile.name);
   assert.equal(outcome.artifact.modeLabel, "Ready to analyze");
-  assert.ok(outcome.artifact.generatedCode.includes("GeneratedDashboard"));
+  assert.ok(outcome.artifact.generatedCode.includes("DashboardStarter"));
   assert.equal(outcome.artifact.previewStats.length, 4);
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("resolveAnalyzeOutcome marks local analysis for missing key flag", () => {
@@ -69,10 +71,10 @@ test("resolveAnalyzeOutcome marks local analysis for missing key flag", () => {
     file: sampleFile,
     responseOk: false,
     payload: { ok: false, code: "missing_qwen_api_key" },
-    instantDemo: true,
+    sampleRun: true,
   });
 
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("resolveAnalyzeOutcome falls back on auth and invalid JSON errors", () => {
@@ -112,18 +114,47 @@ test("resolveAnalyzeOutcome falls back on network and timeout errors", () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /timed out/);
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared the preview after the analysis request could not finish.",
+  );
   assert.equal(outcome.artifact.previewStats.length, 4);
+});
+
+test("resolveAnalyzeOutcome maps upload-read errors to plain user copy", () => {
+  const outcome = resolveAnalyzeOutcome({
+    file: sampleFile,
+    fetchError: "Could not read the uploaded image.",
+  });
+
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared a preview after the uploaded image could not be read.",
+  );
 });
 
 test("fallbackReasonFromPayload maps known server codes", () => {
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_network_error" }),
-    /Could not reach the Qwen API/,
+    /remote vision service could not be reached/,
   );
   assert.match(
     fallbackReasonFromPayload({ code: "qwen_request_failed" }),
-    /Live analysis was unavailable/,
+    /remote vision service was not reachable/,
+  );
+  assert.doesNotMatch(
+    fallbackReasonFromPayload({ code: "invalid_qwen_json" }),
+    /live analysis|analysis route/i,
+  );
+});
+
+test("fallbackReasonFromPayload keeps raw provider messages out of user copy", () => {
+  assert.equal(
+    fallbackReasonFromPayload({
+      code: "unknown_error",
+      message: "Incorrect API key provided.",
+    }),
+    "Local analysis prepared the preview.",
   );
 });
 
@@ -181,7 +212,7 @@ test("postAnalyzeUi skips analyze route when live analysis is disabled", async (
 
   assert.equal(analyzeCalled, false);
   assert.equal(outcome.providerState, "fallback");
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
   assert.equal(outcome.code, "live_analysis_disabled");
   assert.equal(outcome.artifact.modeLabel, "Ready to analyze");
 });
@@ -211,7 +242,7 @@ test("postAnalyzeUi falls back on non-JSON responses", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /non-JSON response/);
+  assert.match(outcome.detail, /analysis response was unreadable/);
 });
 
 test("postAnalyzeUi falls back when fetch throws", async () => {
@@ -223,7 +254,10 @@ test("postAnalyzeUi falls back when fetch throws", async () => {
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.match(outcome.detail, /Failed to fetch/);
+  assert.equal(
+    outcome.detail,
+    "Local analysis prepared the preview after the analysis request could not finish.",
+  );
 });
 
 test("analyzeUiImageWithQwen reports missing API key", async () => {
@@ -238,9 +272,11 @@ test("analyzeUiImageWithQwen reports missing API key", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "missing_qwen_api_key");
   assert.equal(result.status, 503);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.notConfigured);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
-test("analyzeUiImageWithQwen returns demo mock when key is set but live is disabled", async () => {
+test("analyzeUiImageWithQwen returns local analysis when key is set but live is disabled", async () => {
   let fetchCalled = false;
   const result = await analyzeUiImageWithQwen({
     imageDataUrl: "data:image/png;base64,abc",
@@ -256,16 +292,18 @@ test("analyzeUiImageWithQwen returns demo mock when key is set but live is disab
 
   assert.equal(fetchCalled, false);
   assert.equal(result.ok, true);
+  assert.equal(result.sampleRun, true);
   assert.equal(result.demo, true);
   assert.equal(result.artifact.modeLabel, "Ready to analyze");
 });
 
-test("resolveAnalyzeOutcome treats server demo payload as instant offline", () => {
+test("resolveAnalyzeOutcome treats server local payload as sample run", () => {
   const outcome = resolveAnalyzeOutcome({
     file: sampleFile,
     responseOk: true,
     payload: {
       ok: true,
+      sampleRun: true,
       demo: true,
       artifact: { file: { name: sampleFile.name }, modeLabel: "Ready to analyze" },
       provider: { model: "demo" },
@@ -273,7 +311,7 @@ test("resolveAnalyzeOutcome treats server demo payload as instant offline", () =
   });
 
   assert.equal(outcome.providerState, "fallback");
-  assert.equal(outcome.instantDemo, true);
+  assert.equal(outcome.sampleRun, true);
 });
 
 test("analyzeUiImageWithQwen reports auth failures from Qwen", async () => {
@@ -296,6 +334,8 @@ test("analyzeUiImageWithQwen reports auth failures from Qwen", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "qwen_request_failed");
   assert.equal(result.status, 401);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.requestFailed);
+  assert.doesNotMatch(result.message, /qwen|api key|unauthorized|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports network errors", async () => {
@@ -313,6 +353,8 @@ test("analyzeUiImageWithQwen reports network errors", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "qwen_network_error");
   assert.equal(result.status, 503);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.unreachable);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports empty model responses", async () => {
@@ -334,6 +376,8 @@ test("analyzeUiImageWithQwen reports empty model responses", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "empty_qwen_response");
   assert.equal(result.status, 502);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.emptyResponse);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });
 
 test("analyzeUiImageWithQwen reports invalid JSON from model", async () => {
@@ -355,4 +399,6 @@ test("analyzeUiImageWithQwen reports invalid JSON from model", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.code, "invalid_qwen_json");
   assert.equal(result.status, 502);
+  assert.equal(result.message, REMOTE_ANALYSIS_COPY.unreadableResponse);
+  assert.doesNotMatch(result.message, /qwen|api key|dashscope/i);
 });

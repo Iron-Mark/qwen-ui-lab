@@ -7,14 +7,14 @@ import {
   summarizeCorrectedElementChanges,
 } from "../src/features/analysis/lib/detection-corrections.mjs";
 
-test("correctedDetectionConfidence raises included edits and lowers exclusions", () => {
+test("correctedDetectionConfidence raises included updates and lowers hidden boxes", () => {
   assert.equal(correctedDetectionConfidence(0.6, true), 0.72);
   assert.equal(correctedDetectionConfidence(0.9, true), 0.97);
   assert.equal(correctedDetectionConfidence(0.8, false), 0.38);
   assert.equal(correctedDetectionConfidence(undefined, true), 0.72);
 });
 
-test("describeManualDetectionChanges names edited detection dimensions", () => {
+test("describeManualDetectionChanges names updated detection dimensions", () => {
   const element = {
     kind: "card-or-panel",
     primitive: "card",
@@ -49,9 +49,10 @@ test("mergeManualCorrectionReasons replaces stale correction reasons", () => {
 
   assert.equal(reasons.filter((reason) => reason.code === "manual-correction").length, 1);
   assert.equal(reasons[0].code, "manual-correction");
-  assert.match(reasons[0].evidence, /Edited type, geometry/);
-  assert.match(reasons[0].evidence, /source of truth for regeneration/);
+  assert.match(reasons[0].evidence, /Updated type, geometry/);
+  assert.match(reasons[0].evidence, /guides the next rebuild/);
   assert.equal(reasons[1].code, "manual-exclusion");
+  assert.equal(reasons[1].label, "Hidden from component draft");
   assert.equal(reasons.at(-1).code, "geometry");
 });
 

@@ -6,7 +6,7 @@ import {
   buildSvgInspectionPlanSections,
   buildSvgInspectionPreviewStats,
 } from "./offline-svg-inspection.mjs";
-import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
+import { normalizeStarterShadcnImports } from "./generated-imports.mjs";
 
 /**
  * Advanced deterministic offline analysis — no AI, no network.
@@ -16,7 +16,7 @@ import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
 /** @typedef {{ title: string; body: string }} PlanSection */
 /** @typedef {{ label: string; value: string }} PreviewStat */
 
-/** Sample screenshots — exact filename match (normalized). */
+/** Guided layouts - exact filename match (normalized). */
 export const KNOWN_SAMPLES = {
   "dashboard-reference.svg": {
     summary:
@@ -30,7 +30,7 @@ export const KNOWN_SAMPLES = {
     plan: [
       {
         title: "Visual Input",
-        body: "Dashboard sample screenshot: landscape admin dashboard layout.",
+        body: "Dashboard guided layout: landscape admin dashboard.",
       },
       {
         title: "Layout Read",
@@ -38,7 +38,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Component Map",
-        body: "Generate Header, WorkflowBanner, StatCard grid, RevenueCard (Recharts), ChartPreview (Chart.js donut), ActivityList, QuickActionButton row, and Footer.",
+        body: "Build Header, WorkflowBanner, StatCard grid, RevenueCard (Recharts), ChartPreview (Chart.js donut), ActivityList, QuickActionButton row, and Footer.",
       },
       {
         title: "Accessibility Pass",
@@ -46,7 +46,7 @@ export const KNOWN_SAMPLES = {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the source screenshot, wire real API data, and swap chart libraries if product standards require it.",
+        body: "Verify spacing against the source screenshot, wire app data, and swap chart libraries if the implementation requires it.",
       },
     ],
     generatedCode: `import { StatCard } from "@/features/home/components/StatCard";
@@ -54,9 +54,9 @@ import { RevenueCard } from "@/features/home/components/RevenueCard";
 import { ChartPreview } from "@/features/home/components/ChartPreview";
 import { ActivityList } from "@/features/home/components/ActivityList";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export">
+    <section aria-label="Dashboard component draft">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -83,7 +83,7 @@ export function GeneratedDashboard() {
     plan: [
       {
         title: "Visual Input",
-        body: "Sign-in sample screenshot: centered authentication card on a neutral canvas.",
+        body: "Sign-in guided layout: centered authentication card on a neutral canvas.",
       },
       {
         title: "Layout Read",
@@ -91,7 +91,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Component Map",
-        body: "Generate BrandMark, AuthCard, TextField (email), PasswordField, PrimaryButton, OAuthButtonRow (Google/GitHub), and FooterLinks (forgot password, sign up).",
+        body: "Build BrandMark, AuthCard, TextField (email), PasswordField, PrimaryButton, OAuthButtonRow (Google/GitHub), and FooterLinks (forgot password, sign up).",
       },
       {
         title: "Accessibility Pass",
@@ -99,7 +99,7 @@ export function GeneratedDashboard() {
       },
       {
         title: "Human Review",
-        body: "Verify spacing against the source screenshot, wire real auth provider callbacks, and confirm password visibility toggle behavior.",
+        body: "Verify spacing against the source screenshot, connect auth provider callbacks, and confirm password visibility toggle behavior.",
       },
     ],
     generatedCode: `import { Button } from "@/components/ui/button";
@@ -108,9 +108,9 @@ import { TextField } from "@/features/account/components/TextField";
 import { PasswordField } from "@/features/account/components/PasswordField";
 import { OAuthButtonRow } from "@/features/account/components/OAuthButtonRow";
 
-export function GeneratedAuthScreen() {
+export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth export" className="flex min-h-dvh items-center justify-center p-4">
+    <main aria-label="Auth component draft" className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md space-y-6 p-8">
         <header className="text-center">
           <BrandMark className="mx-auto mb-4" />
@@ -141,7 +141,7 @@ export function GeneratedAuthScreen() {
     plan: [
       {
         title: "Visual Input",
-        body: "Mobile app sample screenshot: portrait phone frame around 390×844.",
+        body: "Mobile app guided layout: portrait phone frame around 390×844.",
       },
       {
         title: "Layout Read",
@@ -149,7 +149,7 @@ export function GeneratedAuthScreen() {
       },
       {
         title: "Component Map",
-        body: "Generate MobileHeader, StackedCardList (avatar + title + meta), FloatingActionButton, BottomNav (Home/Search/Profile), and SheetDrawer for overflow actions.",
+        body: "Build MobileHeader, StackedCardList (avatar + title + meta), FloatingActionButton, BottomNav (Home/Search/Profile), and SheetDrawer for overflow actions.",
       },
       {
         title: "Accessibility Pass",
@@ -157,7 +157,7 @@ export function GeneratedAuthScreen() {
       },
       {
         title: "Human Review",
-        body: "Verify safe-area insets on iOS, test bottom nav with keyboard open, and wire real navigation routes.",
+        body: "Verify safe-area insets on iOS, test bottom nav with keyboard open, and connect product navigation routes.",
       },
     ],
     generatedCode: `import { MobileHeader } from "@/features/mobile/components/MobileHeader";
@@ -165,9 +165,9 @@ import { StackedCardList } from "@/features/mobile/components/StackedCardList";
 import { FloatingActionButton } from "@/features/mobile/components/FloatingActionButton";
 import { BottomNav } from "@/features/mobile/components/BottomNav";
 
-export function GeneratedMobileShell() {
+export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile export" className="relative flex min-h-dvh flex-col bg-background">
+    <div aria-label="Mobile component draft" className="relative flex min-h-dvh flex-col bg-background">
       <MobileHeader title="Feed" showSearch />
       <main className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         <StackedCardList items={feedItems} />
@@ -196,7 +196,7 @@ export function GeneratedMobileShell() {
     plan: [
       {
         title: "Visual Input",
-        body: "Landing page sample screenshot: wide marketing page around 1440×900.",
+        body: "Landing page guided layout: wide marketing page around 1440×900.",
       },
       {
         title: "Layout Read",
@@ -204,7 +204,7 @@ export function GeneratedMobileShell() {
       },
       {
         title: "Component Map",
-        body: "Generate SiteNav, HeroSection, FeatureGrid (icon + title + copy), TestimonialRow, PricingTable (Free/Pro/Enterprise), and FooterCTA with newsletter slot.",
+        body: "Build SiteNav, HeroSection, FeatureGrid (icon + title + copy), TestimonialRow, PricingTable (Free/Pro/Enterprise), and FooterCTA with newsletter slot.",
       },
       {
         title: "Accessibility Pass",
@@ -221,13 +221,13 @@ import { TestimonialRow } from "@/features/landing/components/TestimonialRow";
 import { PricingTable } from "@/features/landing/components/PricingTable";
 import { FooterCTA } from "@/features/landing/components/FooterCTA";
 
-export function GeneratedLanding() {
+export function LandingPageStarter() {
   return (
     <>
       <SiteNav logo="qwen-ui-lab" links={["Features", "Pricing", "Docs"]} />
       <HeroSection
         aria-label="Landing hero"
-        headline="Ship UI faster with AI-assisted scaffolding"
+        headline="Ship UI faster from screenshots"
         primaryCta="Start free"
         secondaryCta="View sample"
       />
@@ -251,7 +251,7 @@ export function GeneratedLanding() {
     plan: [
       {
         title: "Visual Input",
-        body: "Settings sample screenshot: desktop layout with left rail.",
+        body: "Settings guided layout: desktop layout with left rail.",
       },
       {
         title: "Layout Read",
@@ -259,7 +259,7 @@ export function GeneratedLanding() {
       },
       {
         title: "Component Map",
-        body: "Generate SettingsNav, FormSection (Profile), TextField group, ToggleRow (email/push alerts), SelectField (timezone), and SaveBar with dirty-state handling.",
+        body: "Build SettingsNav, FormSection (Profile), TextField group, ToggleRow (email/push alerts), SelectField (timezone), and SaveBar with dirty-state handling.",
       },
       {
         title: "Accessibility Pass",
@@ -275,9 +275,9 @@ import { FormSection } from "@/features/settings/components/FormSection";
 import { ToggleRow } from "@/features/settings/components/ToggleRow";
 import { SaveBar } from "@/features/settings/components/SaveBar";
 
-export function GeneratedSettings() {
+export function SettingsStarter() {
   return (
-    <section aria-label="Settings export" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
+    <section aria-label="Settings component draft" className="grid gap-8 lg:grid-cols-[14rem_1fr]">
       <SettingsNav
         sections={[
           { id: "profile", label: "Profile", current: true },
@@ -312,7 +312,7 @@ export function GeneratedSettings() {
     plan: [
       {
         title: "Visual Input",
-        body: "Shop catalog sample screenshot: desktop catalog with left filter rail.",
+        body: "Shop catalog guided layout: desktop catalog with left filter rail.",
       },
       {
         title: "Layout Read",
@@ -320,7 +320,7 @@ export function GeneratedSettings() {
       },
       {
         title: "Component Map",
-        body: "Generate ShopHeader (search + cart), FilterSidebar, ProductGrid, ProductCard (image, title, price, Add CTA), CartDrawer, and CheckoutStepper.",
+        body: "Build ShopHeader (search + cart), FilterSidebar, ProductGrid, ProductCard (image, title, price, Add CTA), CartDrawer, and CheckoutStepper.",
       },
       {
         title: "Accessibility Pass",
@@ -337,9 +337,9 @@ import { ProductGrid } from "@/features/catalog/components/ProductGrid";
 import { ProductCard } from "@/features/catalog/components/ProductCard";
 import { CartDrawer } from "@/features/catalog/components/CartDrawer";
 
-export function GeneratedCatalog() {
+export function CatalogStarter() {
   return (
-    <div aria-label="Catalog export" className="min-h-dvh bg-background">
+    <div aria-label="Catalog component draft" className="min-h-dvh bg-background">
       <ShopHeader cartCount={3} onSearch={handleSearch} />
       <div className="grid gap-6 p-6 lg:grid-cols-[14rem_1fr]">
         <FilterSidebar
@@ -591,14 +591,14 @@ const KNOWN_SIGNATURE_MAX_DISTANCE = 12;
 const HEX_BIT_COUNTS = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4];
 
 const GENERATED_COMPONENT_NAMES = {
-  auth: "GeneratedAuthScreen",
-  dashboard: "GeneratedDashboard",
-  ecommerce: "GeneratedCatalog",
-  landing: "GeneratedLanding",
-  modal: "GeneratedDialogOverlay",
-  mobile: "GeneratedMobileShell",
-  settings: "GeneratedSettings",
-  empty: "GeneratedEmptyState",
+  auth: "AuthScreenStarter",
+  dashboard: "DashboardStarter",
+  ecommerce: "CatalogStarter",
+  landing: "LandingPageStarter",
+  modal: "DialogOverlayStarter",
+  mobile: "MobileShellStarter",
+  settings: "SettingsStarter",
+  empty: "EmptyStateStarter",
 };
 
 const GENERATED_REGION_TONES = {
@@ -763,7 +763,7 @@ function buildProductionKnownSample(sampleKey) {
 function buildKnownSampleGeneratedCode(sampleKey, sample) {
   const profile = buildKnownSampleProfile(sampleKey, sample);
 
-  return normalizeGeneratedShadcnImports(`import type { AriaRole } from "react";
+  return normalizeStarterShadcnImports(`import type { AriaRole } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -814,20 +814,20 @@ const reviewActions = ${JSON.stringify(profile.reviewActions, null, 2)};
 export default function ${profile.componentName}() {
   return (
     <main
-      aria-label="${profile.label} export"
+      aria-label="${profile.label} component draft"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Export</Badge>
+            <Badge variant="secondary">Component draft</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="grid gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{screenIntent.label}</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Starter component translated from the screenshot structure. Replace sample copy,
-              connect real data, and keep the recipe JSON beside this component during review.
+              Screenshot structure mapped into a React component draft. Review the content,
+              wire app data, and keep the recipe JSON beside this component during integration.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -936,7 +936,7 @@ function buildKnownSampleProfile(sampleKey, sample) {
       id: archetypeId,
       label: archetype.label,
       confidence: 0.95,
-      source: "sample-screenshot",
+      source: "source-screenshot",
       reference: sampleKey,
     },
     responsiveIntent: knownSampleResponsiveIntent(archetypeId),
@@ -958,51 +958,49 @@ function inferKnownSampleArchetypeId(sampleKey) {
 }
 
 function buildKnownSampleElements(archetypeId) {
-  const commonReason =
-    "Sample screenshot metadata identifies this region; exported as an editable primitive.";
   const templates = {
     dashboard: [
-      ["sample-nav", "navigation", "top-navigation", "Dashboard navigation"],
-      ["sample-stat-row", "metrics", "stat-row", "Metric cards"],
-      ["sample-chart", "analytics", "chart-panel", "Revenue chart"],
-      ["sample-activity", "list", "repeated-list", "Activity feed"],
-      ["sample-actions", "actions", "action-cluster", "Quick actions"],
+      ["dashboard-nav", "navigation", "top-navigation", "Dashboard navigation"],
+      ["dashboard-stat-row", "metrics", "stat-row", "Metric cards"],
+      ["dashboard-chart", "analytics", "chart-panel", "Revenue chart"],
+      ["dashboard-activity", "list", "repeated-list", "Activity feed"],
+      ["dashboard-actions", "actions", "action-cluster", "Quick actions"],
     ],
     auth: [
-      ["sample-brand", "header", "brand-header", "Brand header"],
-      ["sample-form", "form", "form-group", "Credentials form"],
-      ["sample-email", "field", "form-field", "Email field"],
-      ["sample-password", "field", "form-field", "Password field"],
-      ["sample-oauth", "actions", "action-cluster", "OAuth actions"],
-      ["sample-recovery", "links", "link-row", "Recovery links"],
+      ["auth-brand", "header", "brand-header", "Brand header"],
+      ["auth-form", "form", "form-group", "Credentials form"],
+      ["auth-email", "field", "form-field", "Email field"],
+      ["auth-password", "field", "form-field", "Password field"],
+      ["auth-oauth", "actions", "action-cluster", "OAuth actions"],
+      ["auth-recovery", "links", "link-row", "Recovery links"],
     ],
     mobile: [
-      ["sample-mobile-header", "navigation", "top-navigation", "Mobile header"],
-      ["sample-feed", "list", "repeated-list", "Stacked feed"],
-      ["sample-fab", "actions", "primary-action", "Floating action"],
-      ["sample-bottom-nav", "navigation", "bottom-navigation", "Bottom navigation"],
+      ["mobile-header", "navigation", "top-navigation", "Mobile header"],
+      ["mobile-feed", "list", "repeated-list", "Stacked feed"],
+      ["mobile-fab", "actions", "primary-action", "Floating action"],
+      ["mobile-bottom-nav", "navigation", "bottom-navigation", "Bottom navigation"],
     ],
     landing: [
-      ["sample-site-nav", "navigation", "top-navigation", "Site navigation"],
-      ["sample-hero", "hero", "hero-section", "Hero section"],
-      ["sample-features", "grid", "repeated-grid", "Feature grid"],
-      ["sample-pricing", "pricing", "pricing-table", "Pricing table"],
-      ["sample-footer", "cta", "action-cluster", "Footer CTA"],
+      ["landing-site-nav", "navigation", "top-navigation", "Site navigation"],
+      ["landing-hero", "hero", "hero-section", "Hero section"],
+      ["landing-features", "grid", "repeated-grid", "Feature grid"],
+      ["landing-pricing", "pricing", "pricing-table", "Pricing table"],
+      ["landing-footer", "cta", "action-cluster", "Footer CTA"],
     ],
     settings: [
-      ["sample-settings-nav", "navigation", "side-navigation", "Settings navigation"],
-      ["sample-profile", "form", "form-group", "Profile fields"],
-      ["sample-toggles", "controls", "control-group", "Notification toggles"],
-      ["sample-select", "field", "select-field", "Timezone select"],
-      ["sample-save", "actions", "action-cluster", "Save bar"],
+      ["settings-nav", "navigation", "side-navigation", "Settings navigation"],
+      ["settings-profile", "form", "form-group", "Profile fields"],
+      ["settings-toggles", "controls", "control-group", "Notification toggles"],
+      ["settings-select", "field", "select-field", "Timezone select"],
+      ["settings-save", "actions", "action-cluster", "Save bar"],
     ],
     ecommerce: [
-      ["sample-shop-header", "navigation", "top-navigation", "Shop header"],
-      ["sample-filters", "filters", "side-navigation", "Filter sidebar"],
-      ["sample-products", "grid", "repeated-grid", "Product grid"],
-      ["sample-card", "card", "product-card", "Product card"],
-      ["sample-cart", "dialog", "dialog-panel", "Cart drawer"],
-      ["sample-checkout", "steps", "stepper", "Checkout steps"],
+      ["shop-header", "navigation", "top-navigation", "Shop header"],
+      ["shop-filters", "filters", "side-navigation", "Filter sidebar"],
+      ["shop-products", "grid", "repeated-grid", "Product grid"],
+      ["shop-card", "card", "product-card", "Product card"],
+      ["shop-cart", "dialog", "dialog-panel", "Cart drawer"],
+      ["shop-checkout", "steps", "stepper", "Checkout steps"],
     ],
   };
 
@@ -1015,11 +1013,44 @@ function buildKnownSampleElements(archetypeId) {
       label,
       confidence: Math.max(0.78, 0.95 - index * 0.03),
       reasons: [
-        commonReason,
-        `${titleCase(componentRole)} maps to ${samplePrimitiveName(componentRole)}.`,
+        sampleDetectionReason(componentRole, label),
+        samplePrimitiveReason(componentRole),
       ],
     }),
   );
+}
+
+function sampleDetectionReason(componentRole, label) {
+  const readableLabel = String(label || "This region").toLowerCase();
+  if (/navigation|header/.test(componentRole)) {
+    return `Position and repeated links identify the ${readableLabel} as navigation.`;
+  }
+  if (/stat|metric/.test(componentRole)) {
+    return `Aligned numeric cards identify the ${readableLabel} as a metric group.`;
+  }
+  if (/chart|analytics/.test(componentRole)) {
+    return `Chart-like visual weight and surrounding summary copy identify the ${readableLabel}.`;
+  }
+  if (/list/.test(componentRole)) {
+    return `Repeated row spacing identifies the ${readableLabel} as a list pattern.`;
+  }
+  if (/grid|card|pricing|product/.test(componentRole)) {
+    return `Repeated card geometry identifies the ${readableLabel} as a grid pattern.`;
+  }
+  if (/form|field|select|control/.test(componentRole)) {
+    return `Input-sized controls and label alignment identify the ${readableLabel} as form UI.`;
+  }
+  if (/dialog|drawer/.test(componentRole)) {
+    return `Layered panel placement identifies the ${readableLabel} as an overlay surface.`;
+  }
+  if (/action|cta|oauth|save/.test(componentRole)) {
+    return `Button sizing and action grouping identify the ${readableLabel} as interactive controls.`;
+  }
+  return `Spacing, position, and visual grouping identify the ${readableLabel}.`;
+}
+
+function samplePrimitiveReason(componentRole) {
+  return `Use ${samplePrimitiveName(componentRole)} semantics for the component draft.`;
 }
 
 function buildKnownSamplePatterns(archetypeId, elements) {
@@ -1038,32 +1069,32 @@ function buildKnownSamplePatterns(archetypeId, elements) {
   return {
     textLines: elements.length * 2,
     appShells: appShellChildren.length
-      ? [{ id: `${archetypeId}-sample-shell`, children: appShellChildren, confidence: 0.92 }]
+      ? [{ id: `${archetypeId}-shell`, children: appShellChildren, confidence: 0.92 }]
       : [],
     repeatedLists: listChildren.length
-      ? [{ id: `${archetypeId}-sample-list`, children: listChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-list`, children: listChildren, confidence: 0.9 }]
       : [],
     repeatedGrids: gridChildren.length
-      ? [{ id: `${archetypeId}-sample-grid`, children: gridChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-grid`, children: gridChildren, confidence: 0.9 }]
       : [],
     statRows: statChildren.length
-      ? [{ id: `${archetypeId}-sample-stats`, children: statChildren, confidence: 0.88 }]
+      ? [{ id: `${archetypeId}-stats`, children: statChildren, confidence: 0.88 }]
       : [],
     formGroups: formChildren.length
-      ? [{ id: `${archetypeId}-sample-form`, children: formChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-form`, children: formChildren, confidence: 0.9 }]
       : [],
     dataTables: tableChildren.length
-      ? [{ id: `${archetypeId}-sample-data`, children: tableChildren, confidence: 0.75 }]
+      ? [{ id: `${archetypeId}-data`, children: tableChildren, confidence: 0.75 }]
       : [],
     charts: chartChildren.length
-      ? [{ id: `${archetypeId}-sample-chart`, children: chartChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-chart`, children: chartChildren, confidence: 0.9 }]
       : [],
     actionClusters: actionChildren.length
-      ? [{ id: `${archetypeId}-sample-actions`, children: actionChildren, confidence: 0.9 }]
+      ? [{ id: `${archetypeId}-actions`, children: actionChildren, confidence: 0.9 }]
       : [],
     tabSets: [],
     dialogPanels: dialogChildren.length
-      ? [{ id: `${archetypeId}-sample-dialog`, children: dialogChildren, confidence: 0.86 }]
+      ? [{ id: `${archetypeId}-dialog`, children: dialogChildren, confidence: 0.86 }]
       : [],
     emptyStates: [],
   };
@@ -1074,7 +1105,7 @@ function buildKnownSamplePrimitiveMap(elements) {
     "action-cluster": "Button group inside Card footer",
     "bottom-navigation": "semantic nav with Button icon controls",
     "brand-header": "Card header with logo and heading",
-    "chart-panel": "Card with chart placeholder and text summary",
+    "chart-panel": "Card with chart summary and accessible text summary",
     "control-group": "fieldset with switch-style controls",
     "dialog-panel": "Dialog or Sheet surface with focus management",
     "form-field": "Input with label, helper text, and validation slot",
@@ -1135,14 +1166,14 @@ function knownSampleResponsiveIntent(archetypeId) {
   return {
     mode: modes[archetypeId] ?? "responsive-page",
     breakpoints: archetypeId === "mobile" ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review exported regions, replace sample content, then connect live data.",
+    primaryFlow: "Review detected regions, then wire app data and polish states.",
   };
 }
 
 function buildKnownSampleReviewActions(sample, archetype) {
   return [
-    "Replace sample content",
-    "Wire real data",
+    "Review content",
+    "Wire app data",
     `Review ${archetype.stats.reviewItems} checklist items`,
   ].filter(Boolean);
 }
@@ -1311,9 +1342,9 @@ function buildGeneratedCode(fileName, archetype, inspection, svgInspection) {
       return `import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-export function GeneratedAuthScreen() {
+export function AuthScreenStarter() {
   return (
-    <main aria-label="Auth export based on ${safeName}">
+    <main aria-label="Auth component draft based on ${safeName}">
       <Card className="mx-auto max-w-md p-6">
         <h1 className="text-xl font-semibold">Sign in</h1>
         {/* Email + password fields */}
@@ -1323,9 +1354,9 @@ export function GeneratedAuthScreen() {
   );
 }`;
     case "mobile":
-      return `export function GeneratedMobileShell() {
+      return `export function MobileShellStarter() {
   return (
-    <div aria-label="Mobile export based on ${safeName}" className="flex min-h-dvh flex-col">
+    <div aria-label="Mobile component draft based on ${safeName}" className="flex min-h-dvh flex-col">
       <header className="sticky top-0 border-b p-4">App header</header>
       <main className="flex-1 space-y-3 p-4">{/* stacked cards */}</main>
       <nav aria-label="Primary" className="border-t p-2">{/* bottom nav */}</nav>
@@ -1333,16 +1364,16 @@ export function GeneratedAuthScreen() {
   );
 }`;
     case "settings":
-      return `export function GeneratedSettings() {
+      return `export function SettingsStarter() {
   return (
-    <section aria-label="Settings export based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <section aria-label="Settings component draft based on ${safeName}" className="grid gap-6 lg:grid-cols-[12rem_1fr]">
       <aside>{/* settings nav */}</aside>
       <form className="space-y-4">{/* grouped fields */}</form>
     </section>
   );
 }`;
     case "modal":
-      return `export function GeneratedDialogOverlay() {
+      return `export function DialogOverlayStarter() {
   return (
     <Dialog defaultOpen>
       <DialogContent className="max-w-lg">
@@ -1361,30 +1392,30 @@ export function GeneratedAuthScreen() {
       return `import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-export function GeneratedEmptyState() {
+export function EmptyStateStarter() {
   return (
-    <main aria-label="Generated empty state" className="grid min-h-dvh place-items-center p-6">
+    <main aria-label="Empty-state component draft" className="grid min-h-dvh place-items-center p-6">
       <Card className="grid max-w-md gap-3 p-6 text-center">
         <h1 className="text-xl font-semibold">No results yet</h1>
-        <p className="text-sm text-muted-foreground">Connect real data, upload a source, or create the first item.</p>
+        <p className="text-sm text-muted-foreground">Wire app data, upload a source, or create the first item.</p>
         <Button type="button" className="mx-auto mt-2">Start now</Button>
       </Card>
     </main>
   );
 }`;
     case "landing":
-      return `export function GeneratedLanding() {
+      return `export function LandingPageStarter() {
   return (
     <>
-      <section aria-label="Generated hero" className="py-16 text-center">{/* hero */}</section>
+      <section aria-label="Hero component draft" className="py-16 text-center">{/* hero */}</section>
       <section aria-label="Features" className="grid gap-6 md:grid-cols-3">{/* features */}</section>
     </>
   );
 }`;
     case "ecommerce":
-      return `export function GeneratedCatalog() {
+      return `export function CatalogStarter() {
   return (
-    <div aria-label="Generated catalog" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <div aria-label="Catalog component draft" className="grid gap-6 lg:grid-cols-[14rem_1fr]">
       <aside>{/* filters */}</aside>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{/* product cards */}</div>
     </div>
@@ -1394,9 +1425,9 @@ export function GeneratedEmptyState() {
       return `import { StatCard } from "@/features/home/components/StatCard";
 import { RevenueCard } from "@/features/home/components/RevenueCard";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export based on ${safeName}">
+    <section aria-label="Dashboard component draft based on ${safeName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -1485,13 +1516,13 @@ const shadcnPrimitiveMap: Record<string, string> = ${JSON.stringify(primitiveMap
 export default function ${componentName}() {
   return (
     <main
-      aria-label="${archetype.label} export based on ${safeName}"
+      aria-label="${archetype.label} component draft based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
         <header className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">SVG export</Badge>
+            <Badge variant="secondary">SVG component draft</Badge>
             <Badge variant="outline">{screenIntent.label}</Badge>
           </div>
           <div className="space-y-1">
@@ -1500,7 +1531,7 @@ export default function ${componentName}() {
             </h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               {svgStructure.shapeCount} vector shapes, {svgStructure.groupCount} groups, and{" "}
-              {svgStructure.textCount} labels were parsed into reviewable regions.
+              {svgStructure.textCount} labels were grouped into semantic UI regions.
             </p>
           </div>
           <dl className="grid gap-3 text-sm sm:grid-cols-3">
@@ -1627,7 +1658,7 @@ function svgGuidanceForLabel(label, archetype) {
   if (intent === "section") {
     return "Render as a semantic region heading and preserve the source SVG hierarchy.";
   }
-  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} export.`;
+  return `Use this SVG label as copy or metadata inside the ${archetype.label.toLowerCase()} component draft.`;
 }
 
 function buildGeneratedSvgElementBlueprint(labels) {
@@ -1649,7 +1680,7 @@ function buildGeneratedSvgElementBlueprint(labels) {
       confidence: Math.max(0.72, 0.9 - index * 0.02),
       reasons: [
         "SVG text and group labels define this region.",
-        `${titleCase(item.intent)} label maps to ${samplePrimitiveName(componentRole)}.`,
+        `Use ${samplePrimitiveName(componentRole)} semantics for this ${titleCase(item.intent).toLowerCase()} region.`,
       ],
       guidance: item.guidance,
     };
@@ -1693,7 +1724,7 @@ function buildGeneratedSvgResponsiveBlueprint(svgInspection) {
   return {
     mode: portrait ? "svg-mobile-stack" : "svg-responsive-grid",
     breakpoints: portrait ? ["base", "sm"] : ["base", "md", "lg"],
-    primaryFlow: "Review SVG labels as semantic regions, then replace placeholder controls with product data.",
+    primaryFlow: "Review SVG labels as semantic regions, then bind detected controls to app data.",
   };
 }
 
@@ -1734,24 +1765,24 @@ const screenIntent = ${JSON.stringify(screenIntent, null, 2)};
 
 const layoutRegions = ${JSON.stringify(regions, null, 2)};
 
-const sampleData = {
+const starterData = {
   screenTitle: "${archetype.label} workspace",
   screenDescription:
-    "Use this generated starter as a review-ready layout, then replace sample copy and values with product data.",
-  primaryAction: "Review export",
+    "Use this component draft to review structure, then wire the content to app data.",
+  primaryAction: "Review layout",
   secondaryAction: "Open design notes",
 };
 
-const sampleCollections = {
+const starterCollections = {
   rows: [
-    { title: "Queued review", detail: "Replace with a real list item" },
-    { title: "Ready for import review", detail: "Connect this row to product data" },
+    { title: "Queued review", detail: "Bind this row to app data" },
+    { title: "Ready for integration", detail: "Replace with an app record" },
     { title: "Needs QA", detail: "Use loading, empty, and error states here" },
   ],
   cards: [
-    { title: "Overview", detail: "Card content placeholder" },
-    { title: "Activity", detail: "Swap for real entity data" },
-    { title: "Follow-up", detail: "Support unavailable-item fallbacks" },
+    { title: "Overview", detail: "Replace with the primary entity summary" },
+    { title: "Activity", detail: "Bind to recent events or audit logs" },
+    { title: "Follow-up", detail: "Support unavailable and empty states" },
     { title: "Review", detail: "Keep hierarchy from the screenshot" },
   ],
   metrics: [
@@ -1765,6 +1796,8 @@ const sampleCollections = {
     ["Northstar", "Review", "$8.1K"],
     ["Summit Labs", "Paused", "$4.8K"],
   ],
+  tableColumns: ["Account", "Status", "Value", "Owner"],
+  tabLabels: ["Overview", "Details", "Activity", "Settings"],
   chartValues: [42, 74, 55, 88, 63, 78, 48, 92],
 };
 
@@ -1849,11 +1882,11 @@ export default function ${componentName}() {
 
   return (
     <main
-      aria-label="${archetype.label} export from ${safeName}"
+      aria-label="${archetype.label} component draft from ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
-        <GeneratedScreenHeader />
+        <ScreenHeaderStarter />
 
         <ImplementationChecklist />
 
@@ -1867,7 +1900,7 @@ export default function ${componentName}() {
   );
 }
 
-function GeneratedScreenHeader() {
+function ScreenHeaderStarter() {
   return (
     <header className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
       <div className="grid gap-2">
@@ -1876,16 +1909,16 @@ function GeneratedScreenHeader() {
           <Badge variant="outline">{responsiveIntent.mode}</Badge>
         </div>
         <div className="grid gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">{sampleData.screenTitle}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{starterData.screenTitle}</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            {sampleData.screenDescription}
+            {starterData.screenDescription}
           </p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 sm:justify-end">
-        <Button type="button">{sampleData.primaryAction}</Button>
+        <Button type="button">{starterData.primaryAction}</Button>
         <Button type="button" variant="outline">
-          {sampleData.secondaryAction}
+          {starterData.secondaryAction}
         </Button>
       </div>
     </header>
@@ -1896,10 +1929,10 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Implementation checklist</CardTitle>
+        <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
           {detectedElements.length} elements and {layoutRegions.length} regions were converted into a
-          {generatedLayoutGrid.columns}-column starter layout for implementation review.
+          {generatedLayoutGrid.columns}-column component draft for project integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
@@ -1970,25 +2003,29 @@ function FormSection({ section }: { section: UsableSectionModel }) {
       <CardContent>
         <form className="grid gap-4">
           {section.items.length ? (
-            section.items.map((item, index) =>
-              /action|button/.test(item.componentRole ?? "") ? (
-                <Button key={item.id} type="button" className="w-fit">
-                  {item.label}
-                </Button>
-              ) : (
+            section.items.map((item, index) => {
+              if (/action|button/.test(item.componentRole ?? "")) {
+                return (
+                  <Button key={item.id} type="button" className="w-fit">
+                    {item.label}
+                  </Button>
+                );
+              }
+              const fieldLabel = item.label || "Field " + (index + 1);
+              return (
                 <div key={item.id} className="grid gap-2">
-                  <Label htmlFor={item.id}>Field {index + 1}</Label>
-                  <Input id={item.id} placeholder="Enter product data" />
+                  <Label htmlFor={item.id}>{fieldLabel}</Label>
+                  <Input id={item.id} placeholder={fieldPlaceholder(fieldLabel)} />
                 </div>
-              ),
-            )
+              );
+            })
           ) : (
             <>
               <div className="grid gap-2">
                 <Label htmlFor="generated-primary-field">Primary field</Label>
-                <Input id="generated-primary-field" placeholder="Enter product data" />
+                <Input id="generated-primary-field" placeholder="Enter primary field" />
               </div>
-              <Button type="button" className="w-fit">Submit action</Button>
+              <Button type="button" className="w-fit">Save changes</Button>
             </>
           )}
         </form>
@@ -2031,7 +2068,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
     return (
       <div className="grid gap-2">
         <Label htmlFor={item.id}>{label}</Label>
-        <Input id={item.id} placeholder="Enter product data" />
+        <Input id={item.id} placeholder={fieldPlaceholder(label)} />
       </div>
     );
   }
@@ -2043,7 +2080,7 @@ function PrimitiveBlock({ item }: { item: DetectionElement | LayoutRegion }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Suggested primitive: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
       <PrimitiveBody item={item} />
     </article>
@@ -2073,7 +2110,7 @@ function buildUsableSections(
       id: region.id || "section-" + (index + 1),
       primitive,
       title: region.label || formatPrimitiveLabel(primitive),
-      guidance: region.guidance || "Connect this generated region to real data and copy.",
+      guidance: region.guidance || "Bind this component section to app data and final copy.",
       layoutClass: /grid|stat-row|repeated-grid/.test(primitive)
         ? "grid gap-3 sm:grid-cols-2"
         : /action-cluster/.test(primitive)
@@ -2090,20 +2127,20 @@ function buildUsableSections(
   });
 }
 
-export function DetectionGridReference() {
+export function LayoutGridReference() {
   return (
     <section
-      aria-label="${archetype.label} export based on ${safeName}"
+      aria-label="${archetype.label} component draft based on ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Screenshot export</p>
+        <p className="text-xs font-medium uppercase">Screenshot component draft</p>
         <h1 className="text-xl font-semibold">${archetype.label}</h1>
         <p className="text-sm opacity-75">
-          {detectedElements.length} UI elements were detected before component generation.
+          {detectedElements.length} UI elements were detected before component preview review.
           {" "}
-          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the export.
+          {detectedPatterns.appShells.length} app shell patterns, {detectedPatterns.dialogPanels.length} dialog panels, {detectedPatterns.emptyStates.length} empty states, {detectedPatterns.repeatedLists.length} repeated list patterns, {detectedPatterns.repeatedGrids.length} repeated grid patterns, {detectedPatterns.statRows.length} stat rows, {detectedPatterns.formGroups.length} form groups, {detectedPatterns.dataTables.length} data tables, {detectedPatterns.charts.length} chart series, {detectedPatterns.actionClusters.length} action clusters, {detectedPatterns.tabSets.length} tab sets, and {detectedPatterns.textLines} text-line signals shape the component draft.
         </p>
         <p className="text-xs opacity-70">
           Responsive intent: {responsiveIntent.mode} using {responsiveIntent.breakpoints.join(" / ")} breakpoints.
@@ -2115,7 +2152,7 @@ export function DetectionGridReference() {
 
       {detectedPatterns.appShells.length ? (
         <section
-          aria-label="Detected app shell"
+          aria-label="Application shell"
           className="grid gap-3 border p-3"
           style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
         >
@@ -2300,9 +2337,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "repeated-list" || primitive === "list-item") {
     const rows = Array.from({ length: Math.max(1, region.itemCount ?? 3) }).map(
       (_, index) =>
-        sampleCollections.rows[index] ?? {
+        starterCollections.rows[index] ?? {
           title: "Row " + (index + 1),
-          detail: "Replace with a real list item",
+          detail: "Bind this row to app data",
         },
     );
     return (
@@ -2320,7 +2357,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </ul>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.
+          State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data.
         </p>
       </div>
     );
@@ -2329,9 +2366,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "repeated-grid" || primitive === "card-grid") {
     const cards = Array.from({ length: Math.max(1, region.itemCount ?? 4) }).map(
       (_, index) =>
-        sampleCollections.cards[index] ?? {
+        starterCollections.cards[index] ?? {
           title: "Card " + (index + 1),
-          detail: "Swap for real entity data",
+          detail: "Replace with a live entity summary",
         },
     );
     return (
@@ -2356,7 +2393,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           ))}
         </div>
         <p className="text-[11px] opacity-70">
-          State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.
+          State coverage: include loading cards, empty grid messaging, and unavailable-state handling.
         </p>
       </div>
     );
@@ -2366,10 +2403,10 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const cards = Math.max(2, region.cardCount ?? region.itemCount ?? 3);
     const metrics = Array.from({ length: cards }).map(
       (_, index) =>
-        sampleCollections.metrics[index] ?? {
+        starterCollections.metrics[index] ?? {
           label: "Metric " + (index + 1),
           value: "0",
-          trend: "Connect to product data",
+          trend: "Bind to a real metric",
         },
     );
     return (
@@ -2398,24 +2435,27 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "form-group" || primitive === "form-group") {
     return (
       <form className="mt-3 grid gap-2" aria-label={region.label}>
-        {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => (
-          <div key={itemIndex} className="grid gap-1.5">
-            <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
-              Field {itemIndex + 1}
-            </Label>
-            <Input
-              id={region.id + "-field-" + (itemIndex + 1)}
-              placeholder="Value or input"
-              style={{ backgroundColor: tokens.surface }}
-            />
-          </div>
-        ))}
+        {Array.from({ length: Math.max(1, region.fieldCount ?? 2) }).map((_, itemIndex) => {
+          const fieldLabel = formatPrimitiveLabel(region.label || "Field") + " " + (itemIndex + 1);
+          return (
+            <div key={itemIndex} className="grid gap-1.5">
+              <Label htmlFor={region.id + "-field-" + (itemIndex + 1)}>
+                {fieldLabel}
+              </Label>
+              <Input
+                id={region.id + "-field-" + (itemIndex + 1)}
+                placeholder={fieldPlaceholder(fieldLabel)}
+                style={{ backgroundColor: tokens.surface }}
+              />
+            </div>
+          );
+        })}
         <Button
           type="button"
           className="mt-1 w-fit rounded px-3 py-2 text-xs font-medium"
           style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}
         >
-          Submit action
+          Save changes
         </Button>
         <p className="text-[11px] opacity-70">
           State coverage: wire validation errors, pending submit state, and success feedback.
@@ -2428,7 +2468,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
     const rows = Math.max(2, region.rows ?? 3);
     const columns = Math.max(2, region.columns ?? 3);
     const tableRows = Array.from({ length: rows }).map(
-      (_, index) => sampleCollections.tableRows[index] ?? [],
+      (_, index) => starterCollections.tableRows[index] ?? [],
     );
     return (
       <div className="mt-3 grid gap-2 overflow-x-auto">
@@ -2436,7 +2476,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           <TableHeader>
             <TableRow>
               {Array.from({ length: columns }).map((_, columnIndex) => (
-                <TableHead key={columnIndex}>Column {columnIndex + 1}</TableHead>
+                <TableHead key={columnIndex}>
+                  {starterCollections.tableColumns[columnIndex] || "Field " + (columnIndex + 1)}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -2445,7 +2487,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               <TableRow key={row.join("-")}>
                 {Array.from({ length: columns }).map((_, columnIndex) => (
                   <TableCell key={columnIndex}>
-                    {row[columnIndex] ?? "Cell " + (rowIndex + 1) + "." + (columnIndex + 1)}
+                    {row[columnIndex] ?? "Review value"}
                   </TableCell>
                 ))}
               </TableRow>
@@ -2453,7 +2495,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
           </TableBody>
         </Table>
         <p className="text-[11px] opacity-70">
-          State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.
+          State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.
         </p>
       </div>
     );
@@ -2476,14 +2518,14 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               key={index}
               className="rounded-t"
               style={{
-                height: sampleCollections.chartValues[index % sampleCollections.chartValues.length] + "%",
+                height: starterCollections.chartValues[index % starterCollections.chartValues.length] + "%",
                 backgroundColor: tokens.accent,
               }}
             />
           ))}
         </div>
         <p className="text-[11px] opacity-70">
-          State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.
+          State coverage: include loading, no-data, and request-error summaries for screen readers.
         </p>
       </div>
     );
@@ -2497,7 +2539,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
         <TabsList aria-label={region.label}>
           {Array.from({ length: tabs }).map((_, index) => (
             <TabsTrigger key={index} value={"tab-" + (index + 1)}>
-              Tab {index + 1}
+              {starterCollections.tabLabels[index] || "Section " + (index + 1)}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -2508,7 +2550,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
             className="rounded border p-3 text-xs"
             style={{ borderColor: tokens.border, backgroundColor: tokens.surface }}
           >
-            {formatPrimitiveLabel(region.tabKind || "tabs")} panel {index + 1}
+            {starterCollections.tabLabels[index] || formatPrimitiveLabel(region.tabKind || "tabs")} content
           </TabsContent>
         ))}
       </Tabs>
@@ -2518,6 +2560,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
   if (region.kind === "action-cluster" || primitive === "action-cluster") {
     const controls = Math.max(2, region.controlCount ?? region.itemCount ?? 3);
     const clusterType = region.clusterType || "toolbar";
+    const labels = actionLabels(clusterType, controls);
     return (
       <div className="mt-3 flex flex-wrap items-center gap-2" aria-label={region.label + " controls"}>
         {Array.from({ length: controls }).map((_, index) => (
@@ -2532,7 +2575,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
               color: index === 0 ? tokens.accentForeground : tokens.foreground,
             }}
           >
-            Action {index + 1}
+            {labels[index]}
           </Button>
         ))}
       </div>
@@ -2584,9 +2627,9 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
       <div className="mt-3 grid gap-2" aria-label={label + " primitive preview"}>
         <Label htmlFor={region.id + "-control"}>{roleLabel}</Label>
         <div className="flex items-center gap-2">
-          <Input id={region.id + "-control"} placeholder="User input or action" />
+          <Input id={region.id + "-control"} placeholder={fieldPlaceholder(roleLabel)} />
           <Button type="button" size="xs" className="rounded px-2 py-1 text-[11px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Apply
+            Save
           </Button>
         </div>
       </div>
@@ -2633,7 +2676,7 @@ function renderPrimitiveBody(region: LayoutRegion | DetectionElement, tokens: ty
 
   return (
     <div className="mt-3 rounded border p-2 text-[11px] opacity-80" style={{ borderColor: tokens.border }}>
-      Component primitive: {label}
+      Mapped primitive: {label}
     </div>
   );
 }
@@ -2645,6 +2688,18 @@ function formatPrimitiveLabel(value: string | undefined) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function fieldPlaceholder(label: string) {
+  const value = String(label || "field").trim();
+  return "Enter " + value.charAt(0).toLowerCase() + value.slice(1);
+}
+
+function actionLabels(clusterType: string, count: number) {
+  const segmented = ["Overview", "Details", "Activity", "Settings"];
+  const toolbar = ["Save", "Preview", "Share", "More"];
+  const source = clusterType === "segmented-control" ? segmented : toolbar;
+  return Array.from({ length: count }).map((_, index) => source[index] || "Option " + (index + 1));
 }`;
 }
 
@@ -3125,7 +3180,7 @@ function titleCase(value) {
 }
 
 function escapeGeneratedString(value) {
-  return String(value || "uploaded-reference")
+  return String(value || "uploaded-screenshot")
     .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"');
 }
@@ -3144,7 +3199,7 @@ function escapeGeneratedString(value) {
  * @param {{ readableSize: string; dimensionLine: string | null }} context
  */
 export function buildAdvancedOfflineOverrides(file, context) {
-  const fileName = file.name || "uploaded-reference";
+  const fileName = file.name || "uploaded-screenshot";
   const { archetype, confidence, formFactor } = classifyLayoutArchetype(file);
   const componentList = archetype.components.join(", ");
   const svgInspection = resolveSvgInspection(file);
@@ -3174,7 +3229,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     ...inspectionSections,
     {
       title: "Component Map",
-      body: `Generate ${componentList}.`,
+      body: `Build ${componentList}.`,
     },
     {
       title: "Accessibility Pass",
@@ -3182,7 +3237,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
     },
     {
       title: "Human Review",
-      body: "Confirm classification against the screenshot, wire real data, and validate responsive breakpoints.",
+      body: "Confirm classification against the screenshot, wire app data, and validate responsive breakpoints.",
     },
   ];
 
@@ -3202,7 +3257,7 @@ export function buildAdvancedOfflineOverrides(file, context) {
   return {
     plan,
     previewStats,
-    generatedCode: normalizeGeneratedShadcnImports(
+    generatedCode: normalizeStarterShadcnImports(
       buildGeneratedCode(fileName, archetype, file.offlineInspection, svgInspection),
     ),
     summary: buildOfflineSummary({

@@ -5,7 +5,7 @@ export interface AnalyzeOutcome {
   artifact: unknown;
   message: string;
   detail: string | null;
-  instantDemo?: boolean;
+  sampleRun?: boolean;
   code?: string | null;
 }
 
@@ -23,6 +23,8 @@ export function resolveAnalyzeOutcome(args: {
   };
   payload?: {
     ok?: boolean;
+    sampleRun?: boolean;
+    demo?: boolean;
     artifact?: unknown;
     provider?: { model?: string };
     code?: string;
@@ -30,7 +32,7 @@ export function resolveAnalyzeOutcome(args: {
   };
   responseOk?: boolean;
   fetchError?: string;
-  instantDemo?: boolean;
+  sampleRun?: boolean;
 }): AnalyzeOutcome;
 
 export function fetchAnalyzeHealth(options?: {

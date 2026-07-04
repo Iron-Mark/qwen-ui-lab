@@ -1,3 +1,5 @@
+import { normalizeReviewStatusLabel } from "../../../lib/product-labels.mjs";
+
 export const DESIGN_MD_FILENAME = "DESIGN.md";
 
 const MAX_DETECTED_ELEMENT_ROWS = 12;
@@ -38,6 +40,10 @@ function confidenceBand(value) {
   return "review";
 }
 
+export function normalizeDesignReviewStatus(value) {
+  return normalizeReviewStatusLabel(value);
+}
+
 function confidenceWeight(value) {
   if (typeof value !== "number" || Number.isNaN(value)) return 0.05;
   if (value >= 0.82) return 0.18;
@@ -63,7 +69,7 @@ function elementFallbackSignals(element) {
   const signals = [];
 
   signals.push({
-    label: `Fallback ${confidenceBand(element?.confidence)} confidence`,
+    label: `Detector ${confidenceBand(element?.confidence)} confidence`,
     weight: confidenceWeight(element?.confidence),
   });
 
@@ -81,14 +87,14 @@ function elementFallbackSignals(element) {
 
   if (element?.userEdited) {
     signals.push({
-      label: "Reviewer correction kept as source of truth",
+      label: "Reviewer update guides rebuild",
       weight: 0.2,
     });
   }
 
   if (element?.included === false) {
     signals.push({
-      label: "Reviewer excluded from generated scaffold",
+      label: "Reviewer hid this box from component sections",
       weight: 0.18,
     });
   }
@@ -232,7 +238,7 @@ function renderList(items) {
 
 function renderPlan(plan) {
   if (!Array.isArray(plan) || !plan.length) {
-    return "No plan sections were generated.";
+    return "No plan sections were captured.";
   }
 
   return plan
@@ -267,11 +273,11 @@ function renderTokens(tokens) {
 
 function renderComponentInventory(components) {
   if (!components.length) {
-    return "No active detection boxes were available. Compare the generated structure against the source screenshot before import.";
+    return "No active detection boxes were available. Compare the component structure against the source screenshot during review.";
   }
 
   return [
-    "| Primitive | Count | Avg confidence | Source kinds | Edited |",
+    "| Primitive | Count | Avg confidence | Source kinds | Updated |",
     "| --- | ---: | ---: | --- | ---: |",
     ...components.map(
       (component) =>
@@ -296,7 +302,7 @@ function renderReasonSummary(reasons) {
 }
 
 function renderDetectedElements(elements) {
-  if (!elements.length) return "No active detection boxes were available. Verify layout regions before regeneration.";
+  if (!elements.length) return "No active detection boxes were available. Verify layout regions before rebuilding.";
 
   return [
     "| Order | Element | Primitive | Confidence | Box | Reasons |",
@@ -320,7 +326,7 @@ function renderDetectedElements(elements) {
 /**
  * Build deterministic DESIGN.md notes from the current analysis artifact.
  * The algorithm uses detected geometry, primitive snapping, and confidence
- * reasons so the document follows user edits and offline detector results.
+ * reasons so the document follows review updates and offline detector results.
  *
  * @param {{
  *   artifact: {
@@ -354,7 +360,7 @@ function renderDetectedElements(elements) {
  */
 export function buildDesignMarkdown({
   artifact,
-  componentFilename = "generated-component.tsx",
+  componentFilename = "starter-component.tsx",
   exportedAt = new Date().toISOString(),
 }) {
   const allElements = detectionElements(artifact);
@@ -368,7 +374,8 @@ export function buildDesignMarkdown({
       ? artifact.detections.quality.confidence
       : averageConfidence;
   const layout = layoutBandSummary(artifact, activeElements);
-  const componentNames = exportedComponentNames(artifact?.generatedCode).join(", ") || "Review generated export";
+  const componentNames =
+    exportedComponentNames(artifact?.generatedCode).join(", ") || "No exported component detected";
   const excludedCount = allElements.length - activeElements.length;
   const editedCount = allElements.filter((element) => element.userEdited).length;
   const algorithmNotes = [
@@ -379,12 +386,12 @@ export function buildDesignMarkdown({
   ];
   const e2eChecklist = [
     "Upload or paste the source screenshot.",
-    `Assert ${artifact?.plan?.length ?? 0} generated plan card${artifact?.plan?.length === 1 ? "" : "s"} render.`,
+    `Assert ${artifact?.plan?.length ?? 0} plan card${artifact?.plan?.length === 1 ? "" : "s"} render.`,
     `Download ${componentFilename} and verify it contains ${componentNames}.`,
     `Download ${DESIGN_MD_FILENAME} and verify component inventory plus detector signals are present.`,
     activeElements.length
-      ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible before generation.`
-      : "Compare the generated structure, key controls, and responsive assumptions against the screenshot.",
+      ? `Assert ${activeElements.length} active detection box${activeElements.length === 1 ? "" : "es"} remain visible during integration.`
+      : "Compare the component structure, key controls, and responsive assumptions against the screenshot.",
   ];
 
   return [
@@ -396,22 +403,22 @@ export function buildDesignMarkdown({
     `- Source type: ${text(artifact?.file?.type, "unknown")}`,
     `- Source size: ${text(artifact?.file?.readableSize, "unknown")}`,
     `- Source dimensions: ${sourceDimensions(artifact)}`,
-    `- Analysis mode: ${text(artifact?.modeLabel, "unknown")}`,
-    `- Exported at: ${exportedAt}`,
-    `- Component file: ${componentFilename}`,
-    `- Exported components: ${componentNames}`,
+    `- Review status: ${normalizeDesignReviewStatus(artifact?.modeLabel)}`,
+    `- Package created: ${exportedAt}`,
+    `- Entry file: ${componentFilename}`,
+    `- Component inventory: ${componentNames}`,
     "",
     normalizeLine(artifact?.summary)
       ? `> ${normalizeLine(artifact.summary).replace(/\n/g, "\n> ")}`
-      : "> No summary was generated.",
+      : "> No summary was captured.",
     "",
     "## Confidence",
     "",
     `- Average active confidence: ${percent(averageConfidence)} (${confidenceBand(averageConfidence)})`,
     `- Detector quality confidence: ${percent(qualityConfidence)} (${confidenceBand(qualityConfidence)})`,
     `- Active elements: ${activeElements.length}`,
-    `- Excluded elements: ${excludedCount}`,
-    `- User-edited elements: ${editedCount}`,
+    `- Hidden elements: ${excludedCount}`,
+    `- Updated elements: ${editedCount}`,
     `- Ambiguity: ${text(artifact?.detections?.quality?.ambiguity, "not reported")}`,
     "",
     "## Algorithm Notes",
@@ -448,8 +455,8 @@ export function buildDesignMarkdown({
     "",
     "## Review Notes",
     "",
-    "- Generated code needs review for imports, data wiring, and accessibility before using it in an app.",
-    "- Detection boxes reflect the current browser session, including user edits and excluded elements.",
+    "- Starter code needs review for imports, data wiring, and accessibility before connecting it to a route.",
+    "- Detection boxes reflect the current browser session, including updated and hidden elements.",
     "- Use the component inventory as a checklist for replacing scaffold primitives with app-specific components.",
     "",
   ].join("\n");

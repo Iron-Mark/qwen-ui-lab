@@ -21,13 +21,13 @@ test("home hero is visual-led, compact, and leaves the workflow visible", async 
       hero.getByRole("heading", { name: /turn screenshots into editable react/i }),
     ).toBeVisible();
     await expect(hero.locator(".growth-snippet")).toContainText(
-      /inspect the detected structure, then export/i,
+      /inspect the detected structure, then download/i,
     );
     const benefitRail = hero.getByTestId("hero-benefit-rail");
     await expect(benefitRail).toBeVisible();
     await expect(benefitRail.getByText("Plan", { exact: true })).toBeVisible();
     await expect(benefitRail.getByText("Preview", { exact: true })).toBeVisible();
-    await expect(benefitRail.getByText("Export", { exact: true })).toBeVisible();
+    await expect(benefitRail.getByText("Download", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /build a component preview/i })).toBeVisible();
 
     await expect
@@ -60,7 +60,7 @@ test("home hero is visual-led, compact, and leaves the workflow visible", async 
           return {
             benefitBodyParagraphs,
             benefitLabelsOnly: visibleBenefitText.every(
-              (text) => /^0[1-3] (?:Plan|Preview|Export)$/.test(text),
+              (text) => /^0[1-3] (?:Plan|Preview|Download)$/.test(text),
             ),
             benefitItemsCompact: benefitItems.every(
               (item) => item.getBoundingClientRect().height <= 100,

@@ -85,10 +85,9 @@ test("/share/[id] renders read-only summary from API-created link", async ({
   await expect(page.getByText(shareFixturePayload.summary)).toBeVisible();
   await expect(page.getByText(shareFixturePayload.file)).toBeVisible();
   await expect(page.getByRole("link", { name: /back to workflow/i })).toBeVisible();
-  await expect(page.locator("#main").getByRole("link", { name: /sample screenshot/i })).toHaveAttribute(
-    "href",
-    "/demo",
-  );
+  await expect(
+    page.locator("#main").getByRole("link", { name: "Open sample" }),
+  ).toHaveAttribute("href", "/demo");
 });
 
 test("/share/local renders read-only summary from encoded hash", async ({ page }) => {

@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -9,7 +9,12 @@ import {
   createSiteStructuredData,
   createSiteViewport,
 } from "@/lib/seo";
-import { createThemeBootstrapScript } from "@/lib/theme-bootstrap.client";
+import {
+  BRAND_THEME_COOKIE_NAME,
+  THEME_COOKIE_NAME,
+  resolveBrandTheme,
+  resolveTheme,
+} from "@/lib/theme-preferences";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({
@@ -29,7 +34,7 @@ const spaceGrotesk = Space_Grotesk({
   adjustFontFallback: true,
 });
 
-const ogImagePath = "/opengraph-image";
+const ogImagePath = "/social/home-social-preview-1200x630.png";
 
 export const metadata = createSiteMetadata(ogImagePath);
 export const viewport = createSiteViewport();
@@ -40,26 +45,34 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   await connection();
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const cookieStore = await cookies();
+  const initialTheme = resolveTheme(cookieStore.get(THEME_COOKIE_NAME)?.value);
+  const initialBrandTheme = resolveBrandTheme(
+    cookieStore.get(BRAND_THEME_COOKIE_NAME)?.value,
+  );
 
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("font-sans", geist.variable, spaceGrotesk.variable)}
+      data-brand={initialBrandTheme}
+      className={cn(
+        "font-sans",
+        initialTheme === "dark" && "dark",
+        geist.variable,
+        spaceGrotesk.variable,
+      )}
     >
       <head>
-        <script
-          nonce={nonce}
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: createThemeBootstrapScript() }}
+        <StructuredDataScript
+          id="site-structured-data"
+          data={createSiteStructuredData(ogImagePath)}
         />
       </head>
       <body className="font-sans antialiased">
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
-        <StructuredDataScript data={createSiteStructuredData(ogImagePath)} />
         <ShellLayout>{children}</ShellLayout>
       </body>
     </html>

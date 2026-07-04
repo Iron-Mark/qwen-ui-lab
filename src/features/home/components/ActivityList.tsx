@@ -10,6 +10,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ActivityListProps {
   activities: ActivityData[];
+  title?: string;
+  description?: string;
+  emptyMessage?: string;
 }
 
 function getInitials(name: string): string {
@@ -20,16 +23,21 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-export function ActivityList({ activities }: ActivityListProps) {
+export function ActivityList({
+  activities,
+  title = "Recent activity",
+  description = "Latest user interactions",
+  emptyMessage = "No recent activity.",
+}: ActivityListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Latest user interactions</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         {activities.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No recent activity.</p>
+          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         ) : (
           <ScrollArea className="max-h-80">
             <ul className="divide-y divide-border pr-4" role="list">

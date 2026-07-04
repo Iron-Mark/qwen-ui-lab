@@ -1,16 +1,14 @@
 const EN_PROGRESS_TO_KEY = {
   "Preparing analysis…": "progressCheckingProvider",
-  "Checking provider…": "progressCheckingProvider",
   "Preparing preview…": "progressBuildingOffline",
   "Building local analysis…": "progressBuildingOffline",
-  "Calling Qwen vision API…": "progressCallingApi",
   "Analyzing screenshot…": "progressCallingApi",
-  "Retrying after transient error…": "progressRetrying",
+  "Retrying analysis…": "progressRetrying",
   "Analysis complete": "progressComplete",
   "Reading image…": "analyzeStepReading",
   "Preprocessing image…": "analyzeStepPreprocessing",
   "Analyzing layout…": "analyzeStepLayout",
-  "Generating preview…": "analyzeStepBuilding",
+  "Preparing preview…": "analyzeStepBuilding",
   "Building artifact…": "analyzeStepBuilding",
 };
 
@@ -46,17 +44,15 @@ const EN_STEP_ORDER = [
   "Preprocessing image…",
   "Preparing analysis…",
   "Analyzing layout…",
-  "Generating preview…",
+  "Preparing preview…",
 ];
 
 const PROGRESS_INDEX = {
   "Preparing analysis…": 2,
-  "Checking provider…": 2,
   "Preparing preview…": 3,
   "Building local analysis…": 3,
-  "Calling Qwen vision API…": 3,
   "Analyzing screenshot…": 3,
-  "Retrying after transient error…": 3,
+  "Retrying analysis…": 3,
   "Analysis complete": 4,
 };
 

@@ -49,6 +49,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { interpolate, localizedHref } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/use-locale.client";
 import { cn } from "@/lib/utils";
 import type {
   ActivityData,
@@ -70,68 +72,68 @@ interface DashboardSampleDialogProps {
 
 const samplePlan = [
   {
-    title: "Capture layout",
-    body: "Map the dashboard shell into sections, metric cards, charts, activity, and actions.",
+    titleKey: "planCaptureTitle",
+    bodyKey: "planCaptureBody",
     icon: ScanSearch,
   },
   {
-    title: "Detect primitives",
-    body: "Snap repeated regions to cards, badges, chart containers, avatar rows, and buttons.",
+    titleKey: "planDetectTitle",
+    bodyKey: "planDetectBody",
     icon: Boxes,
   },
   {
-    title: "Generate component",
-    body: "Export a React + Tailwind package that matches the sample hierarchy.",
+    titleKey: "planPrepareTitle",
+    bodyKey: "planPrepareBody",
     icon: Code2,
   },
   {
-    title: "Refine output",
-    body: "Use editable boxes and confidence reasons before copying or downloading code.",
+    titleKey: "planRefineTitle",
+    bodyKey: "planRefineBody",
     icon: Sparkles,
   },
 ] as const;
 
 const detectedUi = [
   {
-    label: "Metric cards",
+    labelKey: "detectedMetricCards",
     value: "4",
-    body: "Repeated KPI cards with title, value, and change indicators.",
+    bodyKey: "detectedMetricCardsBody",
     icon: LayoutDashboard,
   },
   {
-    label: "Chart regions",
+    labelKey: "detectedChartRegions",
     value: "2",
-    body: "Revenue bars plus channel mix visualization containers.",
+    bodyKey: "detectedChartRegionsBody",
     icon: BarChart3,
   },
   {
-    label: "Activity feed",
+    labelKey: "detectedActivityFeed",
     value: "5 rows",
-    body: "Avatar, name, event summary, and timestamp rhythm.",
+    bodyKey: "detectedActivityFeedBody",
     icon: ListChecks,
   },
   {
-    label: "Action controls",
+    labelKey: "detectedActionControls",
     value: "4",
-    body: "Icon-leading buttons grouped as quick shortcuts.",
+    bodyKey: "detectedActionControlsBody",
     icon: PanelsTopLeft,
   },
 ] as const;
 
 const exportOptions = [
   {
-    title: "React component",
-    body: "Dashboard component with reusable cards, charts, and action groups.",
+    titleKey: "exportComponentTitle",
+    bodyKey: "exportComponentBody",
     icon: FileCode2,
   },
   {
-    title: "Tailwind styling",
-    body: "Token-based spacing, surfaces, borders, and responsive grids.",
+    titleKey: "exportTailwindTitle",
+    bodyKey: "exportTailwindBody",
     icon: Sparkles,
   },
   {
-    title: "Local download",
-    body: "Copy TSX or export the package from the workflow.",
+    titleKey: "exportDownloadTitle",
+    bodyKey: "exportDownloadBody",
     icon: Download,
   },
 ] as const;
@@ -144,6 +146,18 @@ export function DashboardSampleDialog({
   activities,
   quickActions,
 }: DashboardSampleDialogProps) {
+  const { locale, dict } = useLocale();
+  const t = dict.dashboardSample;
+  const sampleWorkflowHref = `${localizedHref("/demo", locale)}#upload-flow`;
+  const workflowStepLabels = [
+    t.workflowStepScreenshot,
+    t.workflowStepDetection,
+    t.workflowStepPlan,
+    t.workflowStepCode,
+    t.workflowStepRefine,
+    t.workflowStepFinal,
+  ];
+
   return (
     <Dialog>
       <section
@@ -157,16 +171,16 @@ export function DashboardSampleDialog({
             <div className="min-w-0 py-1 sm:py-2">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                 <Sparkles className="size-3.5" aria-hidden />
-                Sample output
+                {t.launcherEyebrow}
               </div>
               <h2
                 id="dashboard-sample-heading"
                 className="mt-2 font-display text-xl font-semibold tracking-tight text-card-foreground sm:text-2xl"
               >
-                Dashboard sample
+                {t.title}
               </h2>
               <p className="mt-1 max-w-xl text-sm leading-6 text-muted-foreground">
-                See what a generated result looks like.
+                {t.launcherDescription}
               </p>
             </div>
           </div>
@@ -176,16 +190,16 @@ export function DashboardSampleDialog({
               <TooltipTrigger
                 render={
                   <Link
-                    href="/demo#upload-flow"
+                    href={sampleWorkflowHref}
                     className={cn(buttonVariants({ size: "lg" }), "gap-2")}
                   />
                 }
               >
-                Load sample
+                {t.loadSample}
                 <ArrowRight className="size-4" aria-hidden />
               </TooltipTrigger>
               <TooltipContent side="top">
-                Load the dashboard reference into the analyzer.
+                {t.loadSampleTooltip}
               </TooltipContent>
             </Tooltip>
             <Tooltip>
@@ -202,10 +216,10 @@ export function DashboardSampleDialog({
                 }
               >
                 <Eye className="size-4" aria-hidden />
-                Preview
+                {t.preview}
               </TooltipTrigger>
               <TooltipContent side="top">
-                Open the full generated sample without leaving this page.
+                {t.previewTooltip}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -219,21 +233,20 @@ export function DashboardSampleDialog({
         <DialogHeader className="shrink-0 border-b border-border bg-muted/20 px-4 py-4 pr-12 sm:px-5">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/80 px-2.5 py-1 text-xs font-semibold text-muted-foreground">
             <PanelsTopLeft className="size-3.5 text-primary" aria-hidden />
-            Sample preview
+            {t.dialogEyebrow}
           </div>
           <DialogTitle className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-            Dashboard sample
+            {t.title}
           </DialogTitle>
           <DialogDescription className="max-w-2xl leading-6">
-            Preview the generated dashboard, inspect the plan, then load it into
-            the workflow.
+            {t.dialogDescription}
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="preview" className="min-h-0 flex-1 gap-0">
           <div className="shrink-0 px-4 py-3 sm:px-5">
             <ResponsiveTabsList
-              aria-label="Dashboard sample sections"
+              aria-label={t.sectionsAria}
               columns={4}
             >
               <TabsTrigger
@@ -241,28 +254,28 @@ export function DashboardSampleDialog({
                 className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <Eye className="size-4" aria-hidden />
-                Preview
+                {t.tabPreview}
               </TabsTrigger>
               <TabsTrigger
                 value="plan"
                 className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <ListChecks className="size-4" aria-hidden />
-                Plan
+                {t.tabPlan}
               </TabsTrigger>
               <TabsTrigger
                 value="detected"
                 className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <ScanSearch className="size-4" aria-hidden />
-                Detected UI
+                {t.tabDetected}
               </TabsTrigger>
               <TabsTrigger
                 value="export"
                 className="h-11 min-h-11 rounded-xl px-3 text-xs sm:text-sm"
               >
                 <Download className="size-4" aria-hidden />
-                Export
+                {t.tabDownload}
               </TabsTrigger>
             </ResponsiveTabsList>
           </div>
@@ -270,7 +283,11 @@ export function DashboardSampleDialog({
           <TabsContent value="preview" className="min-h-0 flex-1">
             <ScrollArea className="h-full" data-testid="dashboard-sample-dialog-preview">
               <div className="grid gap-5 p-4 sm:p-5">
-                <WorkflowBanner />
+                <WorkflowBanner
+                  ariaLabel={t.workflowAria}
+                  title={t.workflowTitle}
+                  stepLabels={workflowStepLabels}
+                />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {stats.map((stat) => (
@@ -280,24 +297,45 @@ export function DashboardSampleDialog({
 
                 <div className="grid gap-5 lg:grid-cols-7">
                   <div className="lg:col-span-4">
-                    <RevenueCard data={revenueData} />
+                    <RevenueCard
+                      data={revenueData}
+                      title={t.revenueTitle}
+                      description={t.revenueDescription}
+                      formatValueAriaLabel={(point) =>
+                        interpolate(t.revenueValueAria, {
+                          month: point.month,
+                          value: point.revenue.toLocaleString(),
+                        })
+                      }
+                    />
                   </div>
                   <div className="lg:col-span-3">
-                    <ObservabilityErrorBoundary fallbackTitle="Chart preview failed to render.">
+                    <ObservabilityErrorBoundary fallbackTitle={t.chartError}>
                       <ChartPreview
                         performanceData={performanceData}
                         channelMixData={channelMixData}
+                        title={t.chartTitle}
+                        description={t.chartDescription}
+                        trafficMixLabel={t.trafficMix}
+                        performanceChartAriaLabel={t.performanceChartAria}
+                        performanceTooltipLabel={t.performanceTooltipLabel}
+                        channelChartAriaLabel={t.channelChartAria}
                       />
                     </ObservabilityErrorBoundary>
                   </div>
                 </div>
 
                 <div className="grid gap-5 lg:grid-cols-2">
-                  <ActivityList activities={activities} />
+                  <ActivityList
+                    activities={activities}
+                    title={t.activityTitle}
+                    description={t.activityDescription}
+                    emptyMessage={t.activityEmpty}
+                  />
                   <Card className="border-border/80 shadow-sm">
                     <CardHeader>
-                      <CardTitle className="text-lg">Quick Actions</CardTitle>
-                      <CardDescription>Common tasks and shortcuts</CardDescription>
+                      <CardTitle className="text-lg">{t.quickActionsTitle}</CardTitle>
+                      <CardDescription>{t.quickActionsDescription}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-3">
@@ -315,9 +353,9 @@ export function DashboardSampleDialog({
           <TabsContent value="plan" className="min-h-0 flex-1">
             <ScrollArea className="h-full">
               <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
-                {samplePlan.map(({ title, body, icon: Icon }, index) => (
+                {samplePlan.map(({ titleKey, bodyKey, icon: Icon }, index) => (
                   <div
-                    key={title}
+                    key={titleKey}
                     className="rounded-xl border border-border/70 bg-card p-4"
                   >
                     <div className="flex items-start gap-3">
@@ -326,13 +364,13 @@ export function DashboardSampleDialog({
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase text-muted-foreground">
-                          Step {index + 1}
+                          {interpolate(t.stepLabel, { count: String(index + 1) })}
                         </p>
                         <h3 className="mt-1 font-semibold text-card-foreground">
-                          {title}
+                          {t[titleKey]}
                         </h3>
                         <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                          {body}
+                          {t[bodyKey]}
                         </p>
                       </div>
                     </div>
@@ -345,9 +383,9 @@ export function DashboardSampleDialog({
           <TabsContent value="detected" className="min-h-0 flex-1">
             <ScrollArea className="h-full">
               <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
-                {detectedUi.map(({ label, value, body, icon: Icon }) => (
+                {detectedUi.map(({ labelKey, value, bodyKey, icon: Icon }) => (
                   <div
-                    key={label}
+                    key={labelKey}
                     className="rounded-xl border border-border/70 bg-card p-4"
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -357,10 +395,10 @@ export function DashboardSampleDialog({
                         </div>
                         <div className="min-w-0">
                           <h3 className="font-semibold text-card-foreground">
-                            {label}
+                            {t[labelKey]}
                           </h3>
                           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                            {body}
+                            {t[bodyKey]}
                           </p>
                         </div>
                       </div>
@@ -377,9 +415,9 @@ export function DashboardSampleDialog({
           <TabsContent value="export" className="min-h-0 flex-1">
             <ScrollArea className="h-full">
               <div className="grid gap-3 p-4 sm:p-5">
-                {exportOptions.map(({ title, body, icon: Icon }) => (
+                {exportOptions.map(({ titleKey, bodyKey, icon: Icon }) => (
                   <div
-                    key={title}
+                    key={titleKey}
                     className="rounded-xl border border-border/70 bg-card p-4"
                   >
                     <div className="flex items-start gap-3">
@@ -388,10 +426,10 @@ export function DashboardSampleDialog({
                       </div>
                       <div className="min-w-0">
                         <h3 className="font-semibold text-card-foreground">
-                          {title}
+                          {t[titleKey]}
                         </h3>
                         <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                          {body}
+                          {t[bodyKey]}
                         </p>
                       </div>
                     </div>
@@ -409,14 +447,14 @@ export function DashboardSampleDialog({
               "min-h-11",
             )}
           >
-            Close
+            {t.close}
           </DialogClose>
           <Link
-            href="/demo#upload-flow"
+            href={sampleWorkflowHref}
             className={cn(buttonVariants({ size: "lg" }), "min-h-11 gap-2")}
           >
             <UploadCloud className="size-4" aria-hidden />
-            Load into workflow
+            {t.loadIntoWorkflow}
           </Link>
         </DialogActionFooter>
       </DialogContent>

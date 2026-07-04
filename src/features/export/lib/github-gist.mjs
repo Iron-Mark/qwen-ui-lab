@@ -1,21 +1,22 @@
 /**
- * Server-side GitHub Gist helpers for generated UI package exports.
+ * Server-side GitHub Gist helpers for export package sharing.
  */
 
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
 export const GIST_FALLBACK_INSTRUCTIONS =
-  "Open gist.github.com, create a secret gist, paste the copied component, and save.";
+  "Use it when you want a shareable snippet link.";
 
 export function buildGithubGistUnavailablePayload() {
   return {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export needs setup before it can create links automatically.",
+      "Copy the component, then open GitHub Gist to create a shareable snippet.",
     fallback: {
       gistUrl: GIST_FALLBACK_URL,
       instructions: GIST_FALLBACK_INSTRUCTIONS,
@@ -57,6 +58,9 @@ export async function createGithubGist({
   fetchImpl = fetch,
 }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
+  const safeDescription =
+    redactSensitiveText(description).trim().slice(0, 256) ||
+    DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const response = await fetchImpl("https://api.github.com/gists", {
     method: "POST",
     headers: {
@@ -67,7 +71,7 @@ export async function createGithubGist({
       "User-Agent": "qwen-ui-lab",
     },
     body: JSON.stringify({
-      description,
+      description: safeDescription,
       public: isPublic,
       files: {
         [safeFilename]: { content },

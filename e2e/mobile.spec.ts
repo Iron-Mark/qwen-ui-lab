@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
 import {
-  demoModeSnackbar,
-  expectBundledSampleOptionCount,
-  loadBundledSample,
+  analyzerReadySnackbar,
+  expectSampleRunOptionCount,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForUploadFlowReady,
@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   await mockAnalyzeApiForE2E(page);
 });
 
-test("sample picker is visible and loads bundled reference", async ({ page }) => {
+test("sample picker is visible and loads a sample run", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
   await waitForUploadFlowReady(page);
@@ -26,19 +26,19 @@ test("sample picker is visible and loads bundled reference", async ({ page }) =>
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
   await expect(samplePicker.getByTestId("sample-select")).toBeVisible();
-  await expectBundledSampleOptionCount(page, 8);
+  await expectSampleRunOptionCount(page, 8);
   await expect(
-    samplePicker.getByRole("button", { name: /load dashboard sample/i }),
+    samplePicker.getByRole("button", { name: /load dashboard layout/i }),
   ).toBeVisible();
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.(png|svg)/i)).toBeVisible({
     timeout: 15_000,
   });
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
 });
 
-test("upload flow completes analyze and generate on mobile", async ({ page }) => {
+test("upload flow completes analyze and prepare preview on mobile", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
@@ -66,12 +66,12 @@ test("upload flow completes analyze and generate on mobile", async ({ page }) =>
   await expect(page.getByText("Sections", { exact: true })).toBeVisible();
 });
 
-test("startup does not show implementation status snackbar", async ({ page }) => {
+test("startup does not show analyzer status snackbar", async ({ page }) => {
   test.setTimeout(60_000);
 
   await resetE2ESessionStorage(page);
   await page.goto("/");
   await waitForUploadFlowReady(page);
 
-  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
+  await expect(analyzerReadySnackbar(page)).toBeHidden({ timeout: 5_000 });
 });

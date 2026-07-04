@@ -16,11 +16,11 @@ export function clearAuthState(): AuthState;
 
 export function setDisplayName(name: string): AuthState;
 
-export function requestMagicLink(
+export function requestContactLabel(
   email: string,
 ): { ok: true; state: AuthState } | { ok: false; error: string };
 
-export function confirmMagicLinkStub(): AuthState;
+export function confirmContactLabel(): AuthState;
 
 export function getSavedByLabel(state?: AuthState): string;
 

@@ -19,31 +19,31 @@ interface FooterLinkConfig {
 const PRODUCT_LINKS = [
   {
     href: "/",
-    label: "Dashboard",
+    label: "Workflow",
     tooltip: "Return to your workspace and continue building from the uploaded screenshots.",
   },
   {
     href: "/design-system",
     label: "Design system",
-    tooltip: "Browse reusable components, variants, and export snippets.",
+    tooltip: "Browse reusable components, variants, and download snippets.",
   },
   {
     href: "/demo",
-    label: "Sample screenshot",
-    tooltip: "Open a sample screenshot and review the export package.",
+    label: "Sample run",
+    tooltip: "Open a guided layout and review the export package.",
   },
 ] satisfies readonly FooterLinkConfig[];
 
 const RESOURCE_LINKS = [
   {
     href: "https://github.com/qwenlm/qwen3-vl",
-    label: "Qwen3-VL",
-    tooltip: "Open the vision model project used for live analysis.",
+    label: "Vision model",
+    tooltip: "Open the Qwen3-VL project behind the optional vision analyzer.",
   },
   {
     href: "https://qwenlm.github.io/qwen-code-docs/en/users/overview/",
-    label: "Qwen Code",
-    tooltip: "Read the Qwen Code docs for generated React output.",
+    label: "Code docs",
+    tooltip: "Read the Qwen Code docs for implementation context.",
   },
   {
     href: "https://github.com/Iron-Mark/qwen-ui-lab",
@@ -185,7 +185,7 @@ export function Footer() {
                 className="inline-flex min-h-11 min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Image
-                  src="/icons/icon.svg"
+                  src="/icons/icon-512.png"
                   alt=""
                   width={40}
                   height={40}
@@ -197,13 +197,13 @@ export function Footer() {
                     {SITE_NAME}
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    React + Tailwind package
+                    React + Tailwind export package
                   </span>
                 </span>
               </Link>
             </FooterTooltip>
             <p className="mt-2 hidden max-w-sm text-sm leading-5 text-muted-foreground sm:block">
-              Create reviewable React + Tailwind export packages from
+              Create inspectable React + Tailwind export packages from
               screenshot analysis.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -214,7 +214,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="inline-flex size-10 items-center justify-center rounded-lg border border-border/70 bg-background/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="inline-flex size-11 items-center justify-center rounded-lg border border-border/70 bg-background/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <Icon className="size-4" aria-hidden />
                   </a>

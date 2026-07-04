@@ -19,25 +19,29 @@ test("canUseGithubGist is true with trimmed token", () => {
   assert.equal(getGithubGistToken({ GITHUB_TOKEN: " ghp_test " }), "ghp_test");
 });
 
-test("buildGithubGistUnavailablePayload returns product-facing setup instructions", () => {
+test("buildGithubGistUnavailablePayload returns product-facing recovery instructions", () => {
   assert.deepEqual(buildGithubGistUnavailablePayload(), {
     ok: false,
     code: "gist_unavailable",
     message:
-      "GitHub Gist export needs setup before it can create links automatically.",
+      "Copy the component, then open GitHub Gist to create a shareable snippet.",
     fallback: {
       gistUrl: "https://gist.github.com",
       instructions:
-        "Open gist.github.com, create a secret gist, paste the copied component, and save.",
+        "Use it when you want a shareable snippet link.",
     },
   });
+  assert.doesNotMatch(
+    buildGithubGistUnavailablePayload().fallback.instructions,
+    /paste the copied component|component is copied/i,
+  );
 });
 
 test("sanitizeScaffoldFilename normalizes unsafe names", () => {
-  assert.equal(sanitizeScaffoldFilename("generated-auth.tsx"), "generated-auth.tsx");
+  assert.equal(sanitizeScaffoldFilename("starter-auth.tsx"), "starter-auth.tsx");
   assert.equal(sanitizeScaffoldFilename("../evil/name.tsx"), "name.tsx");
-  assert.equal(sanitizeScaffoldFilename("nested/path/generated.tsx"), "generated.tsx");
-  assert.equal(sanitizeScaffoldFilename(""), "component.tsx");
+  assert.equal(sanitizeScaffoldFilename("nested/path/starter.tsx"), "starter.tsx");
+  assert.equal(sanitizeScaffoldFilename(""), "starter-component.tsx");
 });
 
 test("createGithubGist posts component file and returns gist URL", async () => {
@@ -52,8 +56,8 @@ test("createGithubGist posts component file and returns gist URL", async () => {
 
   const result = await createGithubGist({
     token: "ghp_test",
-    filename: "generated-dashboard.tsx",
-    content: "export function Demo() { return null; }",
+    filename: "starter-dashboard.tsx",
+    content: "export function StarterFixture() { return null; }",
     fetchImpl,
   });
 
@@ -64,11 +68,36 @@ test("createGithubGist posts component file and returns gist URL", async () => {
 
   const body = JSON.parse(captured.init.body);
   assert.equal(body.public, false);
-  assert.equal(body.description, "Screenshot UI starter package");
+  assert.equal(body.description, "Screenshot-to-React export package");
   assert.equal(
-    body.files["generated-dashboard.tsx"].content,
-    "export function Demo() { return null; }",
+    body.files["starter-dashboard.tsx"].content,
+    "export function StarterFixture() { return null; }",
   );
+});
+
+test("createGithubGist redacts sensitive description metadata", async () => {
+  let captured = null;
+  const fetchImpl = async (url, init) => {
+    captured = { url, init };
+    return new Response(
+      JSON.stringify({ id: "abc123", html_url: "https://gist.github.com/user/abc123" }),
+      { status: 201, headers: { "Content-Type": "application/json" } },
+    );
+  };
+
+  const result = await createGithubGist({
+    token: "ghp_test",
+    filename: "starter-dashboard.tsx",
+    description: "From C:\\Users\\Mark\\shot.png with GITHUB_TOKEN=ghp_secret",
+    content: "export function StarterFixture() { return null; }",
+    fetchImpl,
+  });
+
+  assert.equal(result.ok, true);
+  const body = JSON.parse(captured.init.body);
+  assert.doesNotMatch(body.description, /C:\\Users|ghp_secret/);
+  assert.match(body.description, /\[local path\]/);
+  assert.match(body.description, /GITHUB_TOKEN=<redacted>/);
 });
 
 test("createGithubGist surfaces GitHub API errors", async () => {
@@ -80,7 +109,7 @@ test("createGithubGist surfaces GitHub API errors", async () => {
 
   const result = await createGithubGist({
     token: "invalid",
-    filename: "component.tsx",
+    filename: "starter-component.tsx",
     content: "const x = 1",
     fetchImpl,
   });

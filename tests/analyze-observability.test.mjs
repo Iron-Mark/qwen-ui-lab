@@ -6,11 +6,11 @@ import {
   isReportableAnalyzeFailure,
 } from "../src/features/analysis/lib/analyze-observability.mjs";
 
-test("expected demo analyze paths are not reported", () => {
+test("expected local-analysis paths are not reported", () => {
   assert.equal(
     isReportableAnalyzeFailure({
       providerState: "fallback",
-      instantDemo: true,
+      sampleRun: true,
       code: "live_analysis_disabled",
     }),
     false,

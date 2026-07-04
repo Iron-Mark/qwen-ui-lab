@@ -46,7 +46,7 @@ function showUpdateToast(
           <div className="flex items-start gap-1">
             <button
               type="button"
-              className={cn(buttonVariants({ variant: "default", size: "sm" }), "h-8 px-2.5")}
+              className={cn(buttonVariants({ variant: "default", size: "sm" }), "min-h-11 px-3")}
               onClick={() => {
                 onRefresh();
                 waiting.postMessage({ type: "SKIP_WAITING" });
@@ -57,7 +57,7 @@ function showUpdateToast(
             </button>
             <button
               type="button"
-              className={cn(buttonVariants({ variant: "ghost", size: "icon-lg" }), "h-9 w-9")}
+              className={buttonVariants({ variant: "ghost", size: "icon-lg" })}
               title="Dismiss"
               aria-label="Dismiss update notice"
               onClick={() => toast.dismiss(t)}

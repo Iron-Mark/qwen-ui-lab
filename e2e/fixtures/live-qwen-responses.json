@@ -13,8 +13,8 @@
       "file": {
         "name": "dashboard-reference.png",
         "type": "image/png",
-        "size": 113391,
-        "readableSize": "110.7 KB",
+        "size": 92831,
+        "readableSize": "90.7 KB",
         "width": 1440,
         "height": 900
       },
@@ -33,7 +33,7 @@
         },
         {
           "id": "generate",
-          "label": "Generate"
+          "label": "Prepare"
         },
         {
           "id": "preview",
@@ -41,17 +41,17 @@
         },
         {
           "id": "export",
-          "label": "Export"
+          "label": "Download"
         }
       ],
       "plan": [
         {
           "title": "Contract Layout Read",
-          "body": "Header row and stat grid from mock upstream."
+          "body": "Header row and stat grid from contract upstream."
         },
         {
           "title": "Contract Component Map",
-          "body": "Cards, chart, and activity regions from mock upstream."
+          "body": "Cards, chart, and activity regions from contract upstream."
         }
       ],
       "previewStats": [
@@ -64,9 +64,9 @@
           "value": "9"
         }
       ],
-      "generatedCode": "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
-      "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
-      "summary": "Contract test dashboard shell from mocked upstream."
+      "generatedCode": "export default function ContractDashboardStarter() {\n  return (\n    <main data-contract-test aria-label=\"Contract dashboard starter\">\n      <section className=\"grid gap-4 md:grid-cols-3\">\n        <article className=\"rounded-lg border p-4\">Contract metric</article>\n        <article className=\"rounded-lg border p-4\">Contract chart</article>\n        <article className=\"rounded-lg border p-4\">Contract activity</article>\n      </section>\n    </main>\n  );\n}",
+      "modeLabel": "Ready for review",
+      "summary": "Contract test dashboard shell from contract upstream."
     },
     "provider": {
       "model": "qwen3-vl-plus-mock",
@@ -88,8 +88,7 @@
         "value": "9"
       }
     ],
-    "modeLabel": "Qwen provider: qwen3-vl-plus-mock",
-    "summary": "Contract test dashboard shell from mocked upstream.",
-    "generatedCodeMarker": "MockedQwenDashboard"
+    "modeLabel": "Ready for review",
+    "summary": "Contract test dashboard shell from contract upstream."
   }
 }

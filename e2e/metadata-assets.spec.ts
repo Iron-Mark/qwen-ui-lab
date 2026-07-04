@@ -14,7 +14,15 @@ test("home head exposes crawler and install metadata", async ({ page }) => {
   await expect(page).toHaveTitle(/qwen-ui-lab/i);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    /screenshot/i,
+    /React \+ Tailwind starter package/,
+  );
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
+    "content",
+    /React \+ Tailwind starter package/,
+  );
+  await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+    "content",
+    /React \+ Tailwind starter package/,
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -34,11 +42,11 @@ test("home head exposes crawler and install metadata", async ({ page }) => {
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    /opengraph-image/,
+    /\/social\/home-social-preview-1200x630\.png$/,
   );
   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
     "content",
-    /twitter-image|opengraph-image/,
+    /\/social\/home-social-preview-1200x630\.png$/,
   );
 });
 
@@ -63,14 +71,16 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
     expect(manifest.ok()).toBeTruthy();
     expect(manifest.headers()["content-type"]).toMatch(/manifest|json/);
     const json = (await manifest.json()) as {
+      description?: string;
       display?: string;
       display_override?: string[];
       icons?: Array<{ src?: string; sizes?: string; purpose?: string; type?: string }>;
-      screenshots?: Array<{ src?: string; sizes?: string; form_factor?: string }>;
-      shortcuts?: Array<{ url?: string }>;
+      screenshots?: Array<{ src?: string; sizes?: string; form_factor?: string; label?: string }>;
+      shortcuts?: Array<{ description?: string; name?: string; url?: string }>;
       start_url?: string;
     };
     expect(json.start_url).toBe("/");
+    expect(json.description).toBe("Screenshot-to-React workflow with inspectable starter packages.");
     expect(json.display).toBe("standalone");
     expect(json.display_override).toContain("standalone");
     expect(json.icons?.some((icon) => icon.sizes === "192x192")).toBeTruthy();
@@ -84,8 +94,32 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
       ),
     ).toBeTruthy();
     expect(json.screenshots?.some((shot) => shot.form_factor === "wide")).toBeTruthy();
+    expect(
+      json.screenshots?.some(
+        (shot) => shot.form_factor === "wide" && shot.label === "Dashboard layout workspace",
+      ),
+    ).toBeTruthy();
+    expect(
+      json.screenshots?.some(
+        (shot) => shot.form_factor === "narrow" && shot.label === "Mobile layout workspace",
+      ),
+    ).toBeTruthy();
     expect(json.shortcuts?.some((shortcut) => shortcut.url === "/#upload-flow")).toBeTruthy();
     expect(json.shortcuts?.some((shortcut) => shortcut.url === "/demo")).toBeTruthy();
+    expect(
+      json.shortcuts?.some(
+        (shortcut) =>
+          shortcut.name === "Analyze screenshot" &&
+          shortcut.description === "Upload a UI screenshot and download a starter package.",
+      ),
+    ).toBeTruthy();
+    expect(
+      json.shortcuts?.some(
+        (shortcut) =>
+          shortcut.name === "Sample run" &&
+          shortcut.description === "Open a guided layout and review a starter preview.",
+      ),
+    ).toBeTruthy();
   }
 
   const favicon = await request.get("/favicon.ico");

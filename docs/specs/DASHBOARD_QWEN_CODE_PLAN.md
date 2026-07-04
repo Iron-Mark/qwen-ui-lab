@@ -1,6 +1,6 @@
 # Qwen Code Plan Mode Output
 
-> Generated using Qwen Code Plan Mode with Prompt 4.
+> Captured from Qwen Code Plan Mode with Prompt 4.
 
 ## Prompt Used
 
@@ -29,26 +29,26 @@ I need:
 ```
 src/
   app/
-    layout.tsx              — Root layout with ThemeProvider, Header, Footer
-    page.tsx                — Dashboard page, imports data + DashboardShell
-    globals.css             — Design tokens, dark mode, base styles
+    layout.tsx              - Root layout with ThemeProvider, Header, Footer
+    page.tsx                - Dashboard page, imports data + DashboardShell
+    globals.css             - Design tokens, dark mode, base styles
   components/
-    Header.tsx              — Top nav bar with branding + theme toggle
-    Footer.tsx              — Footer with links
-    ThemeProvider.tsx        — Dark/light mode context
-    ThemeToggle.tsx          — Toggle button with sun/moon icons
+    Header.tsx              - Top nav bar with branding + theme toggle
+    Footer.tsx              - Footer with links
+    ThemeProvider.tsx        - Dark/light mode context
+    ThemeToggle.tsx          - Toggle button with sun/moon icons
     dashboard/
-      DashboardShell.tsx    — Layout orchestrator
-      StatCard.tsx           — Single KPI metric card
-      RevenueCard.tsx        — Horizontal bar chart
-      ActivityList.tsx       — Recent activity feed
-      QuickActionButton.tsx  — Action shortcut button
-      ChartPreview.tsx       — Placeholder for charting library
-      WorkflowBanner.tsx     — Pipeline visualization
+      DashboardShell.tsx    - Layout orchestrator
+      StatCard.tsx           - Single KPI metric card
+      RevenueCard.tsx        - Horizontal bar chart
+      ActivityList.tsx       - Recent activity feed
+      QuickActionButton.tsx  - Action shortcut button
+      ChartPreview.tsx       - Chart summary preview
+      WorkflowBanner.tsx     - Pipeline visualization
   data/
-    dashboard-data.ts       — Typed mock data + interfaces
+    dashboard-data.ts       - Typed example data + interfaces
   lib/
-    cn.ts                   — clsx + tailwind-merge utility
+    cn.ts                   - clsx + tailwind-merge utility
 ```
 
 ### 2. Component Breakdown
@@ -60,7 +60,7 @@ src/
 | `RevenueCard` | Presentational | Renders horizontal bar chart from data array |
 | `ActivityList` | Presentational | Renders activity feed with avatars |
 | `QuickActionButton` | Interactive | Button with icon + label |
-| `ChartPreview` | Placeholder | Dashed-border placeholder for future chart |
+| `ChartPreview` | Summary preview | Accessible text summary for secondary chart area |
 | `WorkflowBanner` | Presentational | Shows 6-step pipeline |
 | `ThemeProvider` | Provider | Manages theme state + localStorage persistence |
 | `ThemeToggle` | Interactive | Sun/moon toggle button |
@@ -100,7 +100,7 @@ src/
 
 ### 5. Accessibility Checklist
 
-- [ ] Semantic heading hierarchy (h1 in Header → h2 page title → h3 section titles)
+- [ ] Semantic heading hierarchy (h1 in Header -> h2 page title -> h3 section titles)
 - [ ] `aria-label` on dashboard sections
 - [ ] `aria-hidden` on decorative icons and avatar initials
 - [ ] `<time>` element for timestamps
@@ -113,9 +113,9 @@ src/
 
 ### 6. Risks Before Implementation
 
-1. **Theme flash on load** — Need inline `<script>` to set `.dark` class before React hydrates
-2. **Hydration mismatch** — `suppressHydrationWarning` needed on `<html>` for theme
-3. **setState in effect** — Theme initialization must use lazy `useState` initializer, not `useEffect`
-4. **Division by zero** — Revenue bars need guarded `maxRevenue > 0` check
-5. **Text overflow** — Activity list items need `truncate` + `min-w-0` pattern
-6. **Tabular numbers** — Revenue values need `tabular-nums` for aligned columns
+1. **Theme flash on load** - Need inline `<script>` to set `.dark` class before React hydrates
+2. **Hydration mismatch** - `suppressHydrationWarning` needed on `<html>` for theme
+3. **setState in effect** - Theme initialization must use lazy `useState` initializer, not `useEffect`
+4. **Division by zero** - Revenue bars need guarded `maxRevenue > 0` check
+5. **Text overflow** - Activity list items need `truncate` + `min-w-0` pattern
+6. **Tabular numbers** - Revenue values need `tabular-nums` for aligned columns

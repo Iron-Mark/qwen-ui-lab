@@ -12,7 +12,7 @@ This project includes lightweight A/B experiment scaffolding designed to be safe
 - `headerDesignSystemCta`: toggles a small `Labs` badge in the Header's Design system CTA.
 - `uploadFlowHeadline`: tests upload-flow hero headline + supporting copy for stronger first-value framing.
 - `uploadFlowAnalyzeCta`: tests Analyze button label (`Analyze` vs `Analyze now`).
-- `uploadFlowSamplePathHint`: toggles a short helper hint near the sample screenshot button to simplify first-run path.
+- `uploadFlowSamplePathHint`: toggles a short helper hint near the sample run control to simplify first-run path.
 
 This point is intentionally non-invasive and low risk.
 

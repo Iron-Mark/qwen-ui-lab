@@ -63,7 +63,7 @@ export function ShareNotFoundContent() {
               )}
             >
               <ImageIcon className="size-4" aria-hidden />
-              {t.sampleReference}
+              {t.openSampleRun}
             </Link>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function ShareNotFoundContent() {
                 <ImageIcon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-card-foreground">
-                    {t.sampleReference}
+                    {t.sampleRun}
                   </p>
                   <p className="mt-1 text-sm leading-5 text-muted-foreground">
                     {t.notFoundRecoverySample}

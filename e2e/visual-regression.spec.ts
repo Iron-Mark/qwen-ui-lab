@@ -5,7 +5,7 @@ import {
   stubClipboardForE2E,
 } from "./helpers/mock-analyze-api";
 import {
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
   waitForDesignSystemPreview,
@@ -58,12 +58,12 @@ test("post-analyze scaffold panel visual baseline", async ({ page }) => {
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
 
-  await expect(page.getByText(/Generated component/i)).toBeVisible({
-    timeout: 15_000,
-  });
+  await expect(
+    page.getByText(/Preview ready - copy or download the component draft/i),
+  ).toBeVisible({ timeout: 15_000 });
 
   const scaffoldCard = page
-    .getByText("Generated component", { exact: true })
+    .getByText("Component draft", { exact: true })
     .locator("xpath=ancestor::div[contains(@class,'group/card')][1]");
   await expect(scaffoldCard).toHaveScreenshot("post-analyze-scaffold-panel.png", {
     maxDiffPixelRatio: 0.03,
@@ -86,14 +86,14 @@ for (const sampleCase of BUNDLED_SAMPLE_ARTIFACT_CASES) {
     await page.goto("/");
     await waitForUploadFlowReady(page);
 
-    await loadBundledSample(page, sampleCase.label);
+    await loadSampleRun(page, sampleCase.label);
     await expect(page.getByText(new RegExp(sampleCase.fileName, "i"))).toBeVisible();
     await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
     await primaryAnalyzeButton(page).click();
 
-    await expect(page.getByText(/Generated component/i)).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(
+      page.getByText(/Preview ready - copy or download the component draft/i),
+    ).toBeVisible({ timeout: 15_000 });
 
     const summaryCard = page
       .getByText("Layout Read", { exact: true })

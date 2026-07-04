@@ -2,45 +2,45 @@ import type { Metadata } from "next";
 import { createRouteMetadata, createRouteStructuredData } from "@/lib/seo";
 
 const homeRouteDescription =
-  "Upload a UI screenshot, inspect detected structure, refine boxes, and export a React + Tailwind package.";
+  "Upload a UI screenshot, inspect detected structure, refine boxes, and download a React + Tailwind export package.";
 
 export const homeRouteSocialPreviewImageAlt =
   "qwen-ui-lab screenshot-to-React workflow";
 
 export function createHomeRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Screenshot to React Workflow",
+    title: "Screenshot to React Workspace",
     description: homeRouteDescription,
     path: "/",
     keywords: [
       "screenshot to React",
       "UI screenshot to React",
-      "Qwen3-VL UI analysis",
-      "Tailwind component generator",
+      "UI layout detection",
+      "Tailwind export package builder",
       "UI detection workflow",
     ],
-    ogImage: "/opengraph-image",
+    ogImage: "/social/home-social-preview-1200x630.png",
     ogImageAlt: "qwen-ui-lab screenshot to React workflow",
-    twitterImage: "/twitter-image",
+    twitterImage: "/social/home-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab screenshot to React workflow",
     shareSnippet:
-      "Upload a screenshot, review detected UI, and export a React/Tailwind package.",
+      "Upload a screenshot, review detected UI, and download a React/Tailwind export package.",
   });
 }
 
 export function getHomeRouteStructuredDataInput() {
   return {
-    title: "Screenshot to React Workflow",
+    title: "Screenshot to React Workspace",
     description: homeRouteDescription,
     path: "/",
     breadcrumbLabel: "Workflow",
-    about: ["UI screenshot analysis", "React component generation", "Design system export"],
+    about: ["UI screenshot analysis", "React component review", "Design system download"],
     callToAction:
-      "Turn UI screenshots into reviewable React and Tailwind project files.",
+      "Turn UI screenshots into inspectable React and Tailwind project files.",
     additionalGraph: [
       {
         "@type": "SoftwareApplication",
-        name: "qwen-ui-lab dashboard",
+        name: "qwen-ui-lab workspace",
         applicationCategory: "DeveloperApplication",
         operatingSystem: "Web",
         offers: {
@@ -50,8 +50,8 @@ export function getHomeRouteStructuredDataInput() {
         },
         featureList: [
           "Screenshot upload flow",
-          "AI analysis summary",
-          "React + Tailwind package export",
+          "Detection summary",
+          "React + Tailwind export package download",
         ],
       },
     ],
@@ -66,10 +66,10 @@ export function getHomeRouteSocialPreviewImage() {
   return {
     eyebrow: "qwen-ui-lab",
     badge: "Screenshot to React",
-    title: "Turn screenshots into starter UI",
+    title: "Turn screenshots into React UI",
     description:
-      "Upload a reference, inspect detected regions, refine boxes, and export React + Tailwind files.",
-    workflow: "Upload -> Detect -> Refine -> Export package",
+      "Upload a screenshot, inspect detected regions, refine boxes, and download React + Tailwind files.",
+    workflow: "Upload -> Detect -> Refine -> Download package",
     background:
       "linear-gradient(135deg, #08061f 0%, #111827 46%, #312e81 100%)",
     accent: "#8b5cf6",

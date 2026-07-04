@@ -12,6 +12,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getProviderModeLabel } from "@/lib/provider-mode";
 import { cn } from "@/lib/utils";
 
 type ReadinessCheck = {
@@ -36,6 +37,11 @@ const statusLabels: Record<ReadinessCheck["status"], string> = {
   optional: "Optional",
   fallback: "Local",
   missing: "Missing",
+};
+
+const shareStorageLabels: Record<ReadinessPayload["shareStorage"], string> = {
+  kv: "Durable links",
+  memory: "Temporary links",
 };
 
 function statusBadgeVariant(status: ReadinessCheck["status"]) {
@@ -107,10 +113,10 @@ export function ProductionReadinessPanel({
           </div>
           <p className="text-xs text-muted-foreground">
             {payload
-              ? `${statusSummary}. Analysis: ${payload.provider}. Sharing: ${payload.shareStorage}.`
+              ? `${statusSummary}. Analysis: ${getProviderModeLabel(payload.provider)}. Sharing: ${shareStorageLabels[payload.shareStorage]}.`
               : loading
-                ? "Checking runtime feature status."
-                : "Could not load runtime feature status."}
+                ? "Checking service status."
+                : "Could not load service status."}
           </p>
         </div>
         <Button

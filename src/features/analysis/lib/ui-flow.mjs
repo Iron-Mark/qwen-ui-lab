@@ -8,15 +8,15 @@ import {
   mergeManualCorrectionReasons,
   summarizeCorrectedElementChanges,
 } from "./detection-corrections.mjs";
-import { normalizeGeneratedShadcnImports } from "./generated-imports.mjs";
+import { normalizeStarterShadcnImports } from "./generated-imports.mjs";
 
 const workflowSteps = [
   { id: "upload", label: "Upload" },
   { id: "analyze", label: "Analyze" },
   { id: "plan", label: "Plan" },
-  { id: "generate", label: "Generate" },
+  { id: "generate", label: "Prepare" },
   { id: "preview", label: "Preview" },
-  { id: "export", label: "Export" },
+  { id: "export", label: "Download" },
 ];
 
 const defaultPreviewStats = [
@@ -105,7 +105,7 @@ function resolveOfflineContent(file, overrides) {
 
 export function buildUiFlowArtifact(file, overrides = {}) {
   const readableSize = formatFileSize(file.size);
-  const fileName = file.name || "uploaded-reference";
+  const fileName = file.name || "uploaded-screenshot";
   const offline = resolveOfflineContent(file, overrides);
   const detections = buildDetections(file);
 
@@ -113,7 +113,7 @@ export function buildUiFlowArtifact(file, overrides = {}) {
   const previewStats = normalizePreviewStats(
     overrides.previewStats || offline.previewStats || defaultPreviewStats,
   );
-  const generatedCode = normalizeGeneratedShadcnImports(
+  const generatedCode = normalizeStarterShadcnImports(
     overrides.generatedCode ||
       offline.generatedCode ||
       createGeneratedCode(fileName),
@@ -164,8 +164,8 @@ export function regenerateArtifactFromDetections(artifact, detections) {
   const existingSectionsStat = artifact.previewStats?.find(
     (stat) => stat.label === "Sections",
   );
-  const generatedCode = normalizeGeneratedShadcnImports(
-    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-reference", {
+  const generatedCode = normalizeStarterShadcnImports(
+    createGeneratedCodeFromDetections(artifact.file?.name ?? "uploaded-screenshot", {
       ...correctedDetections,
       elements: activeElements,
     }),
@@ -176,7 +176,7 @@ export function regenerateArtifactFromDetections(artifact, detections) {
       value: existingSectionsStat?.value ?? String(activeElements.length),
     },
     {
-      label: "Edited",
+      label: "Updated",
       value: String((correctedDetections.elements ?? []).filter((element) => element.userEdited).length),
     },
     {
@@ -226,7 +226,7 @@ function recomputeCorrectedDetections(detections) {
       correctedElementCount: editedCount,
       excludedElementCount: excludedCount,
       strategy: editedCount
-        ? `${detections.quality?.strategy ?? "offline-detection"} + manual-correction-source-of-truth`
+        ? `${detections.quality?.strategy ?? "offline-detection"} + review-updates-applied`
         : detections.quality?.strategy,
     },
   };
@@ -310,9 +310,9 @@ function createGeneratedCode(fileName) {
   return `import { StatCard } from "@/features/home/components/StatCard";
 import { RevenueCard } from "@/features/home/components/RevenueCard";
 
-export function GeneratedDashboard() {
+export function DashboardStarter() {
   return (
-    <section aria-label="Dashboard export based on ${fileName}">
+    <section aria-label="Dashboard component draft based on ${fileName}">
       <div className="grid gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
@@ -325,7 +325,7 @@ export function GeneratedDashboard() {
 }
 
 function createGeneratedCodeFromDetections(fileName, detections) {
-  const safeName = String(fileName || "uploaded-reference").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const safeName = String(fileName || "uploaded-screenshot").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   const tokens = normalizeDetectionTokens(detections.designTokens);
   const source = {
     width: Math.max(1, detections.source?.width ?? 1440),
@@ -350,8 +350,8 @@ function createGeneratedCodeFromDetections(fileName, detections) {
     appliedEdits: detections.quality?.correctedElementCount ?? elements.filter((element) => element.userEdited).length,
     excludedBoxes: detections.quality?.excludedElementCount ?? 0,
     sourceOfTruth: detections.quality?.correctedElementCount
-      ? "Manual corrections are the source of truth for this regenerated scaffold."
-      : "Detection boxes are the source of truth for this regenerated scaffold.",
+      ? "Reviewer updates guide this component draft."
+      : "Detection boxes guide this component draft.",
   };
 
   return `import type { AriaRole } from "react";
@@ -366,6 +366,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type ElementBox = {
   x: number;
@@ -434,7 +442,7 @@ type LayoutRegion = {
   children: string[];
 };
 
-type GeneratedSection = {
+type StarterSection = {
   id: string;
   kind: string;
   primitive: string;
@@ -515,25 +523,28 @@ const shadcnPrimitiveMap: Record<string, string> = {
   "empty-state": "Card with centered recovery action",
 };
 
-const sampleSectionData = {
-  rows: ["Queued review", "Ready for import review", "Needs QA"],
+const starterSectionData = {
+  rows: ["Queued review", "Ready for integration", "Needs QA"],
   cards: ["Overview", "Activity", "Follow-up", "Review"],
+  metricLabels: ["Revenue", "Users", "Conversion", "Tickets"],
   metrics: ["$45.2K", "12,340", "18.4%", "573"],
-  tableColumns: ["Name", "Status", "Value"],
+  tableColumns: ["Account", "Status", "Value", "Owner"],
   tableRows: [
     ["Acme Co", "Active", "$12.4K"],
     ["Northstar", "Review", "$8.1K"],
     ["Summit Labs", "Paused", "$4.8K"],
   ],
+  tabLabels: ["Overview", "Details", "Activity", "Settings"],
+  actionLabels: ["Save", "Preview", "Share", "More"],
   chartValues: [42, 74, 55, 88, 63, 78],
 };
 
-const generatedSections = buildGeneratedSections(correctedPatterns, correctedElements);
+const starterSections = buildStarterSections(correctedPatterns, correctedElements);
 
 export default function ReviewedScreenshotStarter() {
   return (
     <main
-      aria-label="Screenshot export based on ${safeName}"
+      aria-label="Screenshot component draft based on ${safeName}"
       className="min-h-dvh bg-background text-foreground"
     >
       <section className="mx-auto grid w-full max-w-6xl gap-6 p-4 sm:p-6 lg:p-8">
@@ -544,20 +555,20 @@ export default function ReviewedScreenshotStarter() {
           </div>
           <div className="grid gap-2">
             <h1 className="text-3xl font-semibold tracking-tight">
-              Screenshot starter component
+              Screenshot component draft
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               Built from {correctionSummary.activeElements} active UI regions with shadcn-style
-              primitives, responsive sections, and semantic landmarks ready for real data wiring.
+              primitives, responsive sections, and semantic landmarks ready for app data wiring.
             </p>
           </div>
         </header>
 
         <ImplementationChecklist />
 
-        {generatedSections.length ? (
+        {starterSections.length ? (
           <div className="grid gap-4 lg:grid-cols-2">
-            {generatedSections.map((section) => (
+            {starterSections.map((section) => (
               <ScaffoldSection key={section.id} section={section} />
             ))}
           </div>
@@ -585,37 +596,34 @@ function ImplementationChecklist() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Implementation checklist</CardTitle>
+        <CardTitle>Integration checklist</CardTitle>
         <CardDescription>
-          Manual edits stay in the exported recipe, while this component focuses on the reviewed UI structure.
+          Review metadata stays in the recipe JSON, while this component keeps the UI structure ready for app integration.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
         <p>
           <span className="block font-medium text-foreground">Active elements</span>
-          {correctionSummary.activeElements} reviewed primitives
+          {correctionSummary.activeElements} active UI elements
         </p>
         <p>
           <span className="block font-medium text-foreground">Layout regions</span>
-          {layoutRegions.length} export-ready groups
+          {layoutRegions.length} layout groups
         </p>
         <p>
           <span className="block font-medium text-foreground">Responsive intent</span>
           {responsiveIntent.mode} - {responsiveIntent.breakpoints.join(" / ")}
         </p>
         <p>
-          <span className="block font-medium text-foreground">Applied edits</span>
-          {correctionSummary.appliedEdits} manual edits, {correctionSummary.excludedBoxes} excluded boxes
+          <span className="block font-medium text-foreground">Review updates</span>
+          {correctionSummary.appliedEdits} updated boxes, {correctionSummary.excludedBoxes} hidden boxes
         </p>
-      </CardContent>
-      <CardContent className="border-t pt-4 text-sm text-muted-foreground">
-        {correctionSummary.sourceOfTruth}
       </CardContent>
     </Card>
   );
 }
 
-function ScaffoldSection({ section }: { section: GeneratedSection }) {
+function ScaffoldSection({ section }: { section: StarterSection }) {
   if (section.kind === "tab-set") {
     return <TabScaffoldSection section={section} />;
   }
@@ -627,7 +635,7 @@ function ScaffoldSection({ section }: { section: GeneratedSection }) {
   return <GenericScaffoldSection section={section} />;
 }
 
-function TabScaffoldSection({ section }: { section: GeneratedSection }) {
+function TabScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -654,7 +662,7 @@ function TabScaffoldSection({ section }: { section: GeneratedSection }) {
   );
 }
 
-function FormScaffoldSection({ section }: { section: GeneratedSection }) {
+function FormScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -670,8 +678,8 @@ function FormScaffoldSection({ section }: { section: GeneratedSection }) {
               </Button>
             ) : (
               <div key={item.id} className="grid gap-2">
-                <Label htmlFor={item.id}>Field {index + 1}</Label>
-                <Input id={item.id} placeholder={item.label} />
+                <Label htmlFor={item.id}>{item.label || "Field " + (index + 1)}</Label>
+                <Input id={item.id} placeholder={fieldPlaceholder(item.label || "Field " + (index + 1))} />
               </div>
             ),
           )}
@@ -682,7 +690,7 @@ function FormScaffoldSection({ section }: { section: GeneratedSection }) {
   );
 }
 
-function GenericScaffoldSection({ section }: { section: GeneratedSection }) {
+function GenericScaffoldSection({ section }: { section: StarterSection }) {
   return (
     <Card>
       <CardHeader>
@@ -698,36 +706,36 @@ function GenericScaffoldSection({ section }: { section: GeneratedSection }) {
         {section.items.map((item) => (
           <PrimitivePreview key={item.id} element={item} />
         ))}
-        <SectionSampleDataHint kind={section.kind} />
+        <SectionStarterDataHint kind={section.kind} />
         <SectionStateHint kind={section.kind} />
       </CardContent>
     </Card>
   );
 }
 
-function SectionSampleDataHint({ kind }: { kind: string }) {
+function SectionStarterDataHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "Sample rows: " + sampleSectionData.rows.join(", "),
-    "repeated-grid": "Sample cards: " + sampleSectionData.cards.join(", "),
-    "stat-row": "Sample metrics: " + sampleSectionData.metrics.join(", "),
-    "data-table": "Sample table columns: " + sampleSectionData.tableColumns.join(", "),
-    "chart-panel": "Sample chart values: " + sampleSectionData.chartValues.join(", "),
+    "repeated-list": "Rows: " + starterSectionData.rows.join(", "),
+    "repeated-grid": "Cards: " + starterSectionData.cards.join(", "),
+    "stat-row": "Metrics: " + starterSectionData.metrics.join(", "),
+    "data-table": "Table columns: " + starterSectionData.tableColumns.join(", "),
+    "chart-panel": "Chart values: " + starterSectionData.chartValues.join(", "),
   };
   const message = copy[kind];
   return message ? (
     <p className="mt-3 rounded-md border bg-muted/40 px-3 py-2 text-xs leading-5 text-muted-foreground">
-      {message}. Replace this sample data before using the component in an app.
+      {message}. Review this content before wiring the component to a route.
     </p>
   ) : null;
 }
 
 function SectionStateHint({ kind }: { kind: string }) {
   const copy: Record<string, string> = {
-    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring real data.",
-    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-item fallbacks.",
+    "repeated-list": "State coverage: add loading skeletons, empty copy, and row-level error handling before wiring app data.",
+    "repeated-grid": "State coverage: include loading cards, empty grid messaging, and unavailable-state handling.",
     "form-group": "State coverage: wire validation errors, pending submit state, and success feedback.",
-    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and fetch-error recovery.",
-    "chart-panel": "State coverage: include loading, no-data, and metric fetch-error summaries for screen readers.",
+    "data-table": "State coverage: add loading rows, no-results messaging, pagination overflow, and request-error recovery.",
+    "chart-panel": "State coverage: include loading, no-data, and request-error summaries for screen readers.",
   };
   const message = copy[kind];
   return message ? (
@@ -752,7 +760,7 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
     return (
       <div className="grid gap-2">
         <Label htmlFor={element.id}>{label}</Label>
-        <Input id={element.id} placeholder="Enter product data" />
+        <Input id={element.id} placeholder={fieldPlaceholder(label)} />
       </div>
     );
   }
@@ -764,16 +772,16 @@ function PrimitivePreview({ element }: { element: CorrectedElement }) {
         <Badge variant="secondary">{confidence}%</Badge>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
-        Mapped to {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
+        Suggested primitive: {shadcnPrimitiveMap[role] ?? "semantic Card section"}.
       </p>
     </article>
   );
 }
 
-function buildGeneratedSections(
+function buildStarterSections(
   patterns: CorrectedPatterns,
   elements: CorrectedElement[],
-): GeneratedSection[] {
+): StarterSection[] {
   const byId = new Map<string, CorrectedElement>(
     elements.map((element) => [element.id, enrichElement(element)] as [string, CorrectedElement]),
   );
@@ -786,7 +794,7 @@ function buildGeneratedSections(
     ...patterns.statRows.map((pattern) => sectionFromPattern(pattern, byId, "stat-row", "Metric cards", "KPI cards grouped with consistent hierarchy.", "grid gap-3 sm:grid-cols-2")),
     ...patterns.formGroups.map((pattern) => sectionFromPattern(pattern, byId, "form-group", "Form group", "Inputs and actions arranged as a usable form.", "grid gap-3")),
     ...patterns.dataTables.map((pattern) => sectionFromPattern(pattern, byId, "data-table", "Data table", "Table-like regions preserved for row and column wiring.", "grid gap-2")),
-    ...patterns.charts.map((pattern) => sectionFromPattern(pattern, byId, "chart-panel", "Chart panel", "Chart region exported with accessible summary text.", "grid gap-3")),
+    ...patterns.charts.map((pattern) => sectionFromPattern(pattern, byId, "chart-panel", "Chart panel", "Chart region captured with accessible summary text.", "grid gap-3")),
     ...patterns.actionClusters.map((pattern) => sectionFromPattern(pattern, byId, "action-cluster", "Action cluster", "Controls grouped as a toolbar or segmented control.", "flex flex-wrap gap-2")),
     ...patterns.tabSets.map((pattern) => sectionFromPattern(pattern, byId, "tab-set", "Tabs", "Detected tabs become a real Tabs primitive.", "grid gap-3")),
   ];
@@ -800,7 +808,7 @@ function sectionFromPattern(
   title: string,
   description: string,
   layoutClass: string,
-): GeneratedSection {
+): StarterSection {
   return {
     id: pattern.id,
     kind: primitive,
@@ -822,18 +830,18 @@ function enrichElement(element: CorrectedElement): CorrectedElement {
   };
 }
 
-export function CorrectionGridReference() {
+export function LayoutPreviewStarter() {
   return (
     <section
-      aria-label="Corrected scaffold from ${safeName}"
+      aria-label="Layout component draft from ${safeName}"
       className="space-y-4"
       style={{ backgroundColor: designTokens.surface, color: designTokens.foreground }}
     >
       <header className="space-y-1">
-        <p className="text-xs font-medium uppercase">Corrected screenshot scaffold</p>
+        <p className="text-xs font-medium uppercase">Layout component draft</p>
         <h1 className="text-xl font-semibold">${safeName}</h1>
         <p className="text-sm opacity-75">
-          {correctedElements.length} reviewed deterministic elements drive this scaffold.
+          {correctedElements.length} reviewed UI regions shape this component draft.
           {" "}
           {correctedPatterns.appShells.length} app shell patterns, {correctedPatterns.dialogPanels.length} dialog panels, {correctedPatterns.emptyStates.length} empty states, {correctedPatterns.repeatedLists.length} repeated list patterns, {correctedPatterns.repeatedGrids.length} repeated grid patterns, {correctedPatterns.statRows.length} stat rows, {correctedPatterns.formGroups.length} form groups, {correctedPatterns.dataTables.length} data tables, {correctedPatterns.charts.length} chart series, {correctedPatterns.actionClusters.length} action clusters, and {correctedPatterns.tabSets.length} tab sets remain grouped.
         </p>
@@ -850,7 +858,7 @@ export function CorrectionGridReference() {
           {correctedPatterns.appShells.map((pattern) => (
             <section
               key={pattern.id}
-              aria-label="Detected app shell"
+              aria-label="Application shell"
               className="space-y-2 border p-3"
               style={{ borderColor: designTokens.border, borderRadius: designTokens.radius }}
             >
@@ -1094,7 +1102,9 @@ export function CorrectionGridReference() {
                       className="rounded border px-3 py-2 text-sm"
                       style={{ borderColor: designTokens.border, backgroundColor: designTokens.muted }}
                     >
-                      <p className="text-[11px] uppercase opacity-70">Metric {index + 1}</p>
+                      <p className="text-[11px] uppercase opacity-70">
+                        {starterSectionData.metricLabels[index] || "Metric"}
+                      </p>
                       <p className="font-semibold">{child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Metric card"}</p>
                     </article>
                   );
@@ -1145,6 +1155,15 @@ export function CorrectionGridReference() {
             >
               <p className="text-xs font-semibold uppercase">Data table</p>
               <Table className="min-w-[28rem]">
+                <TableHeader>
+                  <TableRow>
+                    {Array.from({ length: Math.max(1, pattern.columns ?? 3) }).map((_, columnIndex) => (
+                      <TableHead key={columnIndex}>
+                        {starterSectionData.tableColumns[columnIndex] || "Field " + (columnIndex + 1)}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {Array.from({ length: Math.max(1, pattern.rows ?? 3) }).map((_, rowIndex) => (
                     <TableRow key={rowIndex}>
@@ -1153,7 +1172,7 @@ export function CorrectionGridReference() {
                         const child = childId ? correctedElementById.get(childId) : null;
                         return (
                           <TableCell key={columnIndex}>
-                            {child ? renderCorrectedPrimitive(child, designTokens) : "Cell"}
+                            {child ? renderCorrectedPrimitive(child, designTokens) : starterSectionData.tableRows[rowIndex]?.[columnIndex] ?? "Review value"}
                           </TableCell>
                         );
                       })}
@@ -1221,7 +1240,7 @@ export function CorrectionGridReference() {
                         color: index === 0 ? designTokens.accentForeground : designTokens.foreground,
                       }}
                     >
-                      {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Action"}
+                      {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : starterSectionData.actionLabels[index] || "More"}
                     </Button>
                   );
                 })}
@@ -1250,7 +1269,7 @@ export function CorrectionGridReference() {
                       const child = correctedElementById.get(pattern.children[index]);
                       return (
                         <TabsTrigger key={pattern.children[index] ?? index} value={"tab-" + (index + 1)}>
-                          {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : "Tab " + (index + 1)}
+                          {child ? primitiveLabel(child.componentRole || child.primitive || child.kind) : starterSectionData.tabLabels[index] || "Section " + (index + 1)}
                         </TabsTrigger>
                       );
                     })}
@@ -1262,7 +1281,7 @@ export function CorrectionGridReference() {
                       className="rounded border p-3 text-xs"
                       style={{ borderColor: designTokens.border, backgroundColor: designTokens.surface }}
                     >
-                      {primitiveLabel(pattern.tabKind || "tabs")} panel {index + 1}
+                      {starterSectionData.tabLabels[index] || primitiveLabel(pattern.tabKind || "tabs")} content
                     </TabsContent>
                   ))}
                 </Tabs>
@@ -1351,7 +1370,7 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
         <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
           <p className="font-semibold">{roleLabel}</p>
           <Button type="button" size="xs" className="w-fit rounded px-2 py-1 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-            Action
+            {roleLabel}
           </Button>
           <p className="opacity-70">{element.kind} - {confidence}%</p>
         </div>
@@ -1362,11 +1381,11 @@ function renderCorrectedPrimitive(element: CorrectedElement, tokens: typeof desi
       <div className="grid gap-1.5" aria-label={roleLabel + " primitive preview"}>
         <p className="font-semibold">{roleLabel}</p>
         <div className="grid gap-1.5">
-          <Label htmlFor={element.id + "-value"}>Label or value</Label>
+          <Label htmlFor={element.id + "-value"}>{roleLabel}</Label>
           <div className="flex items-center gap-2">
-            <Input id={element.id + "-value"} placeholder="Enter product data" />
+            <Input id={element.id + "-value"} placeholder={fieldPlaceholder(roleLabel)} />
             <Button type="button" size="xs" className="rounded px-2 py-0.5 text-[10px]" style={{ backgroundColor: tokens.accent, color: tokens.accentForeground }}>
-              Action
+              Save
             </Button>
           </div>
         </div>
@@ -1436,6 +1455,11 @@ function primitiveLabel(value: string | undefined) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function fieldPlaceholder(label: string) {
+  const value = String(label || "field").trim();
+  return "Enter " + value.charAt(0).toLowerCase() + value.slice(1);
 }
 
 function elementTone(primitive: string | undefined, tokens: typeof designTokens) {

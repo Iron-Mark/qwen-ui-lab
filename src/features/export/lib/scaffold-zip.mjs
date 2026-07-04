@@ -1,5 +1,5 @@
 /**
- * Minimal ZIP writer (stored, no compression) for export packages.
+ * Minimal ZIP writer (stored, no compression) for export package downloads.
  */
 
 const ENCODER = new TextEncoder();
@@ -21,13 +21,13 @@ function crc32(data) {
  * @param {string} name
  */
 function sanitizeZipEntryName(name) {
-  const normalized = String(name || "component.tsx")
+  const normalized = String(name || "starter-component.tsx")
     .trim()
     .replace(/\\/g, "/")
     .split("/")
     .filter((part) => part && part !== "." && part !== "..")
     .join("/");
-  return normalized || "component.tsx";
+  return normalized || "starter-component.tsx";
 }
 
 /**

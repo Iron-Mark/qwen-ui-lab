@@ -21,7 +21,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : process.platform === "win32" ? 3 : 4,
+  workers: process.env.CI ? 1 : process.platform === "win32" ? 1 : 4,
   reporter: "list",
   snapshotPathTemplate:
     "{testDir}/{testFileDir}/{testFileName}-snapshots/{platform}/{arg}{ext}",
@@ -32,7 +32,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: /mobile\.spec\.ts/,
+      testIgnore: /mobile\.spec\.ts|pwa-production\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {

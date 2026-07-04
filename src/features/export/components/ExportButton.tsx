@@ -20,6 +20,12 @@ import {
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
+import {
+  EXPORT_ACTION_BUTTON_BASE_CLASS,
+  EXPORT_ACTION_BUTTON_ERROR_CLASS,
+  EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+} from "../lib/export-action-button-styles";
 
 export type ExportButtonVariant = "copy" | "export";
 
@@ -39,15 +45,15 @@ interface ExportButtonProps {
 const LABELS: Record<ExportButtonVariant, Record<CopyStatus, string>> = {
   copy: {
     idle: "Copy",
-    copying: "Copying…",
+    copying: "Copying...",
     success: "Copied",
     error: "Failed",
   },
   export: {
-    idle: "Export",
-    copying: "Exporting…",
-    success: "Exported",
-    error: "Failed",
+    idle: "Download component",
+    copying: "Downloading...",
+    success: "Downloaded",
+    error: "Download failed",
   },
 };
 
@@ -78,7 +84,7 @@ export function ExportButton({
   text,
   variant = "copy",
   label,
-  filename = "component.tsx",
+  filename = "starter-component.tsx",
   overlay = false,
   showToast = true,
   className,
@@ -117,7 +123,7 @@ export function ExportButton({
         });
         setDownloadStatus("success");
         if (showToast) {
-          toast("File exported", "success");
+          toast("Component downloaded", "success");
         }
         onCopied?.();
         window.setTimeout(() => setDownloadStatus("idle"), 1800);
@@ -130,7 +136,7 @@ export function ExportButton({
         });
         setDownloadStatus("error");
         if (showToast) {
-          toast("Export failed", "error");
+          toast("Download failed. Try copying instead.", "error");
         }
         window.setTimeout(() => setDownloadStatus("idle"), 2200);
       }
@@ -157,7 +163,7 @@ export function ExportButton({
         status: "failed",
       });
       if (showToast) {
-        toast("Copy failed — try Export", "error");
+        toast("Copy failed. Try downloading instead.", "error");
       }
     }
   }, [
@@ -175,7 +181,9 @@ export function ExportButton({
   ]);
 
   const ariaLabel =
-    effectiveStatus === "idle" ? `${visibleLabel} code` : message || visibleLabel;
+    effectiveStatus === "idle"
+      ? createExportActionAriaLabel(visibleLabel)
+      : message || createExportActionAriaLabel(visibleLabel);
 
   const button = (
     <Button
@@ -187,12 +195,10 @@ export function ExportButton({
       aria-label={ariaLabel}
       aria-busy={isBusy}
       className={cn(
-        "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
+        EXPORT_ACTION_BUTTON_BASE_CLASS,
         overlay && "absolute left-3 top-3 z-20",
-        effectiveStatus === "success" &&
-          "border-success/40 bg-success/10 text-success hover:bg-success/10",
-        effectiveStatus === "error" &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/10",
+        effectiveStatus === "success" && EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+        effectiveStatus === "error" && EXPORT_ACTION_BUTTON_ERROR_CLASS,
         className,
       )}
     >

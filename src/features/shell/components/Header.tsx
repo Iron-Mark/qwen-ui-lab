@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LayoutDashboard, PanelsTopLeft, UserRound } from "lucide-react";
+import { PanelsTopLeft, UserRound, Workflow } from "lucide-react";
 import { AppearanceMenu } from "./AppearanceMenu";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -130,12 +130,12 @@ export function Header() {
           className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-3 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:min-w-0 md:justify-start"
         >
           <Image
-            src="/icons/icon.svg"
+            src="/icons/icon-512.png"
             alt=""
             width={36}
             height={36}
             className="h-9 w-9 shrink-0 rounded-xl shadow-[0_6px_18px_color-mix(in_oklch,var(--primary)_35%,transparent)]"
-            fetchPriority="low"
+            priority
           />
           <HeaderBrandCopy title={brandTitle} subtitle={brandSubtitle} />
         </Link>
@@ -145,7 +145,7 @@ export function Header() {
         >
           <Link
             href={localizedHref("/", locale)}
-            aria-label={t.navDashboardAria}
+            aria-label={t.navWorkflowAria}
             className={cn(
               buttonVariants({
                 variant: pathname === "/" ? "secondary" : "ghost",
@@ -155,8 +155,8 @@ export function Header() {
             )}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <LayoutDashboard className="size-4 shrink-0" aria-hidden />
-            <span className="hidden md:inline">{t.navDashboard}</span>
+            <Workflow className="size-4 shrink-0" aria-hidden />
+            <span className="hidden md:inline">{t.navWorkflow}</span>
           </Link>
           <Link
             href={localizedHref("/design-system", locale)}
@@ -293,7 +293,7 @@ function HeaderBrandCopyLayer({
     >
       <p
         data-testid={current ? "header-brand-title" : undefined}
-        className="truncate text-lg font-bold leading-5 text-card-foreground transition-colors"
+        className="truncate text-lg font-bold leading-5 text-foreground transition-colors"
       >
         {copy.title}
       </p>

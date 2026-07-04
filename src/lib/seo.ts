@@ -2,10 +2,11 @@ import type { Metadata, MetadataRoute, Viewport } from "next";
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 export const SITE_NAME = "qwen-ui-lab";
-export const SITE_TAGLINE = "Screenshot to React workflow";
+export const SITE_TAGLINE = "Screenshot to React workspace";
 export const SITE_PITCH =
   "Turn UI screenshots into inspectable React + Tailwind export packages.";
-export const DEFAULT_OG_IMAGE = "/opengraph-image";
+export const DEFAULT_OG_IMAGE =
+  "/social/home-social-preview-1200x630.png";
 export const MANIFEST_PATH = "/manifest.webmanifest";
 export const LEGACY_MANIFEST_PATH = "/manifest.json";
 export const APP_ICON_SVG = "/icons/icon.svg";
@@ -123,7 +124,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       template: `%s | ${SITE_NAME}`,
     },
     description:
-      "Upload a UI screenshot, inspect detected structure, refine the result, and export a React + Tailwind package.",
+      "Upload a UI screenshot, inspect detected structure, refine the result, and download a React + Tailwind export package.",
     applicationName: SITE_NAME,
     category: "Developer Tools",
     creator: SITE_NAME,
@@ -131,10 +132,10 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     authors: [{ name: SITE_NAME }],
     keywords: [
       "Qwen UI Lab",
-      "AI UI analysis",
+      "UI structure detection",
       "screenshot to component",
-      "React Tailwind generator",
-      "design system export",
+      "React Tailwind export package",
+      "design system snippets",
     ],
     alternates: {
       canonical: "/",
@@ -142,7 +143,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
     openGraph: {
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Screenshot-to-React workflow with detected UI review, editable boxes, and export-ready project files.",
+        "Screenshot-to-React workflow with detected UI review, editable boxes, and starter project files.",
       type: "website",
       url: "/",
       siteName: SITE_NAME,
@@ -160,7 +161,7 @@ export function createSiteMetadata(ogImagePath = DEFAULT_OG_IMAGE): Metadata {
       card: "summary_large_image",
       title: `${SITE_NAME} | ${SITE_TAGLINE}`,
       description:
-        "Upload a UI screenshot, review the detected layout, and export a React + Tailwind package.",
+        "Upload a UI screenshot, review the detected layout, and download a React + Tailwind export package.",
       images: [ogImagePath],
     },
     robots: {
@@ -206,7 +207,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
     name: `${SITE_NAME} - screenshot to React`,
     short_name: SITE_NAME,
     description:
-      "Screenshot-to-React workflow with reviewable export packages.",
+      "Screenshot-to-React workflow with inspectable export packages.",
     start_url: "/",
     scope: "/",
     lang: "en-US",
@@ -216,7 +217,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
     orientation: "any",
     background_color: "#fafafa",
     theme_color: "#18181b",
-    categories: ["developer", "productivity", "utilities"],
+    categories: ["productivity", "utilities", "design"],
     icons: [
       {
         src: APP_ICON_192,
@@ -259,7 +260,7 @@ export function createManifestConfig(): MetadataRoute.Manifest {
       {
         name: "Analyze screenshot",
         short_name: "Analyze",
-        description: "Upload a UI screenshot and export a React component.",
+        description: "Upload a UI screenshot and download an export package.",
         url: "/#upload-flow",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -271,9 +272,9 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "Sample screenshot",
+        name: "Sample run",
         short_name: "Sample",
-        description: "Open a sample screenshot and generate a component preview.",
+        description: "Open a guided layout and review a component preview.",
         url: "/demo",
         icons: [{ src: APP_ICON_192, sizes: "192x192", type: "image/png" }],
       },
@@ -284,14 +285,14 @@ export function createManifestConfig(): MetadataRoute.Manifest {
         sizes: "1440x900",
         type: "image/png",
         form_factor: "wide",
-        label: "Dashboard screenshot reference",
+        label: "Dashboard layout workspace",
       },
       {
         src: "/references/mobile-reference.png",
         sizes: "390x844",
         type: "image/png",
         form_factor: "narrow",
-        label: "Mobile app screenshot reference",
+        label: "Mobile layout workspace",
       },
     ],
     launch_handler: {
@@ -430,7 +431,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           name: SITE_NAME,
           url: siteUrl,
           description:
-            "Screenshot-to-React tool for converting UI screenshots into reviewable React/Tailwind export packages.",
+            "Screenshot-to-React tool for converting UI screenshots into inspectable React/Tailwind export packages.",
           inLanguage: "en-US",
           publisher: {
             "@id": organizationId,
@@ -449,7 +450,7 @@ export function createSiteStructuredData(ogImagePath = DEFAULT_OG_IMAGE): { __ht
           operatingSystem: "Web",
           url: siteUrl,
           description:
-            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind package export.",
+            "Screenshot upload, layout analysis, editable detection review, and React/Tailwind export package download.",
           image: toAbsoluteUrl(ogImagePath),
           offers: {
             "@type": "Offer",

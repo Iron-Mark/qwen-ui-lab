@@ -33,7 +33,7 @@ export async function handleAnalyzeUiPost(request) {
         {
           ok: false,
           code: "rate_limit_exceeded",
-          message: `Too many live analysis requests from this client. Try again in ${rate.retryAfterSec} seconds.`,
+          message: `Too many screenshot analyses from this client. Try again in ${rate.retryAfterSec} seconds.`,
         },
         {
           status: 429,
@@ -65,7 +65,7 @@ export async function handleAnalyzeUiPost(request) {
         ok: false,
         status: 503,
         code: "qwen_network_error",
-        message: "Unexpected error while calling Qwen.",
+        message: "Unexpected error while contacting the remote vision service.",
       },
       { status: 503 },
     );

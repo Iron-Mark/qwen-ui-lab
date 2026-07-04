@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   buildDesignMarkdown,
   DESIGN_MD_FILENAME,
+  normalizeDesignReviewStatus,
 } from "../src/features/analysis/lib/design-md.mjs";
 
 const sampleArtifact = {
@@ -35,12 +36,12 @@ const sampleArtifact = {
     { label: "Components", value: "8" },
   ],
   generatedCode: `
-export function GeneratedDashboard() {
+export function StarterDashboard() {
   return <main>Dashboard scaffold</main>;
 }
 `,
   modeLabel: "Ready to analyze",
-  summary: "Local detector produced a dashboard export from visible geometry.",
+  summary: "Local detector produced a dashboard starter from visible geometry.",
   detections: {
     source: { width: 1200, height: 800 },
     designTokens: {
@@ -133,14 +134,16 @@ export function GeneratedDashboard() {
 test("buildDesignMarkdown exports dynamic design documentation from artifact results", () => {
   const markdown = buildDesignMarkdown({
     artifact: sampleArtifact,
-    componentFilename: "generated-dashboard.tsx",
+    componentFilename: "starter-dashboard.tsx",
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
   assert.equal(DESIGN_MD_FILENAME, "DESIGN.md");
   assert.match(markdown, /^# DESIGN\.md/);
-  assert.match(markdown, /Component file: generated-dashboard\.tsx/);
-  assert.match(markdown, /Exported components: GeneratedDashboard/);
+  assert.match(markdown, /Entry file: starter-dashboard\.tsx/);
+  assert.match(markdown, /Package created: 2026-06-22T00:00:00\.000Z/);
+  assert.match(markdown, /Review status: Ready for review/);
+  assert.match(markdown, /Component inventory: StarterDashboard/);
   assert.match(markdown, /Average active confidence: 85% \(high\)/);
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);
   assert.match(markdown, /\| Card \| 2 \| 82% \| card-or-panel \| 1 \|/);
@@ -149,8 +152,28 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
   assert.match(markdown, /Top band position/);
   assert.match(markdown, /Aligned text signal/);
   assert.match(markdown, /Download DESIGN\.md and verify component inventory plus detector signals are present/);
-  assert.match(markdown, /accessibility before using it in an app/);
+  assert.match(markdown, /accessibility before connecting it to a route/);
   assert.doesNotMatch(markdown, /before production/);
+  assert.doesNotMatch(markdown, /Review starter export/);
+});
+
+test("normalizeDesignReviewStatus keeps provider/internal wording out of generated docs", () => {
+  assert.equal(normalizeDesignReviewStatus("Qwen provider: qwen3-vl-plus"), "Analysis summary");
+  assert.equal(normalizeDesignReviewStatus("Local demo mode"), "Analysis summary");
+  assert.equal(normalizeDesignReviewStatus("Ready to analyze"), "Ready for review");
+  assert.equal(normalizeDesignReviewStatus("Responsive dashboard"), "Responsive dashboard");
+
+  const markdown = buildDesignMarkdown({
+    artifact: {
+      file: { name: "dashboard.png", type: "image/png", readableSize: "40 KB" },
+      modeLabel: "Qwen provider: qwen3-vl-plus",
+      generatedCode: "export function StarterDashboard() { return null; }",
+    },
+    exportedAt: "2026-06-22T00:00:00.000Z",
+  });
+
+  assert.match(markdown, /Review status: Analysis summary/);
+  assert.doesNotMatch(markdown, /Qwen provider/);
 });
 
 test("buildDesignMarkdown handles artifacts without detections", () => {
@@ -159,23 +182,36 @@ test("buildDesignMarkdown handles artifacts without detections", () => {
       file: { name: "wireframe.png", type: "image/png", readableSize: "4 KB" },
       plan: [],
       previewStats: [],
-      generatedCode: "export const GeneratedWireframe = () => null;",
+      generatedCode: "export const StarterWireframe = () => null;",
     },
-    componentFilename: "generated-wireframe.tsx",
+    componentFilename: "starter-wireframe.tsx",
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
-  assert.match(markdown, /Exported components: GeneratedWireframe/);
+  assert.match(markdown, /Component inventory: StarterWireframe/);
   assert.match(markdown, /No active detection boxes were available/);
   assert.match(markdown, /No design tokens were detected/);
   assert.match(
     markdown,
-    /Compare the generated structure, key controls, and responsive assumptions against the screenshot/,
+    /Compare the component structure, key controls, and responsive assumptions against the screenshot/,
   );
   assert.doesNotMatch(markdown, /manual visual review/);
 });
 
-test("buildDesignMarkdown synthesizes fallback review evidence for detections without reasons", () => {
+test("buildDesignMarkdown names missing component inventory clearly", () => {
+  const markdown = buildDesignMarkdown({
+    artifact: {
+      file: { name: "blank.png", type: "image/png", readableSize: "2 KB" },
+      generatedCode: "",
+    },
+    exportedAt: "2026-06-22T00:00:00.000Z",
+  });
+
+  assert.match(markdown, /Component inventory: No exported component detected/);
+  assert.doesNotMatch(markdown, /Review starter export/);
+});
+
+test("buildDesignMarkdown synthesizes review evidence for detections without reasons", () => {
   const markdown = buildDesignMarkdown({
     artifact: {
       file: {
@@ -185,7 +221,7 @@ test("buildDesignMarkdown synthesizes fallback review evidence for detections wi
         width: 960,
         height: 720,
       },
-      generatedCode: "export default function GeneratedSettingsModal() { return null; }",
+      generatedCode: "export default function StarterSettingsModal() { return null; }",
       detections: {
         source: { width: 960, height: 720 },
         elements: [
@@ -209,14 +245,14 @@ test("buildDesignMarkdown synthesizes fallback review evidence for detections wi
         ],
       },
     },
-    componentFilename: "generated-settings-modal.tsx",
+    componentFilename: "starter-settings-modal.tsx",
     exportedAt: "2026-06-22T00:00:00.000Z",
   });
 
   assert.doesNotMatch(markdown, /No confidence reasons were attached/);
-  assert.match(markdown, /Fallback medium confidence/);
+  assert.match(markdown, /Detector medium confidence/);
   assert.match(markdown, /Centered overlay geometry suggests dialog content/);
-  assert.match(markdown, /Reviewer correction kept as source of truth/);
-  assert.match(markdown, /Reviewer excluded from generated scaffold/);
+  assert.match(markdown, /Reviewer update guides rebuild/);
+  assert.match(markdown, /Reviewer hid this box from component sections/);
   assert.match(markdown, /Geometry evidence 600x520/);
 });

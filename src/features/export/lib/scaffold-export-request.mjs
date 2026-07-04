@@ -1,5 +1,6 @@
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 
 export const MAX_SCAFFOLD_EXPORT_CONTENT_BYTES = 512 * 1024;
 
@@ -27,10 +28,10 @@ export function normalizeScaffoldExportRequestBody(body) {
   const filename =
     typeof record.filename === "string"
       ? sanitizeScaffoldFilename(record.filename)
-      : "component.tsx";
+      : "starter-component.tsx";
   const description =
     typeof record.description === "string" && record.description.trim()
-      ? record.description.trim().slice(0, 256)
+      ? redactSensitiveText(record.description).trim().slice(0, 256)
       : DEFAULT_EXPORT_PACKAGE_DESCRIPTION;
   const mode = record.mode === "zip" ? "zip" : "auto";
 

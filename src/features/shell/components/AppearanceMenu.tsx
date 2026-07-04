@@ -19,12 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const BRAND_OPTIONS: Array<{ value: BrandTheme; label: string; subtitle: string }> = [
-  { value: "indigo", label: "Indigo Studio", subtitle: "Default brand palette" },
-  { value: "emerald", label: "Emerald Pro", subtitle: "Fresh and confident" },
-  { value: "sunset", label: "Sunset Neon", subtitle: "Warm and energetic" },
-];
+import { BRAND_THEME_OPTIONS } from "../lib/brand-theme-options";
 
 export function AppearanceMenu() {
   const [mounted, setMounted] = useState(false);
@@ -40,7 +35,7 @@ export function AppearanceMenu() {
       <Button
         variant="ghost"
         size="icon-lg"
-        className="min-h-11 min-w-11 sm:min-h-10 sm:min-w-10"
+        className="min-h-11 min-w-11"
         aria-label="Appearance settings"
         disabled
       >
@@ -56,7 +51,7 @@ export function AppearanceMenu() {
           <Button
             variant="ghost"
             size="icon-lg"
-            className="min-h-11 min-w-11 sm:min-h-10 sm:min-w-10"
+            className="min-h-11 min-w-11"
             aria-label="Appearance settings"
           >
             {theme === "light" ? (
@@ -77,7 +72,7 @@ export function AppearanceMenu() {
             value={brandTheme}
             onValueChange={(value) => setBrandTheme(value as BrandTheme)}
           >
-            {BRAND_OPTIONS.map((option) => (
+            {BRAND_THEME_OPTIONS.map((option) => (
               <DropdownMenuRadioItem
                 key={option.value}
                 value={option.value}
@@ -101,7 +96,7 @@ export function AppearanceMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={toggleTheme}
-          className="min-h-9 cursor-pointer justify-between"
+          className="min-h-11 cursor-pointer justify-between"
         >
           <span className="flex items-center gap-2">
             {theme === "light" ? (

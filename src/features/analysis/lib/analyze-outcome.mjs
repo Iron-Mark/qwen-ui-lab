@@ -1,4 +1,5 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
+import { REMOTE_ANALYSIS_COPY } from "./analysis-copy.mjs";
 
 export const FALLBACK_BANNER_MISSING =
   "Analysis is ready.";
@@ -6,23 +7,29 @@ export const FALLBACK_BANNER_MISSING =
 export const FALLBACK_BANNER_ERROR =
   "Analysis is ready.";
 
-const INSTANT_DEMO_CODES = new Set([
+const SAMPLE_RUN_CODES = new Set([
   "missing_qwen_api_key",
   "live_analysis_disabled",
 ]);
 
 const FALLBACK_REASONS = {
-  missing_qwen_api_key: "DASHSCOPE_API_KEY is not configured on the server.",
+  missing_qwen_api_key: "Local analysis prepared the preview.",
   live_analysis_disabled:
-    "Live Qwen is disabled — set QWEN_LIVE_ANALYSIS=true to enable upstream vision calls.",
-  qwen_request_failed: "Live analysis was unavailable; local analysis generated the preview.",
-  qwen_network_error: "Could not reach the Qwen API (network error or timeout).",
-  invalid_qwen_json: "Qwen returned text that was not valid analysis JSON.",
-  empty_qwen_response: "Qwen returned an empty analysis response.",
-  invalid_response: "The analyze route returned a non-JSON response.",
+    "Local analysis prepared the preview.",
+  qwen_request_failed:
+    "Local analysis prepared the preview while the remote vision service was not reachable.",
+  qwen_network_error:
+    "Local analysis prepared the preview after the remote vision service could not be reached.",
+  invalid_qwen_json:
+    "Local analysis prepared the preview after the remote vision service returned an unreadable response.",
+  empty_qwen_response:
+    "Local analysis prepared the preview after the remote vision service returned no content.",
+  invalid_response:
+    "Local analysis prepared the preview after the analysis response was unreadable.",
 };
 
 const TRANSIENT_CODES = new Set([
+  "fetch_error",
   "qwen_network_error",
   "qwen_request_failed",
   "invalid_response",
@@ -39,10 +46,14 @@ export function fallbackReasonFromPayload(payload) {
   if (payload?.code && FALLBACK_REASONS[payload.code]) {
     return FALLBACK_REASONS[payload.code];
   }
-  if (typeof payload?.message === "string" && payload.message.length > 0) {
-    return payload.message;
+  return "Local analysis prepared the preview.";
+}
+
+function fallbackReasonFromFetchError(reason) {
+  if (/read the uploaded image/i.test(String(reason))) {
+    return "Local analysis prepared a preview after the uploaded image could not be read.";
   }
-  return "Qwen analysis was unavailable.";
+  return "Local analysis prepared the preview after the analysis request could not finish.";
 }
 
 /**
@@ -60,7 +71,7 @@ export function fallbackReasonFromPayload(payload) {
  *   payload?: unknown;
  *   responseOk?: boolean;
  *   fetchError?: string;
- *   instantDemo?: boolean;
+ *   sampleRun?: boolean;
  * }} input
  */
 export function resolveAnalyzeOutcome({
@@ -68,27 +79,27 @@ export function resolveAnalyzeOutcome({
   payload,
   responseOk,
   fetchError,
-  instantDemo = false,
+  sampleRun = false,
 }) {
   if (fetchError) {
     return {
       providerState: "fallback",
       artifact: buildUiFlowArtifact(file),
       message: FALLBACK_BANNER_ERROR,
-      detail: fetchError,
-      instantDemo: false,
+      detail: fallbackReasonFromFetchError(fetchError),
+      sampleRun: false,
       code: "fetch_error",
     };
   }
 
   if (responseOk && payload?.ok && payload?.artifact) {
-    if (payload.demo) {
+    if (payload.sampleRun || payload.demo) {
       return {
         providerState: "fallback",
         artifact: payload.artifact,
         message: FALLBACK_BANNER_MISSING,
         detail: null,
-        instantDemo: true,
+        sampleRun: true,
         code: "live_analysis_disabled",
       };
     }
@@ -96,21 +107,21 @@ export function resolveAnalyzeOutcome({
     return {
       providerState: "qwen",
       artifact: payload.artifact,
-      message: `Qwen analysis complete with ${payload.provider?.model || "configured model"}.`,
+      message: REMOTE_ANALYSIS_COPY.complete,
       detail: null,
-      instantDemo: false,
+      sampleRun: false,
       code: null,
     };
   }
 
-  const isMissing = INSTANT_DEMO_CODES.has(payload?.code);
+  const isMissing = SAMPLE_RUN_CODES.has(payload?.code);
 
   return {
     providerState: "fallback",
     artifact: buildUiFlowArtifact(file),
     message: isMissing ? FALLBACK_BANNER_MISSING : FALLBACK_BANNER_ERROR,
     detail: fallbackReasonFromPayload(payload),
-    instantDemo: instantDemo || isMissing,
+    sampleRun: sampleRun || isMissing,
     code: payload?.code || null,
   };
 }
@@ -119,7 +130,7 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 const RETRY_DELAY_MS = 800;
 
 /**
- * Lightweight health check — skips /api/analyze-ui when live analysis is disabled.
+ * Lightweight health check : skips /api/analyze-ui when live analysis is disabled.
  * @param {{ fetchFn?: typeof fetch; apiPath?: string }} [options]
  * @returns {Promise<{ hasApiKey: boolean; liveAnalysisEnabled: boolean; provider: string }>}
  */
@@ -145,7 +156,7 @@ export async function fetchAnalyzeHealth(
 
 function isTransientOutcome(outcome) {
   if (outcome.providerState === "qwen") return false;
-  if (outcome.instantDemo) return false;
+  if (outcome.sampleRun) return false;
   const detail = outcome.detail || "";
   if (/timed out|Could not reach|network|non-JSON|gateway/i.test(detail)) {
     return true;
@@ -190,12 +201,12 @@ export async function postAnalyzeUi(
     skipHealthCheck = false,
   } = {},
 ) {
-  onProgress?.("Preparing analysis…");
+  onProgress?.("Preparing analysis...");
 
   if (!skipHealthCheck) {
     const health = await fetchAnalyzeHealth({ fetchFn, apiPath: healthPath });
     if (!health.liveAnalysisEnabled) {
-      onProgress?.("Preparing preview…");
+      onProgress?.("Preparing preview...");
       return resolveAnalyzeOutcome({
         file,
         responseOk: false,
@@ -205,12 +216,12 @@ export async function postAnalyzeUi(
             ? "live_analysis_disabled"
             : "missing_qwen_api_key",
         },
-        instantDemo: true,
+        sampleRun: true,
       });
     }
   }
 
-  onProgress?.("Calling Qwen vision API…");
+  onProgress?.("Analyzing screenshot...");
 
   let outcome = await postAnalyzeUiOnce(file, imageDataUrl, {
     fetchFn,
@@ -219,7 +230,7 @@ export async function postAnalyzeUi(
   });
 
   if (outcome.providerState === "fallback" && isTransientOutcome(outcome)) {
-    onProgress?.("Retrying after transient error…");
+    onProgress?.("Retrying analysis...");
     await sleep(RETRY_DELAY_MS);
     outcome = await postAnalyzeUiOnce(file, imageDataUrl, {
       fetchFn,
@@ -279,7 +290,6 @@ async function postAnalyzeUiOnce(
         responseOk: false,
         payload: {
           code: "invalid_response",
-          message: "Server response was not JSON.",
         },
       });
     }
@@ -292,8 +302,8 @@ async function postAnalyzeUiOnce(
   } catch (error) {
     const detail =
       error?.name === "AbortError"
-        ? "Request timed out after 30 seconds."
-        : error?.message || "Request failed.";
+        ? "request_timeout"
+        : "request_failed";
     return resolveAnalyzeOutcome({ file, fetchError: detail });
   } finally {
     clearTimeout(timer);

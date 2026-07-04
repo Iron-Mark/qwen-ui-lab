@@ -1,8 +1,11 @@
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
+import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
 import {
+  DEFAULT_NO_REVIEW_UPDATES,
+  DEFAULT_REVIEW_UPDATES_BASIS,
   extractProductionScaffoldBlueprint,
   hashContent,
-  inferGeneratedComponentName,
+  inferStarterComponentName,
   SCAFFOLD_RECIPE_SCHEMA,
 } from "./scaffold-blueprint.mjs";
 import {
@@ -24,31 +27,50 @@ import {
  */
 export function buildScaffoldZipEntries({ content, filename, description }) {
   const safeFilename = sanitizeScaffoldFilename(filename);
-  const blueprint = extractProductionScaffoldBlueprint(content);
+  const safeDescription = sanitizeExportDescription(description);
+  const packageContent = sanitizeExportedComponentMetadata(content);
+  const blueprint = extractProductionScaffoldBlueprint(packageContent);
   if (blueprint) {
     return buildProductionScaffoldZipEntries({
-      content,
+      content: packageContent,
       filename: safeFilename,
-      description,
+      description: safeDescription,
       blueprint,
     });
   }
 
-  return buildFallbackScaffoldZipEntries({ content, filename: safeFilename, description });
+  return buildFallbackScaffoldZipEntries({
+    content: packageContent,
+    filename: safeFilename,
+    description: safeDescription,
+  });
+}
+
+function sanitizeExportDescription(description) {
+  if (typeof description !== "string") return description;
+  const redacted = redactSensitiveText(description).trim().slice(0, 256);
+  return redacted || undefined;
+}
+
+function sanitizeExportedComponentMetadata(content) {
+  return String(content || "").replace(
+    /("sourceOfTruth"\s*:\s*")([^"]*)(source\s+of\s+truth|(?:manual|reviewer) corrections)([^"]*)(")/gi,
+    (_match, start, _before, _trigger, _after, end) => `${start}${DEFAULT_REVIEW_UPDATES_BASIS}${end}`,
+  );
 }
 
 export function buildScaffoldPackageFileMap(filename) {
   const stem = toExportStem(filename);
-  const componentPath = `src/components/generated/${stem}.tsx`;
+  const componentPath = `src/components/starters/${stem}.tsx`;
 
   return {
     stem,
     files: {
       designDoc: "DESIGN.md",
       component: componentPath,
-      recipe: `src/components/generated/${stem}.recipe.json`,
-      manifest: `src/components/generated/${stem}.manifest.json`,
-      tokens: `src/components/generated/${stem}.tokens.css`,
+      recipe: `src/components/starters/${stem}.recipe.json`,
+      manifest: `src/components/starters/${stem}.manifest.json`,
+      tokens: `src/components/starters/${stem}.tokens.css`,
       detectionSummary: `docs/${stem}.detection.md`,
     },
   };
@@ -59,15 +81,15 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
   const dependencies = inferShadcnDependencies(content, inferPrimitiveMapFromImports(content));
   const fallbackBlueprint = {
     schema: SCAFFOLD_RECIPE_SCHEMA,
-    generator: "manual-scaffold-export",
+    generator: "component-starter-package",
     sourceHash: hashContent(content),
-    componentName: inferGeneratedComponentName(content),
+    componentName: inferStarterComponentName(content),
     designTokens: {},
-    screenIntent: { label: "Screenshot export", confidence: 0.5 },
+    screenIntent: { label: "Screenshot component draft", confidence: 0.5 },
     responsiveIntent: {
-      mode: "responsive export",
+      mode: "responsive component draft",
       breakpoints: ["mobile", "tablet", "desktop"],
-      primaryFlow: "Review layout against the original screenshot before import.",
+      primaryFlow: "Compare the component with the source screenshot during review.",
     },
     detectedPatterns: {},
     detectedElements: [],
@@ -77,13 +99,13 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
       activeElements: 0,
       appliedEdits: 0,
       excludedBoxes: 0,
-      sourceOfTruth: "Manual scaffold exports do not include detection-box corrections.",
+      sourceOfTruth: DEFAULT_NO_REVIEW_UPDATES,
     },
     primitiveSummary: [],
     reviewChecklist: [
       "Review spacing, typography, and responsive behavior against the source screenshot.",
-      "Replace sample content with product data.",
-      "Run lint/build after importing the component.",
+      "Wire component content to app data.",
+      "Run lint/build after placing the component.",
     ],
   };
   const recipe = {
@@ -91,7 +113,7 @@ function buildFallbackScaffoldZipEntries({ content, filename, description }) {
     files,
     integration: {
       entryComponent: fallbackBlueprint.componentName,
-      importPath: `@/components/generated/${stem}`,
+      importPath: `@/components/starters/${stem}`,
       dependencies,
       nextSteps: fallbackBlueprint.reviewChecklist,
     },
@@ -122,11 +144,11 @@ function buildProductionScaffoldZipEntries({ content, filename, description, blu
     files,
     integration: {
       entryComponent: blueprint.componentName,
-      importPath: `@/components/generated/${stem}`,
+      importPath: `@/components/starters/${stem}`,
       dependencies,
       nextSteps: [
-        "Replace sample copy with product content.",
-        "Wire cards, tables, charts, and forms to real data.",
+        "Wire component content to app-specific content.",
+        "Wire cards, tables, charts, and forms to app data.",
         "Review the detection summary before deleting unused regions.",
       ],
     },
@@ -221,7 +243,7 @@ function inferPrimitiveMapFromImports(content) {
   return Object.fromEntries(
     [...new Set(imports)].sort().map((name) => [
       name,
-      `Imported shadcn-style ${name} primitive in the generated component.`,
+      `Imported shadcn-style ${name} primitive in the component draft.`,
     ]),
   );
 }
@@ -287,9 +309,9 @@ function buildPackageInventory(entries) {
 }
 
 function toExportStem(filename) {
-  const withoutExtension = String(filename || "generated-component")
+  const withoutExtension = String(filename || "starter-component")
     .replace(/\.[^.]+$/, "")
     .replace(/[^\w.-]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return withoutExtension || "generated-component";
+  return withoutExtension || "starter-component";
 }

@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import {
-  demoModeSnackbar,
+  analyzerReadySnackbar,
   designSystemTierButton,
   waitForDesignSystemPreview,
-  loadBundledSample,
+  loadSampleRun,
   primaryAnalyzeButton,
   resetE2ESessionStorage,
 } from "./helpers/e2e-ui";
@@ -31,11 +31,30 @@ test("switches between light and dark themes", async ({ page }) => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe(
       "light",
     );
+    await expect
+      .poll(async () =>
+        (await page.context().cookies()).find((cookie) => cookie.name === "qwen-ui-theme")
+          ?.value,
+      )
+      .toBe("light");
   } else {
     await expect(root).toHaveClass(/dark/);
     await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe(
       "dark",
     );
+    await expect
+      .poll(async () =>
+        (await page.context().cookies()).find((cookie) => cookie.name === "qwen-ui-theme")
+          ?.value,
+      )
+      .toBe("dark");
+  }
+
+  await page.reload();
+  if (wasDark) {
+    await expect(root).not.toHaveClass(/dark/);
+  } else {
+    await expect(root).toHaveClass(/dark/);
   }
 });
 
@@ -53,6 +72,118 @@ test("switches brand theme and persists selection", async ({ page }) => {
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("brand-theme")))
     .toBe("emerald");
+  await expect
+    .poll(async () =>
+      (await page.context().cookies()).find((cookie) => cookie.name === "qwen-ui-brand")
+        ?.value,
+    )
+    .toBe("emerald");
+
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.brand)).toBe(
+    "emerald",
+  );
+});
+
+test("server renders saved appearance before hydration", async ({ browser, baseURL }) => {
+  if (!baseURL) throw new Error("Playwright baseURL is required for appearance cookies");
+  const context = await browser.newContext({
+    baseURL,
+    javaScriptEnabled: false,
+  });
+  await context.addCookies([
+    { name: "qwen-ui-theme", value: "dark", url: baseURL },
+    { name: "qwen-ui-brand", value: "sunset", url: baseURL },
+  ]);
+
+  const page = await context.newPage();
+  await page.goto("/");
+
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(page.locator("html")).toHaveAttribute("data-brand", "sunset");
+
+  await context.close();
+});
+
+test("server ignores invalid appearance cookies before hydration", async ({
+  browser,
+  baseURL,
+}) => {
+  if (!baseURL) throw new Error("Playwright baseURL is required for appearance cookies");
+  const context = await browser.newContext({
+    baseURL,
+    javaScriptEnabled: false,
+  });
+  await context.addCookies([
+    { name: "qwen-ui-theme", value: "system", url: baseURL },
+    { name: "qwen-ui-brand", value: "neon", url: baseURL },
+  ]);
+
+  const page = await context.newPage();
+  await page.goto("/");
+
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await expect(page.locator("html")).toHaveAttribute("data-brand", "indigo");
+
+  await context.close();
+});
+
+test("appearance cookies survive hydration without localStorage", async ({
+  browser,
+  baseURL,
+}) => {
+  if (!baseURL) throw new Error("Playwright baseURL is required for appearance cookies");
+  const context = await browser.newContext({ baseURL });
+  await context.addCookies([
+    { name: "qwen-ui-theme", value: "dark", url: baseURL },
+    { name: "qwen-ui-brand", value: "sunset", url: baseURL },
+  ]);
+
+  const page = await context.newPage();
+  await page.goto("/");
+
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(page.locator("html")).toHaveAttribute("data-brand", "sunset");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe(
+    "dark",
+  );
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("brand-theme")))
+    .toBe("sunset");
+
+  await context.close();
+});
+
+test("appearance controls work when localStorage is unavailable", async ({
+  browser,
+  baseURL,
+}) => {
+  if (!baseURL) throw new Error("Playwright baseURL is required for appearance cookies");
+  const context = await browser.newContext({ baseURL });
+  await context.addInitScript(() => {
+    const storageError = () => {
+      throw new DOMException("localStorage unavailable", "SecurityError");
+    };
+    Object.defineProperty(Storage.prototype, "getItem", { value: storageError });
+    Object.defineProperty(Storage.prototype, "setItem", { value: storageError });
+  });
+
+  const page = await context.newPage();
+  await page.goto("/");
+
+  const root = page.locator("html");
+  await expect(page.getByRole("button", { name: /appearance settings/i })).toBeVisible();
+  const wasDark = await root.evaluate((el) => el.classList.contains("dark"));
+  await page.getByRole("button", { name: /appearance settings/i }).click();
+  await page.getByRole("menuitem", { name: /switch to (dark|light) mode/i }).click();
+
+  if (wasDark) {
+    await expect(root).not.toHaveClass(/dark/);
+  } else {
+    await expect(root).toHaveClass(/dark/);
+  }
+
+  await context.close();
 });
 
 test("filters and searches in design system catalog", async ({ page }) => {
@@ -85,7 +216,7 @@ test("runs deterministic local analysis flow", async ({ page }) => {
 
   const samplePicker = page.getByTestId("sample-picker");
   await expect(samplePicker).toBeVisible();
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
 
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
@@ -94,7 +225,9 @@ test("runs deterministic local analysis flow", async ({ page }) => {
   await expect(
     page.getByRole("status").filter({ hasText: /Ready to analyze|Analysis complete/i }).first(),
   ).toBeVisible();
-  await expect(page.getByText(/Preview ready/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Preview ready", { exact: true })).toBeVisible({
+    timeout: 15_000,
+  });
 });
 
 test("supports dashboard and design-system exports", async ({ page }) => {
@@ -103,11 +236,13 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
 
-  await loadBundledSample(page, "Dashboard");
+  await loadSampleRun(page, "Dashboard");
   await expect(page.getByText(/dashboard-reference\.png/i)).toBeVisible();
   await expect(primaryAnalyzeButton(page)).toBeEnabled({ timeout: 10_000 });
   await primaryAnalyzeButton(page).click();
-  await expect(page.getByText(/Generated component/i)).toBeVisible();
+  await expect(
+    page.getByText(/Preview ready - copy or download the component draft/i),
+  ).toBeVisible();
 
   const complianceTrigger = page.getByTestId("ux-compliance-details-trigger");
   await expect(complianceTrigger).toBeVisible();
@@ -120,12 +255,12 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   await expect(complianceDialog).toBeHidden();
 
   await page.getByTestId("export-package-review").click();
-  const exportDialog = page.getByRole("dialog", { name: /review export package/i });
+  const exportDialog = page.getByRole("dialog", { name: /review package/i });
   await expect(exportDialog).toBeVisible();
   const dashboardDownloadPromise = page.waitForEvent("download");
   await exportDialog.getByRole("button", { name: /download component/i }).click();
   const dashboardDownload = await dashboardDownloadPromise;
-  expect(dashboardDownload.suggestedFilename()).toMatch(/generated-.*\.tsx$/);
+  expect(dashboardDownload.suggestedFilename()).toMatch(/starter-.*\.tsx$/);
 
   await page.goto("/design-system", { waitUntil: "domcontentloaded", timeout: 45_000 });
   await expect(page.getByRole("searchbox", { name: /search catalog/i })).toBeVisible({
@@ -134,7 +269,7 @@ test("supports dashboard and design-system exports", async ({ page }) => {
   const snippetDownloadPromise = page.waitForEvent("download");
   await page
     .getByRole("region", { name: /button \(shadcn\) snippet/i })
-    .getByRole("button", { name: /export code/i })
+    .getByRole("button", { name: /download component/i })
     .click();
   const snippetDownload = await snippetDownloadPromise;
   expect(snippetDownload.suggestedFilename()).toMatch(/button.*\.tsx$/i);
@@ -146,7 +281,27 @@ test("does not show startup implementation notice", async ({ page }) => {
   await resetE2ESessionStorage(page);
   await page.goto("/");
 
-  await expect(demoModeSnackbar(page)).toBeHidden({ timeout: 5_000 });
+  await expect(analyzerReadySnackbar(page)).toBeHidden({ timeout: 5_000 });
+});
+
+test("core routes do not emit React script hydration warnings", async ({ page }) => {
+  const blockedWarnings: string[] = [];
+  page.on("console", (message) => {
+    const text = message.text();
+    if (
+      text.includes("Encountered a script tag while rendering React component") ||
+      text.includes("A tree hydrated but some attributes of the server rendered HTML")
+    ) {
+      blockedWarnings.push(text);
+    }
+  });
+
+  for (const route of ["/", "/demo", "/design-system?selected=shadcn-button"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+  }
+
+  expect(blockedWarnings).toEqual([]);
 });
 
 test("design system desktop has no excess document scroll", async ({ browser }) => {
@@ -340,7 +495,16 @@ test.describe("marketing surfaces", () => {
     await expect(page.getByTestId("pwa-install-banner")).toBeVisible({
       timeout: 5_000,
     });
-    await page.getByRole("button", { name: /dismiss install banner/i }).click();
+    const dismissButton = page.getByRole("button", { name: /dismiss install banner/i });
+    await expect
+      .poll(() =>
+        dismissButton.evaluate((button) => {
+          const { height, width } = button.getBoundingClientRect();
+          return width >= 44 && height >= 44;
+        }),
+      )
+      .toBe(true);
+    await dismissButton.click();
     await expect(page.getByTestId("pwa-install-banner")).toBeHidden();
   });
 });

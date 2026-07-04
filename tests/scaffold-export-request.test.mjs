@@ -7,27 +7,42 @@ import {
 
 test("normalizeScaffoldExportRequestBody sanitizes export metadata", () => {
   const result = normalizeScaffoldExportRequestBody({
-    content: "export const Demo = () => null;",
-    filename: "../demo/component.tsx",
+    content: "export const StarterFixture = () => null;",
+    filename: "../scratch/starter-fixture.tsx",
     description: ` ${"A".repeat(300)} `,
   });
 
   assert.deepEqual(result, {
     ok: true,
-    content: "export const Demo = () => null;",
-    filename: "component.tsx",
+    content: "export const StarterFixture = () => null;",
+    filename: "starter-fixture.tsx",
     description: "A".repeat(256),
     mode: "auto",
   });
 });
 
+test("normalizeScaffoldExportRequestBody redacts sensitive description metadata", () => {
+  const result = normalizeScaffoldExportRequestBody({
+    content: "export const StarterFixture = () => null;",
+    description:
+      "Exported from C:\\Users\\Mark\\shot.png with GITHUB_TOKEN=ghp_secret and #share=abcdef",
+  });
+
+  assert.equal(result.ok, true);
+  assert.doesNotMatch(result.description, /C:\\Users|ghp_secret|#share=abcdef/);
+  assert.match(result.description, /\[local path\]/);
+  assert.match(result.description, /GITHUB_TOKEN=<redacted>/);
+  assert.match(result.description, /#share=<redacted>/);
+});
+
 test("normalizeScaffoldExportRequestBody accepts forced zip mode", () => {
   const result = normalizeScaffoldExportRequestBody({
-    content: "export const Demo = () => null;",
+    content: "export const StarterFixture = () => null;",
     mode: "zip",
   });
 
   assert.equal(result.ok, true);
+  assert.equal(result.filename, "starter-component.tsx");
   assert.equal(result.mode, "zip");
 });
 

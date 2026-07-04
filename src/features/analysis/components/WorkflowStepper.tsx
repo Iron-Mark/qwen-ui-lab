@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 type WorkflowStep = {
@@ -40,26 +39,25 @@ export function WorkflowStepper({
 
         return (
           <div key={step.id} className="flex min-w-0 shrink-0 items-center gap-2">
-            <Badge
-              variant={isCurrent ? "default" : "outline"}
+            <span
               data-testid="upload-flow-step"
               data-step-id={step.id}
               data-step-state={stepState}
               aria-current={isCurrent ? "step" : undefined}
               aria-disabled={isLocked ? true : undefined}
               className={cn(
-                "min-h-8 rounded-full px-2.5 py-1 text-[11px] transition-colors sm:h-7 sm:px-3 sm:text-xs",
+                "inline-flex min-h-11 w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 py-2 text-xs font-medium transition-colors",
                 isCurrent &&
-                  "border-primary bg-primary text-white shadow-sm dark:text-primary-foreground",
+                  "border-foreground bg-foreground text-background shadow-sm",
                 isComplete &&
-                  "border-border/70 bg-muted/50 text-muted-foreground",
+                  "border-foreground bg-foreground text-background",
                 isLocked &&
-                  "border-border/70 bg-muted/35 text-muted-foreground",
+                  "border-border bg-background text-muted-foreground",
               )}
             >
               {isComplete ? <Check className="size-3" aria-hidden="true" /> : null}
               {step.label}
-            </Badge>
+            </span>
             {index < steps.length - 1 ? (
               <ChevronRight
                 className={cn(

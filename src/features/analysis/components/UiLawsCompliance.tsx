@@ -47,7 +47,7 @@ const ARCHETYPE_LABELS: Record<string, string> = {
 };
 
 function formatStats(summary: { met: number; partial: number; review: number }) {
-  return `${summary.met} met · ${summary.partial} partial · ${summary.review} review`;
+  return `${summary.met} met \u00b7 ${summary.partial} partial \u00b7 ${summary.review} review`;
 }
 
 interface UiLawsComplianceProps {
@@ -90,7 +90,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           Laws of UX compliance
         </h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Heuristic check of this {stage === "generated" ? "component" : "analysis"} against{" "}
+          Review this {stage === "generated" ? "component" : "analysis"} against{" "}
           <a
             href={LAWS_OF_UX_SITE}
             target="_blank"
@@ -99,7 +99,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           >
             lawsofux.com
           </a>{" "}
-          patterns used in qwen-ui-lab.
+          patterns and related UI examples.
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
             <li key={check.id}>
               <Link
                 href={lawOfUxCatalogHref(check.id)}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground underline-offset-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-xs font-medium text-foreground underline-offset-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 data-testid={`ux-law-link-${check.id}`}
               >
                 {check.name}
@@ -136,7 +136,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           type="button"
           data-testid="ux-compliance-details-trigger"
           aria-haspopup="dialog"
-          className="mt-3 flex w-full items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-left text-xs transition-colors hover:bg-muted/50 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="mt-3 flex min-h-11 w-full items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-left text-xs transition-colors hover:bg-muted/50 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <span className="font-semibold text-foreground">View details</span>
           <span className="min-w-0 flex-1 truncate text-muted-foreground">{statsLabel}</span>
@@ -147,7 +147,7 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           <DialogHeader className="border-b border-border px-4 pt-4 pb-3">
             <DialogTitle>Laws of UX compliance</DialogTitle>
             <DialogDescription id="ux-compliance-dialog-description">
-              {statsLabel} — expand each law for rationale and surface mapping.
+              {statsLabel} - expand each law for rationale and screen mapping.
             </DialogDescription>
           </DialogHeader>
 
@@ -173,16 +173,16 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
                       <div className="mt-3 flex flex-wrap gap-3">
                         <Link
                           href={lawOfUxCatalogHref(check.id)}
-                          className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-foreground underline-offset-4 hover:underline"
+                          className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-foreground underline-offset-4 hover:underline"
                         >
-                          Open in catalog →
+                          Open in catalog -&gt;
                         </Link>
                         {law ? (
                           <a
                             href={`${LAWS_OF_UX_SITE}/${law.slug}/`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex min-h-9 items-center gap-1 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                            className="inline-flex min-h-11 items-center gap-1 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                           >
                             lawsofux.com
                             <ExternalLink className="size-3" aria-hidden />
@@ -203,13 +203,13 @@ export function UiLawsCompliance({ artifact, stage = "analyzed" }: UiLawsComplia
           href={`/design-system?domain=laws-of-ux&selected=law-of-ux-${highlightLawIds[0] ?? "fitts"}`}
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          Laws of UX examples →
+          Laws of UX examples -&gt;
         </Link>
         <Link
           href="/design-system?domain=uilaws"
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          UI Laws manual checklist →
+          UI Laws review checklist -&gt;
         </Link>
       </p>
     </section>

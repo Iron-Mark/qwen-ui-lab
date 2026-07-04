@@ -16,35 +16,37 @@ const designSystemDomainRouteSocialPreviewImageAlt: Record<DesignSystemDomain, s
 
 export function createDesignSystemRouteMetadata(): Metadata {
   return createRouteMetadata({
-    title: "Design System Playground",
+    title: "Design System Catalog",
     description:
-      "Browse reusable UI snippets, UX-law patterns, and export-ready examples for screenshot-to-React work.",
+      "Browse reusable UI snippets, UX-law patterns, and component examples for screenshot-to-React work.",
     path: "/design-system",
     keywords: [
-      "Design system playground",
+      "Design system catalog",
       "atomic design components",
       "UX law references",
-      "copy and export snippets",
+      "copy and download snippets",
       "React UI patterns",
     ],
-    ogImage: "/design-system/opengraph-image",
+    ogImage:
+      "/social/design-system-social-preview-1200x630.png",
     ogImageAlt: "qwen-ui-lab design system component gallery",
-    twitterImage: "/design-system/twitter-image",
+    twitterImage:
+      "/social/design-system-social-preview-1200x630.png",
     twitterImageAlt: "qwen-ui-lab design system growth snippets",
     shareSnippet:
-      "Browse reusable UI patterns and export-ready snippets from the qwen-ui-lab design system.",
+      "Browse reusable UI patterns and component snippets from the qwen-ui-lab design system.",
   });
 }
 
 export function getDesignSystemRouteStructuredDataInput() {
   return {
-    title: "Design System Playground",
+    title: "Design System Catalog",
     description:
-      "Explore an AI-ready component catalog with atomic patterns, UX-law references, and instant copy/export snippets for faster delivery.",
+      "Explore a workflow-ready component catalog with atomic patterns, UX-law references, and instant copy/download snippets for faster delivery.",
     path: "/design-system",
     breadcrumbLabel: "Design System",
     about: ["Atomic design", "UI pattern libraries", "UX laws"],
-    callToAction: "Filter components by domain and export snippets in one click.",
+    callToAction: "Filter components by domain and download snippets in one click.",
     additionalGraph: [
       {
         "@type": "CollectionPage",
@@ -68,7 +70,7 @@ export function getDesignSystemRouteSocialPreviewImage() {
     eyebrow: "qwen-ui-lab / design system",
     badge: "Component catalog",
     title: "Reusable UI patterns for shipping",
-    description: "Browse primitives, UX references, and export-ready snippets in one workspace.",
+    description: "Browse primitives, UX references, and component snippets in one workspace.",
     workflow: "Filter catalog -> Preview component -> Copy code",
     background:
       "linear-gradient(135deg, #08061f 0%, #24144f 48%, #0f172a 100%)",
@@ -83,12 +85,14 @@ export function createLawsOfUxRouteMetadata(): Metadata {
       description:
         "Jump into the Laws of UX slice of the qwen-ui-lab design system and copy practical pattern snippets faster.",
       path: "/design-system/laws-of-ux",
-      ogImage: "/design-system/laws-of-ux/opengraph-image",
+      ogImage:
+        "/social/laws-of-ux-social-preview-1200x630.png",
       ogImageAlt: "Laws of UX route preview in qwen-ui-lab",
-      twitterImage: "/design-system/laws-of-ux/twitter-image",
+      twitterImage:
+        "/social/laws-of-ux-social-preview-1200x630.png",
       twitterImageAlt: "Laws of UX snippets in qwen-ui-lab",
       shareSnippet:
-        "Open the Laws of UX collection and export implementation-ready snippets in seconds.",
+        "Open the Laws of UX collection and download implementation-ready snippets in seconds.",
     }),
     robots: {
       index: false,
@@ -104,12 +108,12 @@ export function createUiLawsRouteMetadata(): Metadata {
       description:
         "Open the UI Laws collection in qwen-ui-lab to discover high-clarity interface patterns with copy-ready snippets.",
       path: "/design-system/uilaws",
-      ogImage: "/design-system/uilaws/opengraph-image",
+      ogImage: "/social/uilaws-social-preview-1200x630.png",
       ogImageAlt: "UI Laws route preview in qwen-ui-lab",
-      twitterImage: "/design-system/uilaws/twitter-image",
+      twitterImage: "/social/uilaws-social-preview-1200x630.png",
       twitterImageAlt: "UI Laws snippets in qwen-ui-lab",
       shareSnippet:
-        "Browse UI Laws-inspired components and export snippets your team can ship immediately.",
+        "Browse UI Laws-inspired components and download snippets your team can adapt immediately.",
     }),
     robots: {
       index: false,
@@ -126,7 +130,7 @@ export function getDesignSystemDomainRouteSocialPreviewImage(
       routeLabel: "laws-of-ux",
       title: "Apply UX laws with clearer patterns",
       description: "Compare practical principles, inspect examples, and copy implementation snippets.",
-      workflow: "Open collection -> Compare patterns -> Export code",
+      workflow: "Open collection -> Compare patterns -> Download code",
       background:
         "linear-gradient(135deg, #08061f 0%, #312e81 48%, #083344 100%)",
       accent: "#22d3ee",
@@ -136,8 +140,8 @@ export function getDesignSystemDomainRouteSocialPreviewImage(
   return {
     routeLabel: "uilaws",
     title: "Build clearer interfaces faster",
-    description: "Explore component examples with stronger hierarchy, affordance, and export flow.",
-    workflow: "Filter UI laws -> Preview component -> Export snippet",
+    description: "Explore component examples with stronger hierarchy, affordance, and snippet downloads.",
+    workflow: "Filter UI laws -> Preview component -> Download snippet",
     background:
       "linear-gradient(135deg, #08061f 0%, #581c87 48%, #111827 100%)",
     accent: "#c4b5fd",

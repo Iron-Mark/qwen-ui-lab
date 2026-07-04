@@ -11,7 +11,6 @@ import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Archive,
-  Bug,
   Check,
   ChevronDown,
   CircleAlert,
@@ -29,6 +28,7 @@ import {
   RotateCcw,
   Share2,
   Sparkles,
+  Tags,
   Undo2,
   X,
 } from "lucide-react";
@@ -39,6 +39,7 @@ import { SharedSummaryCard } from "@/features/share/components/SharedSummaryCard
 import { SamplePicker } from "./SamplePicker";
 import { UploadDropzone } from "./UploadDropzone";
 import { WorkflowStepper } from "./WorkflowStepper";
+import { normalizeReviewStatusLabel } from "@/lib/product-labels.mjs";
 import { useToast } from "@/components/providers/Toast";
 import { useAccountIdentity } from "@/features/account/components/useAccountIdentity";
 import {
@@ -96,13 +97,13 @@ import {
   describeManualDetectionChanges,
   mergeManualCorrectionReasons,
 } from "../lib/detection-corrections.mjs";
-import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { AnalyticsEvent, AnalyticsStatus, createAnalyticsClient } from "@/lib/analytics.client";
 import { createExperimentConfig, resolveExperimentVariant } from "@/lib/experiments";
 import {
-  BUNDLED_REFERENCE_SAMPLES,
-  findReferenceSampleByFileName,
-  getReferenceSampleById,
-  referenceSampleExportFilename,
+  SAMPLE_RUNS,
+  findSampleRunByFileName,
+  getSampleRunById,
+  sampleRunExportFilename,
 } from "../lib/reference-samples.mjs";
 import { getSampleCopy } from "../lib/sample-copy";
 import {
@@ -265,7 +266,7 @@ const ANALYZE_STEPS_EN = [
   "Preprocessing image…",
   "Preparing analysis…",
   "Analyzing layout…",
-  "Generating preview…",
+  "Preparing preview…",
 ] as const;
 
 const DETECTION_KIND_OPTIONS = [
@@ -371,7 +372,7 @@ function DetectedReferencePreview({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [overlayEnabled, setOverlayEnabled] = useState(true);
-  const [debugEnabled, setDebugEnabled] = useState(false);
+  const [boxLabelsVisible, setBoxLabelsVisible] = useState(false);
   const [rasterVisualScore, setRasterVisualScore] = useState<number | null>(null);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const elements = useMemo(() => detections?.elements ?? [], [detections?.elements]);
@@ -693,10 +694,10 @@ function DetectedReferencePreview({
                 >
                   {detectionKindLabel(element.kind)} - {Math.round(element.confidence * 100)}%
                 </span>
-                {debugEnabled ? (
+                {boxLabelsVisible ? (
                   <span
                     className="pointer-events-none absolute bottom-0 left-0 max-w-[calc(100%-1rem)] truncate rounded-tr-[3px] bg-background/90 px-1 py-0.5 text-[9px] font-mono leading-none text-muted-foreground shadow-sm"
-                    data-testid="detection-debug-label"
+                    data-testid="detection-box-label"
                   >
                     {element.primitive ?? primitiveForDetectionKind(element.kind)}{" "}
                     {Math.round(element.box.x)},{Math.round(element.box.y)}{" "}
@@ -724,15 +725,15 @@ function DetectedReferencePreview({
                   Detection review
                 </p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Adjust boxes before regenerating. Edits become the source of truth.
+                  Adjust boxes before regenerating. Your updates guide the next preview.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Badge variant={qualityStats.reviewCount ? "destructive" : "secondary"}>
                   {qualityStats.reviewCount} review
                 </Badge>
-                <Badge variant="outline">{qualityStats.editedCount} edited</Badge>
-                <Badge variant="outline">{qualityStats.excludedCount} excluded</Badge>
+                <Badge variant="outline">{qualityStats.editedCount} updated</Badge>
+                <Badge variant="outline">{qualityStats.excludedCount} hidden</Badge>
                 <Badge
                   variant="secondary"
                   data-testid="visual-diff-score"
@@ -745,20 +746,20 @@ function DetectedReferencePreview({
 
             <div className="grid gap-2 rounded-lg border border-border/70 bg-muted/20 p-3">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Correction tools
+                Box tools
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  variant={debugEnabled ? "secondary" : "outline"}
+                  variant={boxLabelsVisible ? "secondary" : "outline"}
                   size="sm"
                   className="min-h-10 gap-2"
-                  onClick={() => setDebugEnabled((value) => !value)}
-                  aria-pressed={debugEnabled}
-                  data-testid="toggle-detector-debug"
+                  onClick={() => setBoxLabelsVisible((value) => !value)}
+                  aria-pressed={boxLabelsVisible}
+                  data-testid="toggle-box-labels"
                 >
-                  <Bug className="size-3.5" aria-hidden />
-                  Debug labels
+                  <Tags className="size-3.5" aria-hidden />
+                  Box labels
                 </Button>
                 <Button
                   type="button"
@@ -804,7 +805,7 @@ function DetectedReferencePreview({
                   data-testid="export-detections-json"
                 >
                   <Download className="size-3.5" aria-hidden />
-                  Export JSON
+                  Download detections
                 </Button>
               </div>
             </div>
@@ -903,30 +904,30 @@ function DetectedReferencePreview({
               </ul>
             </div>
 
-            {debugEnabled ? (
+            {boxLabelsVisible ? (
               <div
                 className="grid gap-2 rounded-md border border-border bg-muted/30 p-3 text-xs"
-                data-testid="detection-debug-panel"
+                data-testid="detection-box-metadata-panel"
               >
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <DebugField label="Element ID" value={selectedElement.id} />
-                  <DebugField
+                  <BoxMetadataField label="Element ID" value={selectedElement.id} />
+                  <BoxMetadataField
                     label="Primitive"
                     value={selectedElement.primitive ?? primitiveForDetectionKind(selectedElement.kind)}
                   />
-                  <DebugField
+                  <BoxMetadataField
                     label="Geometry"
                     value={`${selectedElement.box.x}, ${selectedElement.box.y}, ${selectedElement.box.width}x${selectedElement.box.height}`}
                   />
-                  <DebugField
+                  <BoxMetadataField
                     label="Confidence"
                     value={`${Math.round(selectedElement.confidence * 100)}%`}
                   />
-                  <DebugField
+                  <BoxMetadataField
                     label="Included"
                     value={selectedElement.included === false ? "false" : "true"}
                   />
-                  <DebugField
+                  <BoxMetadataField
                     label="Visual score"
                     value={`${qualityStats.visualScore}% ${qualityStats.visualMethod}`}
                   />
@@ -955,7 +956,7 @@ function DetectedReferencePreview({
   );
 }
 
-function DebugField({ label, value }: { label: string; value: string }) {
+function BoxMetadataField({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
       <p className="font-medium text-foreground">{label}</p>
@@ -1345,7 +1346,7 @@ function buildExportPackagePreview(
   copy: UploadFlowDictionary,
 ): ExportPackagePreview {
   const generatedCode = artifact.generatedCode ?? "";
-  const componentName = inferGeneratedComponentName(generatedCode);
+  const componentName = inferStarterComponentName(generatedCode);
   const stem = toExportStem(exportFilename);
   const detectedElements =
     asArray(readGeneratedJsonConst(generatedCode, "detectedElements")) ??
@@ -1390,7 +1391,7 @@ function buildExportPackagePreview(
   const patternCount = countDetectedPatternGroups(detectedPatterns);
   const breakpoints = asStringArray(responsiveIntent.breakpoints);
   const responsiveMode = stringValue(responsiveIntent.mode, "responsive layout");
-  const intentLabel = stringValue(screenIntent.label, artifact.modeLabel ?? "Generated screen");
+  const intentLabel = stringValue(screenIntent.label, artifact.modeLabel ?? "Starter screen");
   const tokenCount = Object.keys(designTokens).length;
   const files: ExportPackageFile[] = [
     {
@@ -1404,22 +1405,22 @@ function buildExportPackagePreview(
       description: "Layout decisions, responsive assumptions, primitive mapping, and review notes.",
     },
     {
-      path: `src/components/generated/${stem}.tsx`,
+      path: `src/components/starters/${stem}.tsx`,
       label: "Component",
       description: `${componentName} with React, Tailwind, and shadcn-style primitives.`,
     },
     {
-      path: `src/components/generated/${stem}.recipe.json`,
+      path: `src/components/starters/${stem}.recipe.json`,
       label: "Recipe",
-      description: "Review recipe, primitive map, and deterministic regeneration hints.",
+      description: "Primitive map, review updates, and settings for rebuilding the component.",
     },
     {
-      path: `src/components/generated/${stem}.manifest.json`,
+      path: `src/components/starters/${stem}.manifest.json`,
       label: "Manifest",
-      description: "Bundle identity, dependencies, quality gates, and safety metadata.",
+      description: "Package identity, dependencies, quality gates, and safety metadata.",
     },
     {
-      path: `src/components/generated/${stem}.tokens.css`,
+      path: `src/components/starters/${stem}.tokens.css`,
       label: "Tokens",
       description: "CSS variables derived from the screenshot palette.",
     },
@@ -1519,7 +1520,7 @@ function buildExportReadmePreview({
   reviewSummary: string;
 }) {
   return [
-    "# Screenshot UI starter package",
+    "# Screenshot-to-React export package",
     "",
     `${copy.exportReadmeIntent}: ${intentLabel}`,
     `${copy.exportReadmeComponent}: ${componentName}`,
@@ -1534,16 +1535,16 @@ function buildExportReadmePreview({
     `## ${copy.exportReadmeNext}`,
     "",
     "1. Review detection notes before deleting or merging regions.",
-    "2. Replace placeholder content with product data.",
-    "3. Run lint/build after importing the generated component.",
+    "2. Wire component content to app data.",
+    "3. Run lint/build after placing the component.",
   ].join("\n");
 }
 
-function inferGeneratedComponentName(code: string) {
+function inferStarterComponentName(code: string) {
   return (
     /export\s+default\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
     /export\s+function\s+([A-Za-z0-9_]+)/.exec(code)?.[1] ??
-    "GeneratedComponent"
+    "StarterComponent"
   );
 }
 
@@ -1552,7 +1553,7 @@ function toExportStem(filename: string) {
     filename
       .replace(/\.[^.]+$/, "")
       .replace(/[^\w.-]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "generated-component"
+      .replace(/^-+|-+$/g, "") || "starter-component"
   );
 }
 
@@ -1651,11 +1652,10 @@ function userFacingModeLabel(
   modeLabel: string | null | undefined,
   copy: UploadFlowDictionary,
 ) {
-  const trimmed = modeLabel?.trim();
-  if (!trimmed) return copy.modeLocalReady;
-  return /demo|fallback|api key|provider|qwen route/i.test(trimmed)
-    ? copy.modeLocalReady
-    : trimmed;
+  return normalizeReviewStatusLabel(modeLabel, {
+    fallback: copy.modeLocalReady,
+    ready: copy.modeReviewReady,
+  });
 }
 
 function ExportPackageSummary({
@@ -1861,19 +1861,19 @@ function ExportPackageReviewDialog({
               <GistExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="Screenshot UI starter package"
+                description="Screenshot-to-React export package"
                 analyticsSource="upload_flow"
-                analyticsFeature="generated_scaffold"
+                analyticsFeature="starter_component"
                 className="sm:w-auto"
               />
               <RepoExportButton
                 text={artifact.generatedCode}
                 filename={exportFilename}
-                description="Screenshot UI starter package"
+                description="Screenshot-to-React export package"
                 label={copy.exportRepoInstructions}
                 className="min-h-11 sm:w-auto"
                 analyticsSource="upload_flow"
-                analyticsFeature="generated_scaffold"
+                analyticsFeature="starter_component"
               />
             </DialogActionGroup>
           </details>
@@ -1881,13 +1881,13 @@ function ExportPackageReviewDialog({
             <RepoExportButton
               text={artifact.generatedCode}
               filename={exportFilename}
-              description="Screenshot UI starter package"
+              description="Screenshot-to-React export package"
               label={copy.exportDownloadPackage}
               exportMode="zip"
               testId="export-package-download"
               className="order-first col-span-2 min-h-11 w-full border-primary/70 bg-primary text-primary-foreground hover:bg-primary/90 sm:order-none sm:w-auto"
               analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
+              analyticsFeature="export_package"
               onExported={() => onExported(copy.toastPackageDownloaded)}
             />
             <ExportButton
@@ -1897,7 +1897,7 @@ function ExportPackageReviewDialog({
               className="w-full sm:w-auto"
               showToast={false}
               analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
+              analyticsFeature="starter_component"
               onCopied={() => onExported(copy.toastScaffoldCopied)}
             />
             <ExportButton
@@ -1908,7 +1908,7 @@ function ExportPackageReviewDialog({
               className="w-full sm:w-auto"
               showToast={false}
               analyticsSource="upload_flow"
-              analyticsFeature="generated_scaffold"
+              analyticsFeature="starter_component"
               onCopied={() => onExported(copy.toastScaffoldExported)}
             />
           </DialogActionGroup>
@@ -1971,11 +1971,11 @@ function DetectionComparisonPreview({
 
           <div className="min-w-0">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              {copy.comparisonGeneratedMock}
+              {copy.comparisonGeneratedPreview}
             </p>
             <div
               className="relative h-56 overflow-hidden rounded-md border sm:h-72"
-              data-testid="generated-mock-canvas"
+              data-testid="generated-preview-canvas"
               style={{
                 backgroundColor: tokens.surface,
                 borderColor: tokens.border,
@@ -2007,12 +2007,12 @@ function DetectionComparisonPreview({
                       ? tokens.accentForeground
                       : tokens.foreground,
                   }}
-                  data-testid="generated-mock-element"
+                  data-testid="generated-preview-element"
                   data-detection-id={element.id}
                   data-kind={element.kind}
                   data-primitive={element.primitive ?? primitiveForDetectionKind(element.kind)}
                 >
-                  <GeneratedMockPrimitive element={element} tokens={tokens} />
+                  <StarterPreviewPrimitive element={element} tokens={tokens} />
                 </div>
               ))}
             </div>
@@ -2039,7 +2039,7 @@ function DetectionComparisonPreview({
   );
 }
 
-function GeneratedMockPrimitive({
+function StarterPreviewPrimitive({
   element,
   tokens,
 }: {
@@ -2104,14 +2104,14 @@ function GeneratedMockPrimitive({
 }
 
 export interface UploadFlowProps {
-  /** Sample screenshot id (dashboard, auth, mobile, …) for /demo */
-  sampleReferenceId?: string;
+  /** Guided layout id (dashboard, auth, mobile, etc.) for the sample-run route. */
+  sampleRunId?: string;
   /** Load sample + run analyze on mount (sample route) */
   autoRunSample?: boolean;
 }
 
 export function UploadFlow({
-  sampleReferenceId,
+  sampleRunId,
   autoRunSample = false,
 }: UploadFlowProps = {}) {
   const pathname = usePathname();
@@ -2127,7 +2127,7 @@ export function UploadFlow({
   const detectionHistoryRef = useRef<NonNullable<UiFlowArtifact["detections"]>[]>([]);
   const detectionHistoryIndexRef = useRef(-1);
   const sampleBootstrappedRef = useRef<string | null>(null);
-  const loadBundledSampleRef = useRef<(sampleId: string) => Promise<void>>(
+  const loadSampleRunRef = useRef<(sampleId: string) => Promise<void>>(
     async () => {},
   );
   const runPrimaryActionRef = useRef<() => Promise<void>>(async () => {});
@@ -2141,7 +2141,7 @@ export function UploadFlow({
   const [providerState, setProviderState] = useState<ProviderState>("idle");
   const [loadingSample, setLoadingSample] = useState(false);
   const [selectedSampleId, setSelectedSampleId] = useState(
-    BUNDLED_REFERENCE_SAMPLES[0]?.id ?? "dashboard",
+    SAMPLE_RUNS[0]?.id ?? "dashboard",
   );
   const [sampleUsed, setSampleUsed] = useState(() => readSampleUsedFromSession());
   const [userUploadedOwn, setUserUploadedOwn] = useState(false);
@@ -2178,7 +2178,7 @@ export function UploadFlow({
 
   function reportAnalyzeFailure(outcome: {
     providerState?: string;
-    instantDemo?: boolean;
+    sampleRun?: boolean;
     code?: string | null;
   }) {
     if (!isReportableAnalyzeFailure(outcome)) return;
@@ -2313,19 +2313,19 @@ export function UploadFlow({
 
   const exportFilename = useMemo(() => {
     if (file?.name) {
-      const referenceSample = findReferenceSampleByFileName(file.name);
-      if (referenceSample) {
-        return referenceSampleExportFilename(referenceSample.id);
+      const sampleRun = findSampleRunByFileName(file.name);
+      if (sampleRun) {
+        return sampleRunExportFilename(sampleRun.id);
       }
 
       const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w-]+/g, "-");
-      return `generated-${base || "component"}.tsx`;
+      return `starter-${base || "component"}.tsx`;
     }
-    if (sampleReferenceId) {
-      return referenceSampleExportFilename(sampleReferenceId);
+    if (sampleRunId) {
+      return sampleRunExportFilename(sampleRunId);
     }
-    return "generated-component.tsx";
-  }, [sampleReferenceId, file]);
+    return "starter-component.tsx";
+  }, [sampleRunId, file]);
 
   const exportPackagePreview = useMemo(
     () =>
@@ -2506,7 +2506,7 @@ export function UploadFlow({
         setSharedSummary(sharePayload);
       }
 
-      if (outcome.instantDemo) {
+      if (outcome.sampleRun) {
         toast(t.toastAnalysisReady, "success");
       } else if (outcome.providerState === "qwen") {
         toast(t.toastQwenComplete, "success");
@@ -2519,7 +2519,7 @@ export function UploadFlow({
         fileType: file.type || "unknown",
         fileSize: file.size,
         step: "analyze",
-        status: outcome.instantDemo ? "instant_demo" : "completed",
+        status: outcome.sampleRun ? AnalyticsStatus.SampleRun : AnalyticsStatus.Completed,
         durationMs: currentTimestamp() - startedAt,
       });
 
@@ -2802,10 +2802,10 @@ export function UploadFlow({
     toast(t.toastSessionRemoved, "default");
   }
 
-  async function loadBundledSample(sampleId: string) {
+  async function loadSampleRun(sampleId: string) {
     const sample =
-      BUNDLED_REFERENCE_SAMPLES.find((entry) => entry.id === sampleId) ??
-      getReferenceSampleById(sampleId);
+      SAMPLE_RUNS.find((entry) => entry.id === sampleId) ??
+      getSampleRunById(sampleId);
 
     setError(null);
     setLoadingSample(true);
@@ -2844,21 +2844,21 @@ export function UploadFlow({
   }
 
   useEffect(() => {
-    loadBundledSampleRef.current = loadBundledSample;
+    loadSampleRunRef.current = loadSampleRun;
     runPrimaryActionRef.current = runPrimaryAction;
   });
 
   useEffect(() => {
     if (!autoRunSample) return;
 
-    const sampleId = sampleReferenceId ?? "dashboard";
+    const sampleId = sampleRunId ?? "dashboard";
     if (sampleBootstrappedRef.current === sampleId) return;
     sampleBootstrappedRef.current = sampleId;
 
     void (async () => {
-      await loadBundledSampleRef.current(sampleId);
+      await loadSampleRunRef.current(sampleId);
     })();
-  }, [autoRunSample, sampleReferenceId]);
+  }, [autoRunSample, sampleRunId]);
 
   useEffect(() => {
     if (!autoRunSample || !file || stage !== "uploaded" || providerState === "loading") {
@@ -3047,7 +3047,7 @@ export function UploadFlow({
                   copy={t}
                   disabled={isBusy}
                   loading={loadingSample}
-                  onLoadSample={(sampleId) => void loadBundledSample(sampleId)}
+                  onLoadSample={(sampleId) => void loadSampleRun(sampleId)}
                   onSelectedSampleChange={setSelectedSampleId}
                   selectedSampleId={selectedSampleId}
                   showPathHint={samplePathHintVariant === "show-path-hint"}

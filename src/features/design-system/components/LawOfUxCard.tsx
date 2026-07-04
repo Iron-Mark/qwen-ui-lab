@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
-import { LawOfUxDemo } from "./LawOfUxDemos";
+import { LawOfUxExample } from "./LawOfUxExamples";
 
 const SURFACE_LABELS = {
   upload: "Upload flow",
@@ -39,7 +39,7 @@ export function LawOfUxCard({ law, className }: LawOfUxCardProps) {
             <p className="mt-1 text-sm leading-6 text-muted-foreground">{law.summary}</p>
           </div>
           <Badge variant="secondary" className="shrink-0">
-            {SURFACE_LABELS[law.demoSurface]}
+            {SURFACE_LABELS[law.exampleSurface]}
           </Badge>
         </div>
         <p className="mt-3 text-xs leading-5 text-muted-foreground">
@@ -55,12 +55,12 @@ export function LawOfUxCard({ law, className }: LawOfUxCardProps) {
       </CardHeader>
 
       <CardContent className="min-h-[8rem] border-b bg-background/50 p-4 sm:p-6">
-        <LawOfUxDemo lawId={law.id} />
+        <LawOfUxExample lawId={law.id} />
       </CardContent>
 
       <CardFooter className="flex flex-wrap items-center justify-between gap-3">
         <Link href={law.inAppHref} className={buttonVariants({ variant: "link", size: "sm" })}>
-          See in app →
+          See in app
         </Link>
         <a
           href={lawOfUxUrl(law.slug)}

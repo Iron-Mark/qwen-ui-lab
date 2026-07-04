@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 const port = process.env.PORT ?? "3000";
 const nextDir = join(process.cwd(), ".next");
+const nextCliPath = join(process.cwd(), "node_modules", "next", "dist", "bin", "next");
 const buildIdPath = join(nextDir, "BUILD_ID");
 const buildInputs = [
   "next.config.ts",
@@ -33,7 +34,7 @@ function run(command, args) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       stdio: "inherit",
-      shell: process.platform === "win32",
+      shell: false,
       env: { ...process.env, PORT: port },
     });
     child.on("error", reject);
@@ -45,7 +46,7 @@ function run(command, args) {
 }
 
 if (!isBuildFresh()) {
-  await run("npm", ["run", "build"]);
+  await run(process.execPath, [nextCliPath, "build"]);
 }
 
-await run("npx", ["next", "start", "--port", port]);
+await run(process.execPath, [nextCliPath, "start", "--port", port]);

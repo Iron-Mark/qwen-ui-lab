@@ -15,15 +15,15 @@ paths:
 
 ## Purpose
 
-Help convert UI references into clean, maintainable React/TypeScript/Tailwind components.
+Help convert UI screenshots, design sources, and visual descriptions into clean, maintainable React/TypeScript/Tailwind components.
 
 ## Workflow
 
-1. Analyze the UI reference or description.
+1. Analyze the screenshot, design source, or description.
 2. Identify layout structure, reusable components, and visual hierarchy.
 3. Create a component hierarchy before writing code.
-4. Plan props, mock data, and file structure.
-5. Generate small reusable components.
+4. Plan props, example data, and file structure.
+5. Build small reusable component drafts.
 6. Review accessibility, responsiveness, naming, and maintainability.
 7. Avoid over-engineering.
 
@@ -33,7 +33,7 @@ Help convert UI references into clean, maintainable React/TypeScript/Tailwind co
 - Use TypeScript.
 - Use Tailwind CSS.
 - Keep components small and composable.
-- Use mock data from local data files.
+- Use typed example data from local data files.
 - Avoid unnecessary dependencies.
 - Do not hardcode repeated content.
 - Prefer readable Tailwind grouping.
@@ -41,7 +41,7 @@ Help convert UI references into clean, maintainable React/TypeScript/Tailwind co
 
 ## Review Checklist
 
-Before finalizing, check:
+During review, check:
 
 - Is the layout responsive?
 - Are components reusable?
@@ -57,19 +57,19 @@ Before finalizing, check:
 
 # UI-to-Component Checklist
 
-Use this before finalizing any generated component.
+Use this while reviewing any component draft.
 
 ## Structure
 
 - [ ] Component hierarchy matches visual layout
 - [ ] Props are typed with TypeScript interfaces
-- [ ] Mock data is separated into a data file
+- [ ] Example data is separated into a data file
 - [ ] No hardcoded repeated content
 
 ## Accessibility
 
 - [ ] Interactive elements have accessible labels
-- [ ] Headings follow a logical hierarchy (h1 → h2 → h3)
+- [ ] Headings follow a logical hierarchy (h1 -> h2 -> h3)
 - [ ] Images have alt text
 - [ ] Color contrast meets WCAG AA
 

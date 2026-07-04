@@ -4,9 +4,9 @@ Client observability in `qwen-ui-lab` is **opt-in** and **quiet by default**. No
 
 Related docs:
 
-- [ANALYTICS_TAXONOMY.md](./ANALYTICS_TAXONOMY.md) — event names and allowlisted metadata
-- [ANALYTICS_STAGING_ACTIVATION.md](./ANALYTICS_STAGING_ACTIVATION.md) — staging rollout checklist
-- [RELIABILITY_OPS.md](./RELIABILITY_OPS.md) — health probes and incident thresholds
+- [ANALYTICS_TAXONOMY.md](./ANALYTICS_TAXONOMY.md) - event names and allowlisted metadata
+- [ANALYTICS_STAGING_ACTIVATION.md](./ANALYTICS_STAGING_ACTIVATION.md) - staging rollout checklist
+- [RELIABILITY_OPS.md](./RELIABILITY_OPS.md) - health probes and incident thresholds
 
 ## Default Behavior
 
@@ -15,7 +15,7 @@ When all observability env vars are **unset**:
 - No Sentry initialization
 - No outbound error beacons
 - `captureError` / `trackEvent` are no-ops
-- Local-analysis provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true`
+- Local-analysis provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS=true`
 
 ## Activation flags
 
@@ -51,7 +51,7 @@ Debug logging to the browser console:
 NEXT_PUBLIC_OBSERVABILITY_DEBUG=true
 ```
 
-Copy names from `.env.example` — never commit real DSNs, tokens, or collector secrets.
+Copy names from `.env.example` - never commit real DSNs, tokens, or collector secrets.
 
 ## What gets reported
 
@@ -66,8 +66,8 @@ Copy names from `.env.example` — never commit real DSNs, tokens, or collector 
 | Outcome | Reported? |
 | --- | --- |
 | Live Qwen success (`providerState: qwen`) | No |
-| Expected local analysis (`instantDemo`, missing key, live disabled) | No |
-| Live call failed → offline fallback | Yes |
+| Expected local analysis (sample run, missing key, live disabled) | No |
+| Live call failed -> offline fallback | Yes |
 | Client could not read the uploaded image | Yes |
 
 Errors are sanitized in `src/lib/observability.mjs` (truncated message/stack, no query strings on routes).
@@ -80,27 +80,27 @@ Errors are sanitized in `src/lib/observability.mjs` (truncated message/stack, no
 
 ```text
 ObservabilityProvider
-  ├─ createObservabilityConfig(env)
-  ├─ createClientErrorDispatch(config, env)  → console / generic URL / Sentry
-  └─ createMonitoringHooks({ config, dispatchError })
+  |-- createObservabilityConfig(env)
+  |-- createClientErrorDispatch(config, env)  -> console / generic URL / Sentry
+  `-- createMonitoringHooks({ config, dispatchError })
 
-ObservabilityErrorBoundary → captureError (error_boundary)
-UploadFlow                 → captureError (analyze_route) on reportable fallbacks
+ObservabilityErrorBoundary -> captureError (error_boundary)
+UploadFlow                 -> captureError (analyze_route) on reportable fallbacks
 ```
 
 Implementation files:
 
-- `src/lib/observability.mjs` — gating, sanitization, hooks
-- `src/lib/error-reporting.mjs` — generic beacon (node-testable)
-- `src/lib/error-reporting.client.ts` — lazy `@sentry/browser` init
-- `src/features/analysis/lib/analyze-observability.mjs` — analyze failure classification
-- `src/lib/analytics-event-buffer.mjs` — optional browser-local event ring buffer (staging QA)
-- `/admin/analytics` — docs-only funnel reference by default; live buffer when observability + analytics flags are set (`noindex`)
+- `src/lib/observability.mjs` - gating, sanitization, hooks
+- `src/lib/error-reporting.mjs` - generic beacon (node-testable)
+- `src/lib/error-reporting.client.ts` - lazy `@sentry/browser` init
+- `src/features/analysis/lib/analyze-observability.mjs` - analyze failure classification
+- `src/lib/analytics-event-buffer.mjs` - optional browser-local event ring buffer (staging QA)
+- `/admin/analytics` - docs-only funnel reference by default; live buffer when observability + analytics flags are set (`noindex`)
 
 ## Staging verification
 
 1. Set master + `NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true` and your Sentry DSN (or generic URL).
-2. Keep `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=false` on public hosts.
+2. Keep `NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS=false` on public hosts.
 3. Force a live analyze failure and confirm one issue/beacon with `source: analyze_route`.
 4. Confirm normal public traffic with unset flags produces **zero** outbound error traffic.
 

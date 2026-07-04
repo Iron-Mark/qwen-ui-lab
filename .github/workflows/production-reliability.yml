@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_url:
-        description: "Production URL to monitor (defaults to PRODUCTION_DEPLOY_URL or public demo host)"
+        description: "Production URL to monitor (defaults to PRODUCTION_DEPLOY_URL or public app host)"
         required: false
         type: string
       expect_live_analysis:

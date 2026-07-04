@@ -1,4 +1,5 @@
 import { buildUiFlowArtifact } from "./ui-flow.mjs";
+import { REMOTE_ANALYSIS_COPY } from "./analysis-copy.mjs";
 import {
   canUseLiveQwen,
   getQwenConfig,
@@ -27,9 +28,10 @@ export function buildAnalyzeHealthResponse(env = process.env) {
   };
 }
 
-export function buildDemoAnalyzeResponse({ fileName, fileType, fileSize }) {
+export function buildLocalAnalyzeResponse({ fileName, fileType, fileSize }) {
   return {
     ok: true,
+    sampleRun: true,
     demo: true,
     artifact: buildUiFlowArtifact(
       { name: fileName, type: fileType, size: fileSize },
@@ -67,11 +69,11 @@ export function buildQwenVisionRequest({
               "Return JSON with keys: summary, plan, generatedCode, previewStats.",
               "plan must be an array of {title, body}.",
               "previewStats must be an array of {label, value}.",
-              "generatedCode must be production-usable TSX, not a demo note.",
+              "generatedCode must be concrete starter TSX, not a sample-run note.",
               "generatedCode should prefer shadcn-style primitives from @/components/ui: Card, Button, Input, Badge, Tabs, Dialog, Select, Table when those match the screenshot.",
               "generatedCode should export a default top-level component plus small named subcomponents for repeated sections.",
-              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and placeholder data arrays that can be replaced by real data.",
-              "Avoid app-specific demo imports unless they are included in generatedCode. Do not leave TODO-only blocks as the main output.",
+              "Use semantic landmarks, visible labels, accessible button names, responsive Tailwind grids, and clearly named starter data constants that can be replaced with app data.",
+              "Avoid app-specific sample-run imports unless they are included in generatedCode. Do not leave instruction-only placeholders as the main output.",
             ].join("\n"),
           },
           {
@@ -113,12 +115,12 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 503,
       code: "missing_qwen_api_key",
-      message: `${config.missing} is not configured on the server.`,
+      message: REMOTE_ANALYSIS_COPY.notConfigured,
     };
   }
 
   if (!isLiveQwenAnalysisEnabled(env)) {
-    return buildDemoAnalyzeResponse({ fileName, fileType, fileSize });
+    return buildLocalAnalyzeResponse({ fileName, fileType, fileSize });
   }
 
   const endpoint = `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
@@ -148,8 +150,8 @@ export async function analyzeUiImageWithQwen({
       code: "qwen_network_error",
       message:
         error?.name === "AbortError"
-          ? "Qwen request timed out."
-          : "Could not reach the Qwen API.",
+          ? REMOTE_ANALYSIS_COPY.timedOut
+          : REMOTE_ANALYSIS_COPY.unreachable,
     };
   }
 
@@ -160,10 +162,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: response.status,
       code: "qwen_request_failed",
-      message:
-        payload?.error?.message ||
-        payload?.message ||
-        "Qwen analysis request failed.",
+      message: REMOTE_ANALYSIS_COPY.requestFailed,
     };
   }
 
@@ -174,7 +173,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 502,
       code: "empty_qwen_response",
-      message: "Qwen returned an empty analysis response.",
+      message: REMOTE_ANALYSIS_COPY.emptyResponse,
     };
   }
 
@@ -192,7 +191,7 @@ export async function analyzeUiImageWithQwen({
           plan: analysis.plan,
           generatedCode: analysis.generatedCode,
           previewStats: analysis.previewStats,
-          modeLabel: `Qwen provider: ${config.model}`,
+          modeLabel: REMOTE_ANALYSIS_COPY.readyForReview,
           summary: analysis.summary,
         },
       ),
@@ -206,7 +205,7 @@ export async function analyzeUiImageWithQwen({
       ok: false,
       status: 502,
       code: "invalid_qwen_json",
-      message: "Qwen returned text, but it was not valid analysis JSON.",
+      message: REMOTE_ANALYSIS_COPY.unreadableResponse,
       rawText: modelText,
     };
   }
@@ -235,7 +234,7 @@ function normalizeQwenAnalysis(value) {
     generatedCode:
       typeof value?.generatedCode === "string"
         ? value.generatedCode
-        : "export function GeneratedDashboard() { return null; }",
+        : "export function DashboardStarter() { return null; }",
     previewStats: normalizeCards(value?.previewStats),
   };
 }

@@ -1,6 +1,6 @@
-# OAuth & real auth — research spike
+# OAuth & real auth - research spike
 
-**Status:** Research only — no implementation in this doc.  
+**Status:** Research only - no implementation in this doc.  
 **Audience:** Engineers planning a local-safe migration from the current `sessionStorage` profile modal to real sign-in (OAuth + magic link email).
 
 ## Current state (browser-local profile)
@@ -9,10 +9,10 @@ The header profile control opens a persistent account modal via `?account=1`. Th
 
 | Piece | Location | Behavior |
 |-------|----------|----------|
-| State machine | `src/features/account/lib/auth.mjs` | Modes: `guest` → `named` (display name) or `magic-link-pending` → `named` |
+| State machine | `src/features/account/lib/auth.mjs` | Modes: `guest` -> `named` (display name) or `contact-label-pending` -> `named`; legacy `magic-link-pending` session values normalize on load |
 | Persistence | `sessionStorage` key `qwen-ui-lab:auth` | Tab-scoped; cleared on sign-out or empty name |
 | React context | `src/features/account/components/AuthProvider.tsx` | `AuthProvider` wraps the app in `layout.tsx` |
-| UI | `src/features/account/components/AccountPageClient.tsx` | Profile modal content: display name plus local contact label flow |
+| UI | `src/features/account/components/AccountProfilePanel.tsx` | Profile modal content: display name plus local contact label flow |
 | Consumers | `Header.tsx`, `UploadFlow.tsx` | `savedByLabel`, `signedIn` for local personalization |
 | Tests | `tests/auth.test.mjs`, `e2e/account.spec.ts` | Unit + E2E against sessionStorage |
 
@@ -20,23 +20,23 @@ The header profile control opens a persistent account modal via `?account=1`. Th
 
 ## Goals for real auth
 
-1. **Google + GitHub OAuth** — familiar providers for developers evaluating the lab.
-2. **Magic link email** — passwordless sign-in for users who prefer email.
+1. **Google + GitHub OAuth** - familiar providers for developers evaluating the lab.
+2. **Magic link email** - passwordless sign-in for users who prefer email.
 3. **Local-safe default** - production keeps working with zero auth env vars (browser-local profile or read-only guest).
-4. **Incremental migration** — preserve `useAuth()` shape where possible; avoid breaking E2E and offline demos.
-5. **No secrets in the client** — provider keys and mail API keys server-only (same rule as `DASHSCOPE_API_KEY`).
+4. **Incremental migration** - preserve `useAuth()` shape where possible; avoid breaking E2E and local-analysis flows.
+5. **No secrets in the client** - provider keys and mail API keys server-only (same rule as `DASHSCOPE_API_KEY`).
 
 ## Non-goals (for first slice)
 
 - Full user profiles, billing, or multi-tenant workspaces.
-- Replacing generated `OAuthButtonRow` scaffolds in analyze output (those stay UI templates).
+- Replacing starter `OAuthButtonRow` scaffolds in analyze output (those stay UI templates).
 - Mandatory sign-in for analyze/export (guest must remain viable).
 
 ---
 
 ## Provider options
 
-### Option A — Auth.js (NextAuth v5) + database adapter
+### Option A - Auth.js (NextAuth v5) + database adapter
 
 **Stack:** `@auth/core` / `next-auth@5`, Route Handlers under `src/app/api/auth/[...nextauth]/`, optional Drizzle/Prisma adapter.
 
@@ -45,24 +45,24 @@ The header profile control opens a persistent account modal via `?account=1`. Th
 | First-class Next.js App Router story; Google/GitHub built-in | You own session storage (DB or JWT strategy) |
 | Magic link via Email provider + SMTP/Resend | Email provider config is on you |
 | Large ecosystem, familiar to contributors | v5 APIs still evolving; adapter choice matters |
-| Can run **Credentials-less** demo mode by not mounting routes when disabled | Middleware/session refresh needs careful CSP |
+| Can run **credentials-less** local-analysis mode by not mounting routes when disabled | Middleware/session refresh needs careful CSP |
 
 **Fit:** Best if we want **self-hosted, no vendor lock-in**, and already plan Postgres (e.g. Neon) for future features.
 
 **Env sketch (live only):**
 
 ```bash
-AUTH_SECRET=…
-AUTH_GOOGLE_ID=…
-AUTH_GOOGLE_SECRET=…
-AUTH_GITHUB_ID=…
-AUTH_GITHUB_SECRET=…
-EMAIL_SERVER=…          # SMTP or Resend-compatible
-EMAIL_FROM=noreply@…
-AUTH_ENABLED=true       # proposed gate — see migration
+AUTH_SECRET=...
+AUTH_GOOGLE_ID=...
+AUTH_GOOGLE_SECRET=...
+AUTH_GITHUB_ID=...
+AUTH_GITHUB_SECRET=...
+EMAIL_SERVER=...          # SMTP or Resend-compatible
+EMAIL_FROM=noreply@...
+AUTH_ENABLED=true       # proposed gate - see migration
 ```
 
-### Option B — Clerk
+### Option B - Clerk
 
 **Stack:** `@clerk/nextjs`, hosted dashboard, middleware `auth()`.
 
@@ -74,7 +74,7 @@ AUTH_ENABLED=true       # proposed gate — see migration
 
 **Fit:** Best for **speed over control** when the lab needs real auth in days, not weeks.
 
-### Option C — Supabase Auth
+### Option C - Supabase Auth
 
 **Stack:** `@supabase/ssr`, Supabase project, optional `auth.users` + RLS.
 
@@ -82,11 +82,11 @@ AUTH_ENABLED=true       # proposed gate — see migration
 |------|------|
 | OAuth + magic link in one product | Adds Supabase as dependency even if only auth is used |
 | PKCE flow documented for App Router | Session cookies + middleware; region/data residency choices |
-| Free tier generous for demos | Key rotation and redirect URL management per environment |
+| Free tier generous for prototypes | Key rotation and redirect URL management per environment |
 
 **Fit:** Best if we **already want Postgres + storage** (e.g. persisted share links, user-owned scaffolds later).
 
-### Option D — Lucia + Arctic (roll your own OAuth)
+### Option D - Lucia + Arctic (roll your own OAuth)
 
 **Stack:** `lucia`, `arctic` for OAuth, custom session table, hand-rolled magic-link tokens.
 
@@ -96,9 +96,9 @@ AUTH_ENABLED=true       # proposed gate — see migration
 | No large framework surface | Email delivery, token TTL, CSRF still yours |
 | Easy to keep local and real auth paths separate | Security review burden on the team |
 
-**Fit:** Best for **learning / minimal deps** — poor match for meetup timeline unless auth is the product.
+**Fit:** Best for **learning / minimal deps** - poor match for the current product scope unless auth becomes a core workflow.
 
-### Option E — Magic link only (Resend + custom tokens)
+### Option E - Magic link only (Resend + custom tokens)
 
 **Stack:** Resend (or Postmark) + signed JWT in link + httpOnly session cookie.
 
@@ -119,13 +119,13 @@ AUTH_ENABLED=true       # proposed gate — see migration
 | **Fast alternative** | **Clerk** | If timeline &lt; 1 sprint and vendor OK |
 | **Defer** | Lucia-only, magic-link-only | More code for same user-visible outcome |
 
-Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only — not on the production lane until migration steps below are done.
+Proceed with a **spike PR** (separate from this doc) that prototypes Auth.js on a preview deployment with `AUTH_ENABLED=true` only - not on the production lane until migration steps below are done.
 
 ---
 
 ## Local-safe migration strategy
 
-Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — browser-local by default, live auth opt-in.
+Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** - browser-local by default, live auth opt-in.
 
 ### 1. Feature gate (proposed)
 
@@ -136,15 +136,15 @@ Mirror **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** —
 
 Optional: `AUTH_LOCAL_FALLBACK=true` on preview to show OAuth buttons that noop with a toast (not recommended for production - prefer the browser-local profile).
 
-Validate in CI with `npm run deploy:env:demo` extended to assert `AUTH_ENABLED` is not set on production.
+Validate in CI with `npm run deploy:env:local` extended to assert `AUTH_ENABLED` is not set on production.
 
 ### 2. Adapter boundary
 
 Introduce a thin **`auth-port`** (name TBD) so `useAuth()` stays stable:
 
 ```text
-useAuth()  →  auth-port  →  local: auth.mjs (sessionStorage)
-                         →  live: auth-session.server + client hydrate
+useAuth()  ->  auth-port  ->  local: auth.mjs (sessionStorage)
+                         ->  live: auth-session.server + client hydrate
 ```
 
 | `AuthContextValue` field | Local | Live |
@@ -152,11 +152,11 @@ useAuth()  →  auth-port  →  local: auth.mjs (sessionStorage)
 | `signedIn` | `mode === "named"` | Valid server session |
 | `savedByLabel` | display name or Guest | `user.name` \|\| email local-part \|\| Guest |
 | `setDisplayName` | writes sessionStorage | PATCH profile or noop if OAuth-only |
-| `sendMagicLinkStub` | local contact-label pending state | POST `/api/auth/signin/email` |
-| `confirmMagicLink` | local confirm action | handled by callback route |
+| `saveContactLabel` | local contact-label pending state | POST `/api/auth/signin/email` |
+| `confirmContactLabel` | local confirm action | handled by callback route |
 | `signOut` | clear sessionStorage | Auth.js `signOut()` |
 
-Add fields later (`userId`, `provider`) without breaking demo consumers.
+Add fields later (`userId`, `provider`) without breaking local profile consumers.
 
 ### 3. Phased rollout
 
@@ -170,7 +170,7 @@ flowchart TD
 
 | Phase | Scope | Local-profile impact |
 |-------|--------|-------------|
-| 0 | Roadmap, env contract, `deploy:env:demo` check | None |
+| 0 | Roadmap, env contract, `deploy:env:local` check | None |
 | 1 | Preview deploy, middleware, session cookie | None on prod |
 | 2 | Real email magic link | Prod remains browser-local unless flag set |
 | 3 | OAuth buttons in account modal | Prod flag on staging first |
@@ -191,14 +191,14 @@ During transition:
 - [ ] OAuth redirect URIs: `localhost:3000`, preview `*.vercel.app`, production domain only
 - [ ] Magic link: single-use, short TTL, rate limit by IP + email (reuse analyze rate-limit patterns in `analyze-ui-rate-limit-store.mjs`)
 - [ ] httpOnly, `Secure`, `SameSite=Lax` session cookies
-- [ ] CSP updates — see **[docs/ops/CSP_HARDENING_GUIDE.md](./CSP_HARDENING_GUIDE.md)** for auth callback origins
-- [ ] No PII in analytics events — see **[docs/ops/ANALYTICS_TAXONOMY.md](./ANALYTICS_TAXONOMY.md)**
+- [ ] CSP updates - see **[docs/ops/CSP_HARDENING_GUIDE.md](./CSP_HARDENING_GUIDE.md)** for auth callback origins
+- [ ] No PII in analytics events - see **[docs/ops/ANALYTICS_TAXONOMY.md](./ANALYTICS_TAXONOMY.md)**
 
 ### 6. UI / i18n
 
 - `/account` redirects to `/?account=1`; the profile modal copy lives in EN/ZH dictionaries (`src/lib/i18n/dictionaries/*`).
-- When live: add copy for “Sign in with Google/GitHub” and real magic-link sent state; keep guest CTA for analyze flow.
-- Generated auth archetype (`/demo?archetype=auth`) remains a **visual scaffold** — not wired to real OAuth until explicitly productized.
+- When live: add copy for "Sign in with Google/GitHub" and real magic-link sent state; keep guest CTA for analyze flow.
+- Auth sample archetype (`/demo?archetype=auth`) remains a **visual scaffold** - not wired to real OAuth until explicitly productized.
 
 ---
 
@@ -221,40 +221,40 @@ Store client IDs as env vars; never `NEXT_PUBLIC_*` for secrets.
 | Postmark | SMTP `EMAIL_SERVER` | Transactional focus |
 | SendGrid | SMTP | Heavier setup |
 
-For local dev: Mailpit/Mailhog SMTP on `localhost:1025` — same pattern as share-link KV optional backend.
+For local dev: Mailpit/Mailhog SMTP on `localhost:1025` - same pattern as share-link KV optional backend.
 
 ---
 
 ## Testing strategy (future implementation)
 
-| Layer | Demo (`AUTH_ENABLED=false`) | Live (preview) |
+| Layer | Local profile (`AUTH_ENABLED=false`) | Live (preview) |
 |-------|----------------------------|----------------|
 | Unit | Keep `tests/auth.test.mjs` for browser-local profile | Add adapter mocks |
 | E2E | `e2e/account.spec.ts` unchanged | Separate tagged spec or mocked OAuth |
-| Contract | N/A | Smoke: `GET /api/auth/session` returns 401 when logged out |
+| Contract | Not applicable | Smoke: `GET /api/auth/session` returns 401 when logged out |
 
 ---
 
 ## Open questions
 
-1. **User data model** — session only vs `users` table for saved scaffolds / gist ownership?
-2. **Clerk vs Auth.js** — decision deadline before Phase 1 spike?
-3. **Required sign-in** — any route (`/admin/analytics`?) should stay public-demo or gain optional auth?
-4. **Vercel preview** — shared OAuth app with wildcard redirect vs per-preview secrets?
-5. **GDPR / delete account** — scope for v1?
+1. **User data model** - session only vs `users` table for saved scaffolds / gist ownership?
+2. **Clerk vs Auth.js** - decision deadline before Phase 1 spike?
+3. **Required sign-in** - should any route, such as `/admin/analytics`, stay public sample mode or gain optional auth?
+4. **Vercel preview** - shared OAuth app with wildcard redirect vs per-preview secrets?
+5. **GDPR / delete account** - scope for v1?
 
 ---
 
 ## Related docs
 
-- **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** — demo vs live env policy (model for `AUTH_ENABLED`)
-- **[docs/ops/CSP_HARDENING_GUIDE.md](./CSP_HARDENING_GUIDE.md)** — CSP when adding auth callbacks
-- **[docs/ops/OFFLINE_DEMO_E2E.md](./OFFLINE_DEMO_E2E.md)** — offline guarantees E2E must preserve
-- **[DEMO.md](../DEMO.md)** — meetup script; `/account` is optional, not on critical path
+- **[docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md)** - local vs live env policy (model for `AUTH_ENABLED`)
+- **[docs/ops/CSP_HARDENING_GUIDE.md](./CSP_HARDENING_GUIDE.md)** - CSP when adding auth callbacks
+- **[docs/ops/LOCAL_ANALYSIS_E2E.md](./LOCAL_ANALYSIS_E2E.md)** - local-analysis guarantees E2E must preserve
+- **[DEMO.md](../DEMO.md)** - sample-run guide; `/account` is optional, not on the critical path
 
 ## References
 
-- [Auth.js — Getting started (Next.js)](https://authjs.dev/getting-started/installation?framework=next.js)
-- [Auth.js — Google provider](https://authjs.dev/getting-started/providers/google)
-- [Auth.js — GitHub provider](https://authjs.dev/getting-started/providers/github)
-- [Auth.js — Nodemailer / email](https://authjs.dev/getting-started/authentication/email)
+- [Auth.js - Getting started (Next.js)](https://authjs.dev/getting-started/installation?framework=next.js)
+- [Auth.js - Google provider](https://authjs.dev/getting-started/providers/google)
+- [Auth.js - GitHub provider](https://authjs.dev/getting-started/providers/github)
+- [Auth.js - Nodemailer / email](https://authjs.dev/getting-started/authentication/email)

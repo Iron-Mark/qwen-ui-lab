@@ -264,7 +264,7 @@ function buildSvgRecommendations({ labels, tagCounts, shapeCount, rootAttributes
   const recommendations = [];
 
   if (!rootAttributes.viewBox?.length) {
-    recommendations.push("Add or preserve a viewBox so generated scaffolds can reason about responsive scaling.");
+    recommendations.push("Add or preserve a viewBox so starter scaffolds can reason about responsive scaling.");
   } else {
     recommendations.push("Preserve the detected viewBox proportions when translating the SVG into responsive layout.");
   }
@@ -272,7 +272,7 @@ function buildSvgRecommendations({ labels, tagCounts, shapeCount, rootAttributes
   if (!labels.length) {
     recommendations.push("Add text, title, desc, or aria-label nodes so offline analysis can infer component intent.");
   } else {
-    recommendations.push("Reuse detected SVG labels as accessible names, headings, or form labels in the generated scaffold.");
+    recommendations.push("Reuse detected SVG labels as accessible names, headings, or form labels in the starter scaffold.");
   }
 
   if (tagCounts.path > shapeCount * 0.6 && shapeCount >= 12) {

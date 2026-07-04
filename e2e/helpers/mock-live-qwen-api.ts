@@ -7,7 +7,7 @@ export const E2E_LIVE_ANALYZE_SUCCESS = liveFixtures.analyzeUiSuccess;
 export const E2E_LIVE_ARTIFACT = liveFixtures.artifactContract;
 
 /**
- * Live-path E2E mocks: health reports liveAnalysisEnabled, analyze-ui returns a
+ * Live-path test doubles: health reports liveAnalysisEnabled, analyze-ui returns a
  * structured Qwen artifact. No DashScope credentials or upstream calls in CI.
  */
 export async function mockLiveQwenAnalyzeApiForE2E(page: Page) {

@@ -25,7 +25,7 @@ function ResponsiveTabsList({
   return (
     <TabsList
       className={cn(
-        "grid h-auto w-full gap-1.5 rounded-xl border border-border/70 bg-muted/40 p-1.5 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto",
+        "grid h-auto w-full max-w-full gap-1 rounded-xl border border-border/70 bg-muted/40 p-1 shadow-[inset_0_1px_3px_color-mix(in_oklch,var(--foreground)_14%,transparent),inset_0_-1px_0_color-mix(in_oklch,var(--background)_70%,transparent)] group-data-horizontal/tabs:h-auto sm:gap-1.5 sm:p-1.5 [&_[data-slot=tabs-trigger]]:min-w-0 [&_[data-slot=tabs-trigger]]:whitespace-normal [&_[data-slot=tabs-trigger]]:text-center [&_[data-slot=tabs-trigger]]:leading-tight sm:[&_[data-slot=tabs-trigger]]:whitespace-nowrap",
         mobileColumns,
         desktopColumns,
         inlineAt,

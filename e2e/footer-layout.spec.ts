@@ -13,8 +13,10 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await footer.scrollIntoViewIfNeeded();
   await expect(footer).toBeVisible();
 
-  await expect(footer.locator('img[src="/icons/icon.svg"]')).toHaveCount(1);
-  await expect(footer.getByText("React + Tailwind package")).toBeVisible();
+  await expect(footer.locator('a[href="/"] img').first()).toBeVisible();
+  await expect(
+    footer.getByRole("link", { name: /qwen-ui-lab React \+ Tailwind starter package/ }),
+  ).toBeVisible();
   await expect(page.getByTestId("production-readiness-panel")).toBeHidden();
 
   const githubIconLink = footer.locator('a[aria-label="GitHub"]');
@@ -25,6 +27,16 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   await expect(socialIconLinks.nth(0)).toHaveAttribute("aria-label", "GitHub");
   await expect(socialIconLinks.nth(1)).toHaveAttribute("aria-label", "LinkedIn");
   await expect(socialIconLinks.nth(2)).toHaveAttribute("aria-label", "Website");
+  await expect
+    .poll(() =>
+      socialIconLinks.evaluateAll((links) =>
+        links.every((link) => {
+          const { height, width } = link.getBoundingClientRect();
+          return width >= 44 && height >= 44;
+        }),
+      ),
+    )
+    .toBe(true);
 
   const linkedInIconLink = footer.locator('a[aria-label="LinkedIn"]');
   await expect(linkedInIconLink).toHaveAttribute(
@@ -35,7 +47,7 @@ test("footer presents brand, creator links, and responsive columns", async ({ pa
   const websiteIconLink = footer.locator('a[aria-label="Website"]');
   await expect(websiteIconLink).toHaveAttribute("href", "https://marksiazon.dev");
 
-  await footer.getByRole("link", { name: "Dashboard" }).hover();
+  await footer.getByRole("link", { name: "Workflow" }).hover();
   await expect(
     page.getByText("Return to your workspace and continue building from the uploaded screenshots."),
   ).toBeVisible();

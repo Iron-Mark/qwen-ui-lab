@@ -49,7 +49,7 @@ const DEFAULT_ITEMS: ComplianceItem[] = [
   {
     id: "token-consistency",
     label: "Shared borders, rings, and card shells",
-    detail: "Consistency — catalog snippets mirror generated component chrome.",
+    detail: "Consistency — catalog snippets mirror component draft chrome.",
     law: "consistency",
     status: "warn",
   },
@@ -98,7 +98,7 @@ export function UiLawComplianceChecklist({
         <div>
           <CardTitle id="compliance-title">{title}</CardTitle>
           <CardDescription className="mt-1">
-            Quick review checklist for generated UI components (inspired by{" "}
+            Quick review checklist for component drafts (inspired by{" "}
             <a
               href="https://www.uilaws.com/components"
               className="font-medium text-card-foreground underline-offset-2 hover:underline"

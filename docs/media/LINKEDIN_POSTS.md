@@ -1,6 +1,6 @@
 # LinkedIn content series - qwen-ui-lab
 
-Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates a reviewable starter package from a screenshot. It is not a final shipped UI generator.
+Four product-first posts to publish over one to two weeks. The framing should be honest: qwen-ui-lab creates an inspectable screenshot-to-React export package. It is not a finished app screen.
 
 ---
 
@@ -16,17 +16,17 @@ Turning a UI screenshot into usable React code should not start from a blank fil
 I built qwen-ui-lab to test a focused workflow:
 
 Input: UI screenshot
-Output: React + Tailwind starter package for review
+Output: inspectable React + Tailwind export package
 
 The workflow:
 1. Upload a screenshot
 2. Inspect detected sections, controls, and repeated groups
 3. Correct detection boxes when needed
-4. Generate a React/Tailwind scaffold
+4. Prepare a React/Tailwind starter
 5. Review files, design notes, and detection notes
-6. Export a starter package for source control
+6. Download an export package for source control
 
-The goal is not magic final code.
+The goal is not a finished app screen.
 The goal is a faster, inspectable starting point.
 ```
 
@@ -60,12 +60,12 @@ The local detector in qwen-ui-lab looks for practical UI signals:
 The app then explains why it detected each element:
 geometry, spacing, alignment, repetition, visual weight, and affordance.
 
-That matters because generated UI should be reviewable, not mysterious.
+That matters because a component draft should show what changed and why.
 ```
 
 **Closing:**
 
-> Good scaffolding starts with explainable structure.
+> Good component drafts begin with explainable structure.
 
 **Image:** Detected UI boxes with confidence reasons
 
@@ -86,11 +86,11 @@ Even with better detection, review still matters:
 - real data can break ideal layouts
 - charts and tables need domain semantics
 - accessibility depends on intent, not just pixels
-- generated copy should be replaced with product language
+- sample copy should be replaced with product language
 - responsive assumptions need device testing
 
-qwen-ui-lab treats generated output as a starter package for review.
-The export includes component code, DESIGN.md, recipe JSON, manifest JSON,
+qwen-ui-lab treats the download as an export package for source control.
+The package includes component code, DESIGN.md, recipe JSON, manifest JSON,
 tokens CSS, and detection notes so the next step is inspectable.
 ```
 
@@ -98,7 +98,7 @@ tokens CSS, and detection notes so the next step is inspectable.
 
 > The product is not "done code." The product is a better first review.
 
-**Image:** Export package dialog or file preview
+**Image:** Package download dialog or file preview
 
 ---
 
@@ -106,31 +106,31 @@ tokens CSS, and detection notes so the next step is inspectable.
 
 **Hook:**
 
-Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind starter package.
+Final workflow: screenshot -> detected UI -> corrected boxes -> React/Tailwind export package.
 
 **Body:**
 
 ```text
 What qwen-ui-lab now supports:
 
-- upload, paste, or load a sample screenshot
+- upload, paste, or load a sample run
 - offline-safe detection for common UI structures
 - confidence reasons per detected element
-- editable detection boxes before regeneration
-- side-by-side screenshot and generated preview
+- editable detection boxes before rebuilding
+- side-by-side screenshot and component preview
 - export package with files and review notes
 - design system catalog with reusable snippets
-- PWA, metadata, 404, and production-readiness checks
+- PWA, metadata, 404, and release checks
 
-The strongest version of this workflow is not a black box.
-It is a transparent pipeline where every generated decision can be reviewed.
+The strongest version of this workflow keeps the review path visible.
+It is a transparent pipeline where every layout decision stays visible.
 ```
 
 **Closing:**
 
-> Faster scaffolding is useful when it keeps the human in control.
+> Faster starts are useful when they keep the human in control.
 
-**Image:** Side-by-side screenshot versus generated preview
+**Image:** Side-by-side screenshot versus component preview
 
 ---
 
@@ -145,4 +145,4 @@ It is a transparent pipeline where every generated decision can be reviewed.
 
 ## Reusable closing line
 
-> Faster scaffolding is useful when every generated decision stays reviewable.
+> Faster starts are useful when every layout decision stays visible.

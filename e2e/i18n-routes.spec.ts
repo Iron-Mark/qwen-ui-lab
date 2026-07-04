@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { waitForUploadFlowReady } from "./helpers/e2e-ui";
 
 const shareFixturePayload = {
   file: "dashboard.png",
@@ -7,6 +8,20 @@ const shareFixturePayload = {
   stats: [{ l: "sections", v: "4" }],
 };
 
+test("home workflow renders zh sample layout copy", async ({ page }) => {
+  await page.goto("/?lang=zh");
+  await waitForUploadFlowReady(page);
+
+  const picker = page.getByTestId("sample-picker");
+  await expect(picker).toBeVisible();
+  await expect(picker.getByText("\u8bd5\u7528\u6837\u4f8b")).toBeVisible();
+  await expect(
+    picker.getByRole("button", {
+      name: "\u52a0\u8f7d \u4eea\u8868\u76d8 \u5e03\u5c40",
+    }),
+  ).toBeVisible();
+});
+
 test("404 page renders zh copy with ?lang=zh", async ({ page }) => {
   const response = await page.goto("/does-not-exist?lang=zh");
   expect(response?.status()).toBe(404);
@@ -14,7 +29,7 @@ test("404 page renders zh copy with ?lang=zh", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "页面未找到" })).toBeVisible();
   const notFoundNav = page.getByRole("navigation", { name: "返回已知页面" });
   await expect(
-    notFoundNav.getByRole("link", { name: "返回工作台" }),
+    notFoundNav.getByRole("link", { name: "返回工作流" }),
   ).toHaveAttribute("href", "/?lang=zh");
   await expect(
     notFoundNav.getByRole("link", { name: "设计系统" }),
@@ -63,7 +78,7 @@ test("/account redirects to zh account modal with ?lang=zh", async ({ page }) =>
       level: 2,
     }),
   ).toBeVisible();
-  await expect(page.getByTestId("account-mode-badge")).toHaveText("仅本地");
+  await expect(page.getByTestId("account-mode-badge")).toHaveText("访客资料");
   await expect(page.getByTestId("header-account-link")).toContainText("访客");
 });
 

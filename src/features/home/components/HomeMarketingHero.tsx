@@ -148,7 +148,7 @@ export function HomeMarketingHero() {
                   "min-h-11 gap-2 px-5 py-2.5",
                 )}
               >
-                {copy.sampleReference}
+                {copy.sampleRun}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
               <Link

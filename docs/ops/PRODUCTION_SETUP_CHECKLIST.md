@@ -1,14 +1,14 @@
 # Production Setup Checklist
 
-Use this checklist before treating a deployment as production-ready.
+Use this checklist before treating a deployment as ready for public review.
 
 ## Required Runtime Checks
 
 - `npm run check:full` passes locally or in CI.
 - `npm run prod:readiness` passes against the production env.
 - `/api/readiness` shows `Canonical site URL`, `Durable share links`, `GitHub Gist export`, and `GitHub repo export` as ready.
-- `/api/health` reports `provider=demo` unless a staged live Qwen rollout is approved.
-- The home page readiness panel shows only expected fallbacks.
+- `/api/health` reports local-analysis mode unless a staged live Qwen rollout is approved.
+- The developer readiness dialog shows only expected local-mode items.
 
 ## Required Secrets
 

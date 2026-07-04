@@ -10,28 +10,50 @@ import {
   Wrench,
 } from "lucide-react";
 
-export function WorkflowBanner() {
+interface WorkflowBannerProps {
+  ariaLabel?: string;
+  title?: string;
+  stepLabels?: string[];
+}
+
+const defaultStepLabels = [
+  "UI screenshot",
+  "Layout detection",
+  "Component plan",
+  "React code",
+  "Refine details",
+  "Final component",
+];
+
+export function WorkflowBanner({
+  ariaLabel = "Workflow pipeline",
+  title = "Screenshot -> Plan -> React",
+  stepLabels = defaultStepLabels,
+}: WorkflowBannerProps) {
   const steps = [
-    { label: "UI Screenshot", icon: Camera },
-    { label: "Qwen3-VL Analysis", icon: SearchCheck },
-    { label: "Component Plan", icon: Sparkles },
-    { label: "React Code", icon: Code2 },
-    { label: "Human Refactor", icon: Wrench },
-    { label: "Final Component", icon: CheckCircle2 },
+    { label: stepLabels[0] ?? defaultStepLabels[0], icon: Camera },
+    { label: stepLabels[1] ?? defaultStepLabels[1], icon: SearchCheck },
+    { label: stepLabels[2] ?? defaultStepLabels[2], icon: Sparkles },
+    { label: stepLabels[3] ?? defaultStepLabels[3], icon: Code2 },
+    { label: stepLabels[4] ?? defaultStepLabels[4], icon: Wrench },
+    { label: stepLabels[5] ?? defaultStepLabels[5], icon: CheckCircle2 },
   ];
 
   return (
-    <Card aria-label="Workflow pipeline">
+    <Card aria-label={ariaLabel}>
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Screenshot → Plan → React
+          {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ol className="flex flex-wrap items-center gap-y-3 gap-x-1">
+        <ol className="flex flex-wrap items-center gap-x-1 gap-y-3">
           {steps.map((step, i) => (
             <li key={step.label} className="flex items-center gap-x-1">
-              <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm font-medium">
+              <Badge
+                variant="secondary"
+                className="gap-1.5 px-3 py-1.5 text-sm font-medium"
+              >
                 <step.icon className="size-3.5" aria-hidden="true" />
                 <span>{step.label}</span>
               </Badge>

@@ -1,10 +1,10 @@
 export {
-  BUNDLED_REFERENCE_SAMPLES,
-  DEFAULT_REFERENCE_SAMPLE,
+  SAMPLE_RUNS,
+  DEFAULT_SAMPLE_RUN,
   RASTER_REFERENCE_STEMS,
-  findReferenceSampleByFileName,
-  getReferenceSampleByFileName,
-  getReferenceSampleById,
+  findSampleRunByFileName,
+  getSampleRunByFileName,
+  getSampleRunById,
   inferReferenceMimeType,
-  referenceSampleExportFilename,
+  sampleRunExportFilename,
 } from "./reference-samples.data.mjs";

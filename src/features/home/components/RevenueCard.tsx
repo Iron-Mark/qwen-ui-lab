@@ -9,16 +9,25 @@ import {
 
 interface RevenueCardProps {
   data: RevenueDataPoint[];
+  title?: string;
+  description?: string;
+  formatValueAriaLabel?: (point: RevenueDataPoint) => string;
 }
 
-export function RevenueCard({ data }: RevenueCardProps) {
+export function RevenueCard({
+  data,
+  title = "Revenue overview",
+  description = "Monthly revenue trend",
+  formatValueAriaLabel = (point) =>
+    `${point.month}: $${point.revenue.toLocaleString()}`,
+}: RevenueCardProps) {
   const maxRevenue = Math.max(...data.map((d) => d.revenue));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revenue Overview</CardTitle>
-        <CardDescription>Monthly revenue trend</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {data.map((point) => {
@@ -34,7 +43,7 @@ export function RevenueCard({ data }: RevenueCardProps) {
                 aria-valuenow={point.revenue}
                 aria-valuemin={0}
                 aria-valuemax={maxRevenue}
-                aria-label={`${point.month}: $${point.revenue.toLocaleString()}`}
+                aria-label={formatValueAriaLabel(point)}
               >
                 <div
                   className="h-full bg-chart-bar transition-all duration-500"

@@ -2,6 +2,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
+import { redactSensitiveText } from "../src/lib/privacy-redaction.mjs";
+
 const DEFAULT_HEALTH_LOG = "synthetic-health.log";
 const DEFAULT_SHARE_LOG = "share-export-smoke.log";
 const DEFAULT_OUTPUT = "reliability-summary.md";
@@ -45,11 +47,7 @@ async function readOptionalText(path) {
 }
 
 export function sanitizeSummaryText(value) {
-  return String(value ?? "")
-    .replace(/#share=[A-Za-z0-9._~+/=-]+/g, "#share=<redacted>")
-    .replace(/[A-Z]:\\(?:[^\\\s]+\\)+[^\\\s]*/g, "<local-path>")
-    .replace(/\/home\/[^/\s]+\/[^\s#]*/g, "<local-path>")
-    .trim();
+  return redactSensitiveText(value, { localPathReplacement: "<local-path>" }).trim();
 }
 
 export function parseSyntheticSummary(log) {

@@ -9,6 +9,12 @@ import { useToast } from "@/components/providers/Toast";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
 import { useProviderMode } from "@/components/providers/ProviderModeProvider";
 import { AnalyticsEvent, createAnalyticsClient } from "@/lib/analytics.client";
+import { createExportActionAriaLabel } from "../lib/export-action-labels.mjs";
+import {
+  EXPORT_ACTION_BUTTON_BASE_CLASS,
+  EXPORT_ACTION_BUTTON_ERROR_CLASS,
+  EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+} from "../lib/export-action-button-styles";
 import {
   DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   SCAFFOLD_ZIP_FILENAME,
@@ -37,9 +43,9 @@ interface RepoCompareResponse {
 
 const STATUS_LABELS: Record<RepoExportStatus, string> = {
   idle: "Open PR instructions",
-  exporting: "Preparing export...",
-  success: "Export ready",
-  error: "Export failed",
+  exporting: "Preparing package...",
+  success: "Package ready",
+  error: "Download package instead",
 };
 
 function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
@@ -56,7 +62,7 @@ function downloadZipBlob(blob: Blob, filename = SCAFFOLD_ZIP_FILENAME) {
 
 export function RepoExportButton({
   text,
-  filename = "component.tsx",
+  filename = "starter-component.tsx",
   description = DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   label,
   className,
@@ -104,7 +110,7 @@ export function RepoExportButton({
         const blob = await response.blob();
         downloadZipBlob(blob);
         setStatus("success");
-        toast("Export package downloaded", "success");
+        toast("Package downloaded", "success");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -125,7 +131,7 @@ export function RepoExportButton({
 
       if (!response.ok || !payload || typeof payload !== "object") {
         setStatus("error");
-        toast("Could not export component to repo", "error");
+        toast("Could not open PR instructions. Download the package instead.", "error");
         analytics.track(AnalyticsEvent.ExportTriggered, {
           source: analyticsSource,
           feature: analyticsFeature,
@@ -142,7 +148,7 @@ export function RepoExportButton({
         setStatus("success");
         toast(
           record.instructions ??
-            "Compare view opened. Add your generated component and open a PR.",
+            "Compare view opened. Add your component draft and open a PR.",
           "success",
         );
         analytics.track(AnalyticsEvent.ExportTriggered, {
@@ -157,7 +163,7 @@ export function RepoExportButton({
       }
 
       setStatus("error");
-      toast("Repo export returned an unexpected response", "error");
+      toast("Could not open PR instructions. Download the package instead.", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -167,7 +173,7 @@ export function RepoExportButton({
       resetStatus();
     } catch {
       setStatus("error");
-      toast("Could not reach repo export API", "error");
+      toast("Could not open PR instructions. Download the package instead.", "error");
       analytics.track(AnalyticsEvent.ExportTriggered, {
         source: analyticsSource,
         feature: analyticsFeature,
@@ -207,15 +213,13 @@ export function RepoExportButton({
       size="sm"
       onClick={() => void handleClick()}
       disabled={!text?.trim() || status === "exporting"}
-      aria-label={`${visibleLabel} code`}
+      aria-label={createExportActionAriaLabel(visibleLabel)}
       aria-busy={status === "exporting"}
       data-testid={testId}
       className={cn(
-        "min-h-11 min-w-11 touch-manipulation border-border/80 bg-card/95 text-foreground shadow-sm backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-card",
-        status === "success" &&
-          "border-success/40 bg-success/10 text-success hover:bg-success/10",
-        status === "error" &&
-          "border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/10",
+        EXPORT_ACTION_BUTTON_BASE_CLASS,
+        status === "success" && EXPORT_ACTION_BUTTON_SUCCESS_CLASS,
+        status === "error" && EXPORT_ACTION_BUTTON_ERROR_CLASS,
         className,
       )}
     >

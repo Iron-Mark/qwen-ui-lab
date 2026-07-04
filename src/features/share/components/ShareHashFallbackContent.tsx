@@ -1,22 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 import { PageContainer } from "@/components/layout/PageContainer";
-import { buttonVariants } from "@/components/ui/button";
-import { localizedHref } from "@/lib/i18n";
 import { useLocale } from "@/lib/i18n/use-locale.client";
-import { cn } from "@/lib/utils";
 import { readShareFromLocation } from "../lib/share-result.client";
 import type { buildShareableSummary } from "../lib/share-result.mjs";
 import { SharedSummaryCard } from "./SharedSummaryCard";
 import { ShareNotFoundContent } from "./ShareNotFoundContent";
+import { ShareSummaryActions } from "./ShareSummaryActions";
 
 type ShareableResultSummary = NonNullable<ReturnType<typeof buildShareableSummary>>;
 
 export function ShareHashFallbackContent() {
-  const { locale, dict } = useLocale();
+  const { dict } = useLocale();
   const t = dict.share;
   const [summary, setSummary] = useState<ShareableResultSummary | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -68,20 +65,7 @@ export function ShareHashFallbackContent() {
 
         <SharedSummaryCard summary={summary} />
 
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={localizedHref("/", locale)}
-            className={cn(buttonVariants({ variant: "outline" }), "min-h-11 px-4")}
-          >
-            {t.backToWorkflow}
-          </Link>
-          <Link
-            href={localizedHref("/demo", locale)}
-            className={cn(buttonVariants({ variant: "ghost" }), "min-h-11 px-4")}
-          >
-            {t.sampleReference}
-          </Link>
-        </div>
+        <ShareSummaryActions />
       </div>
     </PageContainer>
   );

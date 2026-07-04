@@ -25,7 +25,7 @@ This checklist tracks the current release candidate and publish commands.
 - PR health: PR #7 passed `Lint, test, build`, PR E2E smoke, and Vercel preview checks before merge.
 - Release-prep health: `npm run check:full` passed with lint, unit tests, docs validation, and production build; E2E smoke, doctor, deploy-env, and whitespace checks were also verified for the release scope.
 - Fixture health: no fixture regeneration required for upload validation or workflow changes.
-- Production policy: public demo remains provider-safe by default; live Qwen still requires explicit opt-in.
+- Production policy: public app remains local-analysis safe by default; live Qwen still requires explicit opt-in.
 
 ## Exact pre-publish commands
 

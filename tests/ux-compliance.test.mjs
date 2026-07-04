@@ -9,7 +9,7 @@ import {
   getArchetypeHighlightLaws,
   lawOfUxCatalogHref,
 } from "../src/features/analysis/lib/ux-compliance.mjs";
-test("evaluateUxCompliance scores demo artifact", () => {
+test("evaluateUxCompliance scores a sample run artifact", () => {
   const artifact = buildUiFlowArtifact({
     name: "dashboard-reference.png",
     type: "image/png",

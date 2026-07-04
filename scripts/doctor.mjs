@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * npm run doctor — env, deps, and API health checks.
+ * npm run doctor - env, deps, and API health checks.
  */
-import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import {
   canUseLiveQwen,
   getQwenConfig,
@@ -25,9 +25,13 @@ function loadEnvLocal() {
 }
 
 function check(label, ok, detail) {
-  const icon = ok ? "✓" : "✗";
-  console.log(`${icon} ${label}${detail ? ` — ${detail}` : ""}`);
+  const icon = ok ? "ok" : "fail";
+  console.log(`${icon} ${label}${detail ? ` - ${detail}` : ""}`);
   return ok;
+}
+
+function info(label, detail) {
+  console.log(`info ${label}${detail ? ` - ${detail}` : ""}`);
 }
 
 loadEnvLocal();
@@ -36,30 +40,30 @@ console.log("qwen-ui-lab doctor\n");
 
 let allOk = true;
 
-allOk =
-  check("node_modules present", existsSync("node_modules")) && allOk;
+allOk = check("node_modules present", existsSync("node_modules")) && allOk;
 
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 for (const dep of ["next", "react", "recharts", "chart.js", "prismjs"]) {
   allOk =
-    check(`dependency: ${dep}`, Boolean(pkg.dependencies?.[dep] || pkg.devDependencies?.[dep])) &&
-    allOk;
+    check(
+      `dependency: ${dep}`,
+      Boolean(pkg.dependencies?.[dep] || pkg.devDependencies?.[dep]),
+    ) && allOk;
 }
 
 const config = getQwenConfig();
 const liveEnabled = isLiveQwenAnalysisEnabled();
 if (!config.ok) {
-  check("DASHSCOPE_API_KEY", false, "not set — local analysis only");
-  check("QWEN_LIVE_ANALYSIS", false, "local analysis mode (no upstream calls)");
+  info("DASHSCOPE_API_KEY", "not set - local analysis only");
+  info("QWEN_LIVE_ANALYSIS", "local analysis mode (no upstream calls)");
 } else {
   check("DASHSCOPE_API_KEY", true, "configured");
   if (liveEnabled) {
     check("QWEN_LIVE_ANALYSIS", true, "live vision calls enabled");
   } else {
-    check(
+    info(
       "QWEN_LIVE_ANALYSIS",
-      false,
-      "not enabled — local analysis only (key alone does not call Qwen)",
+      "not enabled - local analysis only (key alone does not call Qwen)",
     );
   }
   try {
@@ -78,7 +82,7 @@ const testRun = spawnSync(process.execPath, ["--test", "tests/analyze-fallback.t
 allOk = check("sample tests", testRun.status === 0) && allOk;
 
 if (canUseLiveQwen()) {
-  console.log("\nPinging Qwen API (text-only)…");
+  console.log("\nPinging Qwen API (text-only)...");
   const endpoint = `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
   try {
     const response = await fetch(endpoint, {
@@ -98,7 +102,9 @@ if (canUseLiveQwen()) {
       check(
         "Qwen API ping",
         response.ok,
-        response.ok ? `HTTP ${response.status}` : payload?.error?.message || `HTTP ${response.status}`,
+        response.ok
+          ? `HTTP ${response.status}`
+          : payload?.error?.message || `HTTP ${response.status}`,
       ) && allOk;
   } catch (error) {
     allOk = check("Qwen API ping", false, error.message) && allOk;

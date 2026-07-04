@@ -100,7 +100,7 @@ export function ExampleButton() {
     level: "atom",
     domain: "product",
     name: "Badge (shadcn)",
-    description: "Compact status and tier labels — used in catalog cards and provider mode.",
+    description: "Compact status and tier labels for catalog cards, filters, and result metadata.",
     usage: "Import from `@/components/ui/badge`; prefer composing in atoms over raw spans.",
     sourcePath: "components/ui/badge.tsx",
     props: [
@@ -148,7 +148,7 @@ export function ExampleInput() {
     usage: "Place in the header nav; toggles document `dark` class and localStorage.",
     sourcePath: "features/shell/components/ThemeToggle.tsx",
     props: [
-      { name: "(none)", type: "—", description: "Self-contained; reads ThemeProvider context." },
+      { name: "(none)", type: "-", description: "Self-contained; reads ThemeProvider context." },
     ],
     preview: <ThemeToggle />,
     code: `import { ThemeToggle } from "@/features/shell/components/ThemeToggle";
@@ -163,11 +163,11 @@ export function ExampleThemeToggle() {
     level: "atom",
     domain: "product",
     name: "Export button",
-    description: "Copy or download snippet with loading/success/error feedback.",
+    description: "Copy snippets or download component files with clear status feedback.",
     usage: "Overlay on preview cards; pass `text`, `variant`, and optional `filename`.",
     sourcePath: "features/export/components/ExportButton.tsx",
     props: [
-      { name: "text", type: "string", description: "Source code or content to copy/export." },
+      { name: "text", type: "string", description: "Source code or content to copy or download." },
       { name: "variant", type: '"copy" | "export"', description: "Clipboard vs file download." },
       { name: "filename", type: "string", description: "Download filename for export variant." },
     ],
@@ -179,9 +179,14 @@ export function ExampleThemeToggle() {
       },
       {
         id: "export",
-        label: "Export",
+        label: "Download component",
         preview: (
-          <ExportButton text="const x = 1;" variant="export" filename="snippet.tsx" />
+          <ExportButton
+            text="const x = 1;"
+            variant="export"
+            label="Download component"
+            filename="snippet.tsx"
+          />
         ),
       },
     ],
@@ -228,7 +233,7 @@ export function ExampleQuickAction() {
     domain: "product",
     name: "Snippet preview",
     description: "Monospace code block with Prism highlighting and optional copy.",
-    usage: "Wrap generated or catalog snippets; use `hideHeader` when a parent supplies copy/export controls.",
+    usage: "Wrap starter or catalog snippets; use `hideHeader` when a parent supplies copy/download controls.",
     sourcePath: "features/analysis/components/SnippetPreview.tsx",
     props: [
       { name: "code", type: "string", description: "Source text to highlight." },
@@ -403,7 +408,7 @@ export function ExampleHeader() {
     level: "organism",
     domain: "product",
     name: "Workflow banner",
-    description: "Session status strip for the upload-to-export pipeline.",
+    description: "Session status strip for the upload-to-download pipeline.",
     usage: "Shown near the workflow when a sample or uploaded screenshot is ready to review.",
     sourcePath: "features/home/components/WorkflowBanner.tsx",
     preview: <WorkflowBanner />,
@@ -504,7 +509,7 @@ const uilawsCatalog: AtomicCatalogEntry[] = [
     preview: (
       <LawInformationCard
         title="Design system catalog"
-        description="Atomic previews with export, Prism snippets, and variant toggles."
+        description="Atomic previews with downloads, Prism snippets, and variant toggles."
         href="/design-system"
         principles={["proximity", "consistency", "typography-hierarchy"]}
       />
@@ -515,7 +520,7 @@ export function ExampleLawInformationCard() {
   return (
     <LawInformationCard
       title="Upload pipeline"
-      description="Screenshot to React export with reviewable detection notes."
+      description="Screenshot-to-React starter with inspectable detection notes."
       href="/"
       principles={["proximity", "white-space", "typography-hierarchy"]}
     />
@@ -528,8 +533,8 @@ export function ExampleLawInformationCard() {
     level: "organism",
     domain: "uilaws",
     name: "UI law compliance checklist",
-    description: "Interactive checklist for reviewing generated UI against UX laws.",
-    usage: "Manual review below Generate Preview; extend `items` for project rules.",
+    description: "Interactive checklist for reviewing component drafts against UX laws.",
+    usage: "Manual review below Prepare preview; extend `items` for project rules.",
     sourcePath: "features/design-system/components/UiLawComplianceChecklist.tsx",
     principles: ["fitts", "hick", "jakob", "consistency", "contrast"],
     preview: <UiLawComplianceChecklist />,

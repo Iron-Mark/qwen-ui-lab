@@ -1,12 +1,12 @@
 # Review Notes
 
-> Human review of the generated scaffold, comparing generated-first-pass.tsx
-> against the final production components.
+> Human review of the component draft, comparing first-pass output
+> against the reviewed implementation.
 
 ## Prompt Used
 
 ```txt
-Review the generated code as a senior front-end engineer.
+Review the component draft as a senior front-end engineer.
 
 Find issues in:
 
@@ -24,54 +24,54 @@ Find issues in:
 Return a prioritized fix list.
 ```
 
-## Issues Found (Prioritized)
+## Issues Found
 
-### P0 — Structural
+### P0 - Structural
 
-1. **Monolithic component** — Single `DashboardPage` function at 300+ lines
-   - **Fix:** Split into 7 focused components + 1 orchestrator
-2. **No TypeScript interfaces** — Data typed as inline objects
-   - **Fix:** Created `StatCardData`, `ActivityData`, `RevenueDataPoint`, `QuickActionData` interfaces
-3. **Data mixed into component** — Mock data hardcoded inside render
-   - **Fix:** Separated into `src/features/home/data/dashboard-data.ts`
+1. **Monolithic component** - Single `DashboardPage` function at 300+ lines.
+   - **Fix:** Split into 7 focused components plus 1 orchestrator.
+2. **No TypeScript interfaces** - Data typed as inline objects.
+   - **Fix:** Created `StatCardData`, `ActivityData`, `RevenueDataPoint`, and `QuickActionData` interfaces.
+3. **Data mixed into component** - Example data hardcoded inside render.
+   - **Fix:** Separated it into `src/features/home/data/dashboard-data.ts`.
 
-### P1 — Accessibility
+### P1 - Accessibility
 
-4. **No semantic HTML** — `<div>` used for lists, navigation, timestamps
-   - **Fix:** Replaced with `<ul>/<li>`, `<time>`, `<nav>`, `<section>`
-5. **No ARIA attributes** — Missing labels, roles, hidden markers
-   - **Fix:** Added `aria-label`, `aria-hidden`, `role="meter"`, `focus-visible`
-6. **Color-only trend indicators** — Green/red without accompanying symbols
-   - **Fix:** Added `↑`/`↓`/`→` arrows with `aria-hidden`
+4. **No semantic HTML** - `<div>` used for lists, navigation, and timestamps.
+   - **Fix:** Replaced with `<ul>/<li>`, `<time>`, `<nav>`, and `<section>`.
+5. **No ARIA attributes** - Missing labels, roles, hidden markers, and visible focus handling.
+   - **Fix:** Added `aria-label`, `aria-hidden`, `role="meter"`, and `focus-visible`.
+6. **Color-only trend indicators** - Green/red states appeared without accompanying symbols.
+   - **Fix:** Added `up`/`down`/`steady` indicators with `aria-hidden`.
 
-### P1 — Styling
+### P1 - Styling
 
-7. **Inline styles everywhere** — No Tailwind classes, no design tokens
-   - **Fix:** Full Tailwind CSS with CSS custom property design token system
-8. **No dark mode** — Hardcoded light colors
-   - **Fix:** Class-based dark mode with smooth CSS transitions
-9. **No responsive design** — Fixed 4-column grid
-   - **Fix:** Mobile-first responsive: 1→2→4 columns, stacked→split layouts
+7. **Inline styles everywhere** - No Tailwind classes and no design tokens.
+   - **Fix:** Added Tailwind CSS with a CSS custom property design-token system.
+8. **No dark mode** - Colors were hardcoded for light mode.
+   - **Fix:** Added class-based dark mode with smooth CSS transitions.
+9. **No responsive design** - The grid was fixed at four columns.
+   - **Fix:** Added mobile-first responsive layouts: `1 -> 2 -> 4` columns and stacked-to-split sections.
 
-### P2 — Code Quality
+### P2 - Code Quality
 
-10. **Generic naming** — "Card", no descriptive component names
-    - **Fix:** `StatCard`, `RevenueCard`, `ActivityList`, `QuickActionButton`
-11. **Emoji icons** — `➕ 📄 ✉️ ⚙️` instead of proper icons
-    - **Fix:** Proper SVG icons via exhaustive `switch` on typed union
-12. **String-based icon map** — `Record<string, string>` with no exhaustiveness
-    - **Fix:** `"user-plus" | "file-text" | "mail" | "settings"` union with switch
+10. **Generic naming** - Components used vague names such as `Card`.
+    - **Fix:** Renamed to `StatCard`, `RevenueCard`, `ActivityList`, and `QuickActionButton`.
+11. **Emoji icons** - Text glyphs were used instead of proper icons.
+    - **Fix:** Replaced them with SVG icons via an exhaustive typed union.
+12. **String-based icon map** - `Record<string, string>` had no exhaustiveness checks.
+    - **Fix:** Added a `"user-plus" | "file-text" | "mail" | "settings"` union with a `switch`.
 
-### P2 — Robustness
+### P2 - Robustness
 
-13. **No empty state** — Activity list renders nothing when empty
-    - **Fix:** Added empty state fallback message
-14. **Division by zero** — `revenue / maxRevenue` unguarded
-    - **Fix:** Added `maxRevenue > 0` guard
-15. **Text overflow** — Activity items can overflow container
-    - **Fix:** Added `truncate` + `min-w-0` + `shrink-0` patterns
-16. **Theme flash** — Dark mode not set before React hydration
-    - **Fix:** Inline `<script>` in `<head>`, `suppressHydrationWarning`
+13. **No empty state** - Activity list rendered nothing when empty.
+    - **Fix:** Added empty-state fallback copy.
+14. **Division by zero** - `revenue / maxRevenue` was unguarded.
+    - **Fix:** Added a `maxRevenue > 0` guard.
+15. **Text overflow** - Activity items could overflow their container.
+    - **Fix:** Added `truncate`, `min-w-0`, and `shrink-0` patterns.
+16. **Theme flash** - Dark mode was not set before React hydration.
+    - **Fix:** Added an inline `<script>` in `<head>` and `suppressHydrationWarning`.
 
 ## Metrics
 
@@ -80,8 +80,8 @@ Return a prioritized fix list.
 | Components | 1 | 8 |
 | Avg lines/component | 300+ | ~50 |
 | TypeScript interfaces | 0 | 4 |
-| Lint errors | N/A | 0 |
-| Accessibility score (est.) | ~62 | ~95+ |
-| Dark mode | ✗ | ✓ |
-| Responsive | ✗ | ✓ |
-| Semantic HTML | ✗ | ✓ |
+| Lint errors | Not measured | 0 |
+| Accessibility score (estimated) | ~62 | ~95+ |
+| Dark mode | No | Yes |
+| Responsive | No | Yes |
+| Semantic HTML | No | Yes |

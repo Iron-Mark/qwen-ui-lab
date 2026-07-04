@@ -1,25 +1,37 @@
-import { buildUiFlowArtifact } from "./ui-flow.mjs";
+﻿import { buildUiFlowArtifact } from "./ui-flow.mjs";
 
-/** CI-safe placeholders — never use real DashScope credentials in tests. */
+/** CI-safe placeholders - never use real DashScope credentials in tests. */
 export const MOCK_QWEN_MODEL = "qwen3-vl-plus-mock";
 export const MOCK_QWEN_BASE_URL = "https://mock.qwen.ci/v1";
 export const MOCK_CI_API_KEY = "ci-mock-key-not-real";
 
 /** Deterministic analysis JSON returned inside Qwen chat/completions content. */
 export const MOCK_QWEN_ANALYSIS_JSON = {
-  summary: "Contract test dashboard shell from mocked upstream.",
+  summary: "Contract test dashboard shell from contract upstream.",
   plan: [
     {
       title: "Contract Layout Read",
-      body: "Header row and stat grid from mock upstream.",
+      body: "Header row and stat grid from contract upstream.",
     },
     {
       title: "Contract Component Map",
-      body: "Cards, chart, and activity regions from mock upstream.",
+      body: "Cards, chart, and activity regions from contract upstream.",
     },
   ],
   generatedCode:
-    "export function MockedQwenDashboard() {\n  return <main data-contract-test>mocked</main>;\n}",
+    [
+      "export default function ContractDashboardStarter() {",
+      "  return (",
+      '    <main data-contract-test aria-label="Contract dashboard starter">',
+      '      <section className="grid gap-4 md:grid-cols-3">',
+      '        <article className="rounded-lg border p-4">Contract metric</article>',
+      '        <article className="rounded-lg border p-4">Contract chart</article>',
+      '        <article className="rounded-lg border p-4">Contract activity</article>',
+      "      </section>",
+      "    </main>",
+      "  );",
+      "}",
+    ].join("\n"),
   previewStats: [
     { label: "Contract Sections", value: "5" },
     { label: "Contract Components", value: "9" },
@@ -66,7 +78,7 @@ export function buildMockLiveAnalyzeUiRouteResponse(file) {
       plan: MOCK_QWEN_ANALYSIS_JSON.plan,
       generatedCode: MOCK_QWEN_ANALYSIS_JSON.generatedCode,
       previewStats: MOCK_QWEN_ANALYSIS_JSON.previewStats,
-      modeLabel: `Qwen provider: ${MOCK_QWEN_MODEL}`,
+      modeLabel: "Ready for review",
       summary: MOCK_QWEN_ANALYSIS_JSON.summary,
     }),
     provider: {

@@ -2,7 +2,7 @@
   "id": "/",
   "name": "qwen-ui-lab - screenshot to React",
   "short_name": "qwen-ui-lab",
-  "description": "Reviewable React + Tailwind export packages for screenshot-to-code flows.",
+  "description": "Screenshot-to-React workflow with inspectable export packages.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-US",
@@ -12,7 +12,7 @@
   "orientation": "any",
   "background_color": "#fafafa",
   "theme_color": "#18181b",
-  "categories": ["developer", "productivity", "utilities"],
+  "categories": ["productivity", "utilities", "design"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -55,7 +55,7 @@
     {
       "name": "Analyze screenshot",
       "short_name": "Analyze",
-      "description": "Upload a UI screenshot and export a React component.",
+      "description": "Upload a UI screenshot and download an export package.",
       "url": "/#upload-flow",
       "icons": [
         {
@@ -79,9 +79,9 @@
       ]
     },
     {
-      "name": "Sample screenshot",
+      "name": "Sample run",
       "short_name": "Sample",
-      "description": "Open a sample screenshot and generate a component preview.",
+      "description": "Open a guided layout and review a component preview.",
       "url": "/demo",
       "icons": [
         {
@@ -98,14 +98,14 @@
       "sizes": "1440x900",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard screenshot reference"
+      "label": "Dashboard layout workspace"
     },
     {
       "src": "/references/mobile-reference.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile app screenshot reference"
+      "label": "Mobile layout workspace"
     }
   ],
   "launch_handler": {

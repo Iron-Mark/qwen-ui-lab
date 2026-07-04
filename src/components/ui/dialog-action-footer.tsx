@@ -17,7 +17,7 @@ function DialogActionFooter({
     <div
       data-slot="dialog-action-footer"
       className={cn(
-        "shrink-0 border-t border-border/70 bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] backdrop-blur sm:px-5 sm:py-4",
+        "themed-scrollbar max-h-[42dvh] shrink-0 overflow-y-auto border-t border-border/70 bg-background/95 px-4 pb-[calc(1.125rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-1px_0_color-mix(in_oklch,var(--background)_80%,transparent)] backdrop-blur sm:max-h-none sm:overflow-visible sm:px-5 sm:py-4",
         align === "between"
           ? "grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between"
           : "flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end",

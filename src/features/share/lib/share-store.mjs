@@ -2,7 +2,7 @@
  * Short-ID share storage for read-only analysis summaries.
  *
  * Default: in-memory Map (per serverless instance, best-effort).
- * Production: wire Upstash/Vercel KV via REST env vars — see docs/ops/SHARE_LINKS.md.
+ * Production: wire Upstash/Vercel KV via REST env vars; see docs/ops/SHARE_LINKS.md.
  */
 
 import { randomBytes } from "node:crypto";
@@ -85,7 +85,7 @@ export function sanitizeSharePayload(input) {
             value: String(/** @type {{ v?: string }} */ (stat)?.v ?? ""),
           }))
         : [],
-      modeLabel: String(record.mode ?? "Ready to analyze"),
+      modeLabel: String(record.mode ?? "Analysis summary"),
       file: String(record.file ?? "screenshot"),
       detections: record.detections,
     });
@@ -193,7 +193,7 @@ export async function createShareRecord(payload, options = {}) {
         return { id, storage: "kv" };
       }
     } catch {
-      // fall through to in-memory stub
+      // fall through to the in-memory share store
     }
   }
 
