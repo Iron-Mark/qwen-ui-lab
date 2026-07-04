@@ -52,7 +52,7 @@ test("mergeManualCorrectionReasons replaces stale correction reasons", () => {
   assert.match(reasons[0].evidence, /Updated type, geometry/);
   assert.match(reasons[0].evidence, /guides the next rebuild/);
   assert.equal(reasons[1].code, "manual-exclusion");
-  assert.equal(reasons[1].label, "Hidden from starter");
+  assert.equal(reasons[1].label, "Hidden from component draft");
   assert.equal(reasons.at(-1).code, "geometry");
 });
 
