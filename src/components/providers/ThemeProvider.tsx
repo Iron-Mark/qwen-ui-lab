@@ -20,7 +20,7 @@ export type { BrandTheme } from "@/lib/theme-preferences";
 
 /** Light-mode `--primary` from globals.css per brand (dropdown swatches). */
 export const BRAND_THEME_SWATCH: Record<BrandTheme, string> = {
-  purple: "oklch(0.55 0.24 293)",
+  purple: "oklch(0.53 0.24 293)",
   blue: "oklch(0.55 0.22 263)",
   sunset: "oklch(0.68 0.19 28)",
 };

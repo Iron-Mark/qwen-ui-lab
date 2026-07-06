@@ -14,7 +14,7 @@
   --ring: oklch(0.62 0.22 293);
   --accent: oklch(0.95 0.04 293);
   --accent-foreground: oklch(0.28 0.1 293);
-  --success: #2563eb;
+  --success: #1d4ed8;
   --danger: #dc2626;
   --chart-bar: #18181b;
   --chart-line: #18181b;
@@ -23,7 +23,7 @@
   --foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.55 0.24 293);
+  --primary: oklch(0.53 0.24 293);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.95 0.03 293);
   --secondary-foreground: oklch(0.3 0.09 293);
