@@ -61,8 +61,11 @@ See [Architecture](./ARCHITECTURE.md) for the folder rules and feature ownership
 | `npx tsc --noEmit` | Run TypeScript without writing build output. |
 | `npm run build` | Production build. |
 | `npm run validate:docs` | Check local Markdown links in README.md and docs/. |
+| `npm run validate:assets` | Check required public assets, manifest icons, and service worker cache metadata. |
 | `npm run check` | Lint plus unit tests. |
-| `npm run check:full` | Lint, unit tests, docs link validation, and production build. |
+| `npm run check:screenshots` | Validate the committed screenshot archive, mockup boards, README images, and manifest image entries. |
+| `npm run check:full` | Lint, unit tests, screenshot archive validation, docs link validation, and production build. |
+| `npm run capture:screenshots` | Refresh the committed product screenshot archive from a running app. |
 | `npm run test:e2e` | Playwright smoke tests with offline mocks. |
 | `npm run export:sample-run-fixtures` | Regenerate E2E sample-run fixtures from analysis libs. |
 | `npm run doctor` | Local environment and optional provider diagnostics. |
@@ -101,6 +104,7 @@ Media docs:
 | --- | --- |
 | [Product media kit](./media/PRODUCT_MEDIA.md) | Recording and slide export checklist. |
 | [Product walkthrough script](./media/PRODUCT_WALKTHROUGH_SCRIPT.md) | Short video script and backup screenshot order. |
+| [Product screenshot archive](./SCREENSHOTS.md) | Feature-by-feature real app screenshots and mockup boards. |
 | [LinkedIn posts](./media/LINKEDIN_POSTS.md) | Social copy drafts. |
 | [Slide source](./media/PRODUCT_WALKTHROUGH_SLIDES.marp.md) | Marp slide source. |
 

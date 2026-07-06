@@ -94,18 +94,18 @@
   ],
   "screenshots": [
     {
-      "src": "/references/dashboard-reference.png",
-      "sizes": "1440x900",
+      "src": "/screenshots/A1-Workflow-Home/desktop-light.png",
+      "sizes": "1440x1000",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard layout workspace"
+      "label": "Workflow home desktop"
     },
     {
-      "src": "/references/mobile-reference.png",
+      "src": "/screenshots/A2-Upload-Flow/mobile-light.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile layout workspace"
+      "label": "Upload workflow mobile"
     }
   ],
   "launch_handler": {
