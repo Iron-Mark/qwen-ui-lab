@@ -8,6 +8,7 @@ import {
   DEFAULT_EXPORT_PACKAGE_DESCRIPTION,
   DEFAULT_EXPORT_SOURCE_REPO,
 } from "./scaffold-package-docs.mjs";
+import { getGithubExportToken } from "./github-token-env.mjs";
 
 export const DEFAULT_GITHUB_EXPORT_REPO = DEFAULT_EXPORT_SOURCE_REPO;
 export const DEFAULT_GITHUB_EXPORT_BASE = "main";
@@ -25,7 +26,7 @@ export const REPO_EXPORT_COMPARE_INSTRUCTIONS =
  * @param {Record<string, string | undefined>} [env]
  */
 export function canUseGithubRepoExport(env = process.env) {
-  return Boolean(env.GITHUB_TOKEN?.trim());
+  return Boolean(getGithubExportToken(env));
 }
 
 /**

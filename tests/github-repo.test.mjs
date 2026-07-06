@@ -25,6 +25,10 @@ function escapeRegExp(value) {
 test("canUseGithubRepoExport mirrors gist token detection", () => {
   assert.equal(canUseGithubRepoExport({}), false);
   assert.equal(canUseGithubRepoExport({ GITHUB_TOKEN: "ghp_test" }), true);
+  assert.equal(
+    canUseGithubRepoExport({ GITHUB_GIST_TOKEN: "github_pat_test" }),
+    true,
+  );
 });
 
 test("parseGithubRepoSlug accepts owner/repo", () => {

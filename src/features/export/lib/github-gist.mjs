@@ -5,6 +5,7 @@
 import { DEFAULT_EXPORT_PACKAGE_DESCRIPTION } from "./scaffold-package-docs.mjs";
 import { sanitizeScaffoldFilename } from "./scaffold-filename.mjs";
 import { redactSensitiveText } from "../../../lib/privacy-redaction.mjs";
+import { getGithubExportToken } from "./github-token-env.mjs";
 
 export const GIST_FALLBACK_URL = "https://gist.github.com";
 
@@ -28,15 +29,14 @@ export function buildGithubGistUnavailablePayload() {
  * @param {Record<string, string | undefined>} [env]
  */
 export function canUseGithubGist(env = process.env) {
-  return Boolean(env.GITHUB_TOKEN?.trim());
+  return Boolean(getGithubGistToken(env));
 }
 
 /**
  * @param {Record<string, string | undefined>} [env]
  */
 export function getGithubGistToken(env = process.env) {
-  const token = env.GITHUB_TOKEN?.trim();
-  return token || null;
+  return getGithubExportToken(env);
 }
 
 /**

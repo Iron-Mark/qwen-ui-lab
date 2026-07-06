@@ -133,7 +133,9 @@ export function validateProdEnv(env = process.env, options = {}) {
       );
     }
     if (!gistOk) {
-      failures.push("Production requires GITHUB_TOKEN (server-only gist export).");
+      failures.push(
+        "Production requires GITHUB_GIST_TOKEN or GITHUB_TOKEN (server-only gist export).",
+      );
     }
     if (liveRequested) {
       failures.push(

@@ -1,5 +1,5 @@
 const SECRET_ASSIGNMENT_PATTERN =
-  /\b(DASHSCOPE_API_KEY|QWEN_API_KEY|OPENAI_API_KEY|GITHUB_TOKEN|KV_REST_API_TOKEN|SENTRY_DSN)\s*[:=]\s*["']?[^"'\s,;]+/gi;
+  /\b(DASHSCOPE_API_KEY|QWEN_API_KEY|OPENAI_API_KEY|GITHUB_GIST_TOKEN|GITHUB_TOKEN|KV_REST_API_TOKEN|SENTRY_DSN)\s*[:=]\s*["']?[^"'\s,;]+/gi;
 const GENERIC_SECRET_ASSIGNMENT_PATTERN =
   /\b(api[_-]?key|token|secret|password)\s*[:=]\s*["']?[^"'\s,;]+/gi;
 const SHARE_HASH_PATTERN = /#share=[A-Za-z0-9._~+/=-]+/g;
