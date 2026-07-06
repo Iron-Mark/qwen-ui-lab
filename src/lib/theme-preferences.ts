@@ -1,6 +1,6 @@
-export const BRAND_THEME_VALUES = ["indigo", "emerald", "sunset"] as const;
+export const BRAND_THEME_VALUES = ["purple", "blue", "sunset"] as const;
 export type BrandTheme = (typeof BRAND_THEME_VALUES)[number];
-export const DEFAULT_BRAND_THEME: BrandTheme = "indigo";
+export const DEFAULT_BRAND_THEME: BrandTheme = "purple";
 export const THEME_VALUES = ["light", "dark"] as const;
 export type Theme = (typeof THEME_VALUES)[number];
 export const DEFAULT_THEME: Theme = "light";
@@ -14,6 +14,11 @@ export function isBrandTheme(value: string | null): value is BrandTheme {
   return BRAND_THEME_VALUES.includes(value as BrandTheme);
 }
 
+const LEGACY_BRAND_THEME_ALIASES = {
+  indigo: "purple",
+  emerald: "blue",
+} as const satisfies Record<string, BrandTheme>;
+
 export function isTheme(value: string | null): value is Theme {
   return THEME_VALUES.includes(value as Theme);
 }
@@ -25,7 +30,11 @@ export function resolveTheme(value: string | null | undefined): Theme {
 
 export function resolveBrandTheme(value: string | null | undefined): BrandTheme {
   const candidate = value ?? null;
-  return isBrandTheme(candidate) ? candidate : DEFAULT_BRAND_THEME;
+  if (isBrandTheme(candidate)) return candidate;
+  if (candidate && candidate in LEGACY_BRAND_THEME_ALIASES) {
+    return LEGACY_BRAND_THEME_ALIASES[candidate as keyof typeof LEGACY_BRAND_THEME_ALIASES];
+  }
+  return DEFAULT_BRAND_THEME;
 }
 
 export function createPreferenceCookie(name: string, value: string): string {
