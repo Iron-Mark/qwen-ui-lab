@@ -12,11 +12,23 @@ import { sanitizeScaffoldFilename } from "../src/features/export/lib/scaffold-fi
 test("canUseGithubGist is false without token", () => {
   assert.equal(canUseGithubGist({}), false);
   assert.equal(canUseGithubGist({ GITHUB_TOKEN: "   " }), false);
+  assert.equal(canUseGithubGist({ GITHUB_GIST_TOKEN: "   " }), false);
 });
 
 test("canUseGithubGist is true with trimmed token", () => {
   assert.equal(canUseGithubGist({ GITHUB_TOKEN: "ghp_test" }), true);
   assert.equal(getGithubGistToken({ GITHUB_TOKEN: " ghp_test " }), "ghp_test");
+});
+
+test("canUseGithubGist prefers app-specific token name", () => {
+  assert.equal(canUseGithubGist({ GITHUB_GIST_TOKEN: "github_pat_test" }), true);
+  assert.equal(
+    getGithubGistToken({
+      GITHUB_GIST_TOKEN: " github_pat_test ",
+      GITHUB_TOKEN: "ghp_fallback",
+    }),
+    "github_pat_test",
+  );
 });
 
 test("buildGithubGistUnavailablePayload returns product-facing recovery instructions", () => {
