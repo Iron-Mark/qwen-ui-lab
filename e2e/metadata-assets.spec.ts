@@ -96,12 +96,12 @@ test("robots, sitemap, manifest, and icons are reachable", async ({ request }) =
     expect(json.screenshots?.some((shot) => shot.form_factor === "wide")).toBeTruthy();
     expect(
       json.screenshots?.some(
-        (shot) => shot.form_factor === "wide" && shot.label === "Dashboard layout workspace",
+        (shot) => shot.form_factor === "wide" && shot.label === "Workflow home desktop",
       ),
     ).toBeTruthy();
     expect(
       json.screenshots?.some(
-        (shot) => shot.form_factor === "narrow" && shot.label === "Mobile layout workspace",
+        (shot) => shot.form_factor === "narrow" && shot.label === "Upload workflow mobile",
       ),
     ).toBeTruthy();
     expect(json.shortcuts?.some((shortcut) => shortcut.url === "/#upload-flow")).toBeTruthy();

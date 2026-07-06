@@ -48,9 +48,9 @@ export function WorkflowStepper({
               className={cn(
                 "inline-flex min-h-11 w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 py-2 text-xs font-medium transition-colors",
                 isCurrent &&
-                  "border-foreground bg-foreground text-background shadow-sm",
+                  "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20",
                 isComplete &&
-                  "border-foreground bg-foreground text-background",
+                  "border-primary/30 bg-primary/15 text-primary",
                 isLocked &&
                   "border-border bg-background text-muted-foreground",
               )}

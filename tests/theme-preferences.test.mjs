@@ -18,8 +18,11 @@ test("theme preference helpers validate cookie values", () => {
   assert.equal(resolveTheme("system"), DEFAULT_THEME);
   assert.equal(resolveTheme(undefined), DEFAULT_THEME);
 
-  assert.equal(resolveBrandTheme("emerald"), "emerald");
+  assert.equal(resolveBrandTheme("purple"), "purple");
+  assert.equal(resolveBrandTheme("blue"), "blue");
   assert.equal(resolveBrandTheme("sunset"), "sunset");
+  assert.equal(resolveBrandTheme("indigo"), "purple");
+  assert.equal(resolveBrandTheme("emerald"), "blue");
   assert.equal(resolveBrandTheme("neon"), DEFAULT_BRAND_THEME);
   assert.equal(resolveBrandTheme(undefined), DEFAULT_BRAND_THEME);
 });
@@ -30,8 +33,8 @@ test("theme preference cookies are durable and path-scoped", () => {
     "qwen-ui-theme=dark; Path=/; Max-Age=31536000; SameSite=Lax",
   );
   assert.equal(
-    createPreferenceCookie(BRAND_THEME_COOKIE_NAME, "emerald"),
-    "qwen-ui-brand=emerald; Path=/; Max-Age=31536000; SameSite=Lax",
+    createPreferenceCookie(BRAND_THEME_COOKIE_NAME, "blue"),
+    "qwen-ui-brand=blue; Path=/; Max-Age=31536000; SameSite=Lax",
   );
 });
 

@@ -90,8 +90,8 @@ describe("PWA manifest", () => {
     assert.match(manifestSource, /name:\s*`\$\{SITE_NAME\} - screenshot to React`/);
     assert.equal(sampleShortcut?.name, "Sample run");
     assert.equal(sampleShortcut?.description, "Open a guided layout and review a component preview.");
-    assert.ok(screenshotLabels.includes("Dashboard layout workspace"));
-    assert.ok(screenshotLabels.includes("Mobile layout workspace"));
+    assert.ok(screenshotLabels.includes("Workflow home desktop"));
+    assert.ok(screenshotLabels.includes("Upload workflow mobile"));
 
     for (const value of [
       manifest.description,
@@ -128,6 +128,20 @@ describe("PWA manifest", () => {
       width: 390,
       height: 844,
     });
+    assert.deepEqual(
+      readPngSize(join(PUBLIC, "screenshots", "A1-Workflow-Home", "desktop-light.png")),
+      {
+        width: 1440,
+        height: 1000,
+      },
+    );
+    assert.deepEqual(
+      readPngSize(join(PUBLIC, "screenshots", "A2-Upload-Flow", "mobile-light.png")),
+      {
+        width: 390,
+        height: 844,
+      },
+    );
 
     const icoEntries = readIcoEntries(join("src", "app", "favicon.ico"));
     assert.ok(icoEntries.some((entry) => entry.width === 16 && entry.height === 16));

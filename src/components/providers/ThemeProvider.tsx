@@ -9,9 +9,9 @@ import {
   THEME_COOKIE_NAME,
   THEME_STORAGE_KEY,
   createPreferenceCookie,
-  isBrandTheme,
   isTheme,
   readPreferenceCookie,
+  resolveBrandTheme,
   type BrandTheme,
   type Theme,
 } from "@/lib/theme-preferences";
@@ -20,8 +20,8 @@ export type { BrandTheme } from "@/lib/theme-preferences";
 
 /** Light-mode `--primary` from globals.css per brand (dropdown swatches). */
 export const BRAND_THEME_SWATCH: Record<BrandTheme, string> = {
-  indigo: "oklch(0.54 0.2 259)",
-  emerald: "oklch(0.66 0.16 165)",
+  purple: "oklch(0.53 0.24 293)",
+  blue: "oklch(0.55 0.22 263)",
   sunset: "oklch(0.68 0.19 28)",
 };
 
@@ -86,9 +86,9 @@ function getInitialTheme(): Theme {
 function getInitialBrandTheme(): BrandTheme {
   if (typeof window === "undefined") return DEFAULT_BRAND_THEME;
   const stored = readLocalPreference(BRAND_THEME_STORAGE_KEY);
-  if (isBrandTheme(stored)) return stored;
+  if (stored) return resolveBrandTheme(stored);
   const cookieBrandTheme = readCookiePreference(BRAND_THEME_COOKIE_NAME);
-  if (isBrandTheme(cookieBrandTheme)) return cookieBrandTheme;
+  if (cookieBrandTheme) return resolveBrandTheme(cookieBrandTheme);
   return DEFAULT_BRAND_THEME;
 }
 

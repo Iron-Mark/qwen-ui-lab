@@ -85,42 +85,42 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
       .join("") || "G";
 
   return (
-    <div className={cn("mx-auto max-w-2xl space-y-4", className)}>
-      <header className="flex items-start gap-4 border-b border-border/70 pb-5">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <UserRound className="size-6" aria-hidden="true" />
+    <div className={cn("mx-auto max-w-xl space-y-4", className)}>
+      <header className="flex items-start gap-3 pr-10">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/10">
+          <UserRound className="size-5" aria-hidden="true" />
         </div>
         <div className="min-w-0">
-          <DialogTitle className="font-display text-3xl font-semibold tracking-tight text-foreground">
+          <DialogTitle className="font-display text-2xl font-semibold tracking-tight text-foreground">
             {t.title}
           </DialogTitle>
-          <DialogDescription className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+          <DialogDescription className="mt-1.5 max-w-md text-sm leading-6 text-muted-foreground">
             {t.subtitle}
           </DialogDescription>
         </div>
       </header>
 
       <section className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-border/70 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-border/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div className="flex min-w-0 items-center gap-4" data-testid="account-profile-preview">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-sm">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-sm">
               {profileInitials}
             </div>
             <div className="min-w-0">
               <p
-                className="truncate text-lg font-semibold text-foreground"
+                className="truncate text-base font-semibold text-foreground"
                 data-testid={showSavedName ? "account-saved-by-label" : undefined}
               >
                 {visibleName}
               </p>
-              <p className="mt-0.5 text-sm text-muted-foreground">
+              <p className="mt-0.5 text-sm leading-5 text-muted-foreground">
                 {t.profilePreviewDesc}
               </p>
             </div>
           </div>
 
           <div
-            className="inline-flex min-h-8 w-fit max-w-full items-center gap-2 rounded-full border border-border/70 bg-background px-2.5 text-xs font-medium text-muted-foreground"
+            className="inline-flex min-h-8 w-fit max-w-full items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-2.5 text-xs font-medium text-primary"
             data-testid="account-status-card"
           >
             <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
@@ -129,7 +129,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
         </div>
 
         <form
-          className="space-y-4 p-5"
+          className="space-y-4 p-4 sm:p-5"
           onSubmit={(event) => {
             event.preventDefault();
             handleSaveDisplayName();
@@ -147,7 +147,7 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
               autoComplete="nickname"
               className="min-h-12 rounded-xl px-3 text-base sm:text-sm"
             />
-            <p className="text-xs leading-5 text-muted-foreground">
+            <p className="text-sm leading-5 text-muted-foreground">
               {t.displayNameDesc}
             </p>
           </div>
@@ -178,13 +178,13 @@ export function AccountProfilePanel({ className }: AccountProfilePanelProps) {
       </section>
 
       <details
-        className="group rounded-2xl border border-border/70 bg-card shadow-sm"
+        className="group rounded-2xl border border-border/70 bg-card/80 shadow-sm"
         open={pendingContactLabel || undefined}
       >
-        <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 outline-none transition hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
+        <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 outline-none transition hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5 [&::-webkit-details-marker]:hidden">
           <span className="flex min-w-0 items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-              <Mail className="size-5" aria-hidden="true" />
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Mail className="size-4" aria-hidden="true" />
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-semibold text-foreground">

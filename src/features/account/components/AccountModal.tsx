@@ -52,14 +52,14 @@ export function AccountModal() {
       <DialogContent
         data-testid="account-modal"
         initialFocus={initialFocusRef}
-        className="account-modal-surface flex max-h-[min(92dvh,54rem)] w-[min(calc(100vw-1rem),48rem)] max-w-none grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 shadow-2xl sm:max-h-[min(88dvh,52rem)] sm:max-w-3xl"
+        className="account-modal-surface max-h-[min(92dvh,44rem)] w-[min(calc(100vw-1rem),38rem)] max-w-none gap-0 overflow-hidden rounded-2xl p-0 shadow-2xl ring-1 ring-primary/10 sm:max-h-[min(88dvh,42rem)] sm:max-w-xl"
       >
         <div
           ref={initialFocusRef}
           tabIndex={-1}
-          className="account-modal-surface themed-scrollbar min-h-0 overflow-y-auto px-4 py-6 outline-none sm:px-6 sm:py-7"
+          className="themed-scrollbar max-h-[min(92dvh,44rem)] min-h-0 overflow-y-auto px-5 py-5 outline-none sm:max-h-[min(88dvh,42rem)] sm:px-6 sm:py-6"
         >
-          <AccountProfilePanel className="mx-0 max-w-none space-y-5 sm:space-y-6" />
+          <AccountProfilePanel className="mx-0 max-w-none" />
         </div>
       </DialogContent>
     </Dialog>

@@ -55,10 +55,10 @@ test("Prism token colors rely on syntax variables, not surface accent", () => {
 test("Brand themes provide syntax overrides in light and dark modes", () => {
   const source = readProjectFile("src/app/globals.css");
 
-  assert.match(source, /:root\[data-brand="indigo"\][\s\S]*--syntax-keyword:/);
-  assert.match(source, /:root\.dark\[data-brand="indigo"\][\s\S]*--syntax-keyword:/);
-  assert.match(source, /:root\[data-brand="emerald"\][\s\S]*--syntax-string:/);
-  assert.match(source, /:root\.dark\[data-brand="emerald"\][\s\S]*--syntax-string:/);
+  assert.match(source, /:root\[data-brand="purple"\][\s\S]*--syntax-keyword:/);
+  assert.match(source, /:root\.dark\[data-brand="purple"\][\s\S]*--syntax-keyword:/);
+  assert.match(source, /:root\[data-brand="blue"\][\s\S]*--syntax-string:/);
+  assert.match(source, /:root\.dark\[data-brand="blue"\][\s\S]*--syntax-string:/);
   assert.match(source, /:root\[data-brand="sunset"\][\s\S]*--syntax-regex:/);
   assert.match(source, /:root\.dark\[data-brand="sunset"\][\s\S]*--syntax-regex:/);
 });

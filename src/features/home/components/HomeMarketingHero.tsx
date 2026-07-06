@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Sparkles,
   Upload,
-  Zap,
 } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { useObservability } from "@/components/providers/ObservabilityProvider";
@@ -67,11 +66,6 @@ export function HomeMarketingHero() {
     },
   ] as const;
 
-  const trustSignals = [
-    { icon: ShieldCheck, label: copy.trustBrowserSafe },
-    { icon: Zap, label: copy.trustOffline },
-  ] as const;
-
   function trackCta(feature: string) {
     analytics.track(AnalyticsEvent.HomeHeroCtaClicked, {
       source: "home_hero",
@@ -117,7 +111,7 @@ export function HomeMarketingHero() {
               </span>
               <span className="inline-flex min-h-7 items-center gap-1.5 rounded-xl px-2.5 py-1 font-medium text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-primary" aria-hidden />
-                {copy.badgeOffline}
+                {copy.trustBrowserSafe}
               </span>
             </div>
             <h1
@@ -144,8 +138,8 @@ export function HomeMarketingHero() {
               <Link
                 href={localizedHref("/demo", locale)}
                 className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "min-h-11 gap-2 px-5 py-2.5",
+                  buttonVariants({ variant: "secondary", size: "lg" }),
+                  "min-h-11 gap-2 px-5 py-2.5 shadow-sm",
                 )}
               >
                 {copy.sampleRun}
@@ -154,8 +148,8 @@ export function HomeMarketingHero() {
               <Link
                 href={localizedHref("/design-system", locale)}
                 className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "min-h-11 gap-2 px-5 py-2.5",
+                  buttonVariants({ variant: "ghost", size: "lg" }),
+                  "min-h-11 gap-2 border border-border/40 bg-background/35 px-4 py-2.5 text-muted-foreground backdrop-blur-sm hover:border-primary/30 hover:bg-primary/10 hover:text-primary",
                 )}
                 onClick={() => trackCta("explore_design_system")}
               >
@@ -163,23 +157,11 @@ export function HomeMarketingHero() {
               </Link>
             </div>
           </div>
-
-          <ul
-            className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
-            aria-label={copy.trustSignalsAria}
-          >
-            {trustSignals.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2">
-                <Icon className="size-4 shrink-0 text-primary" aria-hidden />
-                <span>{label}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <ol
           data-testid="hero-benefit-rail"
-          className="mt-7 grid max-w-3xl grid-cols-3 overflow-hidden rounded-xl border border-border/70 bg-card/75 shadow-sm backdrop-blur-md sm:mt-8"
+          className="mt-7 grid w-full max-w-xl grid-cols-3 overflow-hidden rounded-xl border border-border/70 bg-card/75 shadow-sm backdrop-blur-md sm:mt-8"
           aria-label={copy.keyBenefitsAria}
         >
           {valueProps.map(({ icon: Icon, label, title, body }, index) => (
