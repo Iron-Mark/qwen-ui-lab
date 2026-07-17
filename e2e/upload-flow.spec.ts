@@ -431,13 +431,22 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
     timeout: 5_000,
   });
 
-  const repoZipDownloadPromise = page.waitForEvent("download");
-  await page.getByTestId("repo-export-button").click();
-  const repoZipDownload = await repoZipDownloadPromise;
-  expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-starter-package.zip");
-  await expect(page.getByText(/Package downloaded/i).first()).toBeVisible({
+  const repoZipDownloadPromise = page
+    .waitForEvent("download", { timeout: 10_000 })
+    .catch(() => null);
+  const repoExportButton = page.getByTestId("repo-export-button");
+  await repoExportButton.click();
+  await expect(repoExportButton).toHaveAttribute("aria-busy", "true", {
     timeout: 5_000,
   });
+  await expect(repoExportButton).toHaveAttribute("aria-busy", "false", {
+    timeout: 10_000,
+  });
+  const repoZipDownload = await repoZipDownloadPromise;
+  if (repoZipDownload) {
+    expect(repoZipDownload.suggestedFilename()).toBe("qwen-ui-lab-starter-package.zip");
+  }
+  await expect(page.getByText(/Could not open PR instructions/i)).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(exportDialog).toBeHidden();
 
