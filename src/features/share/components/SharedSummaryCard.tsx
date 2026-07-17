@@ -62,11 +62,11 @@ export function SharedSummaryCard({
       className="overflow-hidden border-border/80 bg-background shadow-sm"
       data-testid={testId}
     >
-      <CardHeader className="border-b border-border/70 bg-muted/25 pb-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <CardHeader className="border-b border-border/60 bg-background px-4 py-4 sm:px-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-2">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-primary/15 bg-primary/10 text-primary">
                 <Link2 className="size-4" aria-hidden />
               </span>
               {t.sharedSummaryTitle}
@@ -77,7 +77,7 @@ export function SharedSummaryCard({
           </div>
           <Badge
             variant="secondary"
-            className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium"
+            className="w-fit rounded-full border border-border/70 bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground"
           >
             {summary.mode}
           </Badge>
@@ -92,7 +92,7 @@ export function SharedSummaryCard({
           </div>
         </div>
         {summary.stats.length > 0 ? (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
             {summary.stats.map((stat) => (
               <div
                 key={`${stat.l}-${stat.v}`}

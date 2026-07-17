@@ -1275,7 +1275,7 @@ function estimateVisualDiffScore(
 
 function detectionClassName(kind: string) {
   if (/nav|header/i.test(kind)) return "border-sky-500";
-  if (/button|input|control/i.test(kind)) return "border-emerald-500";
+  if (/button|input|control/i.test(kind)) return "border-blue-500";
   if (/chart|media/i.test(kind)) return "border-amber-500";
   return "border-primary";
 }
@@ -3132,11 +3132,11 @@ export function UploadFlow({
             {stage === "analyzed" ? (
               <Alert
                 role="status"
-                className="mt-4 border-success/30 bg-success/10 text-success shadow-sm"
+                className="mt-4 border-primary/30 bg-primary/10 text-primary shadow-sm"
               >
                 <Check className="size-4" aria-hidden />
                 <AlertTitle>{t.progressComplete}</AlertTitle>
-                <AlertDescription className="font-medium text-success">
+                <AlertDescription className="font-medium text-primary">
                   {providerState === "qwen"
                     ? t.statusQwenComplete
                     : t.statusAnalysisComplete}
@@ -3146,11 +3146,11 @@ export function UploadFlow({
             {stage === "generated" ? (
               <Alert
                 role="status"
-                className="mt-4 border-success/30 bg-success/10 text-success shadow-sm"
+                className="mt-4 border-primary/30 bg-primary/10 text-primary shadow-sm"
               >
                 <Check className="size-4" aria-hidden />
                 <AlertTitle>{t.progressComplete}</AlertTitle>
-                <AlertDescription className="font-medium text-success">
+                <AlertDescription className="font-medium text-primary">
                   {t.statusPreviewReady}
                 </AlertDescription>
               </Alert>

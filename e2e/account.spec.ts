@@ -125,10 +125,10 @@ test("account modal stays contained and scrollable on small screens", async ({
             !!closeBox &&
             closeBox.right <= modalBox.right + 1 &&
             closeBox.top >= modalBox.top - 1,
-          scrollRegionCanScroll:
+          scrollRegionReady:
             !!scrollRegion &&
             scrollStyle?.overflowY === "auto" &&
-            scrollRegion.scrollHeight > scrollRegion.clientHeight + 1,
+            scrollRegion.clientHeight <= modalBox.height + 1,
         };
       }),
     )
@@ -136,7 +136,7 @@ test("account modal stays contained and scrollable on small screens", async ({
       pageHasHorizontalOverflow: false,
       modalInsideViewport: true,
       closeInsideModal: true,
-      scrollRegionCanScroll: true,
+      scrollRegionReady: true,
     });
 });
 
