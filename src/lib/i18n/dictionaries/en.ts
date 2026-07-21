@@ -22,7 +22,6 @@ export const en = {
     benefitDesignTitle: "Download the package",
     benefitDesignBody:
       "Review TSX, Design.md, and package files during integration.",
-    trustSignalsAria: "Trust signals",
     keyBenefitsAria: "Key benefits",
   },
   header: {

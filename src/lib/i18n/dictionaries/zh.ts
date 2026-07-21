@@ -21,7 +21,6 @@ export const zh = {
     benefitDesignLabel: "下载",
     benefitDesignTitle: "下载导出包",
     benefitDesignBody: "在项目交接时检查 TSX、Design.md 和导出包文件。",
-    trustSignalsAria: "信任标识",
     keyBenefitsAria: "核心优势",
   },
   header: {
