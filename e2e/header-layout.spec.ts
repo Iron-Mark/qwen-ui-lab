@@ -83,7 +83,7 @@ test("site header combines theme and brand controls into one appearance menu", a
   await appearanceButton.click();
 
   await expect(page.getByText("Brand theme")).toBeVisible();
-  await expect(page.getByRole("menuitemradio", { name: /Indigo Studio/i })).toBeVisible();
+  await expect(page.getByRole("menuitemradio", { name: /Purple Studio/i })).toBeVisible();
   const modeMenuItem = page
     .getByRole("menuitem")
     .filter({ hasText: /Switch to (dark|light) mode/i });
