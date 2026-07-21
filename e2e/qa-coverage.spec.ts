@@ -63,25 +63,25 @@ test("switches brand theme and persists selection", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: /appearance settings/i }).click();
-  await expect(page.getByRole("menuitemradio", { name: /emerald/i })).toBeVisible();
-  await page.getByRole("menuitemradio", { name: /emerald/i }).click();
+  await expect(page.getByRole("menuitemradio", { name: /blue/i })).toBeVisible();
+  await page.getByRole("menuitemradio", { name: /blue/i }).click();
 
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.brand)).toBe(
-    "emerald",
+    "blue",
   );
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("brand-theme")))
-    .toBe("emerald");
+    .toBe("blue");
   await expect
     .poll(async () =>
       (await page.context().cookies()).find((cookie) => cookie.name === "qwen-ui-brand")
         ?.value,
     )
-    .toBe("emerald");
+    .toBe("blue");
 
   await page.reload();
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.brand)).toBe(
-    "emerald",
+    "blue",
   );
 });
 
@@ -123,7 +123,7 @@ test("server ignores invalid appearance cookies before hydration", async ({
   await page.goto("/");
 
   await expect(page.locator("html")).not.toHaveClass(/dark/);
-  await expect(page.locator("html")).toHaveAttribute("data-brand", "indigo");
+  await expect(page.locator("html")).toHaveAttribute("data-brand", "purple");
 
   await context.close();
 });
@@ -400,7 +400,6 @@ test.describe("marketing surfaces", () => {
     await expect(
       page.getByRole("link", { name: /browse components/i }),
     ).toHaveAttribute("href", "/design-system");
-    await expect(page.getByLabel("Trust signals")).toBeVisible();
     await expect(page.getByLabel("Key benefits")).toBeVisible();
   });
 

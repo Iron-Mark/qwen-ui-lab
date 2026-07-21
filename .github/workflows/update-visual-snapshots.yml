@@ -1,0 +1,54 @@
+name: Update Visual Snapshots
+
+# Regenerate the Playwright visual-regression baselines in the same Linux
+# environment the E2E Nightly runs in, then commit them back to the branch this
+# workflow was dispatched on. Run this whenever an intentional UI change makes
+# the committed baselines stale (they cannot be regenerated correctly off-Linux).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-visual-snapshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-snapshots:
+    name: Regenerate visual baselines
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Update visual baselines
+        continue-on-error: true
+        run: npx playwright test e2e/visual-regression.spec.ts --update-snapshots --reporter=line
+
+      - name: Commit refreshed baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "e2e/visual-regression.spec.ts-snapshots"
+          if git diff --staged --quiet; then
+            echo "No baseline changes to commit."
+            exit 0
+          fi
+          git commit -m "test: refresh Playwright visual baselines"
+          git push origin "HEAD:${{ github.ref_name }}"
