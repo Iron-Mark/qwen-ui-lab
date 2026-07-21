@@ -6,6 +6,12 @@ name: Update Visual Snapshots
 # the committed baselines stale (they cannot be regenerated correctly off-Linux).
 on:
   workflow_dispatch:
+  # TEMPORARY bootstrap trigger: this workflow cannot be workflow_dispatch-run
+  # until it exists on the default branch, so we self-run once on this branch to
+  # regenerate the baselines. Removed in the following commit.
+  push:
+    branches:
+      - fix/e2e-nightly-brand-baselines
 
 permissions:
   contents: write
