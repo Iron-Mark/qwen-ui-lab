@@ -45,8 +45,8 @@ Each release should update or produce:
    - `npm run test:e2e`
    - `npm run doctor`
 3. Confirm documented routes/APIs are still accurate:
-   - Pages: `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`
-   - APIs: `GET /api/health`, `POST /api/analyze-ui`, `POST /api/security/csp-report`
+   - Pages: `/`, `/demo`, `/account`, `/admin/analytics`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `/share/[id]`
+   - APIs: `GET /api/health`, `GET /api/readiness`, `POST /api/analyze-ui`, `GET`/`POST /api/share`, `GET`/`POST /api/export-gist`, `GET`/`POST /api/export-repo`, `POST /api/security/csp-report`
 4. Open a `dev` -> `main` release PR and wait for required checks.
 5. Merge to `main`, create the release tag from that `main` commit, and publish GitHub Release notes.
 6. Deploy from the approved `main` commit or release tag.

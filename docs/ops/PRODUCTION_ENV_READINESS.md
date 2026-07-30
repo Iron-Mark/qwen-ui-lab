@@ -11,7 +11,7 @@ Set these production environment variables on the hosting provider:
 | `NEXT_PUBLIC_SITE_URL` | yes | Public HTTPS origin for canonical metadata, sitemap, robots, PWA links, and generated short share URLs |
 | `KV_REST_API_URL` | yes | Durable share links and cluster-wide analyze rate limits |
 | `KV_REST_API_TOKEN` | yes | Server-only Upstash/Vercel KV REST token |
-| `GITHUB_TOKEN` | yes | Server-side Gist/package download flow |
+| `GITHUB_GIST_TOKEN` or `GITHUB_TOKEN` | yes | Server-side Gist/package download flow; `GITHUB_GIST_TOKEN` is preferred at runtime when both are set |
 
 Production must also keep these safe defaults:
 
@@ -37,11 +37,11 @@ Add production runtime values without printing secrets in the shell history:
 ```bash
 vercel env add KV_REST_API_URL production
 vercel env add KV_REST_API_TOKEN production
-vercel env add GITHUB_TOKEN production
+vercel env add GITHUB_GIST_TOKEN production
 vercel env add NEXT_PUBLIC_SITE_URL production
 ```
 
-Use a dedicated least-privilege token for `GITHUB_TOKEN`. Do not reuse a broad personal CLI token for production app runtime.
+Use a dedicated least-privilege token for `GITHUB_GIST_TOKEN`. The validator also accepts `GITHUB_TOKEN` as a fallback name, but do not reuse a broad personal CLI token for production app runtime.
 `NEXT_PUBLIC_SITE_URL` should be the exact deployed HTTPS origin, for example `https://qwen-ui-lab.vercel.app`. If you rely on Vercel's `VERCEL_PROJECT_PRODUCTION_URL`, the validator accepts that host as the fallback canonical source.
 
 Optional Sentry production setup:
@@ -91,4 +91,4 @@ To publish smoke results to GitHub, set `SMOKE_GITHUB_REPORT=true` plus `SMOKE_G
 
 The app also exposes `/api/readiness` and a developer readiness dialog from the footer. Use those diagnostics to confirm which production-facing features are live and which are intentionally using local analysis.
 
-`npm run validate:prod` is expected to fail until `NEXT_PUBLIC_SITE_URL` or `VERCEL_PROJECT_PRODUCTION_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, and `GITHUB_TOKEN` are configured in the environment being checked.
+`npm run validate:prod` is expected to fail until `NEXT_PUBLIC_SITE_URL` or `VERCEL_PROJECT_PRODUCTION_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, and `GITHUB_GIST_TOKEN` (or `GITHUB_TOKEN`) are configured in the environment being checked.

@@ -26,7 +26,7 @@ For a staging activation checklist and dashboard setup, see `docs/ops/ANALYTICS_
 
 ## Privacy Guardrails
 
-- Event names are constrained to predefined constants in `src/lib/analytics.ts`.
+- Event names are constrained to predefined constants in `src/lib/analytics.client.ts`.
 - Metadata is allowlisted in `src/lib/observability.mjs`; unknown keys are dropped.
 - Query strings are stripped from routes.
 - Sensitive values like freeform text, prompts, emails, and API payloads are not tracked.
@@ -57,8 +57,9 @@ For a staging activation checklist and dashboard setup, see `docs/ops/ANALYTICS_
 - `design_system.domain_changed` - domain tab changed.
 - `design_system.level_changed` - atomic level filter changed.
 - `design_system.search_updated` - search value updated (tracked on input blur).
+- `design_system.snippets_downloaded` - download of all visible catalog snippets.
 - `design_system.variant_changed` - component variant toggled.
-- `export.triggered` - snippet/catalog export interactions.
+- `export.triggered` - copy or download actions on individual snippets.
 
 ## Allowlisted Metadata Keys
 
@@ -91,7 +92,7 @@ Only these keys are accepted:
 
 ## Key Files
 
-- `src/lib/analytics.ts` - event constants and client abstraction.
+- `src/lib/analytics.client.ts` - event constants and client abstraction.
 - `src/lib/observability.mjs` - env gating + sanitization + dispatch hooks.
 - `src/features/analysis/components/UploadFlow.tsx` - funnel instrumentation.
 - `src/features/design-system/components/DesignSystemPreview.tsx` - design-system instrumentation.

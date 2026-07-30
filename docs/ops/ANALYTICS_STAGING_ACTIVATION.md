@@ -32,7 +32,7 @@ Notes:
    - freeform text (`prompt`, `notes`, user-entered strings)
    - emails, API keys, raw request/response payloads
 6. Confirm event names are from the taxonomy only:
-   - `upload.*`, `analysis.*`, `generate.*`, `design_system.*`, `export.triggered`
+   - `home.*`, `upload.*`, `analysis.*`, `generate.*`, `design_system.*`, `export.triggered`
 7. Confirm local-analysis suppression:
    - with `NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS=false`, local-analysis provider mode does not emit events.
 
@@ -60,7 +60,7 @@ Start with these slices in your analytics tool:
 
 ### D. Design System Discovery
 
-- **Filter**: `eventName in [design_system.viewed, design_system.search_updated, design_system.domain_changed, design_system.level_changed, design_system.variant_changed]`
+- **Filter**: `eventName in [design_system.viewed, design_system.search_updated, design_system.domain_changed, design_system.level_changed, design_system.variant_changed, design_system.snippets_downloaded]`
 - **Breakdown**: `domain`, `level`, `entryId`, `queryLength`, `totalVisible`
 - **Use**: understand catalog navigation and search friction.
 

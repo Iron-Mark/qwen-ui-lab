@@ -1,6 +1,8 @@
 # UI to Component Skill Spec
 
-## Source: SKILL.md
+> Archived capture of the retired `.qwen/skills/ui-to-component/` skill. The `.qwen/skills` directory was removed from the repo, and this spec is the surviving copy. The frontmatter below (including the `paths` globs) reflects the repository layout at the time: component code now lives under `src/features/*/components/`, while `src/components/` holds shared `ui/`, `layout/`, and `providers/` modules.
+
+## Archived source: SKILL.md
 
 ---
 name: ui-to-component
@@ -53,7 +55,7 @@ During review, check:
 - Is the component easy to extend?
 
 
-## Source: checklist.md
+## Archived source: checklist.md
 
 # UI-to-Component Checklist
 
@@ -93,7 +95,7 @@ Use this while reviewing any component draft.
 - [ ] Error state handled
 
 
-## Source: component-template.md
+## Archived source: component-template.md
 
 # Component Template
 

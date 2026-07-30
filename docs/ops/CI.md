@@ -9,7 +9,7 @@ Branch policy: normal work starts on `dev`; production promotion is a protected 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | [pr-checks.yml](../../.github/workflows/pr-checks.yml) | `pull_request`, `workflow_dispatch` | Fast PR gate: lint, unit tests, docs link validation, build (no E2E) |
-| [pr-e2e-smoke.yml](../../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract + upload-flow (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
+| [pr-e2e-smoke.yml](../../.github/workflows/pr-e2e-smoke.yml) | `pull_request`, `workflow_dispatch` | Optional E2E smoke: mobile + a11y + live-qwen-contract + upload-flow + layout-regression (warn-only on PRs; strict when `PR_E2E_STRICT=true`) |
 | [ci.yml](../../.github/workflows/ci.yml) | `push` to `main`/`master`, `workflow_dispatch` | Security scan, quality, web audits, visual regression, production LCP budget |
 | [e2e-nightly.yml](../../.github/workflows/e2e-nightly.yml) | Daily schedule (06:00 UTC), `workflow_dispatch` | Full `CI=1 npm run test:e2e` Playwright suite |
 | [post-deploy-smoke.yml](../../.github/workflows/post-deploy-smoke.yml) | `workflow_dispatch`, `repository_dispatch` | Route/API smoke plus browser share/export smoke against a deployed URL |
@@ -38,6 +38,7 @@ Runs a **fast subset** of Playwright specs on every pull request:
 - `e2e/a11y.spec.ts` - accessibility checks
 - `e2e/live-qwen-contract.spec.ts` - live-path contract (mocked JSON, no API key)
 - `e2e/upload-flow.spec.ts` - upload size guard and sample-picker flow
+- `e2e/layout-regression.spec.ts` - core routes do not horizontally overflow or clip primary controls
 
 **Warn-only on PRs (default):** the job uses `continue-on-error` so failures show as a yellow check and do **not** block merge. Required PR gate remains `pr-checks.yml` (lint, unit tests, docs links, build).
 
@@ -136,7 +137,7 @@ To make production LCP breaches block CI without changing workflow YAML, set rep
 | Script | Use |
 |--------|-----|
 | `npm run test:e2e` | Full Playwright suite |
-| `npm run test:e2e:pr-smoke` | PR smoke subset (mobile + a11y + live-qwen-contract + upload-flow) |
+| `npm run test:e2e:pr-smoke` | PR smoke subset (mobile + a11y + live-qwen-contract + upload-flow + layout-regression) |
 | `npm run test:e2e:visual` | Visual regression spec only |
 | `npm run smoke:share-live` | Browser smoke for deployed share/export behavior |
 | `npm run synthetic:health` | Synthetic `/api/health` probe |

@@ -1,4 +1,4 @@
-# Product Walkthrough Recording Script - 30-60 Seconds
+# Product Walkthrough Recording Script - 75 Seconds
 
 Use this script when recording a short product walkthrough.
 
@@ -13,7 +13,7 @@ Use this script when recording a short product walkthrough.
 
 ---
 
-## Script (target: 45 seconds)
+## Script (target: 75 seconds)
 
 ### [0:00-0:08] Opening shot - Upload flow
 
@@ -48,7 +48,7 @@ Use this script when recording a short product walkthrough.
 **Action:** Open the package download panel.
 
 **Voiceover:**
-> "The package includes component draft TSX, design notes, detection JSON, and a manifest for engineering review."
+> "The package includes component draft TSX, design notes, recipe and manifest JSON, plus detection notes for engineering review."
 
 ### [0:56-1:08] Show the component preview
 

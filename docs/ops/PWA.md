@@ -136,6 +136,6 @@ npm run test:e2e:pwa      # prod server - SW registration + cache headers
 - **No `next-pwa`** - App Router + Next 16 is handled with a hand-written `public/sw.js` and client registration in `ServiceWorkerRegister`.
 - **Dev vs prod** - SW registration is gated on `NODE_ENV === "production"`.
 - **RSC payloads** - first visit needs network to populate runtime caches; repeat visits and sample-run analysis work offline after that.
-- **CSP** - `worker-src 'self' blob:` and `manifest-src 'self'` are set in [next.config.ts](../../next.config.ts).
+- **CSP** - `worker-src 'self' blob:` and `manifest-src 'self'` are enforced per-request via [src/proxy.ts](../../src/proxy.ts) (built in [src/lib/csp.ts](../../src/lib/csp.ts)); [next.config.ts](../../next.config.ts) carries them only in the report-only header.
 
 See also [TROUBLESHOOTING_RUNBOOK.md](./TROUBLESHOOTING_RUNBOOK.md) (PWA/service worker section) and [LOCAL_ANALYSIS_E2E.md](./LOCAL_ANALYSIS_E2E.md) (local-analysis algorithm without network).
