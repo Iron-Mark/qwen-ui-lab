@@ -78,23 +78,23 @@ When an alert fires:
 1. Run synthetic probe manually against the affected environment.
 2. Capture `/api/health` payload and latency summary.
 3. Follow `docs/ops/TROUBLESHOOTING_RUNBOOK.md`:
-   - "Incident: Analyze is not using live Qwen"
-   - "Incident: Analyze call fails or falls back unexpectedly"
+   - "Incident: Live provider is not active"
+   - "Incident: Live analysis call fails and returns local analysis"
    - "Handoff Notes"
 4. If mitigation requires rollback, use `docs/ops/ROLLBACK_CHECKLIST.md`.
 5. Record root cause and threshold adjustments in release notes.
 
 ## Concrete Integration Ideas
 
-### 1) Post-deploy gate
+### 1) Post-deploy gate (implemented)
 
-During deployment, run:
+The [Post Deploy Smoke](../../.github/workflows/post-deploy-smoke.yml) workflow covers this: on manual dispatch or a `vercel-deployment-success` repository dispatch it runs `npm run smoke:deploy` (`scripts/post-deploy-smoke.mjs`), which validates the `/api/health` payload, provider, and `liveAnalysisEnabled` against the deployed URL, then runs `npm run smoke:share-live` for share/export coverage. Do not declare a deployment healthy until it passes.
+
+For an ad-hoc manual gate, the synthetic probe still works:
 
 ```bash
 node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5
 ```
-
-Do not declare deployment healthy until this check passes.
 
 ### 2) External uptime service
 

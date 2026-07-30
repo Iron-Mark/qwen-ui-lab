@@ -41,7 +41,7 @@ The codebase is organized by feature ownership:
 ```text
 src/app/          route shells, metadata, API handlers
 src/features/     account, analysis, analytics, demo, design-system, export,
-                  home, pwa, share, shell
+                  home, ops, pwa, share, shell
 src/components/   shared ui primitives, layout, providers
 src/lib/          cross-cutting infrastructure only
 tests/            Node unit tests
@@ -96,7 +96,7 @@ Core docs:
 | [Architecture](./ARCHITECTURE.md) | Feature colocation and component boundaries. |
 | [Contributing](./CONTRIBUTING.md) | Workflow, checks, and PR expectations. |
 | [Sample run](./DEMO.md) | Guided-layout flow and troubleshooting table. |
-| [Agent notes](./AGENTS.md) | Repository-specific agent guidance. |
+| [Agent notes](./AGENTS.md) | Auto-injected Next.js agent-rules notice. |
 
 Media docs:
 
@@ -130,14 +130,26 @@ Operations docs:
 | [OAuth roadmap](./ops/OAUTH_ROADMAP.md) | Future auth migration plan. |
 | [Experimentation](./ops/EXPERIMENTATION.md) | Feature flags and A/B setup. |
 | [Release process](./ops/RELEASE_PROCESS.md) | Versioning and release flow. |
+| [Release notes draft](./ops/RELEASE_NOTES_DRAFT.md) | In-progress notes for the next release. |
+| [Release package checklist](./ops/RELEASE_PACKAGE_CHECKLIST.md) | Per-release publish checklist. |
+| [Rollback checklist](./ops/ROLLBACK_CHECKLIST.md) | Production rollback steps. |
+| [Production setup checklist](./ops/PRODUCTION_SETUP_CHECKLIST.md) | One-time production project setup. |
+| [Post launch](./ops/POST_LAUNCH.md) | Post-launch hardening status and backlog. |
+| [CSP hardening guide](./ops/CSP_HARDENING_GUIDE.md) | Staged Content-Security-Policy rollout. |
+| [Storybook](./ops/STORYBOOK.md) | Component workshop notes. |
 
 Specs:
 
 | Doc | Topic |
 | --- | --- |
 | [Artifact checklist](./specs/ARTIFACT_CHECKLIST.md) | Export artifact inventory. |
-| [UI to component skill](./specs/UI_TO_COMPONENT_SKILL.md) | Screenshot-to-component workflow spec. |
-| [PR template](./specs/PULL_REQUEST_TEMPLATE.md) | Pull request checklist text. |
+| [UI to component skill](./specs/UI_TO_COMPONENT_SKILL.md) | Screenshot-to-component workflow spec (archived source capture). |
+| [PR template](../.github/PULL_REQUEST_TEMPLATE.md) | Pull request checklist, auto-applied by GitHub. |
+| [Dashboard Qwen Code plan](./specs/DASHBOARD_QWEN_CODE_PLAN.md) | Original dashboard build plan. |
+| [Dashboard Qwen3-VL breakdown](./specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md) | Vision-model detection breakdown. |
+| [Dashboard component hierarchy](./specs/DASHBOARD_COMPONENT_HIERARCHY.md) | Component tree and file map. |
+| [Dashboard limitations](./specs/DASHBOARD_LIMITATIONS.md) | Retrospective on model limits. |
+| [Dashboard review notes](./specs/DASHBOARD_REVIEW_NOTES.md) | Human review notes from the original build. |
 
 ## License
 

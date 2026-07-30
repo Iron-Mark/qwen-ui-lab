@@ -27,7 +27,7 @@ const PUBLIC_COPY_FILES = [
   "docs/ops/ANALYTICS_STAGING_ACTIVATION.md",
   "docs/ops/PRODUCTION_SETUP_CHECKLIST.md",
   "docs/ops/STORYBOOK.md",
-  "docs/specs/PULL_REQUEST_TEMPLATE.md",
+  ".github/PULL_REQUEST_TEMPLATE.md",
   "docs/specs/ARTIFACT_CHECKLIST.md",
   "docs/specs/UI_TO_COMPONENT_SKILL.md",
   "docs/specs/DASHBOARD_QWEN3_VL_BREAKDOWN.md",
@@ -117,7 +117,7 @@ const LOCAL_PATH_GUARD_FILES = [
   "docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md",
   "docs/ops/LOCAL_ANALYSIS_E2E.md",
   "docs/ops/PWA.md",
-  "docs/specs/PULL_REQUEST_TEMPLATE.md",
+  ".github/PULL_REQUEST_TEMPLATE.md",
 ];
 
 const OPS_PRODUCT_COPY_FILES = [

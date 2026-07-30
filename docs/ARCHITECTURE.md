@@ -25,6 +25,7 @@ src/features/
   design-system/    catalog UI/registry, laws data, catalog filters
   export/           copy/download/Gist/repo export UI and server helpers
   home/             home hero, dashboard widgets, charts, dashboard data
+  ops/              production readiness and reliability UI and helpers
   pwa/              install banner, service worker registration, install helpers
   share/            shared result route, summary card, share storage/API helpers
   shell/            header, footer, theme controls, local-analysis notice
@@ -83,18 +84,21 @@ docs/
   ARCHITECTURE.md
   CONTRIBUTING.md
   DEMO.md
+  SCREENSHOTS.md
   AGENTS.md
   CLAUDE.md
+  assets/
   media/
   ops/
   specs/
 ```
 
-Only three direct docs subfolders are used:
+Only four direct docs subfolders are used:
 
+- `assets` for committed README and product preview images.
 - `media` for walkthrough scripts, slide copy, and social copy.
 - `ops` for CI, deploy, observability, reliability, security, release, and PWA operations.
-- `specs` for artifact notes, PR template text, and implementation specs.
+- `specs` for artifact notes and implementation specs.
 
 ## Related Docs
 

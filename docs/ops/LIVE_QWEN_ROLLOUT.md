@@ -26,7 +26,7 @@ Use this when turning on live vision on **Vercel Preview only**. Do **not** chec
 - [ ] **Local gate** - `npm run deploy:env:live` passes with the same values (see below).
 - [ ] **Staged smoke** - `DEPLOY_URL=https://<preview-host> npm run smoke:staged` (or `npm run smoke:live`) exits `0`.
 - [ ] **Health** - `GET /api/health` on preview -> `liveAnalysisEnabled: true`, `provider: "qwen"`.
-- [ ] **Manual UI** - header **Live Qwen** -> sample run -> **Analyze** completes (quota permitting).
+- [ ] **Manual UI** - header **Live Qwen** -> **Try sample** -> **Analyze** completes (quota permitting).
 
 ## Copy-paste Vercel env (Preview only)
 
@@ -132,7 +132,7 @@ Use this sequence to rehearse live vision on a **Preview** deployment without ch
    ```
    - Script refuses `http://` and the public production host unless `ALLOW_PRODUCTION_LIVE_SMOKE=1`.
    - Expect: health `provider: "qwen"`, `liveAnalysisEnabled: true`, `hasApiKey: true`, non-empty `model`; `POST /api/analyze-ui` rejects invalid body with HTTP 400.
-6. **Manual UI check** on the preview `/` URL: header **Live Qwen** -> sample run -> **Analyze** (upstream call; quota-dependent).
+6. **Manual UI check** on the preview `/` URL: header **Live Qwen** -> **Try sample** -> **Analyze** (upstream call; quota-dependent).
 
 Local rehearsal (safe, no Vercel changes): copy [`.env.example`](../../.env.example) -> `.env.local`, set live vars, restart `npm run dev`, then `npm run doctor`.
 
@@ -175,7 +175,7 @@ npm run validate:prod:preview
 |----------|------------------|---------------|-------------|
 | `KV_REST_API_URL` | *(from Vercel KV dashboard)* | Same store URL | **Production + Preview** - required on Production for durable share links + cluster rate limits |
 | `KV_REST_API_TOKEN` | *(from KV dashboard)* | Same token | **Production + Preview** - server-only; never expose to browser |
-| `GITHUB_TOKEN` | `ghp_...` or fine-grained PAT (`gist`) | Same or separate preview PAT | **Production + Preview** - server-only gist export |
+| `GITHUB_GIST_TOKEN` (preferred; `GITHUB_TOKEN` fallback) | `ghp_...` or fine-grained PAT (`gist`) | Same or separate preview PAT | **Production + Preview** - server-only gist export; the app checks `GITHUB_GIST_TOKEN` first |
 | `NEXT_PUBLIC_OBSERVABILITY_ENABLED` | **Unset** (default) | `true` only when rehearsing telemetry | Client flag |
 | `NEXT_PUBLIC_ERROR_MONITORING_ENABLED` | **Unset** unless ops enables monitoring | `true` with observability rehearsal | Requires master flag |
 | `NEXT_PUBLIC_SENTRY_DSN` | **Unset** unless row above enabled | `https://...@...ingest.sentry.io/...` when monitoring on | Required when error monitoring enabled |
@@ -193,7 +193,7 @@ npm run validate:prod:preview
 |-----|-------|---------------------|
 | `KV_REST_API_URL` | *(paste from KV)* | Production, Preview |
 | `KV_REST_API_TOKEN` | *(paste from KV)* | Production, Preview |
-| `GITHUB_TOKEN` | `ghp_<gist-capable-token>` | Production, Preview |
+| `GITHUB_GIST_TOKEN` (or `GITHUB_TOKEN` fallback) | `ghp_<gist-capable-token>` | Production, Preview |
 | `QWEN_LIVE_ANALYSIS` | *(leave unset)* | Production only - do not add |
 | `DASHSCOPE_API_KEY` | *(optional; omit for the strictest local-analysis setup)* | Production only if you accept unused key |
 
@@ -315,7 +315,7 @@ npm run validate:prod:preview
 **Production validator (`validate:prod`)** - exit `0` when:
 
 - `KV_REST_API_URL` + `KV_REST_API_TOKEN` set
-- `GITHUB_TOKEN` set
+- `GITHUB_GIST_TOKEN` or `GITHUB_TOKEN` set (`GITHUB_GIST_TOKEN` preferred)
 - Live Qwen **local-analysis safe** (`QWEN_LIVE_ANALYSIS` unset/false)
 - If `NEXT_PUBLIC_ERROR_MONITORING_ENABLED=true` (with observability master): valid `NEXT_PUBLIC_SENTRY_DSN`
 
@@ -381,20 +381,6 @@ npm run deploy:env:live
 
 - Local-analysis target with `DASHSCOPE_API_KEY` set but live flag off -> warning only; still passes the local-analysis gate
 
-### Validation log (2026-06-05, Lane 4)
-
-Ran locally on `qwen-ui-lab` (no production Vercel changes):
-
-| Command | Exit | Summary |
-|---------|------|---------|
-| `npm run deploy:env:local` (clean env) | `0` | `Live analysis requested: no`, `Live calls executable: no` |
-| `npm run deploy:env:live` (clean env) | `1` | Errors: missing `QWEN_LIVE_ANALYSIS`, `DASHSCOPE_API_KEY`, `QWEN_MODEL` |
-| `npm run deploy:env:live` (mock: `QWEN_LIVE_ANALYSIS=true`, `DASHSCOPE_API_KEY=sk-mock-validation-only`, `QWEN_MODEL=qwen3-vl-plus`) | `0` | `Live analysis requested: yes`, `Live calls executable: yes` |
-| `npm run deploy:env:local` with `QWEN_LIVE_ANALYSIS=true` | `1` | Local-analysis gate blocks live flag |
-| `DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy` | `0` | `provider=demo`, `liveAnalysisEnabled=false` (production stays local-analysis safe) |
-| `EXPECT_LIVE_ANALYSIS=true` + same production URL | `1` | Health mismatch - confirms live smoke detects local-analysis rollback state |
-| `npm run smoke:staged` | - | Requires `DEPLOY_URL` or `--url=`; use on Preview after live env |
-
 ## Staged rollout
 
 1. **Stage A - Preview**
@@ -452,7 +438,7 @@ Smoke verifies:
 Manual UI check on `/`:
 
 1. Confirm header **Live Qwen** (not local-analysis mode).
-2. **Use sample run** -> **Analyze** - should call upstream (not instant offline-only).
+2. **Try sample** -> **Analyze** - should call upstream (not instant offline-only).
 3. Success path shows live completion messaging (network/quota dependent).
 
 Optional local health probe before deploy: `npm run doctor` (with live env loaded).
@@ -480,16 +466,6 @@ Use this when live vision misbehaves, quota spikes, or you need local-analysis b
    ```
    Expected: exit `1`, `/api/health liveAnalysisEnabled mismatch (expected true, got false)`.
 5. If the **build** is bad, follow **[ROLLBACK_CHECKLIST.md](./ROLLBACK_CHECKLIST.md)** (redeploy last good tag **and** keep live flag off).
-
-### Rollback drill results (2026-06-05, production unchanged)
-
-Public production **`https://qwen-ui-lab.vercel.app`** was **not** switched to live. Drill used current local-analysis production:
-
-| Step | Command | Result |
-|------|---------|--------|
-| Local-analysis gate after clearing live env | `npm run deploy:env:local` | Pass (`0`) |
-| Local-analysis smoke on production | `DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy` | Pass - `provider=demo` |
-| Live smoke on local-analysis production | `EXPECT_LIVE_ANALYSIS=true` + same URL | Fail (`1`) - mismatch detected |
 
 Leaving `DASHSCOPE_API_KEY` set while live flag is off is **safe** - no upstream calls until `QWEN_LIVE_ANALYSIS=true` again.
 

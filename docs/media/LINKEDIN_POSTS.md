@@ -22,7 +22,7 @@ The workflow:
 1. Upload a screenshot
 2. Inspect detected sections, controls, and repeated groups
 3. Correct detection boxes when needed
-4. Prepare a React/Tailwind starter
+4. Prepare the React/Tailwind component draft
 5. Review files, design notes, and detection notes
 6. Download an export package for source control
 

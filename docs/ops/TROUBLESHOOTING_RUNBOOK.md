@@ -105,8 +105,8 @@ QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ### Actions
 
-1. Verify static file exists:
-   - `public/references/dashboard-reference.svg`
+1. Verify static files exist:
+   - `public/references/dashboard-reference.png` (and its `.webp` variant)
 2. Refresh dev server and reload page.
 3. Continue by uploading your own image to validate the flow.
 

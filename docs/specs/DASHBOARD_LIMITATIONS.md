@@ -50,12 +50,3 @@
 4. **Type safety is a human responsibility.** AI can produce `any`-adjacent code unless explicitly prompted for types.
 
 5. **Design systems require human taste.** Color palettes, spacing scales, and component boundaries need intentional decisions.
-
-## Recommendations for Next Iteration
-
-- Provide the design token system upfront in the prompt to avoid inline styles
-- Include explicit accessibility requirements in every prompt
-- Use Plan Mode to review component API before scaffolding
-- Test responsive output at multiple breakpoints immediately after generation
-- Consider creating a reusable `.qwen/skills/ui-to-component/` skill to enforce standards
-- Add `eslint-plugin-jsx-a11y` to catch accessibility issues at build time

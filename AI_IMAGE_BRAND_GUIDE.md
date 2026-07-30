@@ -4,7 +4,7 @@ Use this guide as the reusable context block when generating replacement images 
 
 ## Repository Context
 
-`qwen-ui-lab` is a developer-focused web app that turns UI screenshots into reviewable React + Tailwind starter packages. The product experience centers on uploading a screenshot, detecting UI structure, reviewing editable regions, and exporting reviewable starter files.
+`qwen-ui-lab` is a developer-focused web app that turns UI screenshots into inspectable React + Tailwind export packages. The product experience centers on uploading a screenshot, detecting UI structure, reviewing editable regions, and downloading export package files.
 
 The visual system should feel like a practical frontend engineering tool: clear, precise, calm, and polished. It should look useful before it looks decorative.
 
@@ -177,14 +177,16 @@ Generate these as a matching set:
 
 | Sample | Target Size | Purpose |
 |---|---:|---|
-| Dashboard | 1440x900 | Hero background, sample picker, PWA wide screenshot |
+| Dashboard | 1440x900 | Hero background, sample picker |
 | Auth | 1200x720 | Sign-in form sample |
-| Mobile app | 390x844 | Portrait mobile sample, PWA narrow screenshot |
+| Mobile app | 390x844 | Portrait mobile sample |
 | Landing page | 1440x900 | Marketing page sample |
 | Settings | 1200x720 | Account/preferences UI sample |
 | Ecommerce | 1200x720 | Product catalog sample |
 | Dense dashboard | 1440x900 | Stress test for charts, tables, metrics |
 | Repeated list | 1200x720 | Stress test for rows, actions, and list rhythm |
+
+The PWA manifest screenshots are real product captures under `public/screenshots` (wired in `public/manifest.json` and `src/lib/seo.ts`), not these reference samples.
 
 ## Social Preview Direction
 

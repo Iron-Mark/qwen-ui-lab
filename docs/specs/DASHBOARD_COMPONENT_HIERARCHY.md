@@ -7,8 +7,13 @@
 ```
 <ThemeProvider>
   <Header>
-    <Logo (inline SVG) />
-    <ThemeToggle />
+    <Logo (brand link) />
+    <nav aria-label from i18n>
+      Workflow link
+      Design system link
+    </nav>
+    <Account entry />
+    <AppearanceMenu (includes theme toggle) />
   </Header>
 
   <main>
@@ -34,11 +39,25 @@
   </main>
 
   <Footer>
-    <nav aria-label="External links">
+    <nav (product)>
+      <ul>
+        <li> Workflow (/) </li>
+        <li> Design system (/design-system) </li>
+        <li> Sample run (/demo) </li>
+      </ul>
+    </nav>
+    <nav (resources)>
       <ul>
         <li> Qwen3-VL link </li>
-        <li> Qwen Code link </li>
-        <li> GitHub link </li>
+        <li> Qwen Code docs link </li>
+        <li> Source repo link </li>
+      </ul>
+    </nav>
+    <nav (social)>
+      <ul>
+        <li> GitHub profile link </li>
+        <li> LinkedIn link </li>
+        <li> Portfolio website link </li>
       </ul>
     </nav>
   </Footer>
@@ -49,25 +68,27 @@
 
 | Component | File | Props | State | Accessibility |
 |-----------|------|-------|-------|---------------|
-| `ThemeProvider` | `ThemeProvider.tsx` | children | theme (context) | - |
-| `ThemeToggle` | `ThemeToggle.tsx` | - | reads context | `aria-label` |
-| `Header` | `Header.tsx` | - | - | `<header>` semantic |
-| `Footer` | `Footer.tsx` | - | - | `<footer>`, `<nav>`, `<ul>` |
-| `DashboardShell` | `DashboardShell.tsx` | stats[], revenueData[], activities[], quickActions[] | - | `aria-label` |
-| `WorkflowBanner` | `WorkflowBanner.tsx` | - | - | `<section>`, `<ol>`, `aria-label` |
-| `StatCard` | `StatCard.tsx` | StatCardData | - | `aria-hidden` on trend arrows |
-| `RevenueCard` | `RevenueCard.tsx` | RevenueDataPoint[] | - | `role="meter"`, ARIA value attrs |
-| `ChartPreview` | `ChartPreview.tsx` | - | - | Text summary for chart area |
-| `ActivityList` | `ActivityList.tsx` | ActivityData[] | - | `<ul>`, `<time>`, `aria-hidden` avatars |
-| `QuickActionButton` | `QuickActionButton.tsx` | QuickActionData | - | `focus-visible`, `type="button"` |
+| `ThemeProvider` | `src/components/providers/ThemeProvider.tsx` | children | theme (context) | - |
+| `ThemeToggle` | `src/features/shell/components/ThemeToggle.tsx` | - | reads context | `aria-label` |
+| `Header` | `src/features/shell/components/Header.tsx` | - | - | `<header>` semantic |
+| `Footer` | `src/features/shell/components/Footer.tsx` | - | - | `<footer>`, `<nav>`, `<ul>` |
+| `DashboardShell` | `src/features/home/components/DashboardShell.tsx` | stats[], revenueData[], activities[], quickActions[] | - | `aria-label` |
+| `WorkflowBanner` | `src/features/home/components/WorkflowBanner.tsx` | - | - | `<section>`, `<ol>`, `aria-label` |
+| `StatCard` | `src/features/home/components/StatCard.tsx` | StatCardData | - | `aria-hidden` on trend arrows |
+| `RevenueCard` | `src/features/home/components/RevenueCard.tsx` | RevenueDataPoint[] | - | `role="meter"`, ARIA value attrs |
+| `ChartPreview` | `src/features/home/components/ChartPreview.tsx` | - | - | Text summary for chart area |
+| `ActivityList` | `src/features/home/components/ActivityList.tsx` | ActivityData[] | - | `<ul>`, `<time>`, `aria-hidden` avatars |
+| `QuickActionButton` | `src/features/home/components/QuickActionButton.tsx` | QuickActionData | - | `focus-visible`, `type="button"` |
 
 ## Data Types
 
 ```typescript
-StatCardData    { label, value, change, trend }
+StatCardData     { label, value, change, trend }
 RevenueDataPoint { month, revenue }
-ActivityData    { id, user, action, timestamp }
-QuickActionData { id, label, icon: "user-plus" | "file-text" | "mail" | "settings" }
+PerformanceDataPoint { week, sessions }
+ChannelMixPoint  { channel, share }
+ActivityData     { id, user, action, timestamp }
+QuickActionData  { id, label, icon: "user-plus" | "file-text" | "mail" | "settings" }
 ```
 
 ## File Map
@@ -79,20 +100,26 @@ src/
     page.tsx            - Dashboard page, imports data
     globals.css         - Design tokens, transitions, dark mode
   components/
-    ThemeProvider.tsx    - Theme context + localStorage
-    ThemeToggle.tsx      - Sun/moon SVG toggle
-    Header.tsx           - Top nav with logo
-    Footer.tsx           - Footer with links
-    dashboard/
-      DashboardShell.tsx - Layout orchestrator
-      StatCard.tsx       - KPI metric card
-      RevenueCard.tsx    - Horizontal bar chart
-      ActivityList.tsx   - Activity feed
-      QuickActionButton.tsx - Action button
-      ChartPreview.tsx   - Chart summary preview
-      WorkflowBanner.tsx - Pipeline visualization
-  data/
-    dashboard-data.ts    - Typed example data + interfaces
+    providers/
+      ThemeProvider.tsx  - Theme context + localStorage
+  features/
+    shell/
+      components/
+        ThemeToggle.tsx  - Sun/moon SVG toggle
+        Header.tsx       - Top nav with logo
+        Footer.tsx       - Footer with links
+    home/
+      components/
+        DashboardShell.tsx - Layout orchestrator
+        StatCard.tsx       - KPI metric card
+        RevenueCard.tsx    - Horizontal bar chart
+        ActivityList.tsx   - Activity feed
+        QuickActionButton.tsx - Action button
+        ChartPreview.tsx   - Chart summary preview
+        ThemedChartPreview.tsx - Theme-aware chart wrapper
+        WorkflowBanner.tsx - Pipeline visualization
+      data/
+        dashboard-data.ts  - Typed example data + interfaces
   lib/
-    cn.ts                - clsx + tailwind-merge utility
+    utils.ts             - cn() clsx + tailwind-merge utility
 ```
