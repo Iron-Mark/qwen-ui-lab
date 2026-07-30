@@ -107,7 +107,7 @@ Production releases use a separate `dev` -> `main` PR after `dev` is ready. Do n
 
 ## Pull Requests and Issues
 
-- Use `docs/specs/PULL_REQUEST_TEMPLATE.md` for consistent PR context and validation.
+- The PR template at `.github/PULL_REQUEST_TEMPLATE.md` is applied to new pull requests automatically for consistent PR context and validation.
 - Use issue forms under `.github/ISSUE_TEMPLATE/` to keep bug reports and features triage-ready.
 - Optional ownership map: copy `.github/CODEOWNERS.example` to `.github/CODEOWNERS` and replace placeholder teams/users.
 

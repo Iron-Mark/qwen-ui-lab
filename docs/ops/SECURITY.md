@@ -6,8 +6,8 @@
 
 | Version | Supported |
 | ------- | --------- |
-| 0.1.x   | Yes       |
-| &lt; 0.1  | No        |
+| 0.4.x   | Yes       |
+| &lt; 0.4  | No        |
 
 Releases are tagged on [GitHub Releases](https://github.com/Iron-Mark/qwen-ui-lab/releases). Production app: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app).
 
@@ -44,4 +44,4 @@ Describe impact, affected routes (e.g. `/api/analyze-ui`, `/api/health`), and wh
 - Never commit `.env.local` or keys; use [`.env.example`](../../.env.example) as a template only.
 - Follow [CONTRIBUTING.md](../CONTRIBUTING.md) and [docs/ops/PRODUCTION_DEPLOY_LANE.md](./PRODUCTION_DEPLOY_LANE.md) for deploy checks.
 
-We aim to acknowledge reports within a reasonable timeframe and will coordinate fixes on `main` and patch releases in the 0.1.x line when appropriate.
+We aim to acknowledge reports within a reasonable timeframe and will coordinate fixes on `main` and patch releases in the 0.4.x line when appropriate.

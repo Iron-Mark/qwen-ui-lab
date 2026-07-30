@@ -11,7 +11,7 @@ The header profile control opens a persistent account modal via `?account=1`. Th
 |-------|----------|----------|
 | State machine | `src/features/account/lib/auth.mjs` | Modes: `guest` -> `named` (display name) or `contact-label-pending` -> `named`; legacy `magic-link-pending` session values normalize on load |
 | Persistence | `sessionStorage` key `qwen-ui-lab:auth` | Tab-scoped; cleared on sign-out or empty name |
-| React context | `src/features/account/components/AuthProvider.tsx` | `AuthProvider` wraps the app in `layout.tsx` |
+| React context | `src/features/account/components/AuthProvider.tsx` | `AuthProvider` wraps the app in `src/features/shell/components/ShellLayout.tsx` (rendered by `layout.tsx`) |
 | UI | `src/features/account/components/AccountProfilePanel.tsx` | Profile modal content: display name plus local contact label flow |
 | Consumers | `Header.tsx`, `UploadFlow.tsx` | `savedByLabel`, `signedIn` for local personalization |
 | Tests | `tests/auth.test.mjs`, `e2e/account.spec.ts` | Unit + E2E against sessionStorage |
@@ -29,7 +29,7 @@ The header profile control opens a persistent account modal via `?account=1`. Th
 ## Non-goals (for first slice)
 
 - Full user profiles, billing, or multi-tenant workspaces.
-- Replacing starter `OAuthButtonRow` scaffolds in analyze output (those stay UI templates).
+- Replacing `OAuthButtonRow` component drafts in analyze output (those stay UI templates).
 - Mandatory sign-in for analyze/export (guest must remain viable).
 
 ---

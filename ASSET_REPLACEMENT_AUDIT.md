@@ -24,6 +24,8 @@ Important visual asset areas:
 - Static/public assets: `public`
 - App icons and PWA images: `public/icons`, `src/app/favicon.ico`
 - Reference screenshots: `public/references`
+- Real product screenshot archive: `public/screenshots`
+- Marketing mock-up composites: `public/mock-ups`
 - Documentation graphics: `docs/media`
 - Visual regression baselines: `e2e/visual-regression.spec.ts-snapshots`
 
@@ -57,20 +59,20 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | ID | Asset | Type | Location | Used In | Usage Purpose | Dimensions | Status | Confidence |
 |---|---|---|---|---|---|---|---|---|
 | A001 | Favicon | ICO | `src/app/favicon.ico` | `src/lib/seo.ts:179`, metadata routes, tests | Browser tab/favicon shortcut | 16, 32, 48, 256 px entries | Used | High |
-| A002 | App icon SVG mark | SVG | `public/icons/icon.svg` | `src/lib/seo.ts:11`, `public/manifest.json:42`, `public/sw.js` | Metadata icon, SVG fallback, PWA cache | 64x64 viewBox | Used | High |
+| A002 | App icon SVG mark | SVG | `public/icons/icon.svg` | `src/lib/seo.ts:12`, `public/manifest.json:42`, `public/sw.js:21` | Metadata icon, SVG fallback, PWA cache | 64x64 viewBox | Used | High |
 | A003 | App icon raster mark | PNG | `public/icons/icon-192.png`, `public/icons/icon-512.png` | `Header.tsx`, `Footer.tsx`, `public/manifest.json:18,24,62,75,88`, `public/offline.html:163`, `public/sw.js`, `src/lib/seo.ts` | Header/footer logo, PWA icons, shortcut icons, offline icon, organization logo | 192x192, 512x512 | Used | High |
 | A004 | Maskable app icon set | SVG + PNG | `public/icons/icon-maskable.svg`, `public/icons/icon-maskable-512.png` | `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191` | PWA maskable icon and mask icon | 512x512 | Used | High |
 | A005 | Apple touch icon set | SVG + PNG | `public/icons/apple-touch-icon.svg`, `public/icons/apple-touch-icon.png` | `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16` | iOS/PWA touch icon | 180x180 | Used | High |
 | A006 | Static social preview file | PNG | Removed: `public/images/og-image.png` | No exact runtime reference found | Older/static Open Graph style image candidate | 1200x630 | Removed | Medium |
-| A007 | Dashboard reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/dashboard-reference-candidate-1440x900.png` | `HomeMarketingHero.tsx:95`, `reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, tests/docs | Home hero background, bundled sample, PWA screenshot | 1440x900 | Used + Candidate | High |
+| A007 | Dashboard reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/dashboard-reference-candidate-1440x900.png` | `HomeMarketingHero.tsx:89`, `reference-samples.data.mjs:6-8`, tests/docs | Home hero background, bundled sample | 1440x900 | Used + Candidate | High |
 | A008 | Auth reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/auth-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/auth-reference-candidate-1200x720.png` | `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests | Bundled sign-in sample | 1200x720 | Used + Candidate | High |
-| A009 | Mobile reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/mobile-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/mobile-reference-candidate-390x844.png` | `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, tests | Bundled mobile/PWA screenshot sample | 390x844 | Used + Candidate | High |
+| A009 | Mobile reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/mobile-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/mobile-reference-candidate-390x844.png` | `reference-samples.data.mjs:28-30`, tests | Bundled portrait mobile sample | 390x844 | Used + Candidate | High |
 | A010 | Landing reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/landing-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/landing-reference-candidate-1440x900.png` | `reference-samples.data.mjs:39-41`, `offline-analyze.mjs:186`, tests | Bundled marketing landing-page sample | 1440x900 | Used + Candidate | High |
 | A011 | Settings reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/settings-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/settings-reference-candidate-1200x720.png` | `reference-samples.data.mjs:50-52`, `offline-analyze.mjs:241`, tests | Bundled settings UI sample | 1200x720 | Used + Candidate | High |
 | A012 | Ecommerce reference sample | SVG + PNG + WebP + candidate PNG | Active `public/references/ecommerce-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/ecommerce-reference-candidate-1200x720.png` | `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, tests | Bundled shop catalog sample | 1200x720 | Used + Candidate | High |
 | A013 | Dense dashboard stress sample | SVG + PNG + WebP + candidate PNG | Active `public/references/stress-dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-dashboard-reference-candidate-1440x900.png` | `reference-samples.data.mjs:72-74`, tests, raster script | Bundled dense dashboard sample | 1440x900 | Used + Candidate | High |
 | A014 | Repeated list stress sample | SVG + PNG + WebP + candidate PNG | Active `public/references/stress-list-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-list-reference-candidate-1200x720.png` | `reference-samples.data.mjs:83-85`, tests, raster script | Bundled repeated-list sample | 1200x720 | Used + Candidate | High |
-| A015 | Before/after comparison graphic | PNG + SVG source | `docs/media/before-after-comparison.png`; legacy source `docs/media/before-after-comparison.svg` | `docs/specs/ARTIFACT_CHECKLIST.md:11`; legacy demo docs may still reference the SVG until the docs migration is finalized | Documentation comparison graphic | 1600x900 | Used in docs | High |
+| A015 | Before/after comparison graphic | PNG + SVG source | `docs/media/before-after-comparison.png`; legacy source `docs/media/before-after-comparison.svg` | PNG: `docs/specs/ARTIFACT_CHECKLIST.md:11`, `docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md`; no docs reference the SVG, which survives only as the tracked source listed in `tests/public-copy-guardrail.test.mjs` | Documentation comparison graphic | 1600x900 | Used in docs | High |
 | A016 | Next.js starter logo | SVG | Removed: `public/next.svg` | No exact runtime reference found | Starter/framework logo leftover | 394x80 viewBox | Removed | High |
 | A017 | Vercel starter logo | SVG | Removed: `public/vercel.svg` | No exact runtime reference found | Starter/deployment logo leftover | 1155x1000 viewBox | Removed | High |
 | A018 | Globe starter icon | SVG | Removed: `public/globe.svg` | No exact runtime reference found | Starter/global icon leftover | 16x16 viewBox | Removed | High |
@@ -85,9 +87,11 @@ No remote image URLs, videos, Lottie files, or Rive files were found. Remote URL
 | A027 | Lucide icon system | Icon library SVGs | Imports across `src/components`, `src/features/*` | Header, upload flow, sample picker, dialogs, banners, buttons, toasts | Scalable inline SVG | Inline | High |
 | A028 | Chart graphics | Generated SVG/canvas | `PerformanceLineChart.tsx:70-114`, `ChannelDonutChart.tsx:95`, catalog refs | Dashboard previews, design-system examples | Responsive, 180 px line chart, 160 px donut container | Generated/Dynamic | High |
 | A029 | Upload preview, generated mock canvas, detection boxes | Generated/dynamic image/canvas | `UploadDropzone.tsx:61-62`, `UploadFlow.tsx:621-622,1060-1141,1876-1877,1898` | User screenshot preview, visual diff, mock canvas | User/source dependent | Generated/Dynamic | High |
-| A030 | CSS/decorative gradient backgrounds | CSS/Generated | `public/offline.html:51`, `src/app/globals.css:291`, `DemoPageClient.tsx:30`, `HomeMarketingHero.tsx:103-104`, social preview backgrounds | Decorative surface backgrounds and overlays | Responsive CSS | Generated/Dynamic | Medium |
+| A030 | CSS/decorative gradient backgrounds | CSS/Generated | `public/offline.html:51`, `src/app/globals.css:291`, `SampleRunPageClient.tsx:32`, `HomeMarketingHero.tsx:103-104`, social preview backgrounds | Decorative surface backgrounds and overlays | Responsive CSS | Generated/Dynamic | Medium |
 | A031 | Playwright visual regression snapshots | PNG test baselines | `e2e/visual-regression.spec.ts-snapshots/{linux,win32}/*.png` | Visual tests only | 18 PNGs, varied sizes | Test baseline | Medium |
 | A032 | Test-only inline/base64 image fixtures | Inline/base64 test assets | `tests/offline-analyze.test.mjs:565`, several `tests/*` `data:image` strings | Test fixtures only | Varied/mock | Test fixture | Low |
+| A033 | Product screenshot archive | PNG set | `public/screenshots/A1-Workflow-Home` through `A12-PWA-Offline` (30 PNGs, desktop/tablet/mobile in light/dark) | `public/manifest.json:97,104`, `src/lib/seo.ts:284,291`, `README.md`, `docs/SCREENSHOTS.md` | Real product captures; PWA wide/narrow manifest screenshots | Viewport captures incl. 1440x1000 desktop, 390x844 mobile | Used | High |
+| A034 | Marketing mock-up composites | PNG | `public/mock-ups/A1-device-showcase.png`, `A2-feature-gallery.png`, `A3-theme-viewport-matrix.png` | `README.md:32-34`, `docs/SCREENSHOTS.md:7-9` | README/docs product preview composites | 1600x1000 | Used | High |
 
 Local file variants covered by grouped entries:
 
@@ -95,10 +99,12 @@ Local file variants covered by grouped entries:
 |---|---|
 | App icons | `src/app/favicon.ico` 285478 bytes; `public/icons/icon.svg` 2871 bytes; `icon-maskable.svg` 2803 bytes; `apple-touch-icon.svg` 3100 bytes; `icon-192.png` 51695 bytes; `icon-512.png` 316156 bytes; `icon-maskable-512.png` 316156 bytes; `apple-touch-icon.png` 46160 bytes |
 | Static social | Promoted active PNGs in `public/social`: home 1005207 bytes, design-system 950390 bytes, laws-of-ux 937800 bytes, uilaws 1063395 bytes. Removed legacy `public/images/og-image.png` |
-| Reference samples | `dashboard-reference` SVG 10591 bytes, PNG 92042 bytes, WebP 38918 bytes; `auth-reference` SVG 3793, PNG 24785, WebP 9654; `mobile-reference` SVG 4614, PNG 26845, WebP 8734; `landing-reference` SVG 5848, PNG 72495, WebP 34202; `settings-reference` SVG 4297, PNG 33014, WebP 13214; `ecommerce-reference` SVG 7355, PNG 44658, WebP 19290; `stress-dashboard-reference` SVG 5509, PNG 37488, WebP 20450; `stress-list-reference` SVG 5241, PNG 28317, WebP 11478 |
+| Reference samples | `dashboard-reference` SVG 10607 bytes, PNG 92831 bytes, WebP 38634 bytes; `auth-reference` SVG 3813, PNG 24785, WebP 9654; `mobile-reference` SVG 4634, PNG 26845, WebP 8734; `landing-reference` SVG 5864, PNG 72495, WebP 34202; `settings-reference` SVG 4317, PNG 33014, WebP 13214; `ecommerce-reference` SVG 7375, PNG 44658, WebP 19290; `stress-dashboard-reference` SVG 5529, PNG 37488, WebP 20450; `stress-list-reference` SVG 5261, PNG 28317, WebP 11478 |
 | Generated reference candidates | Exact-size PNG candidates under `public/generated-assets/references`: dashboard 978694 bytes; auth 757488; mobile 315796; landing 1081046; settings 641861; ecommerce 754581; stress-dashboard 1126179; stress-list 712079 |
 | Documentation graphic | `docs/media/before-after-comparison.png` 1797157 bytes; legacy source `docs/media/before-after-comparison.svg` |
 | Starter leftovers | Removed after confirming no runtime references: `public/next.svg`, `public/vercel.svg`, `public/globe.svg`, `public/file.svg`, `public/window.svg` |
+| Product screenshot archive | 30 PNGs under `public/screenshots/A1-Workflow-Home` through `A12-PWA-Offline`; captured by `npm run capture:screenshots` and validated by `npm run check:screenshots` |
+| Mock-up composites | `public/mock-ups/A1-device-showcase.png` 843436 bytes; `A2-feature-gallery.png` 773335 bytes; `A3-theme-viewport-matrix.png` 824060 bytes; all 1600x1000 |
 | Visual snapshots | 18 PNG files under `e2e/visual-regression.spec.ts-snapshots/linux` and `.../win32`; dimensions include 1280x619, 960x685, 295x681, 298x29, 250x335, 239x399 |
 
 ## 4. Detailed Asset Breakdown
@@ -108,7 +114,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `src/app/favicon.ico`.
 - **Asset type:** ICO multi-size icon.
 - **Dimensions:** 16x16, 32x32, 48x48, 256x256 entries.
-- **File size:** 13315 bytes.
+- **File size:** 285478 bytes.
 - **Usage locations:** `src/lib/seo.ts:179`; tested in `tests/pwa.test.mjs:96` and `e2e/metadata-assets.spec.ts:91`.
 - **Usage purpose:** Browser tab favicon and metadata shortcut icon.
 - **Visual description:** Current generated icon uses a dark technical app mark. New final target style should be a simplified favicon derived from the glossy purple 3D `QUI` hex badge: dark indigo core, violet/lavender bevels, and a strong small-size silhouette.
@@ -125,9 +131,9 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `public/icons/icon.svg`.
 - **Asset type:** SVG.
 - **Dimensions:** 64x64 viewBox.
-- **File size:** 1102 bytes.
-- **Usage locations:** `src/features/shell/components/Header.tsx:141`, `src/features/shell/components/Footer.tsx:188`, `src/lib/seo.ts:11`, `public/manifest.json:42`, `public/sw.js:19`.
-- **Usage purpose:** Header/footer logo, metadata icon, cached public asset.
+- **File size:** 2871 bytes.
+- **Usage locations:** `src/lib/seo.ts:12`, `public/manifest.json:42`, `public/sw.js:21`. The header/footer brand image is `/icons/icon-512.png` (`Header.tsx:133`, `Footer.tsx:188`), covered by A003.
+- **Usage purpose:** Metadata icon and cached public asset.
 - **Visual description:** Current generated SVG uses a dark rounded-square screenshot-analysis mark. New final target style is the purple 3D `QUI` hexagonal badge with beveled frame segments, luminous violet/lavender highlights, dark indigo core, and orbital analysis swooshes.
 - **Replacement recommendation:** Replace/refine as the primary vector source for the final brand mark. Keep a simplified SVG-friendly variant that echoes the 3D badge without becoming too heavy in the header/footer.
 - **Suggested AI prompt:** Design an original SVG-friendly app icon based on the final qwen-ui-lab logo: glossy purple hexagonal shield badge, dark indigo inner face, beveled violet and lavender frame pieces, bold `QUI` monogram, neon violet rim highlights, and subtle orbital analysis arcs. Premium developer-tool brand, strong silhouette, no unrelated logos, transparent-background source plus square-safe export.
@@ -142,7 +148,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `public/icons/icon-192.png`, `public/icons/icon-512.png`.
 - **Asset type:** PNG.
 - **Dimensions:** 192x192 and 512x512.
-- **File size:** 7436 bytes and 19406 bytes.
+- **File size:** 51695 bytes and 316156 bytes.
 - **Usage locations:** `public/manifest.json:18,24,62,75,88`, `public/offline.html:163`, `public/sw.js:15-16`, `src/lib/seo.ts:13-14,471`.
 - **Usage purpose:** PWA install icons, app shortcuts, offline shell icon, structured-data organization logo.
 - **Visual description:** Raster exports currently reflect the prior dark technical icon. New final target should be raster exports of the glossy purple `QUI` hex badge with dark indigo center, beveled violet/lavender frame, bold monogram, and luminous rim highlights.
@@ -159,7 +165,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `public/icons/icon-maskable.svg`, `public/icons/icon-maskable-512.png`.
 - **Asset type:** SVG + PNG.
 - **Dimensions:** 512x512.
-- **File size:** 1034 bytes and 19906 bytes.
+- **File size:** 2803 bytes and 316156 bytes.
 - **Usage locations:** `public/manifest.json:30,48`, `public/sw.js:17,20`, `src/lib/seo.ts:12,15,191`.
 - **Usage purpose:** PWA maskable icon and mask icon metadata.
 - **Visual description:** Maskable target should be the final purple `QUI` hex badge adapted with generous safe-area padding so bevels and lettering survive platform crops.
@@ -176,7 +182,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** `public/icons/apple-touch-icon.svg`, `public/icons/apple-touch-icon.png`.
 - **Asset type:** SVG + PNG.
 - **Dimensions:** 180x180.
-- **File size:** 1294 bytes and 7204 bytes.
+- **File size:** 3100 bytes and 46160 bytes.
 - **Usage locations:** `public/offline.html:12`, `public/manifest.json:36`, `public/sw.js:18,21`, `src/lib/seo.ts:16`.
 - **Usage purpose:** iOS home-screen/touch icon and cached icon.
 - **Visual description:** Apple touch target should be the final purple `QUI` badge adapted to 180x180 with an opaque dark/indigo base and strong violet/lavender bevel readability.
@@ -188,31 +194,14 @@ Local file variants covered by grouped entries:
 - **Transparency needed:** No.
 - **Notes:** Offline page, manifest, metadata, and service-worker paths should remain aligned after replacing the exported file.
 
-### Asset ID: A006
-- **Asset name:** Static social preview file.
-- **Asset path or URL:** Removed: `public/images/og-image.png`.
-- **Asset type:** PNG.
-- **Dimensions:** 1200x630.
-- **File size:** 19527 bytes.
-- **Usage locations:** No exact runtime source reference found.
-- **Usage purpose:** Likely older Open Graph/social preview fallback.
-- **Visual description:** Removed static social preview used the older dark navy technical-grid direction. If recreated, it should now use the final purple `QUI` badge as the anchor visual.
-- **Replacement recommendation:** Completed: removed after confirming promoted static social preview PNGs cover home, demo, and design-system metadata.
-- **Suggested AI prompt:** Create a 1200x630 social preview card for qwen-ui-lab, a screenshot-to-React developer tool. Use the final logo style as the anchor: glossy purple `QUI` hex badge, deep indigo background, violet/lavender rim lighting, subtle technical grid, screenshot-analysis panels, code/export motif, and a large safe editable headline area. Premium SaaS/devtool mood, crisp composition, high contrast.
-- **Negative prompt:** Illegible generated text, copied platform branding, unrelated Qwen logo variants, stock people, noisy cyberpunk background, flat purple wash, watermark, distorted UI panels.
-- **Suggested aspect ratio:** 1.91:1.
-- **Suggested output size:** 1200x630 PNG.
-- **Transparency needed:** No.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage. The app now uses promoted static PNGs in `public/social`; generated image routes remain as fallback route files.
-
 ### Asset ID: A007
 - **Asset name:** Dashboard reference sample.
 - **Asset path or URL:** Active `public/references/dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/dashboard-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/dashboard-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** Active SVG 10591 bytes; PNG 92042 bytes; WebP 38918 bytes. Candidate PNG 978694 bytes; raw render 1080712 bytes.
-- **Usage locations:** `src/features/home/components/HomeMarketingHero.tsx:95`, `src/features/analysis/lib/reference-samples.data.mjs:6-8`, `public/manifest.json:97`, `src/lib/seo.ts:283`, `scripts/generate-reference-rasters.mjs:15`, `offline-analyze.mjs:20`, tests/docs.
-- **Usage purpose:** Home hero background, default sample reference, PWA wide screenshot, known offline-analysis sample.
+- **File size:** Active SVG 10607 bytes; PNG 92831 bytes; WebP 38634 bytes. Candidate PNG 978694 bytes; raw render 1080712 bytes.
+- **Usage locations:** `src/features/home/components/HomeMarketingHero.tsx:89`, `src/features/analysis/lib/reference-samples.data.mjs:6-8`, `scripts/generate-reference-rasters.mjs:15`, `offline-analyze.mjs:20`, tests/docs. The PWA wide screenshot slots (`public/manifest.json:97`, `src/lib/seo.ts:284`) now point at `/screenshots/A1-Workflow-Home/desktop-light.png`, not this sample.
+- **Usage purpose:** Home hero background, default sample reference, known offline-analysis sample.
 - **Visual description:** Light admin analytics dashboard with top nav, metric cards, revenue chart placeholder, activity feed, and quick actions. Mostly white/gray with black text, violet primary accents, blue positive/supporting details, and red negative/risk details.
 - **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review as a UI screenshot/mockup, not a decorative illustration. Preserve 1440x900 and keep enough clean interface detail for the analyzer demo before wiring it in.
 - **Suggested AI prompt:** Generate a high-fidelity desktop SaaS analytics dashboard screenshot for a screenshot-to-code demo. Clean white interface, top navigation, four metric cards, revenue line or bar chart, recent activity feed, quick action buttons, restrained neutral palette with violet/lavender as the main brand theme, blue as the secondary/info/positive accent, and red only for negative/risk indicators. Realistic spacing, crisp readable UI structure, no real company logos, no copyrighted brand marks, no people, no green/cyan/mint/yellow/amber theme accents.
@@ -220,14 +209,14 @@ Local file variants covered by grouped entries:
 - **Suggested aspect ratio:** 16:10.
 - **Suggested output size:** 1440x900 PNG/WebP plus SVG source if maintaining raster workflow.
 - **Transparency needed:** No.
-- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Wiring it into runtime would affect hero visuals, sample picker, PWA screenshots, known-sample hashes/signatures, tests, and docs.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Wiring it into runtime would affect hero visuals, sample picker, known-sample hashes/signatures, tests, and docs.
 
 ### Asset ID: A008
 - **Asset name:** Auth reference sample.
 - **Asset path or URL:** Active `public/references/auth-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/auth-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/auth-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** Active SVG 3793 bytes; PNG 24785 bytes; WebP 9654 bytes. Candidate PNG 757488 bytes; raw render 1200389 bytes.
+- **File size:** Active SVG 3813 bytes; PNG 24785 bytes; WebP 9654 bytes. Candidate PNG 757488 bytes; raw render 1200389 bytes.
 - **Usage locations:** `reference-samples.data.mjs:17-19`, `offline-analyze.mjs:73`, tests.
 - **Usage purpose:** Bundled sign-in sample.
 - **Visual description:** Centered sign-in card on pale gray background, black square logo at top, email/password inputs, black primary button, Google/GitHub secondary buttons, forgot-password and sign-up links.
@@ -244,24 +233,24 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** Active `public/references/mobile-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/mobile-reference-candidate-390x844.png`; raw render `public/generated-assets/references/mobile-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 390x844.
-- **File size:** Active SVG 4614 bytes; PNG 26845 bytes; WebP 8734 bytes. Candidate PNG 315796 bytes; raw render 1071594 bytes.
-- **Usage locations:** `reference-samples.data.mjs:28-30`, `public/manifest.json:104`, `src/lib/seo.ts:290`, `offline-analyze.mjs:131`, tests.
-- **Usage purpose:** Bundled portrait mobile app sample and PWA narrow screenshot.
+- **File size:** Active SVG 4634 bytes; PNG 26845 bytes; WebP 8734 bytes. Candidate PNG 315796 bytes; raw render 1071594 bytes.
+- **Usage locations:** `reference-samples.data.mjs:28-30`, `offline-analyze.mjs:131`, tests. The PWA narrow screenshot slots (`public/manifest.json:104`, `src/lib/seo.ts:291`) now point at `/screenshots/A2-Upload-Flow/mobile-light.png`, not this sample.
+- **Usage purpose:** Bundled portrait mobile app sample.
 - **Visual description:** Minimal phone feed layout with status time, `Feed` title, stacked social/activity cards with avatar initials, bottom navigation, and floating plus button.
-- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; preserve exact portrait dimensions and bottom navigation structure for PWA screenshot and mobile analyzer coverage.
+- **Replacement recommendation:** Active file remains source-based. Imagegen candidate is available for review; preserve exact portrait dimensions and bottom navigation structure for mobile analyzer coverage.
 - **Suggested AI prompt:** Generate a portrait mobile app UI screenshot for a productivity/social feed. 390x844 layout, clean light background, status bar, top title, three to five stacked activity cards with initials avatars, concise metadata, bottom navigation with three tabs, floating action button, modern native-app spacing, accessible contrast, no real brand names.
 - **Negative prompt:** Device hardware frame, hands, faces, photos, cluttered social media feed, tiny illegible labels, trademarked app icons, watermark.
 - **Suggested aspect ratio:** 390:844.
 - **Suggested output size:** 390x844 PNG/WebP plus SVG source if needed.
 - **Transparency needed:** No.
-- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. Used as manifest screenshot if promoted; keep `form_factor: narrow` metadata correct.
+- **Notes:** Candidate was generated with the built-in imagegen workflow and saved review-only. The manifest narrow screenshot now comes from the product capture archive under `public/screenshots`, not this sample.
 
 ### Asset ID: A010
 - **Asset name:** Landing reference sample.
 - **Asset path or URL:** Active `public/references/landing-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/landing-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/landing-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** Active SVG 5848 bytes; PNG 72495 bytes; WebP 34202 bytes. Candidate PNG 1081046 bytes; raw render 1184370 bytes.
+- **File size:** Active SVG 5864 bytes; PNG 72495 bytes; WebP 34202 bytes. Candidate PNG 1081046 bytes; raw render 1184370 bytes.
 - **Usage locations:** `reference-samples.data.mjs:39-41`, `offline-analyze.mjs:186`, `scripts/generate-reference-rasters.mjs:18`, tests.
 - **Usage purpose:** Bundled marketing landing-page sample.
 - **Visual description:** Minimal SaaS landing page with top nav, hero headline, CTA buttons, feature cards, testimonial strip, and pricing cards. The SVG source contains an invalid control character in testimonial text but the raster previews render.
@@ -278,7 +267,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** Active `public/references/settings-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/settings-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/settings-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** Active SVG 4297 bytes; PNG 33014 bytes; WebP 13214 bytes. Candidate PNG 641861 bytes; raw render 984038 bytes.
+- **File size:** Active SVG 4317 bytes; PNG 33014 bytes; WebP 13214 bytes. Candidate PNG 641861 bytes; raw render 984038 bytes.
 - **Usage locations:** `reference-samples.data.mjs:50-52`, `offline-analyze.mjs:241`, `scripts/generate-reference-rasters.mjs:19`, tests.
 - **Usage purpose:** Bundled settings/preferences sample.
 - **Visual description:** Desktop settings screen with left sidebar tabs, profile form fields, notification toggles, and cancel/save buttons.
@@ -295,7 +284,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** Active `public/references/ecommerce-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/ecommerce-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/ecommerce-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** Active SVG 7355 bytes; PNG 44658 bytes; WebP 19290 bytes. Candidate PNG 754581 bytes; raw render 1162559 bytes.
+- **File size:** Active SVG 7375 bytes; PNG 44658 bytes; WebP 19290 bytes. Candidate PNG 754581 bytes; raw render 1162559 bytes.
 - **Usage locations:** `reference-samples.data.mjs:61-63`, `offline-analyze.mjs:302`, `scripts/generate-reference-rasters.mjs:20`, tests.
 - **Usage purpose:** Bundled product catalog sample.
 - **Visual description:** Light ecommerce catalog UI with header, search field, cart/profile icon, left filters, and product grid cards with gray product placeholders and Add buttons. The SVG source has an encoded text issue, but the raster previews render.
@@ -312,7 +301,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** Active `public/references/stress-dashboard-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-dashboard-reference-candidate-1440x900.png`; raw render `public/generated-assets/references/stress-dashboard-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1440x900.
-- **File size:** Active SVG 5509 bytes; PNG 37488 bytes; WebP 20450 bytes. Candidate PNG 1126179 bytes; raw render 1219063 bytes.
+- **File size:** Active SVG 5529 bytes; PNG 37488 bytes; WebP 20450 bytes. Candidate PNG 1126179 bytes; raw render 1219063 bytes.
 - **Usage locations:** `reference-samples.data.mjs:72-74`, `scripts/generate-reference-rasters.mjs:21`, tests.
 - **Usage purpose:** Stress test for dense metrics, charts, tables, and admin layouts.
 - **Visual description:** Dense admin dashboard with dark top bar, left navigation, metric cards, line chart, donut chart, and table rows. Uses violet/lavender as the primary theme, blue as the secondary/support color, red for risk/negative states, and pale neutral UI surfaces.
@@ -329,7 +318,7 @@ Local file variants covered by grouped entries:
 - **Asset path or URL:** Active `public/references/stress-list-reference.svg`, `.png`, `.webp`; candidate `public/generated-assets/references/stress-list-reference-candidate-1200x720.png`; raw render `public/generated-assets/references/stress-list-reference-generated.png`.
 - **Asset type:** SVG source + PNG/WebP rasters.
 - **Dimensions:** 1200x720.
-- **File size:** Active SVG 5241 bytes; PNG 28317 bytes; WebP 11478 bytes. Candidate PNG 712079 bytes; raw render 1087347 bytes.
+- **File size:** Active SVG 5261 bytes; PNG 28317 bytes; WebP 11478 bytes. Candidate PNG 712079 bytes; raw render 1087347 bytes.
 - **Usage locations:** `reference-samples.data.mjs:83-85`, `scripts/generate-reference-rasters.mjs:22`, tests.
 - **Usage purpose:** Stress test for repeated rows, list rhythm, item actions, and status pills.
 - **Visual description:** Desktop app list/table view with top bar, left sidebar, repeated rows with circular avatars/status indicators, text lines, pills, and action buttons.
@@ -347,7 +336,7 @@ Local file variants covered by grouped entries:
 - **Asset type:** PNG with legacy SVG source.
 - **Dimensions:** 1600x900.
 - **File size:** PNG 1797157 bytes; SVG source 4418 bytes.
-- **Usage locations:** `docs/specs/ARTIFACT_CHECKLIST.md:11`; legacy demo docs may still reference the SVG until the docs migration is finalized.
+- **Usage locations:** PNG referenced by `docs/specs/ARTIFACT_CHECKLIST.md:11` and `docs/media/PRODUCT_WALKTHROUGH_SCRIPT.md`. No docs reference the SVG anymore; it survives only as the tracked source file listed in `tests/public-copy-guardrail.test.mjs`.
 - **Usage purpose:** Documentation graphic comparing a first-pass scaffold and refined starter.
 - **Visual description:** Installed generated dark indigo comparison graphic with the glossy violet `QUI` badge, "Before" raster screenshot panel, central analysis step, and "After" editable React + Tailwind component view.
 - **Replacement recommendation:** Completed: use the PNG in docs; keep SVG only as legacy/source context.
@@ -357,91 +346,6 @@ Local file variants covered by grouped entries:
 - **Suggested output size:** 1600x900 SVG or PNG.
 - **Transparency needed:** No.
 - **Notes:** Treat as docs/media artwork, not primary runtime UI.
-
-### Asset ID: A016
-- **Asset name:** Next.js starter logo.
-- **Asset path or URL:** Removed: `public/next.svg`.
-- **Asset type:** SVG.
-- **Dimensions:** 394x80 viewBox.
-- **File size:** 1375 bytes.
-- **Usage locations:** No exact runtime reference found.
-- **Usage purpose:** Starter template leftover.
-- **Visual description:** Black `NEXT.js` wordmark.
-- **Replacement recommendation:** Completed: deleted after confirmation. If a framework badge is needed later, use a generic original framework/stack wordmark, not a trademark imitation.
-- **Suggested AI prompt:** Create a generic monochrome "web framework" badge for documentation, original typography, simple geometric wordmark placeholder, neutral black-on-transparent style, no imitation of Next.js or other trademarked framework logos.
-- **Negative prompt:** Next.js wordmark, Vercel logo, copied typography, brand names, watermark.
-- **Suggested aspect ratio:** Wide wordmark.
-- **Suggested output size:** SVG or 800x160 PNG.
-- **Transparency needed:** Yes if used as a badge.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
-
-### Asset ID: A017
-- **Asset name:** Vercel starter logo.
-- **Asset path or URL:** Removed: `public/vercel.svg`.
-- **Asset type:** SVG.
-- **Dimensions:** 1155x1000 viewBox.
-- **File size:** 128 bytes.
-- **Usage locations:** No exact runtime reference found.
-- **Usage purpose:** Starter/deployment logo leftover.
-- **Visual description:** White triangle mark on transparent background.
-- **Replacement recommendation:** Completed: deleted after confirmation. If needed later, replace with a generic deployment/cloud icon.
-- **Suggested AI prompt:** Create an original deployment-platform icon: simple abstract upward triangle combined with a cloud/server base, monochrome, vector, generic, no resemblance to any existing hosting provider logo.
-- **Negative prompt:** Vercel triangle, AWS/Azure/GCP logos, brand imitation, text, watermark.
-- **Suggested aspect ratio:** 1:1.
-- **Suggested output size:** SVG or 512x512 PNG.
-- **Transparency needed:** Yes.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
-
-### Asset ID: A018
-- **Asset name:** Globe starter icon.
-- **Asset path or URL:** Removed: `public/globe.svg`.
-- **Asset type:** SVG.
-- **Dimensions:** 16x16 viewBox.
-- **File size:** 1035 bytes.
-- **Usage locations:** No exact runtime reference found. Footer uses `Globe2` from Lucide instead.
-- **Usage purpose:** Starter icon leftover.
-- **Visual description:** Gray globe outline with longitude/latitude bands.
-- **Replacement recommendation:** Completed: deleted after confirmation. Use Lucide or a unified custom icon set if needed later.
-- **Suggested AI prompt:** Create a simple 16x16 globe/navigation icon in a consistent thin-line icon style, neutral stroke, transparent background, no brand marks.
-- **Negative prompt:** Filled globe illustration, flags, photorealism, complex map detail, watermark.
-- **Suggested aspect ratio:** 1:1.
-- **Suggested output size:** SVG.
-- **Transparency needed:** Yes.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
-
-### Asset ID: A019
-- **Asset name:** File starter icon.
-- **Asset path or URL:** Removed: `public/file.svg`.
-- **Asset type:** SVG.
-- **Dimensions:** 16x16 viewBox.
-- **File size:** 391 bytes.
-- **Usage locations:** No exact runtime reference found.
-- **Usage purpose:** Starter icon leftover.
-- **Visual description:** Gray document/file icon with folded corner and text lines.
-- **Replacement recommendation:** Completed: deleted after confirmation. Replace through the app-wide icon system if needed later.
-- **Suggested AI prompt:** Create a simple 16x16 document/file icon, thin-line style, folded corner, two subtle horizontal content lines, transparent background, matches a modern developer-tool icon system.
-- **Negative prompt:** Real document scan, brand logos, excessive detail, watermark.
-- **Suggested aspect ratio:** 1:1.
-- **Suggested output size:** SVG.
-- **Transparency needed:** Yes.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
-
-### Asset ID: A020
-- **Asset name:** Window starter icon.
-- **Asset path or URL:** Removed: `public/window.svg`.
-- **Asset type:** SVG.
-- **Dimensions:** 16x16 viewBox.
-- **File size:** 385 bytes.
-- **Usage locations:** No exact runtime reference found.
-- **Usage purpose:** Starter icon leftover.
-- **Visual description:** Gray browser/app window icon with three top dots.
-- **Replacement recommendation:** Completed: deleted after confirmation. Replace through the app-wide icon system if needed later.
-- **Suggested AI prompt:** Create a simple 16x16 browser-window icon, thin-line style, rounded rectangle, three small top controls, transparent background, consistent with a developer-tool icon set.
-- **Negative prompt:** Brand browser logos, 3D window, complex chrome, watermark.
-- **Suggested aspect ratio:** 1:1.
-- **Suggested output size:** SVG.
-- **Transparency needed:** Yes.
-- **Notes:** Removed from `public` after reference search confirmed no runtime usage.
 
 ### Asset ID: A021
 - **Asset name:** Home/demo social preview.
@@ -552,7 +456,7 @@ Local file variants covered by grouped entries:
 - **Dimensions:** Scalable SVG, usually 12 to 20 px in UI.
 - **File size:** Bundled by imports.
 - **Usage locations:** Examples include `Header.tsx:8`, `HomeMarketingHero.tsx:7`, `UploadFlow.tsx:12`, `SamplePicker.tsx:3`, `DashboardSampleDialog.tsx:4`, `PwaInstallBanner.tsx:4`, UI primitives, export buttons, account panel, and more.
-- **Detected import locations:** `src/components/ui/select.tsx:5`, `dropdown-menu.tsx:7`, `dialog.tsx:8`, `checkbox.tsx:6`, `accordion.tsx:6`, `src/components/providers/SonnerToaster.tsx:4`, `src/features/shell/components/ThemeToggle.tsx:4`, `NotFoundClient.tsx:4`, `Header.tsx:8`, `Footer.tsx:4`, `DeveloperReadinessDialog.tsx:3`, `DemoModeSnackbar.tsx:4`, `BrandThemeSwitcher.tsx:3`, `AppearanceMenu.tsx:4`, `src/features/demo/components/DemoPageClient.tsx:4`, `src/features/ops/components/ProductionReadinessPanel.tsx:4`, `src/features/export/components/*ExportButton.tsx`, `src/features/pwa/components/*`, `src/features/share/components/SharedSummaryCard.tsx:3`, `src/features/analysis/components/*`, `src/features/account/components/AccountProfilePanel.tsx:13`, `src/features/design-system/components/*`, `src/features/design-system/lib/design-system-options.ts:1`, `src/features/home/components/*`.
+- **Detected import locations:** `src/components/ui/select.tsx:5`, `dropdown-menu.tsx:7`, `dialog.tsx:8`, `checkbox.tsx:6`, `accordion.tsx:6`, `src/components/providers/SonnerToaster.tsx:4`, `src/features/shell/components/ThemeToggle.tsx:4`, `NotFoundClient.tsx:4`, `Header.tsx:8`, `Footer.tsx:4`, `DeveloperReadinessDialog.tsx:3`, `AppearanceMenu.tsx:4`, `src/features/demo/components/SampleRunPageClient.tsx:4`, `src/features/ops/components/ProductionReadinessPanel.tsx:4`, `src/features/export/components/*ExportButton.tsx`, `src/features/pwa/components/*`, `src/features/share/components/SharedSummaryCard.tsx:3`, `src/features/analysis/components/*`, `src/features/account/components/AccountProfilePanel.tsx:13`, `src/features/design-system/components/*`, `src/features/design-system/lib/design-system-options.ts:1`, `src/features/home/components/*`.
 - **Detected icon names:** `AlertCircle`, `AlertTriangle`, `Archive`, `ArrowRight`, `Atom`, `BarChart3`, `Box`, `Boxes`, `Bug`, `Camera`, `Check`, `CheckCircle2`, `CheckIcon`, `ChevronDown`, `ChevronDownIcon`, `ChevronRight`, `ChevronRightIcon`, `ChevronUpIcon`, `CircleAlert`, `CircleCheckIcon`, `Clock3`, `Code2`, `Compass`, `Copy`, `Download`, `ExternalLink`, `Eye`, `EyeOff`, `FileCode2`, `FileText`, `FolderGit2`, `Globe2`, `Grid2X2`, `Home`, `Info`, `InfoIcon`, `Layers`, `LayoutDashboard`, `LayoutGrid`, `Link2`, `ListChecks`, `Loader2`, `Loader2Icon`, `LogIn`, `LogOut`, `Mail`, `Monitor`, `MonitorCog`, `Moon`, `OctagonXIcon`, `PackageCheck`, `PackageOpen`, `Palette`, `PanelsTopLeft`, `Redo2`, `RefreshCw`, `RotateCcw`, `ScanSearch`, `Search`, `SearchCheck`, `ServerCog`, `Settings`, `Settings2`, `Share`, `Share2`, `ShieldCheck`, `ShoppingBag`, `Smartphone`, `Sparkles`, `Sun`, `Table2`, `Tablet`, `Tag`, `TriangleAlertIcon`, `Undo2`, `Upload`, `UploadCloud`, `UserPlus`, `UserRound`, `Waypoints`, `Wrench`, `X`, `XIcon`, `Zap`.
 - **Usage purpose:** Navigation, actions, feedback states, workflow steps, cards, buttons, tabs, menus, and toasts.
 - **Visual description:** Thin-line modern icon set used throughout the product UI.
@@ -588,7 +492,7 @@ Local file variants covered by grouped entries:
 - **Dimensions:** Source image dependent.
 - **File size:** Source image dependent.
 - **Usage locations:** `UploadDropzone.tsx:61-62`, `UploadFlow.tsx:621-622,1060-1141,1876-1877,1898`.
-- **Usage purpose:** Displays user-uploaded screenshots, sample screenshots, generated scaffold preview, and visual diff/mock canvas.
+- **Usage purpose:** Displays user-uploaded screenshots, sample screenshots, component draft preview, and visual diff canvas.
 - **Visual description:** Not a fixed repository asset. It renders whatever screenshot/sample the user chooses, with detection and mock-preview graphics generated by code.
 - **Replacement recommendation:** No direct file replacement. Ensure new sample images are valid inputs and maintain supported dimensions/file sizes.
 - **Suggested AI prompt:** Generate a clean UI screenshot suitable for upload into a screenshot-to-code analyzer. The image should contain a complete interface with clear layout regions, buttons, forms, cards, navigation, and charts where relevant. Use realistic spacing, high contrast, no watermarks, no copyrighted logos, no real personal data, and preserve a single clear viewport.
@@ -600,7 +504,7 @@ Local file variants covered by grouped entries:
 
 ### Asset ID: A030
 - **Asset name:** CSS/decorative gradient backgrounds.
-- **Asset path or URL:** `public/offline.html:51`, `src/app/globals.css:291`, `src/features/demo/components/DemoPageClient.tsx:30`, `HomeMarketingHero.tsx:103-104`, social preview gradient strings.
+- **Asset path or URL:** `public/offline.html:51`, `src/app/globals.css:291`, `src/features/demo/components/SampleRunPageClient.tsx:32`, `HomeMarketingHero.tsx:103-104`, social preview gradient strings.
 - **Asset type:** CSS-generated visual graphics.
 - **Dimensions:** Responsive.
 - **File size:** Code-generated.
@@ -677,7 +581,7 @@ Generate the eight reference samples as a matching UI screenshot suite. They sho
 - Distinct screen archetypes: dashboard, auth, mobile, landing, settings, ecommerce, dense dashboard, repeated list.
 - Same product world but no real private data or real brand logos.
 
-The dashboard reference A007 is especially important because it is also the home hero background and PWA wide screenshot.
+The dashboard reference A007 is especially important because it is also the home hero background.
 
 ### Social Preview Images
 
@@ -810,33 +714,9 @@ Negative prompt:
 Watermark, illegible text, copied logos, unrelated Qwen logo variants, low contrast, distorted UI, broken alignment, random photos, people unless explicitly needed, flat one-note purple wash, noisy texture, busy composition.
 ```
 
-## 8. QA Checklist
+## 8. Verification After Replacement
 
-- [x] Repository structure inspected.
-- [x] Project type and build system identified.
-- [x] Public/static asset directories inspected.
-- [x] Source route, component, feature, data, style, script, doc, and test directories searched.
-- [x] Common raster extensions searched.
-- [x] SVG/vector assets searched and visually inspected where possible.
-- [x] ICO favicon inspected.
-- [x] CSS `url(...)`, gradient, and background references considered.
-- [x] HTML/JSX/TSX image components searched.
-- [x] Next metadata, Open Graph, Twitter image routes inspected.
-- [x] Manifest, PWA, service worker, and offline page asset references inspected.
-- [x] Remote image URLs searched; none found.
-- [x] Base64/data image references searched.
-- [x] Inline SVG references searched.
-- [x] Icon library imports parsed.
-- [x] Generated charts and canvas visuals considered.
-- [x] Local asset dimensions and file sizes captured.
-- [x] Visual descriptions provided or marked as generated/inferred/test-only.
-- [x] Usage locations included for used assets.
-- [x] Unused/unconfirmed assets identified.
-- [x] Replacement prompts written for each asset or asset class.
-- [x] Consolidated art direction provided.
-- [x] QA subagent findings incorporated.
-
-Recommended verification after actual replacement:
+Recommended verification after any future asset replacement:
 
 - [ ] Run `npm run validate:assets`.
 - [ ] Run `npm test`.
@@ -848,6 +728,8 @@ Recommended verification after actual replacement:
 ## 9. Open Questions or Risks
 
 - Replace/refine A001-A005 together from the final purple `QUI` badge master; do not update one icon size or format in isolation.
+- `scripts/generate-app-icons.mjs` (`npm run generate:app-icons`) regenerates the entire icon family plus `src/app/favicon.ico` from a deterministic SVG source. Running it would overwrite the installed AI-master icons; retire or repoint the script before any future icon regeneration.
+- `public/icons/icon-maskable-512.png` is currently byte-identical to `public/icons/icon-512.png`, so there is no dedicated maskable safe-area inset. This contradicts the A004 guidance; the next icon pass should export a true maskable variant with safe-area padding.
 - `public/manifest.json` and `src/lib/seo.ts` both define PWA icon/screenshot metadata. They can drift if only one is updated.
 - `public/sw.js` precaches icons, manifests, and social routes. Bump `CACHE_NAME` when replacing cached assets.
 - Reference samples are filename-coupled. `reference-samples.data.mjs`, `offline-analyze.mjs`, tests, docs, and raster generation all expect known stems like `dashboard-reference`.

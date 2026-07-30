@@ -2,7 +2,7 @@
 
 Turn UI screenshots into inspectable React + Tailwind export packages.
 
-`qwen-ui-lab` is a browser-first workflow for product and frontend reviews: upload a screenshot, inspect detected UI structure, correct detection boxes, preview a component draft, then download a starter package with code, design notes, tokens, recipe JSON, and detection notes.
+`qwen-ui-lab` is a browser-first workflow for product and frontend reviews: upload a screenshot, inspect detected UI structure, correct detection boxes, preview a component draft, then download an export package with code, design notes, tokens, recipe JSON, and detection notes.
 
 Production: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 
@@ -20,7 +20,7 @@ Production: [qwen-ui-lab.vercel.app](https://qwen-ui-lab.vercel.app)
 - Edit detection boxes before rebuilding the preview.
 - Review confidence reasons for detected elements.
 - Generate a React + Tailwind component draft with shadcn-style primitive mapping.
-- Export a multi-file starter package for review or handoff.
+- Export a multi-file export package for review.
 - Browse reusable product and UX-law snippets in the design system.
 
 ## Visual Archive
@@ -67,9 +67,9 @@ Never expose provider secrets through `NEXT_PUBLIC_*` variables.
 | `/account` | Compatibility redirect to the browser-local profile modal. |
 | `/share/[id]` | Read-only shared analysis summary. |
 
-## Starter Package Contents
+## Export package contents
 
-Downloaded packages are intended as inspectable starter packages, not finished screens. A package can include:
+Downloaded packages are intended as inspectable export packages, not finished screens. A package can include:
 
 - `README.md`
 - `DESIGN.md`

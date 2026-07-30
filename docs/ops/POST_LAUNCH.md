@@ -51,7 +51,7 @@ Violations are **report-only** in production - they do not block users.
 
 ## What's next (backlog, not required for launch)
 
-- Scheduled synthetic health workflow (sketch in **[docs/ops/RELIABILITY_OPS.md](./RELIABILITY_OPS.md)**).
+- Pair the scheduled **Production Reliability Monitor** workflow (daily `/api/health` + share/export smoke; see **[docs/ops/RELIABILITY_OPS.md](./RELIABILITY_OPS.md)**) with an external uptime service for more frequent probes.
 - Promote CSP report-only findings into enforced policy in stages (guide above).
 - Optional perf checks before/after UI changes - see **[docs/ops/PERFORMANCE.md](./PERFORMANCE.md)** (`npm run analyze` for bundles; `npm run perf:lighthouse` for Lighthouse; artifacts under `.perf/`, gitignored).
 - Release tagging per **[docs/ops/RELEASE_PROCESS.md](./RELEASE_PROCESS.md)** when cutting a versioned milestone.

@@ -15,7 +15,7 @@ When all observability env vars are **unset**:
 - No Sentry initialization
 - No outbound error beacons
 - `captureError` / `trackEvent` are no-ops
-- Local-analysis provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS=true`
+- Local-analysis provider mode never emits telemetry unless `NEXT_PUBLIC_OBSERVABILITY_ALLOW_LOCAL_ANALYSIS=true` (the legacy alias `NEXT_PUBLIC_OBSERVABILITY_ALLOW_DEMO_MODE=true` is also honored)
 
 ## Activation flags
 

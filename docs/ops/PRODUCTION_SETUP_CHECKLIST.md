@@ -16,7 +16,7 @@ Configure these as server-only environment variables:
 
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`
-- `GITHUB_TOKEN`
+- `GITHUB_GIST_TOKEN` (preferred) or `GITHUB_TOKEN` (fallback for Gist export)
 
 Configure this public environment variable with the deployed HTTPS origin:
 
@@ -39,5 +39,7 @@ After deploy:
 DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 SMOKE_GITHUB_REPORT=true DEPLOY_URL=https://qwen-ui-lab.vercel.app npm run smoke:deploy
 ```
+
+When running locally, GitHub reporting also requires `SMOKE_GITHUB_TOKEN` (or `GITHUB_TOKEN`/`GH_TOKEN`) and `SMOKE_GITHUB_REPOSITORY` (or `GITHUB_REPOSITORY`); without both, the smoke script only warns and skips reporting.
 
 Use `SMOKE_GITHUB_ISSUE=<number>` to comment on an existing tracking issue. Without an issue number, the smoke script creates a new GitHub issue when reporting is enabled.

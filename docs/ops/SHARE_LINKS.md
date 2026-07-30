@@ -17,7 +17,7 @@ Payload shape (v1, secret-free):
   "v": 1,
   "summary": "Admin dashboard with stat grid...",
   "stats": [{ "l": "Components", "v": "6" }],
-  "mode": "Analyzer ready",
+  "mode": "Ready for review",
   "file": "dashboard-reference.svg"
 }
 ```
@@ -29,7 +29,7 @@ Fields such as `generatedCode`, `plan`, or API keys are stripped by `buildSharea
 1. After analyze, **Copy short share link** POSTs the sanitized payload to `/api/share`.
 2. On success, the clipboard receives `https://<host>/share/<id>` (8-char ID by default). The response also reports whether the link used memory or KV storage.
 3. If the API is unavailable, the app falls back to a URL hash (`#share=...`) plus `sessionStorage` (`qwen-ui-lab:last-share`).
-4. Opening a hash link on `/` or `/demo` attempts a one-time redirect to the short `/share/[id]` route when the API succeeds.
+4. Opening a hash link on `/` or `/demo` attempts a one-time redirect to the short `/share/[id]` route only when the share API returns a durable (KV-backed) link; in-memory links stay on the hash URL.
 
 ## Storage backends
 

@@ -8,7 +8,7 @@ This project uses a two-track CSP strategy:
 ## Current rollout
 
 - Enforced policy (Stage C - **done**): per-request nonce + `strict-dynamic` for scripts; no `unsafe-inline` or `unsafe-eval` in production.
-  - Implemented in `src/proxy.ts` (Next.js 16 proxy) + `src/lib/csp.ts`; custom theme bootstrap script in `layout.tsx` receives the nonce via `x-nonce`.
+  - Implemented in `src/proxy.ts` (Next.js 16 proxy) + `src/lib/csp.ts`; the proxy sets `x-nonce` so Next.js injects nonces into framework scripts during SSR (`layout.tsx` calls `connection()` for this - see Stage C notes).
   - `style-src 'unsafe-inline'` remains for Tailwind/runtime styles (Stage D).
 - Enforced policy additionally pins:
   - `frame-src 'none'`
@@ -77,7 +77,7 @@ Report-only CSP does **not** block scripts or styles for the app. Use it to lear
 
 3. **Triage weekly:** group by `violated-directive` and `blocked-uri`; fix first-party issues before changing enforced headers.
 
-4. **Disable report-only temporarily** (e.g. noisy third-party): set `CSP_REPORT_ONLY=false` in the host env - enforced baseline in `next.config.ts` stays local-analysis safe.
+4. **Disable report-only temporarily** (e.g. noisy third-party): set `CSP_REPORT_ONLY=false` in the host env - enforced baseline in `src/proxy.ts` stays in place.
 
 5. **Do not enforce strict script/style policy** on the public app until report-only noise is near zero on a rehearsal deploy.
 

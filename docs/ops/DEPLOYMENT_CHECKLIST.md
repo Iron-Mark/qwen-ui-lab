@@ -21,7 +21,7 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 - [ ] Validate local-analysis defaults (recommended): `npm run deploy:env:local`
 - [ ] With production secrets loaded: `npm run validate:prod` (KV, gist, Sentry policy, local-analysis live gate)
 - [ ] Production env setup follows [PRODUCTION_ENV_READINESS.md](./PRODUCTION_ENV_READINESS.md).
-- [ ] Current public-app exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and `GITHUB_TOKEN`; this is acceptable only for local-analysis operation where durable share links and server-side Gist export are not required.
+- [ ] Current public-app exception: if Vercel has no env vars configured, `validate:prod` fails on missing KV and a Gist export token (`GITHUB_GIST_TOKEN` preferred, `GITHUB_TOKEN` accepted); this is acceptable only for local-analysis operation where durable share links and server-side Gist export are not required.
 - [ ] For live rollout only: `npm run deploy:env:live` (see **[docs/ops/LIVE_QWEN_ROLLOUT.md](./LIVE_QWEN_ROLLOUT.md)**)
 - [ ] `NEXT_PUBLIC_QWEN_API_KEY` is not set.
 - [ ] Runtime secrets stay server-only (no `NEXT_PUBLIC_*` prefix for secrets).
@@ -42,11 +42,13 @@ Use this checklist for production releases of `qwen-ui-lab` (Vercel-first, porta
 ## 5) Post-deploy smoke checks
 
 - [ ] Automated workflow run succeeded: `.github/workflows/post-deploy-smoke.yml`
-- [ ] Or manual smoke succeeded:
+- [ ] Or manual smoke succeeded (the workflow runs both commands; run both for parity):
   - [ ] `DEPLOY_URL=<deployed-url> npm run smoke:deploy`
+  - [ ] `DEPLOY_URL=<deployed-url> npm run smoke:share-live` (browser share/export smoke)
   - [ ] Optional live expectation: `EXPECT_LIVE_ANALYSIS=true DEPLOY_URL=<deployed-url> npm run smoke:deploy`
 - [ ] `GET /api/health` mode matches rollout intent (local analysis by default unless explicit live rollout).
-- [ ] `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `robots.txt`, and `sitemap.xml` are healthy.
+- [ ] `/`, `/design-system`, `/design-system/laws-of-ux`, `/design-system/uilaws`, `robots.txt`, and `sitemap.xml` are healthy (covered by `smoke:deploy`).
+- [ ] Spot-check the newer public routes `/demo` and `/share/[id]` (share coverage also comes from `npm run smoke:share-live`), plus `/account` and `/admin/analytics` when relevant.
 - [ ] Optional latency probe for sign-off: `node scripts/synthetic-health-check.mjs --base-url <deployed-url> --attempts 5`.
 - [ ] Optional production LCP telemetry: `npm run perf:lcp-budget` or CI `Production LCP budget`. This is warn-only by default because live network/CDN variance can spike; set Vercel/GitHub repository variable `PERF_LCP_STRICT=true` only when you want this to block CI.
 

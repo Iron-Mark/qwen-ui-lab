@@ -67,8 +67,11 @@ Production host env readiness: **[docs/ops/PRODUCTION_ENV_READINESS.md](./PRODUC
 - Workflow: `.github/workflows/post-deploy-smoke.yml`
   - Supports `workflow_dispatch` with explicit `deploy_url`
   - Supports `repository_dispatch` (`vercel-deployment-success`) for external webhook-driven hooks
+  - Runs two stages: route/API smoke (`npm run smoke:deploy`), then installs Chromium and runs the browser share/export smoke (`npm run smoke:share-live`)
 - Script: `scripts/post-deploy-smoke.mjs`
   - Verifies `GET /api/health` mode and critical app routes/assets
+- Script: `scripts/live-share-smoke.mjs`
+  - Drives a real browser against the deployed URL to verify share and export behavior
 
 ## Failure policy
 
