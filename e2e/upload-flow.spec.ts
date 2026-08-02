@@ -465,8 +465,12 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
       },
       { timeout: 10_000 },
     )
-    .toContain("share=");
-  expect(copiedShareUrl).toContain("share=");
+    // Copy-share-link yields a short path link (/share/<id>) when the shortlink
+    // service is reachable, and falls back to the portable hash form
+    // (/share/local#share=<payload>) when it is not. Both are valid shares, so
+    // accept either shape here rather than pinning to the legacy `share=` query.
+    .toMatch(/\/share\/|share=/);
+  expect(copiedShareUrl).toMatch(/\/share\/|share=/);
   await page.goto(copiedShareUrl!);
   await expect(page.getByTestId("shared-detection-preview")).toBeVisible();
   await expect(
