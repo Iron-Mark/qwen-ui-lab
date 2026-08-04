@@ -465,8 +465,8 @@ test("upload -> analyze -> prepare preview -> copy/download smoke flow", async (
       },
       { timeout: 10_000 },
     )
-    .toContain("share=");
-  expect(copiedShareUrl).toContain("share=");
+    .toMatch(/(?:\/share\/[^/?#]+|#share=)/);
+  expect(copiedShareUrl).toMatch(/(?:\/share\/[^/?#]+|#share=)/);
   await page.goto(copiedShareUrl!);
   await expect(page.getByTestId("shared-detection-preview")).toBeVisible();
   await expect(
