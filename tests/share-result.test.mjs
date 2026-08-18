@@ -247,6 +247,45 @@ test("isShareKvConfigured requires REST env vars", () => {
   );
 });
 
+test("KV share records use Upstash REST SET semantics and round-trip", async () => {
+  const payload = buildShareableSummary(sampleArtifact);
+  assert.ok(payload);
+
+  const env = {
+    KV_REST_API_URL: "https://example.upstash.io",
+    KV_REST_API_TOKEN: "token",
+    SHARE_TTL_MS: "120000",
+  };
+  const stored = new Map();
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (input, init = {}) => {
+    const url = new URL(String(input));
+    const [, command, encodedKey] = url.pathname.split("/");
+    const key = decodeURIComponent(encodedKey);
+
+    if (command === "get") {
+      return Response.json({ result: stored.get(key) ?? null });
+    }
+
+    assert.equal(command, "set");
+    assert.equal(init.method, "POST");
+    assert.equal(url.searchParams.get("EX"), "120");
+    assert.equal(typeof init.body, "string");
+    assert.deepEqual(JSON.parse(init.body), payload);
+    stored.set(key, init.body);
+    return Response.json({ result: "OK" });
+  };
+
+  try {
+    const created = await createShareRecord(payload, { env });
+    assert.equal(created?.storage, "kv");
+    assert.deepEqual(await getShareRecord(created.id, env), payload);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("POST /api/share creates short link", async () => {
   const payload = buildShareableSummary(sampleArtifact);
   assert.ok(payload);
