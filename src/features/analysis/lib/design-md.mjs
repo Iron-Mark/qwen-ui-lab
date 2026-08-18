@@ -17,6 +17,7 @@ function normalizeLine(value) {
 
 function tableCell(value) {
   return text(value, "-")
+    .replace(/\\/g, "\\\\")
     .replace(/\|/g, "\\|")
     .replace(/\r?\n/g, " ")
     .trim() || "-";
