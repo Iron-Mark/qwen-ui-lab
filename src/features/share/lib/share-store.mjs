@@ -122,18 +122,23 @@ async function kvRequest(key, env, method = "GET", body) {
   const { kvRestUrl, kvRestToken } = getShareStoreConfig(env);
   if (!kvRestUrl || !kvRestToken) return null;
 
+  const expiryQuery =
+    method === "POST" && Number.isFinite(body?.ex)
+      ? `?EX=${encodeURIComponent(String(body.ex))}`
+      : "";
   const url =
     method === "GET"
       ? `${kvRestUrl}/get/${encodeURIComponent(key)}`
-      : `${kvRestUrl}/set/${encodeURIComponent(key)}`;
+      : `${kvRestUrl}/set/${encodeURIComponent(key)}${expiryQuery}`;
+  const value = method === "POST" ? body?.value : undefined;
 
   const response = await fetch(url, {
     method,
     headers: {
       Authorization: `Bearer ${kvRestToken}`,
-      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(value !== undefined ? { "Content-Type": "application/json" } : {}),
     },
-    ...(body ? { body: JSON.stringify(body) } : {}),
+    ...(value !== undefined ? { body: String(value) } : {}),
   });
 
   if (!response.ok) return null;

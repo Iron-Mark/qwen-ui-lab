@@ -55,6 +55,8 @@ Optional tuning:
 
 No `@vercel/kv` package is required - the store uses the Upstash REST API when both env vars are present.
 
+The REST `SET` request sends the serialized share record as the raw request body and applies expiry through the `EX` query parameter. Do not wrap the value in a `{ value, ex }` object: Upstash stores that wrapper as the Redis value, so the later share-record sanitizer cannot read the expected record shape.
+
 ## Operations
 
 - Treat share payloads as **public** - never include secrets in client-side share input.
