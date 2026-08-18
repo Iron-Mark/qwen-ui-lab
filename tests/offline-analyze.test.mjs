@@ -1069,6 +1069,18 @@ test("inspectSvgMarkup treats missing or invalid viewBox as absent", () => {
   assert.equal(invalid.source.viewBox, null);
 });
 
+test("inspectSvgMarkup excludes active content and decodes entities once", () => {
+  const inspection = inspectSvgMarkup(`<svg viewBox="0 0 100 100">
+    <script>const injected = '<text>Attack</text>';</script >
+    <style><text>Hidden</text></style >
+    <text>&amp;lt;Safe</text>
+  </svg>`);
+
+  assert.ok(inspection);
+  assert.deepEqual(inspection.labels, ["&lt;Safe"]);
+  assert.equal(inspection.tagCounts.text, 1);
+});
+
 test("inspectSvgDataUrl and preprocessImageDataUrl preserve SVG structure offline", async () => {
   const dataUrl = `data:image/svg+xml;base64,${Buffer.from(AUTH_SVG, "utf8").toString(
     "base64",
