@@ -49,6 +49,7 @@ export function StarterDashboard() {
       foreground: "#f8fafc",
       accent: "#60a5fa",
       spacing: "cozy",
+      escaped: String.raw`path\|value`,
     },
     elements: [
       {
@@ -148,6 +149,7 @@ test("buildDesignMarkdown exports dynamic design documentation from artifact res
   assert.match(markdown, /Detector quality confidence: 86% \(high\)/);
   assert.match(markdown, /\| Card \| 2 \| 82% \| card-or-panel \| 1 \|/);
   assert.match(markdown, /\| accent \| #60a5fa \|/);
+  assert.ok(markdown.includes(String.raw`| escaped | path\\\|value |`));
   assert.match(markdown, /Primitive snapping grouped 3 active detections into 2 component families/);
   assert.match(markdown, /Top band position/);
   assert.match(markdown, /Aligned text signal/);
