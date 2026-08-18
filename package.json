@@ -79,7 +79,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@next/bundle-analyzer": "^16.2.6",
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.6",
