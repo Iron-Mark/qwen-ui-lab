@@ -5,7 +5,7 @@
  * Production: wire Upstash/Vercel KV via REST env vars; see docs/ops/SHARE_LINKS.md.
  */
 
-import { randomBytes } from "node:crypto";
+import { randomInt } from "node:crypto";
 
 import { buildShareableSummary } from "./share-result.mjs";
 
@@ -60,10 +60,9 @@ export function getShareStorageMode(env = process.env) {
  * @param {number} length
  */
 export function generateShareId(length = DEFAULT_SHARE_ID_LENGTH) {
-  const bytes = randomBytes(length);
   let id = "";
   for (let index = 0; index < length; index += 1) {
-    id += SHARE_ID_ALPHABET[bytes[index] % SHARE_ID_ALPHABET.length];
+    id += SHARE_ID_ALPHABET[randomInt(SHARE_ID_ALPHABET.length)];
   }
   return id;
 }

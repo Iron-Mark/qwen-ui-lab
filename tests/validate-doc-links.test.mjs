@@ -42,6 +42,20 @@ test("validateDocLinks accepts same-file and cross-file heading anchors", () => 
   assert.deepEqual(result.issues, []);
 });
 
+test("validateDocLinks handles HTML attributes containing closing brackets", () => {
+  const root = createFixture();
+  mkdirSync(join(root, "docs"));
+  writeFileSync(
+    join(root, "README.md"),
+    '# <span title=">">Safe Label</span>\n\n[Safe](#safe-label)\n',
+  );
+
+  const result = validateDocLinks({ repoRoot: root });
+
+  assert.equal(result.checkedFileCount, 1);
+  assert.deepEqual(result.issues, []);
+});
+
 test("validateDocLinks reports missing local markdown targets", () => {
   const root = createFixture();
   mkdirSync(join(root, "docs"));

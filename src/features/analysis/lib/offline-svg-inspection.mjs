@@ -1,6 +1,7 @@
 const SVG_DATA_URL_PATTERN = /^data:image\/svg\+xml(?:[;,]|$)/i;
 const MAX_LABELS = 12;
 const MAX_LABEL_LENGTH = 80;
+const BLOCKED_SVG_TAGS = new Set(["script", "style"]);
 
 const SVG_TAGS = [
   "a",
@@ -147,9 +148,75 @@ export function buildSvgInspectionPreviewStats(inspection) {
 }
 
 function stripUnsafeSvgMarkup(markup) {
-  return String(markup)
-    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, "");
+  const source = String(markup);
+  let filtered = "";
+  let cursor = 0;
+  let blockedDepth = 0;
+
+  while (cursor < source.length) {
+    const opening = source.indexOf("<", cursor);
+    if (opening < 0) {
+      if (blockedDepth === 0) filtered += source.slice(cursor);
+      break;
+    }
+
+    if (blockedDepth === 0) filtered += source.slice(cursor, opening);
+    const closing = findMarkupTagEnd(source, opening + 1);
+    if (closing < 0) break;
+
+    const tag = parseMarkupTag(source.slice(opening + 1, closing));
+    if (tag && BLOCKED_SVG_TAGS.has(tag.name)) {
+      if (tag.closing) {
+        blockedDepth = Math.max(0, blockedDepth - 1);
+      } else if (!tag.selfClosing) {
+        blockedDepth += 1;
+      }
+    } else if (blockedDepth === 0) {
+      filtered += source.slice(opening, closing + 1);
+    }
+
+    cursor = closing + 1;
+  }
+
+  return filtered;
+}
+
+function findMarkupTagEnd(source, start) {
+  let quote = null;
+  for (let index = start; index < source.length; index += 1) {
+    const character = source[index];
+    if (quote) {
+      if (character === quote) quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === ">") {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function parseMarkupTag(source) {
+  const token = source.trim();
+  if (!token || token.startsWith("!") || token.startsWith("?")) return null;
+
+  const closing = token.startsWith("/");
+  let cursor = closing ? 1 : 0;
+  while (cursor < token.length && /\s/.test(token[cursor])) cursor += 1;
+
+  const nameStart = cursor;
+  while (cursor < token.length && /[A-Za-z0-9:_-]/.test(token[cursor])) {
+    cursor += 1;
+  }
+  if (cursor === nameStart) return null;
+
+  return {
+    name: token.slice(nameStart, cursor).toLowerCase(),
+    closing,
+    selfClosing: !closing && token.endsWith("/"),
+  };
 }
 
 function parseSvgRootAttributes(markup) {
@@ -230,16 +297,36 @@ function normalizeSvgLabel(value) {
 }
 
 function stripTags(value) {
-  return String(value || "").replace(/<[^>]*>/g, " ");
+  const source = String(value || "");
+  let plainText = "";
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const opening = source.indexOf("<", cursor);
+    if (opening < 0) return plainText + source.slice(cursor);
+
+    plainText += source.slice(cursor, opening);
+    const closing = findMarkupTagEnd(source, opening + 1);
+    if (closing < 0) return plainText + source.slice(opening);
+    plainText += " ";
+    cursor = closing + 1;
+  }
+
+  return plainText;
 }
 
 function decodeEntities(value) {
-  return String(value || "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+  const entities = {
+    amp: "&",
+    lt: "<",
+    gt: ">",
+    quot: '"',
+    "#39": "'",
+  };
+  return String(value || "").replace(
+    /&(amp|lt|gt|quot|#39);/g,
+    (match, name) => entities[name] ?? match,
+  );
 }
 
 function scoreSvgArchetypeHints(labels) {

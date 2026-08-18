@@ -87,8 +87,7 @@ function parseLocalTarget(rawTarget) {
 }
 
 function slugHeading(heading) {
-  return heading
-    .replace(/<[^>]+>/g, "")
+  return stripMarkupTags(heading)
     .replace(/[`*_~[\]]/g, "")
     .trim()
     .toLowerCase()
@@ -97,6 +96,37 @@ function slugHeading(heading) {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+function stripMarkupTags(value) {
+  const source = String(value);
+  let plainText = "";
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const opening = source.indexOf("<", cursor);
+    if (opening < 0) return plainText + source.slice(cursor);
+
+    plainText += source.slice(cursor, opening);
+    let quote = null;
+    let closing = -1;
+    for (let index = opening + 1; index < source.length; index += 1) {
+      const character = source[index];
+      if (quote) {
+        if (character === quote) quote = null;
+      } else if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === ">") {
+        closing = index;
+        break;
+      }
+    }
+
+    if (closing < 0) return plainText + source.slice(opening);
+    cursor = closing + 1;
+  }
+
+  return plainText;
 }
 
 function collectMarkdownAnchors(source) {
