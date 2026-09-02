@@ -14,6 +14,10 @@ concurrency:
 jobs:
   e2e-smoke:
     name: E2E smoke (mobile + a11y + live contract + upload)
+    # Dependency-only PRs retain the required audit/lint/unit/build gate in
+    # pr-checks.yml. Skip the second install and Playwright run to conserve
+    # hosted-runner minutes; GitHub reports this named check as skipped.
+    if: github.event_name != 'pull_request' || github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Warn-only on PRs unless repo variable PR_E2E_STRICT=true. Hard fail on manual dispatch.
