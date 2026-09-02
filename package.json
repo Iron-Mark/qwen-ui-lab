@@ -68,7 +68,7 @@
     "hono": "4.12.34",
     "js-yaml": "4.3.1",
     "@hono/node-server": "^2.0.5",
-    "fast-uri": "3.1.5",
+    "fast-uri": "3.1.7",
     "ip-address": "10.4.0",
     "nanoid@^3.0.0": "3.3.18",
     "body-parser": "^2.3.0",
