@@ -293,13 +293,13 @@ function HeaderBrandCopyLayer({
     >
       <p
         data-testid={current ? "header-brand-title" : undefined}
-        className="truncate text-lg font-bold leading-5 text-foreground transition-colors"
+        className="truncate text-lg font-bold leading-5 text-foreground"
       >
         {copy.title}
       </p>
       <p
         data-testid={current ? "header-brand-subtitle" : undefined}
-        className="truncate text-xs leading-4 text-muted-foreground transition-colors"
+        className="truncate text-xs leading-4 text-muted-foreground"
       >
         {copy.subtitle}
       </p>
