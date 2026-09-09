@@ -23,3 +23,13 @@ test("stateful primitives respect reduced-motion preferences", () => {
     assert.match(source, /\bmotion-reduce:transition-none\b/, file);
   }
 });
+
+test("active header copy stays opaque during route-title motion", () => {
+  const source = readFileSync(join("src", "app", "globals.css"), "utf8");
+  const enterStart = source.indexOf("@keyframes header-brand-copy-enter");
+  const exitStart = source.indexOf("@keyframes header-brand-copy-exit", enterStart);
+
+  assert.notEqual(enterStart, -1);
+  assert.notEqual(exitStart, -1);
+  assert.doesNotMatch(source.slice(enterStart, exitStart), /\bopacity\s*:/);
+});

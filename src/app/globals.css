@@ -280,12 +280,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-*,
-*::before,
-*::after {
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
-}
-
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
   text-rendering: optimizeLegibility;
@@ -312,12 +306,10 @@ body {
 
 @keyframes header-brand-copy-enter {
   from {
-    opacity: 0;
     transform: translateY(6px);
     filter: blur(2px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
     filter: blur(0);
   }
