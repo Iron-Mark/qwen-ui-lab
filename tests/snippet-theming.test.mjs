@@ -70,6 +70,15 @@ test("Global theme tokens set native browser color scheme", () => {
   assert.match(source, /\.dark\s*{[\s\S]*color-scheme:\s*dark;/);
 });
 
+test("Global styles do not animate theme colors on every element", () => {
+  const source = readProjectFile("src/app/globals.css");
+
+  assert.doesNotMatch(
+    source,
+    /\*,\s*\*::before,\s*\*::after\s*\{[^}]*transition\s*:/,
+  );
+});
+
 test("CodeHighlight assigns Prism language classes in both states", () => {
   const source = readProjectFile("src/features/analysis/components/CodeHighlight.tsx");
 
